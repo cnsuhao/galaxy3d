@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "galaxy3d", "..\..\lib\project_winpc\galaxy3d.vcxproj", "{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "g3dgame", "g3dgame.vcxproj", "{0FFFED23-DA22-4449-A481-99280F706F16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B} = {AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}.Debug|Win32.Build.0 = Debug|Win32
+		{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}.Release|Win32.ActiveCfg = Release|Win32
+		{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}.Release|Win32.Build.0 = Release|Win32
+		{0FFFED23-DA22-4449-A481-99280F706F16}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0FFFED23-DA22-4449-A481-99280F706F16}.Debug|Win32.Build.0 = Debug|Win32
+		{0FFFED23-DA22-4449-A481-99280F706F16}.Release|Win32.ActiveCfg = Release|Win32
+		{0FFFED23-DA22-4449-A481-99280F706F16}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
