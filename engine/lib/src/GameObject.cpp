@@ -11,7 +11,7 @@ namespace Galaxy3D
 
 		auto transform = std::shared_ptr<Transform>(new Transform());
 		obj->m_transform = transform;
-		obj->AddComponent(transform, true);
+		obj->AddComponent(transform);
 
 		return obj;
 	}
@@ -20,7 +20,9 @@ namespace Galaxy3D
 	{
 		if(!obj.expired())
 		{
-			obj.lock()->Delete();
+			auto o = obj.lock();
+			o->Delete();
+			o->SetActive(false);
 			obj.reset();
 		}
 	}
@@ -44,23 +46,52 @@ namespace Galaxy3D
 		{
 			m_deleted = true;
 		}
+
+		auto transform = GetTransform();
+		int child_count = transform->GetChildCount();
+		for(int i=0; i<child_count; i++)
+		{
+			transform->GetChild(i)->GetGameObject()->Delete();
+		}
 	}
 
-	void GameObject::Update()
+	void GameObject::Start()
 	{
-		m_components.insert(m_components.end(), m_components_new.begin(), m_components_new.end());
-		m_components_new.clear();
-
-		for(auto &i : m_components)
+		std::list<std::shared_ptr<Component>> starts(m_components);
+		do
 		{
-			if(!i->m_deleted)
+			for(auto &i : starts)
 			{
-				if(!i->m_started)
+				if(!IsActiveInHierarchy())
+				{
+					break;
+				}
+
+				if(i->IsEnable() && !i->m_started)
 				{
 					i->m_started = true;
 					i->Start();
 				}
+			}
+			starts.clear();
 
+			starts = m_components_new;
+			m_components.insert(m_components.end(), m_components_new.begin(), m_components_new.end());
+			m_components_new.clear();
+		}while(!starts.empty());
+	}
+
+	void GameObject::Update()
+	{
+		for(auto &i : m_components)
+		{
+			if(!IsActiveInHierarchy())
+			{
+				break;
+			}
+
+			if(i->IsEnable())
+			{
 				i->Update();
 			}
 		}
@@ -70,7 +101,12 @@ namespace Galaxy3D
 	{
 		for(auto &i : m_components)
 		{
-			if(!i->m_deleted)
+			if(!IsActiveInHierarchy())
+			{
+				break;
+			}
+
+			if(i->IsEnable())
 			{
 				i->LateUpdate();
 			}
@@ -91,16 +127,9 @@ namespace Galaxy3D
 		}
 	}
 
-	void GameObject::AddComponent(const std::shared_ptr<Component> &com, bool immediately)
+	void GameObject::AddComponent(const std::shared_ptr<Component> &com)
 	{
-		if(immediately)
-		{
-			m_components.push_back(com);
-		}
-		else
-		{
-			m_components_new.push_back(com);
-		}
+		m_components_new.push_back(com);
 
 		auto obj = World::FindGameObject(this);
 		com->m_gameobject = obj;

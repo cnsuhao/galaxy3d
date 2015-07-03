@@ -153,5 +153,6 @@ namespace Galaxy3D
 		//render
 		m_current = GetGameObject()->GetComponent<Camera>();
 		Renderer::RenderAll();
+		m_current.reset();
 	}
 }

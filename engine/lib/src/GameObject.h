@@ -38,9 +38,10 @@ namespace Galaxy3D
 
 		GameObject(const std::string &name);
 		void Delete();
+		void Start();
 		void Update();
 		void LateUpdate();
-		void AddComponent(const std::shared_ptr<Component> &com, bool immediately);
+		void AddComponent(const std::shared_ptr<Component> &com);
 		void SetActiveInHierarchy(bool active);
 	};
 
@@ -52,7 +53,7 @@ namespace Galaxy3D
 		}
 
 		auto t = std::make_shared<T>();
-		AddComponent(std::dynamic_pointer_cast<Component>(t), false);
+		AddComponent(std::dynamic_pointer_cast<Component>(t));
 
 		return t;
 	}
