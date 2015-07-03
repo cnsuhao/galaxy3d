@@ -133,7 +133,6 @@ namespace Galaxy3D
 				i->IsVisible() &&
 				((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
 			{
-				//obj->SendMessage("OnWillRenderObject", null);
 				i->Render();
 			}
 		}

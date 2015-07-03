@@ -13,6 +13,7 @@ namespace Galaxy3D
 
 	public:
 		static void Destroy(std::weak_ptr<Component> &obj);
+		virtual ~Component() {}
 		std::shared_ptr<GameObject> GetGameObject() const {return m_gameobject.lock();}
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		void Enable(bool enable);
@@ -23,6 +24,7 @@ namespace Galaxy3D
 		std::weak_ptr<Transform> m_transform;
 
 		Component();
+		//没有OnDestroy，用析构函数
 		virtual void Start() {}
 		virtual void Update() {}
 		virtual void LateUpdate() {}

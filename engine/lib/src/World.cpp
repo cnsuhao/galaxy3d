@@ -32,45 +32,60 @@ namespace Galaxy3D
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
 
-		m_gameobjects.insert(m_gameobjects_new.begin(), m_gameobjects_new.end());
-		m_gameobjects_new.clear();
+		//	start
+		std::unordered_map<GameObject *, std::shared_ptr<GameObject>> starts(m_gameobjects);
+		do
+		{
+			for(auto &i : starts)
+			{
+				auto &obj = i.second;
 
-		for(auto i : m_gameobjects)
+				if(obj->IsActiveInHierarchy())
+				{
+					i.second->Start();
+				}
+			}
+			starts.clear();
+
+			starts = m_gameobjects_new;
+			m_gameobjects.insert(m_gameobjects_new.begin(), m_gameobjects_new.end());
+			m_gameobjects_new.clear();
+		}while(!starts.empty());
+
+		//	update
+		for(auto &i : m_gameobjects)
 		{
 			auto &obj = i.second;
 
-			if(!obj->m_deleted)
+			if(obj->IsActiveInHierarchy())
 			{
 				i.second->Update();
 			}
 		}
 
-		for(auto i : m_gameobjects)
+		//	late update
+		for(auto &i : m_gameobjects)
 		{
 			auto &obj = i.second;
 
-			if(!obj->m_deleted)
+			if(obj->IsActiveInHierarchy())
 			{
 				i.second->LateUpdate();
 			}
 		}
 
-		//pick deleted
-		std::list<GameObject *> deleted;
-		for(auto i : m_gameobjects)
+		//	delete
+		auto it = m_gameobjects.begin();
+		while(it != m_gameobjects.end())
 		{
-			auto &obj = i.second;
-
-			if(obj->m_deleted)
+			if(it->second->m_deleted)
 			{
-				deleted.push_back(obj.get());
+				it = m_gameobjects.erase(it);
 			}
-		}
-
-		//delete
-		for(auto i : deleted)
-		{
-			m_gameobjects.erase(i);
+			else
+			{
+				it++;
+			}
 		}
 
 		GTTime::m_update_time = GTTime::GetRealTimeSinceStartup() - time;

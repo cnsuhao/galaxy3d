@@ -24,6 +24,7 @@ namespace Galaxy3D
 		if(!m_deleted)
 		{
 			m_deleted = true;
+			Enable(false);
 		}
 	}
 

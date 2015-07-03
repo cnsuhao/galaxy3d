@@ -16,7 +16,7 @@ namespace Galaxy3D
 		static void RenderAll();
 		static std::shared_ptr<Camera> GetCurrent() {return m_current;}
 		Camera();
-		~Camera();
+		virtual ~Camera();
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
 		void SetClearColor(const Color &color) {m_clear_color = color;}
 		void SetDepth(int depth);
