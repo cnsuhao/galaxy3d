@@ -109,7 +109,7 @@ namespace Galaxy3D
 			GTTime::m_time_record = now;
 			GTTime::m_frame_record = frame;
 
-			Debug::Log("fps:%d render:%f update:%f", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000);
+			Debug::Log("fps:%d render:%.3f update:%.3f dc:%d", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000, GTTime::m_draw_call);
 		}
 
 		GTTime::m_frame_count++;
@@ -118,8 +118,6 @@ namespace Galaxy3D
 	void Camera::RenderAll()
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
-
-		UpdateTime();
 
 		for(auto i : m_cameras)
 		{
@@ -133,6 +131,8 @@ namespace Galaxy3D
 		GraphicsDevice::GetInstance()->GetSwapChain()->Present(0, 0);
 
 		GTTime::m_render_time = GTTime::GetRealTimeSinceStartup() - time;
+
+		UpdateTime();
 	}
 
 	void Camera::Render() const

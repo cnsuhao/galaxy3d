@@ -2,11 +2,13 @@
 #define __Launcher_h__
 
 #include "Component.h"
-#include "Sprite.h"
 #include "Application.h"
-#include "SpriteRenderer.h"
 #include "Texture2D.h"
 #include "Screen.h"
+
+#include "SpriteNode.h"
+#include "SpriteBatchRenderer.h"
+#include "SpriteRenderer.h"
 
 namespace Galaxy3D
 {
@@ -15,18 +17,24 @@ namespace Galaxy3D
 	public:
 
 	protected:
+		std::shared_ptr<SpriteNode> m_node;
+		std::shared_ptr<Sprite> sps[20];
+		std::shared_ptr<SpriteBatchRenderer> m_renderer;
+		float index;
+
 		virtual void Start()
 		{
+			index = 0;
+
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
-			auto sprite = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
-			auto renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->SetSprite(sprite);
+			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
+			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
+			sr->SetSprite(bg);
 
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
 			float h = 384.f;
-			std::shared_ptr<Sprite> sps[20];
 			for(int i=0; i<5; i++)
 			{
 				for(int j=0; j<4; j++)
@@ -35,42 +43,61 @@ namespace Galaxy3D
 				}
 			}
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(-3, -2.f, 0));
-			renderer->SetSprite(sps[0]);
+			auto renderer = GameObject::Create("renderer")->AddComponent<SpriteBatchRenderer>();
+			renderer->SetSortingOrder(1);
+			m_renderer = renderer;
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(-2, -2.f, 0));
-			renderer->SetSprite(sps[1]);
+			auto node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(-3, -2.f, 0));
+			node->SetSprite(sps[0]);
+			renderer->AddSprite(node);
+			m_node = node;
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(-1, -2.f, 0));
-			renderer->SetSprite(sps[2]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(-2, -2.f, 0));
+			node->SetSprite(sps[1]);
+			renderer->AddSprite(node);
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(0, -2.f, 0));
-			renderer->SetSprite(sps[3]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(-1, -2.f, 0));
+			node->SetSprite(sps[2]);
+			renderer->AddSprite(node);
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(1, -2.f, 0));
-			renderer->SetSprite(sps[4]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(0, -2.f, 0));
+			node->SetSprite(sps[3]);
+			renderer->AddSprite(node);
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(2, -2.f, 0));
-			renderer->SetSprite(sps[5]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(1, -2.f, 0));
+			node->SetSprite(sps[4]);
+			renderer->AddSprite(node);
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(3, -2.f, 0));
-			renderer->SetSprite(sps[6]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(2, -2.f, 0));
+			node->SetSprite(sps[5]);
+			renderer->AddSprite(node);
 
-			renderer = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
-			renderer->GetTransform()->SetPosition(Vector3(4, -2.f, 0));
-			renderer->SetSprite(sps[7]);
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(3, -2.f, 0));
+			node->SetSprite(sps[6]);
+			renderer->AddSprite(node);
+
+			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetPosition(Vector3(4, -2.f, 0));
+			node->SetSprite(sps[7]);
+			renderer->AddSprite(node);
 		}
 
 		virtual void Update()
 		{
-			
+			index += 0.06f;
+			if(index > 19)
+			{
+				index = 0;
+			}
+			m_node->SetSprite(sps[(int) index]);
+			m_renderer->UpdateSprites();
 		}
 
 	private:
