@@ -24,6 +24,7 @@ namespace Galaxy3D
 	int GTTime::m_fps;
 	float GTTime::m_render_time;
 	float GTTime::m_update_time;
+	int GTTime::m_draw_call = 0;
 
 	long long GTTime::GetTimeMS()
 	{

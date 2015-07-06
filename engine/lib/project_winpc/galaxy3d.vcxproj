@@ -20,6 +20,7 @@
     <ClCompile Include="..\src\d3d11\Material.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
+    <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\Texture2D.cpp" />
     <ClCompile Include="..\src\Debug.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="..\src\d3d11\ShaderPropertyType.h" />
     <ClInclude Include="..\src\d3d11\ShaderSampler.h" />
     <ClInclude Include="..\src\d3d11\ShaderTexture.h" />
+    <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteRenderer.h" />
     <ClInclude Include="..\src\d3d11\Texture2D.h" />
     <ClInclude Include="..\src\d3d11\VertexShader.h" />
@@ -83,6 +85,7 @@
     <ClInclude Include="..\src\Screen.h" />
     <ClInclude Include="..\src\ShaderNode.h" />
     <ClInclude Include="..\src\Sprite.h" />
+    <ClInclude Include="..\src\SpriteNode.h" />
     <ClInclude Include="..\src\Texture.h" />
     <ClInclude Include="..\src\TextureFormat.h" />
     <ClInclude Include="..\src\TextureWrapMode.h" />

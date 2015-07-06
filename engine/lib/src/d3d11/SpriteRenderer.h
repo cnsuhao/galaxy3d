@@ -11,10 +11,12 @@ namespace Galaxy3D
 	public:
 		SpriteRenderer();
 		virtual ~SpriteRenderer();
-		virtual void Render();
 		void SetColor(const Color &color) {m_color = color;}
 		void SetSprite(const std::shared_ptr<Sprite> &sprite);
 		std::shared_ptr<Sprite> GetSprite() const {return m_sprite;}
+
+	protected:
+		virtual void Render();
 
 	private:
 		Color m_color;

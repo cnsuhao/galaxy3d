@@ -7,6 +7,7 @@ namespace Galaxy3D
 	{
 		friend class World;
 		friend class Camera;
+		friend class Renderer;
 
 	public:
 		static int GetFrameCount(){return m_frame_count;}
@@ -24,6 +25,7 @@ namespace Galaxy3D
 		static int m_fps;
 		static float m_render_time;
 		static float m_update_time;
+		static int m_draw_call; 
 	};
 }
 

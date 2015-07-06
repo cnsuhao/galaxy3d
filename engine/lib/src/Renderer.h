@@ -4,6 +4,8 @@
 #include "Component.h"
 #include "Vector4.h"
 #include "Material.h"
+#include "Camera.h"
+#include "Transform.h"
 #include <list>
 
 namespace Galaxy3D
@@ -13,9 +15,10 @@ namespace Galaxy3D
 	public:
 		static void Sort();
 		static void RenderAll();
-		virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
+		void SetSortingLayer(int layer);
+		void SetSortingOrder(int order);
 		void SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials) {m_shared_materials = materials;}
 		const std::vector<std::shared_ptr<Material>> &GetSharedMaterials() const {return m_shared_materials;}
 		void SetSharedMaterial(const std::shared_ptr<Material> &material);
@@ -34,6 +37,7 @@ namespace Galaxy3D
 		int m_sorting_order;
 
 		Renderer();
+		virtual ~Renderer();
 
 	private:
 		static std::list<Renderer *> m_renderers;

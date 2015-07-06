@@ -1,7 +1,5 @@
 #include "SpriteRenderer.h"
 #include "VertexType.h"
-#include "Camera.h"
-#include "Transform.h"
 
 namespace Galaxy3D
 {

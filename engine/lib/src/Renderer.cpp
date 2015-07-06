@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "LayerMask.h"
+#include "GTTime.h"
 
 namespace Galaxy3D
 {
@@ -22,6 +23,18 @@ namespace Galaxy3D
 	Renderer::~Renderer()
 	{
 		m_renderers.remove(this);
+	}
+
+	void Renderer::SetSortingLayer(int layer)
+	{
+		m_sorting_layer = layer;
+		Sort();
+	}
+
+	void Renderer::SetSortingOrder(int order)
+	{
+		m_sorting_order = order;
+		Sort();
 	}
 
 	void Renderer::Sort()
@@ -124,6 +137,7 @@ namespace Galaxy3D
 	{
 		auto camera = Camera::GetCurrent();
 
+		int dc = 0;
 		for(auto i : m_renderers)
 		{
 			auto obj = i->GetGameObject();
@@ -134,7 +148,10 @@ namespace Galaxy3D
 				((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
 			{
 				i->Render();
+				dc++;
 			}
 		}
+
+		GTTime::m_draw_call = dc;
 	}
 }
