@@ -49,7 +49,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
-    <LibraryPath>$(SolutionDir)\..\out\winpc\;..\..\lib\depend\zlib\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\..\out\winpc\;$(LibraryPath)</LibraryPath>
     <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
