@@ -41,6 +41,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Screen::SetSize(g_screen_w, g_screen_h);
 	GraphicsDevice::GetInstance()->Init(g_hwnd);
+	World::Init();
 
 	GameObject::Create("launcher")->AddComponent<Launcher>();
 
@@ -62,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	}
 
-	World::Destroy();
+	World::Done();
 
 	if(fstdout != 0)
 	{

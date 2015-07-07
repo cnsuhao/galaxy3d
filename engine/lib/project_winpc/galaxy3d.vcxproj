@@ -22,6 +22,7 @@
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteRenderer.cpp" />
+    <ClCompile Include="..\src\d3d11\TextRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\Texture2D.cpp" />
     <ClCompile Include="..\src\Debug.cpp" />
     <ClCompile Include="..\src\GameObject.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="..\src\GTStringUTF32.cpp" />
     <ClCompile Include="..\src\GTTime.cpp" />
     <ClCompile Include="..\src\Image.cpp" />
+    <ClCompile Include="..\src\Label.cpp" />
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
@@ -63,6 +65,7 @@
     <ClInclude Include="..\src\d3d11\ShaderTexture.h" />
     <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteRenderer.h" />
+    <ClInclude Include="..\src\d3d11\TextRenderer.h" />
     <ClInclude Include="..\src\d3d11\Texture2D.h" />
     <ClInclude Include="..\src\d3d11\VertexShader.h" />
     <ClInclude Include="..\src\Debug.h" />
@@ -73,6 +76,7 @@
     <ClInclude Include="..\src\GTStringUTF32.h" />
     <ClInclude Include="..\src\GTTime.h" />
     <ClInclude Include="..\src\Image.h" />
+    <ClInclude Include="..\src\Label.h" />
     <ClInclude Include="..\src\Layer.h" />
     <ClInclude Include="..\src\LayerMask.h" />
     <ClInclude Include="..\src\Mathf.h" />
@@ -127,7 +131,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
-    <IncludePath>..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

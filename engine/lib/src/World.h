@@ -12,8 +12,9 @@ namespace Galaxy3D
 		//只有World持有GameObject的shared_ptr，其它一律使用weak_ptr
 		static void AddGameObject(const std::shared_ptr<GameObject> &obj);
 		static std::weak_ptr<GameObject> FindGameObject(GameObject *obj);
+		static void Init();
 		static void Update();
-		static void Destroy();
+		static void Done();
 
 	private:
 		static std::unordered_map<GameObject *, std::shared_ptr<GameObject>> m_gameobjects;
