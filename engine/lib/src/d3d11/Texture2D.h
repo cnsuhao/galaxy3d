@@ -17,12 +17,16 @@ namespace Galaxy3D
 		static std::shared_ptr<Texture2D> LoadImageFile(const std::string &file, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
 		virtual ~Texture2D();
 		void SetPixels(const char *colors);
+		void SetPixels(int x, int y, int w, int h, const char *colors);
 		void Apply();
+		const char *GetPixels() const {return m_colors;}
+		void EncodeToPNG(const std::string &file);
 		ID3D11ShaderResourceView *GetTexture() const {return m_texture;}
 		ID3D11SamplerState *GetSampler() const {return m_sampler;}
 
 	private:
 		char *m_colors;
+		int m_color_buffer_size;
 		TextureFormat::Enum m_format;
 		ID3D11ShaderResourceView *m_texture;
 		ID3D11SamplerState *m_sampler;
@@ -30,6 +34,7 @@ namespace Galaxy3D
 		Texture2D(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode):
 			Texture(w, h, filter_mode, wrap_mode),
 			m_colors(nullptr),
+			m_color_buffer_size(0),
 			m_format(format),
 			m_texture(nullptr),
 			m_sampler(nullptr)
