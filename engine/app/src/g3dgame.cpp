@@ -12,6 +12,7 @@
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")
 #pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "freetype.lib")
 #pragma comment(lib, "galaxy3d.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")

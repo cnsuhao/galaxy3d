@@ -78,6 +78,7 @@ namespace Galaxy3D
 		{
 			free(m_colors);
 			m_colors = nullptr;
+			m_color_buffer_size = 0;
 		}
 	}
 
@@ -161,14 +162,50 @@ namespace Galaxy3D
 
 			if(m_colors == 0)
 			{
-				m_colors = (char *) malloc(size);
+				m_colors = (char *) calloc(1, size);
 			}
 			else
 			{
-				m_colors = (char *) realloc(m_colors, size);
+				if(m_color_buffer_size != size)
+				{
+					m_colors = (char *) realloc(m_colors, size);
+				}
 			}
 
+			m_color_buffer_size = size;
+
 			memcpy(m_colors, colors, size);
+		}
+	}
+
+	void Texture2D::SetPixels(int x, int y, int w, int h, const char *colors)
+	{
+		if(PIXEL_BITS_SIZE[m_format] > 0)
+		{
+			int pixel_size = PIXEL_BITS_SIZE[m_format] / 8;
+			int size = m_width * m_height * pixel_size;
+
+			if(m_colors == 0)
+			{
+				m_colors = (char *) calloc(1, size);
+			}
+			else
+			{
+				if(m_color_buffer_size != size)
+				{
+					m_colors = (char *) realloc(m_colors, size);
+				}
+			}
+
+			m_color_buffer_size = size;
+
+			for(int i=0; i<h; i++)
+			{
+				if(y >= 0)
+				{
+					memcpy(&m_colors[((y + i) * m_width + x) * pixel_size], &colors[i * w * pixel_size], w * pixel_size);
+				}
+			}
 		}
 	}
 
@@ -261,5 +298,10 @@ namespace Galaxy3D
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 		hr = device->CreateSamplerState(&sampDesc, &m_sampler);
+	}
+
+	void Texture2D::EncodeToPNG(const std::string &file)
+	{
+		Image::EncodeToPNG(this, PIXEL_BITS_SIZE[m_format], file);
 	}
 }

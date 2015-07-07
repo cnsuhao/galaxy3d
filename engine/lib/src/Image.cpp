@@ -1,4 +1,6 @@
 #include "Image.h"
+#include "Texture2D.h"
+#include "GTFile.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -160,5 +162,66 @@ namespace Galaxy3D
 		png_destroy_read_struct(&png_ptr, &info_ptr, 0);
 
 		return pixels;
+	}
+
+	void Image::EncodeToPNG(Texture2D *tex, int bits_per_pixel, const std::string &file)
+	{
+		int color_type = -1;
+		switch(bits_per_pixel)
+		{
+		case 32:
+			color_type = PNG_COLOR_TYPE_RGBA;
+			break;
+		case 24:
+			color_type = PNG_COLOR_TYPE_RGB;
+			break;
+		case 8:
+			color_type = PNG_COLOR_TYPE_GRAY;
+			break;
+		default:
+			return;
+		}
+
+		char *data = 0;
+		int width = tex->GetWidth();
+		int height = tex->GetHeight();
+		const char *colors = tex->GetPixels();
+		if(colors == nullptr)
+		{
+			return;
+		}
+
+		png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+		png_infop info_ptr = png_create_info_struct(png_ptr);
+		setjmp(png_jmpbuf(png_ptr));
+
+		PNGData png_data;
+		png_data.buffer = 0;
+		png_data.size = 0;
+
+		png_set_write_fn(png_ptr, &png_data, user_png_write, user_png_flush);
+		
+		png_set_IHDR(png_ptr, info_ptr, width, height,
+			8, color_type, PNG_INTERLACE_NONE,
+			PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+		png_write_info(png_ptr, info_ptr);
+
+		png_bytepp row_pointers = new png_bytep[height];
+		for(int i=0; i<height; i++)
+		{
+			row_pointers[i] = (png_bytep) &colors[i * width * bits_per_pixel / 8];
+		}
+		png_write_image(png_ptr, row_pointers);
+		delete [] row_pointers;
+
+		png_write_end(png_ptr, 0);
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+
+		data = png_data.buffer;
+		int size = png_data.size;
+
+		GTFile::WriteAllBytes(file, data, size);
+
+		free(data);
 	}
 }

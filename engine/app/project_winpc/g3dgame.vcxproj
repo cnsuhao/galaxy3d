@@ -50,7 +50,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)\..\out\winpc\;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\freetype-2.6\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
