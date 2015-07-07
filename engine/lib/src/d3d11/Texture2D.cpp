@@ -201,7 +201,10 @@ namespace Galaxy3D
 
 			for(int i=0; i<h; i++)
 			{
-				if(y >= 0)
+				if(	x >= 0 &&
+					y >= 0 &&
+					x + w <= m_width &&
+					y + h <= m_height)
 				{
 					memcpy(&m_colors[((y + i) * m_width + x) * pixel_size], &colors[i * w * pixel_size], w * pixel_size);
 				}
