@@ -1,5 +1,6 @@
 #include "World.h"
 #include "GTTime.h"
+#include "Label.h"
 
 namespace Galaxy3D
 {
@@ -91,9 +92,16 @@ namespace Galaxy3D
 		GTTime::m_update_time = GTTime::GetRealTimeSinceStartup() - time;
 	}
 
-	void World::Destroy()
+	void World::Init()
+	{
+		Label::InitFontLib();
+	}
+
+	void World::Done()
 	{
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
+
+		Label::DoneFontLib();
 	}
 }
