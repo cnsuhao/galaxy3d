@@ -91,7 +91,7 @@ namespace Galaxy3D
 
 		virtual void Update()
 		{
-			index += 0.06f;
+			index += 0.07f;
 			if(index > 19)
 			{
 				index = 0;
