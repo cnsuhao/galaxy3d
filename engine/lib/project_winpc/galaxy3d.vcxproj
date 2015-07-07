@@ -127,7 +127,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
-    <IncludePath>..\..\lib\depend\zlib\include;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
