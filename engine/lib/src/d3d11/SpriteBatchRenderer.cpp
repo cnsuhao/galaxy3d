@@ -9,6 +9,8 @@ namespace Galaxy3D
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
+
+		SetSharedMaterial(Material::Create("Sprite"));
 	}
 
 	SpriteBatchRenderer::~SpriteBatchRenderer()
@@ -45,19 +47,12 @@ namespace Galaxy3D
 			return;
 		}
 
-		auto mat = GetSharedMaterial();
-		if(!mat)
-		{
-			mat = Material::Create("Sprite");
-			SetSharedMaterial(mat);
-			Sort();
-		}
-
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
 			return;
 		}
 
+		auto mat = GetSharedMaterial();
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 		auto shader = mat->GetShader();
 		auto pass = shader->GetPass(0);

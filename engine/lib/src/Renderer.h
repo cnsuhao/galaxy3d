@@ -20,7 +20,7 @@ namespace Galaxy3D
 		bool IsVisible() const {return m_visible;}
 		void SetSortingLayer(int layer);
 		void SetSortingOrder(int order);
-		void SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials) {m_shared_materials = materials;}
+		void SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials);
 		const std::vector<std::shared_ptr<Material>> &GetSharedMaterials() const {return m_shared_materials;}
 		void SetSharedMaterial(const std::shared_ptr<Material> &material);
 		std::shared_ptr<Material> GetSharedMaterial() const;

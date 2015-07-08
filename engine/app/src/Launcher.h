@@ -35,11 +35,11 @@ namespace Galaxy3D
 			Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
 			unsigned char str[] = {0xe9, 0xbe, 0x99, 0xe9, 0xbe, 0x8d, 0};
 			auto label = Label::Create(std::string((char *) str) + "AAV\nxy ija", "consola", 17);
+			label->SetColor(Color(0, 0, 1, 1));
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
 			tr->GetTransform()->SetPosition(Vector3(-4.8f, 3.2f, 0));
 			tr->SetLabel(label);
 			tr->SetSortingOrder(2);
-			tr->SetColor(Color(0, 0, 1, 1));
 			tr->UpdateLabel();
 			m_fps = tr;
 

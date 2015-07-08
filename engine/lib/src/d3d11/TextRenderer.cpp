@@ -3,12 +3,13 @@
 namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
-		m_color(1, 1, 1, 1),
 		m_vertex_buffer(nullptr),
 		m_index_buffer(nullptr)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
+
+		SetSharedMaterial(Material::Create("Text"));
 	}
 
 	TextRenderer::~TextRenderer()
@@ -59,19 +60,12 @@ namespace Galaxy3D
 			return;
 		}
 
-		auto mat = GetSharedMaterial();
-		if(!mat)
-		{
-			mat = Material::Create("Text");
-			SetSharedMaterial(mat);
-			Sort();
-		}
-
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
 			return;
 		}
 
+		auto mat = GetSharedMaterial();
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 		auto shader = mat->GetShader();
 		auto pass = shader->GetPass(0);
@@ -98,12 +92,13 @@ namespace Galaxy3D
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
 
-	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<Label> &label, const Color &color)
+	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<Label> &label)
 	{
 		char *p = buffer;
 		auto &vertices = label->GetVertices();
 		auto &colors = label->GetColors();
 		auto &uv = label->GetUV();
+		auto color = label->GetColor();
 		int vertex_count = vertices.size();
 
 		for(int i=0; i<vertex_count; i++)
@@ -140,7 +135,7 @@ namespace Galaxy3D
 		int buffer_size = sizeof(VertexMesh) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		fill_vertex_buffer(buffer, m_label, m_color);
+		fill_vertex_buffer(buffer, m_label);
 
 		bool dynamic = true;
 
@@ -167,7 +162,7 @@ namespace Galaxy3D
 		int buffer_size = sizeof(VertexMesh) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		fill_vertex_buffer(buffer, m_label, m_color);
+		fill_vertex_buffer(buffer, m_label);
 
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 

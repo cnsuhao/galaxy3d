@@ -21,6 +21,8 @@ namespace Galaxy3D
 		std::string GetText() const {return m_text;}
 		void SetCharSpace(int space);
 		void SetLineSpace(int space);
+		void SetColor(const Color &color) {m_color = color;}
+		Color GetColor() const {return m_color;}
 		const std::vector<Vector2> &GetVertices() const {return m_vertices;}
 		const std::vector<Vector2> &GetUV() const {return m_uv;}
 		const std::vector<Color> &GetColors() const {return m_colors;}
@@ -32,6 +34,7 @@ namespace Galaxy3D
 		int m_font_size;
 		int m_char_space;
 		int m_line_space;
+		Color m_color;
 		float m_pixels_per_unit;
 		std::vector<Vector2> m_vertices;
 		std::vector<Vector2> m_uv;

@@ -92,7 +92,8 @@ namespace Galaxy3D
 		m_font_size(20),
 		m_pixels_per_unit(100),
 		m_char_space(0),
-		m_line_space(0)
+		m_line_space(0),
+		m_color(1, 1, 1, 1)
 	{
 	}
 

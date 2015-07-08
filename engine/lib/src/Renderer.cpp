@@ -82,6 +82,13 @@ namespace Galaxy3D
 		return q1 < q2;
 	}
 
+	void Renderer::SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials)
+	{
+		m_shared_materials = materials;
+
+		Sort();
+	}
+
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
 	{
 		m_shared_materials.clear();
@@ -90,6 +97,8 @@ namespace Galaxy3D
 		{
 			m_shared_materials.push_back(material);
 		}
+
+		Sort();
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const
