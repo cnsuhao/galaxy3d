@@ -19,7 +19,7 @@ namespace Galaxy3D
 		void AddSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void RemoveSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void SetColor(const Color &color) {m_color = color;}
-		void UpdateSprites();
+		void UpdateSprites();//添加完所有sprite node后，需要手动调用
 
 	protected:
 		virtual void Render();
@@ -31,11 +31,9 @@ namespace Galaxy3D
 		ID3D11Buffer *m_vertex_buffer;
 		ID3D11Buffer *m_index_buffer;
 
-		void CheckBuffer();
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
 		void CreateIndexBuffer();
-		bool IsCached() const;
 		void Release();
 	};
 }

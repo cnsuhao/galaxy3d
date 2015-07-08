@@ -21,14 +21,15 @@ namespace Galaxy3D
 		void Apply();
 		const char *GetPixels() const {return m_colors;}
 		void EncodeToPNG(const std::string &file);
-		ID3D11ShaderResourceView *GetTexture() const {return m_texture;}
+		ID3D11ShaderResourceView *GetTexture() const {return m_texture_res;}
 		ID3D11SamplerState *GetSampler() const {return m_sampler;}
 
 	private:
 		char *m_colors;
 		int m_color_buffer_size;
 		TextureFormat::Enum m_format;
-		ID3D11ShaderResourceView *m_texture;
+		ID3D11Texture2D *m_texture;
+		ID3D11ShaderResourceView *m_texture_res;
 		ID3D11SamplerState *m_sampler;
 
 		Texture2D(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode):
@@ -37,6 +38,7 @@ namespace Galaxy3D
 			m_color_buffer_size(0),
 			m_format(format),
 			m_texture(nullptr),
+			m_texture_res(nullptr),
 			m_sampler(nullptr)
 		{}
 	};

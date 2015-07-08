@@ -1,5 +1,4 @@
 #include "SpriteRenderer.h"
-#include "VertexType.h"
 
 namespace Galaxy3D
 {
@@ -20,24 +19,30 @@ namespace Galaxy3D
 
 	void SpriteRenderer::SetSprite(const std::shared_ptr<Sprite> &sprite)
 	{
-		if(sprite)
+		if(m_sprite != sprite)
+		{
+			m_sprite = sprite;
+		}
+	}
+
+	void SpriteRenderer::UpdateSprite()
+	{
+		if(m_sprite)
 		{
 			if(m_vertex_buffer == nullptr)
 			{
-				CreateVertexBuffer(sprite);
+				CreateVertexBuffer(m_sprite);
 			}
 			else
 			{
-				UpdateVertexBuffer(sprite);
+				UpdateVertexBuffer(m_sprite);
 			}
 
 			if(m_index_buffer == nullptr)
 			{
-				CreateIndexBuffer(sprite);
+				CreateIndexBuffer(m_sprite);
 			}
 		}
-
-		m_sprite = sprite;
 	}
 
 	void SpriteRenderer::Render()
@@ -53,6 +58,11 @@ namespace Galaxy3D
 			mat = Material::Create("Sprite");
 			SetSharedMaterial(mat);
 			Sort();
+		}
+
+		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
+		{
+			return;
 		}
 
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();

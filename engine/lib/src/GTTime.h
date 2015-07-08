@@ -8,6 +8,7 @@ namespace Galaxy3D
 		friend class World;
 		friend class Camera;
 		friend class Renderer;
+		friend class Launcher;
 
 	public:
 		static int GetFrameCount(){return m_frame_count;}
