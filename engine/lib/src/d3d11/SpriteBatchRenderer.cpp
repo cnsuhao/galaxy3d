@@ -1,5 +1,4 @@
 #include "SpriteBatchRenderer.h"
-#include "VertexType.h"
 
 namespace Galaxy3D
 {
@@ -54,7 +53,10 @@ namespace Galaxy3D
 			Sort();
 		}
 
-		CheckBuffer();
+		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
+		{
+			return;
+		}
 
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 		auto shader = mat->GetShader();
@@ -82,38 +84,13 @@ namespace Galaxy3D
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
 
-	void SpriteBatchRenderer::CheckBuffer()
-	{
-		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
-		{
-			CreateVertexBuffer();
-			CreateIndexBuffer();
-
-			m_sprites_cache = m_sprites;
-		}
-		else
-		{
-			if(!IsCached())
-			{
-				if(m_sprites_cache.size() != m_sprites.size())
-				{
-					Release();
-
-					CreateVertexBuffer();
-					CreateIndexBuffer();
-				}
-				else
-				{
-					UpdateVertexBuffer();
-				}
-
-				m_sprites_cache = m_sprites;
-			}
-		}
-	}
-
 	void SpriteBatchRenderer::UpdateSprites()
 	{
+		if(m_sprites.empty())
+		{
+			return;
+		}
+
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
 			CreateVertexBuffer();
@@ -135,26 +112,6 @@ namespace Galaxy3D
 		}
 
 		m_sprites_cache = m_sprites;
-	}
-
-	bool SpriteBatchRenderer::IsCached() const
-	{
-		if(m_sprites_cache.size() != m_sprites.size())
-		{
-			return false;
-		}
-
-		auto i = m_sprites_cache.begin();
-		auto j = m_sprites.begin();
-		while(i != m_sprites_cache.end() && j != m_sprites.end())
-		{
-			if(*i++ != *j++)
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	void SpriteBatchRenderer::Release()

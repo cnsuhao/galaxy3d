@@ -72,6 +72,7 @@ namespace Galaxy3D
 	Texture2D::~Texture2D()
 	{
 		SAFE_RELEASE(m_texture);
+		SAFE_RELEASE(m_texture_res);
 		SAFE_RELEASE(m_sampler);
 
 		if(m_colors != nullptr)
@@ -132,7 +133,7 @@ namespace Galaxy3D
 			tex = Create(w, h, format, filter_mode, wrap_mode);
 			tex->SetPixels(pixels);
 			tex->Apply();
-			
+
 			free(pixels);
 			pixels = 0;
 		}
@@ -264,12 +265,18 @@ namespace Galaxy3D
 			init_data.SysMemPitch = m_width * bytes;
 		}
 
-        ID3D11Texture2D* tex = 0;
-		HRESULT hr = device->CreateTexture2D(&desc, mipmap ? 0 : &init_data, &tex);
-
-		if(mipmap)
+		if(m_texture == nullptr)
 		{
-			context->UpdateSubresource(tex, 0, 0, init_data.pSysMem, init_data.SysMemPitch, 0);
+			HRESULT hr = device->CreateTexture2D(&desc, mipmap ? 0 : &init_data, &m_texture);
+
+			if(mipmap)
+			{
+				context->UpdateSubresource(m_texture, 0, 0, init_data.pSysMem, init_data.SysMemPitch, 0);
+			}
+		}
+		else
+		{
+			context->UpdateSubresource(m_texture, 0, 0, init_data.pSysMem, init_data.SysMemPitch, 0);
 		}
 		
 		if(buffer != 0)
@@ -277,30 +284,35 @@ namespace Galaxy3D
 			delete [] buffer;
 		}
 
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
-        memset(&srvd, 0, sizeof(srvd));
-        srvd.Format = TEXTURE_FORMATS[m_format];
-		srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvd.Texture2D.MipLevels = -1;
-
-		hr = device->CreateShaderResourceView(tex, &srvd, &m_texture);
-		tex->Release();
-
-		if(mipmap)
+		if(m_texture_res == nullptr)
 		{
-			context->GenerateMips(m_texture);
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
+			memset(&srvd, 0, sizeof(srvd));
+			srvd.Format = TEXTURE_FORMATS[m_format];
+			srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvd.Texture2D.MipLevels = -1;
+
+			device->CreateShaderResourceView(m_texture, &srvd, &m_texture_res);
+
+			if(mipmap)
+			{
+				context->GenerateMips(m_texture_res);
+			}
 		}
 
-		D3D11_SAMPLER_DESC sampDesc;
-		ZeroMemory(&sampDesc, sizeof(sampDesc));
-		sampDesc.Filter = FILTER_MODES[m_filter_mode];
-		sampDesc.AddressU = ADDRESS_MODES[m_wrap_mode];
-		sampDesc.AddressV = ADDRESS_MODES[m_wrap_mode];
-		sampDesc.AddressW = ADDRESS_MODES[m_wrap_mode];
-		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		sampDesc.MinLOD = 0;
-		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		hr = device->CreateSamplerState(&sampDesc, &m_sampler);
+		if(m_sampler == nullptr)
+		{
+			D3D11_SAMPLER_DESC sampDesc;
+			ZeroMemory(&sampDesc, sizeof(sampDesc));
+			sampDesc.Filter = FILTER_MODES[m_filter_mode];
+			sampDesc.AddressU = ADDRESS_MODES[m_wrap_mode];
+			sampDesc.AddressV = ADDRESS_MODES[m_wrap_mode];
+			sampDesc.AddressW = ADDRESS_MODES[m_wrap_mode];
+			sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+			sampDesc.MinLOD = 0;
+			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			device->CreateSamplerState(&sampDesc, &m_sampler);
+		}
 	}
 
 	void Texture2D::EncodeToPNG(const std::string &file)

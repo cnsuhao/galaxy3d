@@ -9,6 +9,10 @@
 #include "SpriteRenderer.h"
 #include "SpriteNode.h"
 #include "SpriteBatchRenderer.h"
+#include "Label.h"
+#include "TextRenderer.h"
+#include "GTString.h"
+#include "GTTime.h"
 
 namespace Galaxy3D
 {
@@ -23,18 +27,31 @@ namespace Galaxy3D
 		std::shared_ptr<SpriteNode> m_node;
 		std::shared_ptr<Sprite> sps[20];
 		std::shared_ptr<SpriteBatchRenderer> m_renderer;
+		std::shared_ptr<TextRenderer> m_fps;
 		float index;
 
 		virtual void Start()
 		{
-			index = 0;
+			Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+			unsigned char str[] = {0xe9, 0xbe, 0x99, 0xe9, 0xbe, 0x8d, 0};
+			auto label = Label::Create(std::string((char *) str) + "AAV\nxy ija", "consola", 17);
+			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
+			tr->GetTransform()->SetPosition(Vector3(-4.8f, 3.2f, 0));
+			tr->SetLabel(label);
+			tr->SetSortingOrder(2);
+			tr->SetColor(Color(0, 0, 1, 1));
+			tr->UpdateLabel();
+			m_fps = tr;
 
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
+			
 			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
 			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
 			sr->SetSprite(bg);
+			sr->UpdateSprite();
 
+			index = 0;
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
 			float h = 384.f;
@@ -101,6 +118,10 @@ namespace Galaxy3D
 			}
 			m_node->SetSprite(sps[(int) index]);
 			m_renderer->UpdateSprites();
+
+			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
+				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
+			m_fps->UpdateLabel();
 		}
 
 	private:

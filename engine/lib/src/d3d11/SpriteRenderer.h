@@ -14,6 +14,7 @@ namespace Galaxy3D
 		void SetColor(const Color &color) {m_color = color;}
 		void SetSprite(const std::shared_ptr<Sprite> &sprite);
 		std::shared_ptr<Sprite> GetSprite() const {return m_sprite;}
+		void UpdateSprite();//设置sprite后，需要手动调用
 
 	protected:
 		virtual void Render();

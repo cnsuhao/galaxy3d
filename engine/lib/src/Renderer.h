@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "VertexType.h"
 #include <list>
 
 namespace Galaxy3D
@@ -25,7 +26,6 @@ namespace Galaxy3D
 		std::shared_ptr<Material> GetSharedMaterial() const;
 		std::vector<std::shared_ptr<Material>> GetMaterials() const;
 		std::shared_ptr<Material> GetMaterial() const;
-		virtual void Render() = 0;
 
 	protected:
 		bool m_cast_shadow;
@@ -38,6 +38,7 @@ namespace Galaxy3D
 
 		Renderer();
 		virtual ~Renderer();
+		virtual void Render() = 0;
 
 	private:
 		static std::list<Renderer *> m_renderers;
