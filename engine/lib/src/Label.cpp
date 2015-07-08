@@ -8,6 +8,7 @@ struct CharInfo
 {
 	int c;
 	int size;
+	unsigned int glyph_index;
 	int uv_pixel_x;
 	int uv_pixel_y;
 	int uv_pixel_w;
@@ -170,6 +171,7 @@ namespace Galaxy3D
 
 			_ASSERT(slot->bitmap.width == slot->bitmap.pitch);
 
+			info.glyph_index = glyph_index;
 			info.uv_pixel_w = slot->bitmap.width;
 			info.uv_pixel_h = slot->bitmap.rows;
 			info.bearing_x = slot->bitmap_left;
@@ -239,6 +241,9 @@ namespace Galaxy3D
 		float v_size = 1.0f / TEXTURE_SIZE_MAX;
 		int vertex_count = 0;
 
+		auto has_kerning = FT_HAS_KERNING(face);
+		FT_UInt previous = 0;
+
 		for(int i=0; i<str.Size(); i++)
 		{
 			int c = str[i];
@@ -246,11 +251,18 @@ namespace Galaxy3D
 			if(c == '\n')
 			{
 				pen_x = 0;
-				pen_y -= m_font_size + m_line_space;
+				pen_y += -(m_font_size + m_line_space);
 				continue;
 			}
 			
 			CharInfo info = get_char_info(m_font, c, m_font_size);
+
+			if(has_kerning && previous && info.glyph_index)
+			{
+				FT_Vector delta;
+				FT_Get_Kerning(face, previous, info.glyph_index, FT_KERNING_UNFITTED, &delta);
+				pen_x += delta.x >> 6;
+			}
 
 			int x0 = pen_x + info.bearing_x;
 			int y0 = pen_y - origin_y + info.bearing_y;
@@ -284,6 +296,7 @@ namespace Galaxy3D
 			m_indices.push_back(vertex_count + 3);
 
 			vertex_count += 4;
+			previous = info.glyph_index;
 		}
 
 		g_font_texture->Apply();

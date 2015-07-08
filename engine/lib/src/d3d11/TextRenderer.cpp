@@ -27,7 +27,7 @@ namespace Galaxy3D
 
 	void TextRenderer::UpdateLabel()
 	{
-		if(!m_label)
+		if(!m_label || m_label->GetVertices().empty())
 		{
 			return;
 		}
