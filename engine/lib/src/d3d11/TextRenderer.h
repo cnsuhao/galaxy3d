@@ -25,6 +25,7 @@ namespace Galaxy3D
 		int m_vertex_count;
 		std::vector<ID3D11Buffer *> m_vertex_buffer_img;
 		std::vector<ID3D11Buffer *> m_index_buffer_img;
+		std::shared_ptr<Material> m_material_img;
 
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();

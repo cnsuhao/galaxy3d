@@ -40,7 +40,8 @@ namespace Galaxy3D
 		Renderer();
 		virtual ~Renderer();
 		virtual void Render() = 0;
-		void AddDrawCall() {GTTime::m_draw_call++;}
+		void AddDrawCall() const {GTTime::m_draw_call++;}
+		void DecDrawCall() const {GTTime::m_draw_call--;}
 
 	private:
 		static std::list<Renderer *> m_renderers;

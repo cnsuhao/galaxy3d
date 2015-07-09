@@ -56,6 +56,7 @@ namespace Galaxy3D
 
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
+			DecDrawCall();
 			return;
 		}
 
