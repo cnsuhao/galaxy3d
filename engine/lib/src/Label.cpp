@@ -611,6 +611,8 @@ namespace Galaxy3D
 			return;
 		}
 
+		auto image_items_old = m_image_items;
+
 		m_image_items.clear();
 		m_vertices.clear();
 		m_uv.clear();
@@ -635,6 +637,7 @@ namespace Galaxy3D
 		FT_UInt previous = 0;
 		int font_size = m_font_size;
 		std::string font = m_font;
+		int line_height = m_font_size;
 
 		for(int i=0; i<str.Size(); i++)
 		{
@@ -645,13 +648,6 @@ namespace Galaxy3D
 			bool outline = false;
 			Color color_outline(0, 0, 0, 1);
 			int origin = origin_y;
-
-			if(c == '\n')
-			{
-				pen_x = 0;
-				pen_y += -(font_size + m_line_space);
-				continue;
-			}
 
 			if(m_rich)
 			{
@@ -798,6 +794,11 @@ namespace Galaxy3D
 					{
 						font_size = size;
 						previous = 0;
+
+						if(line_height < font_size)
+						{
+							line_height = font_size;
+						}
 					}
 				}
 				else
@@ -926,7 +927,7 @@ namespace Galaxy3D
 							img.image_count = find->second.size();
 							
 							int ix0 = pen_x;
-							int iy0 = pen_y - origin + h;
+							int iy0 = pen_y;
 							int ix1 = ix0 + w;
 							int iy1 = iy0 - h;
 							img.vertices.push_back(Vector2(ix0 * v_ppu, iy0 * v_ppu));
@@ -951,6 +952,21 @@ namespace Galaxy3D
 							m_image_items.push_back(img);
 
 							pen_x += w + m_char_space;
+
+							if(line_height < h)
+							{
+								line_height = h;
+							}
+
+							//	刷新的时候继续之前的动画帧
+							if(image_items_old.size() >= m_image_items.size())
+							{
+								int index = m_image_items.size() - 1;
+								if(image_items_old[index].name == m_image_items[index].name)
+								{
+									m_image_items[index].image_index = image_items_old[index].image_index;
+								}
+							}
 						}
 					}
 				}
@@ -1038,6 +1054,15 @@ namespace Galaxy3D
 
 			vertex_count += 4;
 			previous = info.glyph_index;
+
+			if(i < str.Size() - 1 && str[i+1] == '\n')
+			{
+				pen_x = 0;
+				pen_y += -(line_height + m_line_space);
+				line_height = m_font_size;
+				i++;
+				continue;
+			}
 		}
 
 		g_font_texture->Apply();

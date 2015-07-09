@@ -45,6 +45,11 @@ namespace Galaxy3D
 			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_7.png");
 			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_8.png");
 			Label::LoadImages("cool", files);
+			files.clear();
+			files.push_back(Application::GetDataPath() + "/Assets/texture/girl/1.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/girl/2.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/girl/3.png");
+			Label::LoadImages("girl", files);
 			
 			auto label = Label::Create("", "consola", 20, true);
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -55,12 +60,12 @@ namespace Galaxy3D
 
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
-			/*
+			
 			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
 			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
 			sr->SetSprite(bg);
 			sr->UpdateSprite();
-			*/
+			
 			index = 0;
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
@@ -78,43 +83,43 @@ namespace Galaxy3D
 			m_renderer = renderer;
 
 			auto node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(-3, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(-3, -4.5f, 0));
 			node->SetSprite(sps[0]);
 			renderer->AddSprite(node);
 			m_node = node;
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(-2, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(-2, -4.5f, 0));
 			node->SetSprite(sps[1]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(-1, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(-1, -4.5f, 0));
 			node->SetSprite(sps[2]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(0, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(0, -4.5f, 0));
 			node->SetSprite(sps[3]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(1, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(1, -4.5f, 0));
 			node->SetSprite(sps[4]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(2, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(2, -4.5f, 0));
 			node->SetSprite(sps[5]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(3, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(3, -4.5f, 0));
 			node->SetSprite(sps[6]);
 			renderer->AddSprite(node);
 
 			node = GameObject::Create("sprite")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetPosition(Vector3(4, -2.f, 0));
+			node->GetTransform()->SetPosition(Vector3(4, -4.5f, 0));
 			node->SetSprite(sps[7]);
 			renderer->AddSprite(node);
 		}
@@ -128,16 +133,16 @@ namespace Galaxy3D
 			}
 			m_node->SetSprite(sps[(int) index]);
 			m_renderer->UpdateSprites();
-
+			
 			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str + "\n" +
-				"color<color=#ff0000ff>red<color=#00ff00ff>green</color></color>" + "\n" +
-				"<shadow>shadow</shadow>" + "\n" +
-				"<outline>outline</outline>" + "\n" +
-				"<size=50>size</size>" + "\n" +
-				"<font=heiti>font</font>" + "\n" +
-				"fontold" + "\n" +
-				"image<image=cool></image>image<image=cool></image>image");
+				"color<color=#ff0000ff>color<color=#00ff00ff>color</color></color>color" + "\n" +
+				"shadow<shadow>shadow</shadow>shadow" + "\n" +
+				"outline<outline>outline</outline>outline" + "\n" +
+				"size<size=50>size</size>size" + "\n" +
+				"font<font=heiti>font</font>font" + "\n" +
+				"image<image=girl></image>image<image=cool></image>image" + "\n" +
+				"end");
 			m_fps->UpdateLabel();
 		}
 
