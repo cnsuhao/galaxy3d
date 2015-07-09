@@ -31,7 +31,10 @@ namespace Galaxy3D
 		void CreateIndexBuffer();
 		void ReleaseBuffer();
 		void RenderLabelImage();
-		void ReleaseLabelImageBuffer();
+		void CreateVertexBufferLabelImage();
+		void UpdateVertexBufferLabelImage();
+		void CreateIndexBufferLabelImage();
+		void ReleaseBufferLabelImage();
 	};
 }
 
