@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "LayerMask.h"
-#include "GTTime.h"
 
 namespace Galaxy3D
 {
@@ -146,7 +145,7 @@ namespace Galaxy3D
 	{
 		auto camera = Camera::GetCurrent();
 
-		int dc = 0;
+		GTTime::m_draw_call = 0;
 		for(auto i : m_renderers)
 		{
 			auto obj = i->GetGameObject();
@@ -157,10 +156,8 @@ namespace Galaxy3D
 				((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
 			{
 				i->Render();
-				dc++;
+				GTTime::m_draw_call++;
 			}
 		}
-
-		GTTime::m_draw_call = dc;
 	}
 }

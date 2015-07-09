@@ -15,7 +15,8 @@ namespace Galaxy3D
 
 	TextRenderer::~TextRenderer()
 	{
-		Release();
+		ReleaseBuffer();
+		ReleaseLabelImageBuffer();
 	}
 
 	void TextRenderer::SetLabel(const std::shared_ptr<Label> &label)
@@ -47,7 +48,7 @@ namespace Galaxy3D
 		{
 			if(m_vertex_count != m_label->GetVertices().size())
 			{
-				Release();
+				ReleaseBuffer();
 
 				if(!m_label->GetVertices().empty())
 				{
@@ -101,6 +102,32 @@ namespace Galaxy3D
 		context->DrawIndexed(m_label->GetIndices().size(), 0, 0);
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
+
+		RenderLabelImage();
+	}
+
+	void TextRenderer::RenderLabelImage()
+	{
+		auto images = m_label->GetImageItems();
+		for(auto i : images)
+		{
+			AddDrawCall();
+		}
+	}
+
+	void TextRenderer::ReleaseLabelImageBuffer()
+	{
+		for(auto i : m_vertex_buffer_img)
+		{
+			SAFE_RELEASE(i);
+		}
+		m_vertex_buffer_img.clear();
+
+		for(auto i : m_index_buffer_img)
+		{
+			SAFE_RELEASE(i);
+		}
+		m_index_buffer_img.clear();
 	}
 
 	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<Label> &label)
@@ -212,7 +239,7 @@ namespace Galaxy3D
 		free(buffer);
 	}
 
-	void TextRenderer::Release()
+	void TextRenderer::ReleaseBuffer()
 	{
 		SAFE_RELEASE(m_vertex_buffer);
 		SAFE_RELEASE(m_index_buffer);
