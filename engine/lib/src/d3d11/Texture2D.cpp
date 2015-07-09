@@ -267,7 +267,7 @@ namespace Galaxy3D
 
 		if(m_texture == nullptr)
 		{
-			HRESULT hr = device->CreateTexture2D(&desc, mipmap ? 0 : &init_data, &m_texture);
+			HRESULT hr = device->CreateTexture2D(&desc, (mipmap || init_data.pSysMem == 0) ? 0 : &init_data, &m_texture);
 
 			if(mipmap)
 			{
