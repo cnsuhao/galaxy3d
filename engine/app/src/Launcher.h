@@ -55,12 +55,12 @@ namespace Galaxy3D
 
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
-			
+			/*
 			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
 			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
 			sr->SetSprite(bg);
 			sr->UpdateSprite();
-			
+			*/
 			index = 0;
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
@@ -121,6 +121,7 @@ namespace Galaxy3D
 
 		virtual void Update()
 		{
+			/*
 			index += 0.07f;
 			if(index > 19)
 			{
@@ -128,7 +129,8 @@ namespace Galaxy3D
 			}
 			m_node->SetSprite(sps[(int) index]);
 			m_renderer->UpdateSprites();
-			
+			*/
+
 			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str + "\n" +
 				"color<color=#ff0000ff>color<color=#00ff00ff>color</color></color>color" + "\n" +

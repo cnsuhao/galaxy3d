@@ -18,6 +18,7 @@ namespace Galaxy3D
 		std::string name;
 		int image_index;
 		int image_count;
+		int text_index;
 		std::vector<Vector2> vertices;
 		std::vector<Vector2> uv;
 		std::vector<Color> colors;

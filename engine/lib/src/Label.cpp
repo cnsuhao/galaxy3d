@@ -902,7 +902,10 @@ namespace Galaxy3D
 			int uv_x1 = uv_x0 + info.uv_pixel_w;
 			int uv_y1 = uv_y0 + info.uv_pixel_h;
 
-			pen_x += info.advance_x + m_char_space;
+			if(c != '\n')
+			{
+				pen_x += info.advance_x + m_char_space;
+			}
 
 			if(m_rich)
 			{
@@ -923,6 +926,7 @@ namespace Galaxy3D
 							int w = tex->GetWidth();
 							int h = tex->GetHeight();
 
+							img.text_index = i + 1;
 							img.image_index = 0;
 							img.image_count = find->second.size();
 							
@@ -971,7 +975,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(shadow)
+				if(shadow && c != '\n')
 				{
 					Vector2 offset = Vector2(1, -1) * v_ppu;
 
@@ -997,7 +1001,7 @@ namespace Galaxy3D
 					vertex_count += 4;
 				}
 
-				if(outline)
+				if(outline && c != '\n')
 				{
 					Vector2 offsets[4];
 					offsets[0] = Vector2(-1, 1) * v_ppu;
@@ -1033,93 +1037,40 @@ namespace Galaxy3D
 				}
 			}
 
-			m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
-			m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
-			m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
-			m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
-			m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-			m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-			m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-			m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-			m_colors.push_back(color);
-			m_colors.push_back(color);
-			m_colors.push_back(color);
-			m_colors.push_back(color);
-			m_indices.push_back(vertex_count + 0);
-			m_indices.push_back(vertex_count + 1);
-			m_indices.push_back(vertex_count + 2);
-			m_indices.push_back(vertex_count + 0);
-			m_indices.push_back(vertex_count + 2);
-			m_indices.push_back(vertex_count + 3);
+			if(c != '\n')
+			{
+				m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
+				m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
+				m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
+				m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
+				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+				m_colors.push_back(color);
+				m_colors.push_back(color);
+				m_colors.push_back(color);
+				m_colors.push_back(color);
+				m_indices.push_back(vertex_count + 0);
+				m_indices.push_back(vertex_count + 1);
+				m_indices.push_back(vertex_count + 2);
+				m_indices.push_back(vertex_count + 0);
+				m_indices.push_back(vertex_count + 2);
+				m_indices.push_back(vertex_count + 3);
 
-			vertex_count += 4;
-			previous = info.glyph_index;
+				vertex_count += 4;
+				previous = info.glyph_index;
+			}
 
 			if(i < str.Size() - 1 && str[i+1] == '\n')
 			{
 				pen_x = 0;
 				pen_y += -(line_height + m_line_space);
 				line_height = m_font_size;
-				i++;
 				continue;
 			}
 		}
 
 		g_font_texture->Apply();
-
-		//g_font_texture->EncodeToPNG(Application::GetDataPath() + "/Assets/font/test.png");
 	}
 }
-
-/*
-auto font_tex = Texture2D::Create(2048, 2048, TextureFormat::Alpha8, FilterMode::Point, TextureWrapMode::Clamp);
-int font_size = 24;
-
-FT_Face face;
-err = FT_New_Face( library,
-            (Application::GetDataPath() + "/Assets/font/STHeiti-Light.ttc").c_str(),
-            0,
-            &face );
-err = FT_Set_Pixel_Sizes(
-	face,
-	0,
-	font_size);
-
-FT_GlyphSlot  slot = face->glyph;
-auto pen_x = 0;
-auto pen_y = 0;
-unsigned char str[] = {0xe9, 0xbe, 0x99, 0xe9, 0xbe, 0x8d, 0};
-GTStringUTF32 text(std::string((char *) str) + "AVxyija");
-			
-auto use_kerning = FT_HAS_KERNING( face );
-FT_UInt previous = 0;
-int origin_y = face->bbox.yMax * font_size / face->units_per_EM;
-
-for (int n = 0; n < text.Size(); n++ )
-{
-	auto glyph_index = FT_Get_Char_Index( face, text[n] );
-	err = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
-	if ( err )
-		continue;
-
-	if ( use_kerning && previous && glyph_index )
-	{
-		FT_Vector delta;
-		FT_Get_Kerning( face, previous, glyph_index, FT_KERNING_DEFAULT, &delta );
-		pen_x += delta.x >> 6;
-	}
-
-	font_tex->SetPixels(
-		pen_x + slot->bitmap_left,
-		pen_y + origin_y - slot->bitmap_top,
-		slot->bitmap.width,
-		slot->bitmap.rows,
-		(char *) slot->bitmap.buffer);
-				
-	pen_x += slot->advance.x >> 6;
-
-	previous = glyph_index;
-}
-
-font_tex->EncodeToPNG(Application::GetDataPath() + "/Assets/font/test.png");
-*/
