@@ -2,12 +2,12 @@
 
 namespace Galaxy3D
 {
-	const float Mathf::Epsilon = 1.192092896e-07f;
-	const float Mathf::PI = 3.14159f;
+	const float Mathf::Epsilon = FLT_EPSILON;
+	const float Mathf::PI = 3.14159265358979323846f;
 	const float Mathf::Deg2Rad = 0.0174533f;
 	const float Mathf::Rad2Deg = 57.2958f;
-	const float Mathf::MaxFloatValue = 3.40282e+038f;
-    const float Mathf::MinFloatValue = -3.40282e+038f;
+	const float Mathf::MaxFloatValue = FLT_MAX;
+    const float Mathf::MinFloatValue = -FLT_MAX;
 
 	float Mathf::Lerp(float from, float to, float t, bool clamp_01)
 	{

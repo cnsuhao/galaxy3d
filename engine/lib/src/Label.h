@@ -9,6 +9,15 @@
 
 namespace Galaxy3D
 {
+	//	Supported rich text tags
+	//
+	//	<color=#ffffffff></color>
+	//	<shadow></shadow>
+	//	<shadow=#000000ff></shadow>
+	//	<outline></outline>
+	//	<outline=#000000ff></outline>
+	//	<size=30></size>
+	//	<font=msyh></font>
 	class Label : public Object
 	{
 	public:
@@ -16,13 +25,15 @@ namespace Galaxy3D
 		static void DoneFontLib();
 		static std::shared_ptr<Texture2D> GetFontTexture();
 		static void LoadFont(const std::string &name, const std::string &file);
-		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size);
+		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, bool rich = false);
 		void SetText(const std::string &text);
 		std::string GetText() const {return m_text;}
 		void SetCharSpace(int space);
 		void SetLineSpace(int space);
 		void SetColor(const Color &color) {m_color = color;}
 		Color GetColor() const {return m_color;}
+		void SetWidth(int width) {m_width = width;}
+		void SetHeight(int height) {m_height = height;}
 		const std::vector<Vector2> &GetVertices() const {return m_vertices;}
 		const std::vector<Vector2> &GetUV() const {return m_uv;}
 		const std::vector<Color> &GetColors() const {return m_colors;}
@@ -35,6 +46,9 @@ namespace Galaxy3D
 		int m_char_space;
 		int m_line_space;
 		Color m_color;
+		int m_width;
+		int m_height;
+		bool m_rich;
 		float m_pixels_per_unit;
 		std::vector<Vector2> m_vertices;
 		std::vector<Vector2> m_uv;
