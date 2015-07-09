@@ -33,8 +33,9 @@ namespace Galaxy3D
 		virtual void Start()
 		{
 			Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
-			auto label = Label::Create("", "consola", 17);
-			label->SetColor(Color(0, 0, 1, 1));
+			Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/STHeiti-Light.ttc");
+			
+			auto label = Label::Create("", "consola", 20, true);
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
 			tr->GetTransform()->SetPosition(Vector3(-4.8f, 3.2f, 0));
 			tr->SetLabel(label);
@@ -43,12 +44,12 @@ namespace Galaxy3D
 
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
-			
+			/*
 			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
 			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
 			sr->SetSprite(bg);
 			sr->UpdateSprite();
-
+			*/
 			index = 0;
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
@@ -118,7 +119,13 @@ namespace Galaxy3D
 			m_renderer->UpdateSprites();
 
 			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
-				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
+				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str + "\n" +
+				"color<color=#ff0000ff>red<color=#00ff00ff>green</color></color>" + "\n" +
+				"<shadow>shadow</shadow>" + "\n" +
+				"<outline>outline</outline>" + "\n" +
+				"<size=50>size</size>" + "\n" +
+				"<font=heiti>font</font>" + "\n" +
+				"fontold");
 			m_fps->UpdateLabel();
 		}
 

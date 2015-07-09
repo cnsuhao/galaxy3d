@@ -1,5 +1,7 @@
 #include "Label.h"
 #include "GTStringUTF32.h"
+#include "GTString.h"
+#include "Mathf.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <unordered_map>
@@ -17,6 +19,14 @@ struct CharInfo
 	int bearing_y;
 	int advance_x;
 	int advance_y;
+};
+
+struct TagInfo
+{
+	std::string tag;
+	std::string value;
+	int begin;
+	int end;
 };
 
 namespace Galaxy3D
@@ -71,7 +81,7 @@ namespace Galaxy3D
 		}
 	}
 
-	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size)
+	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, bool rich)
 	{
 		std::shared_ptr<Label> label;
 
@@ -82,6 +92,7 @@ namespace Galaxy3D
 			label->m_text = text;
 			label->m_font = font;
 			label->m_font_size = font_size;
+			label->m_rich = rich;
 
 			label->ProcessText();
 		}
@@ -94,7 +105,9 @@ namespace Galaxy3D
 		m_pixels_per_unit(100),
 		m_char_space(0),
 		m_line_space(0),
-		m_color(1, 1, 1, 1)
+		m_color(1, 1, 1, 1),
+		m_width(0x7fffffff),
+		m_height(0x7fffffff)
 	{
 	}
 
@@ -215,9 +228,292 @@ namespace Galaxy3D
 		return info;
 	}
 
+	static std::vector<TagInfo> parse_rich_tags(GTStringUTF32 &str)
+	{
+		std::vector<TagInfo> tags;
+
+		std::vector<TagInfo> tag_find;
+		for(int i=0; i<str.Size(); i++)
+		{
+			if(	str[i+0] == '<' &&
+				str[i+1] == 'c' &&
+				str[i+2] == 'o' &&
+				str[i+3] == 'l' &&
+				str[i+4] == 'o' &&
+				str[i+5] == 'r' &&
+				str[i+6] == '=' &&
+				str[i+7] == '#')
+			{
+				auto value = str.Substr(i + 8, 8);
+
+				TagInfo info;
+				info.tag = "color";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 17);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 'c' &&
+				str[i+3] == 'o' &&
+				str[i+4] == 'l' &&
+				str[i+5] == 'o' &&
+				str[i+6] == 'r' &&
+				str[i+7] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "color")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 8);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 's' &&
+				str[i+2] == 'h' &&
+				str[i+3] == 'a' &&
+				str[i+4] == 'd' &&
+				str[i+5] == 'o' &&
+				str[i+6] == 'w' &&
+				str[i+7] == '=' &&
+				str[i+8] == '#')
+			{
+				auto value = str.Substr(i + 9, 8);
+
+				TagInfo info;
+				info.tag = "shadow";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 18);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 's' &&
+				str[i+2] == 'h' &&
+				str[i+3] == 'a' &&
+				str[i+4] == 'd' &&
+				str[i+5] == 'o' &&
+				str[i+6] == 'w' &&
+				str[i+7] == '>')
+			{
+				TagInfo info;
+				info.tag = "shadow";
+				info.value = "000000ff";
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 8);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 's' &&
+				str[i+3] == 'h' &&
+				str[i+4] == 'a' &&
+				str[i+5] == 'd' &&
+				str[i+6] == 'o' &&
+				str[i+7] == 'w' &&
+				str[i+8] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "shadow")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 9);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 'o' &&
+				str[i+2] == 'u' &&
+				str[i+3] == 't' &&
+				str[i+4] == 'l' &&
+				str[i+5] == 'i' &&
+				str[i+6] == 'n' &&
+				str[i+7] == 'e' &&
+				str[i+8] == '=' &&
+				str[i+9] == '#')
+			{
+				auto value = str.Substr(i + 10, 8);
+
+				TagInfo info;
+				info.tag = "outline";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 19);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 'o' &&
+				str[i+2] == 'u' &&
+				str[i+3] == 't' &&
+				str[i+4] == 'l' &&
+				str[i+5] == 'i' &&
+				str[i+6] == 'n' &&
+				str[i+7] == 'e' &&
+				str[i+8] == '>')
+			{
+				TagInfo info;
+				info.tag = "outline";
+				info.value = "000000ff";
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 9);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 'o' &&
+				str[i+3] == 'u' &&
+				str[i+4] == 't' &&
+				str[i+5] == 'l' &&
+				str[i+6] == 'i' &&
+				str[i+7] == 'n' &&
+				str[i+8] == 'e' &&
+				str[i+9] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "outline")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 10);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 's' &&
+				str[i+2] == 'i' &&
+				str[i+3] == 'z' &&
+				str[i+4] == 'e' &&
+				str[i+5] == '=')
+			{
+				int value_size = str.Find('>', i+5) - (i+5) - 1;
+				auto value = str.Substr(i + 6, value_size);
+
+				TagInfo info;
+				info.tag = "size";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 6 + value_size + 1);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 's' &&
+				str[i+3] == 'i' &&
+				str[i+4] == 'z' &&
+				str[i+5] == 'e' &&
+				str[i+6] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "size")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 7);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 'f' &&
+				str[i+2] == 'o' &&
+				str[i+3] == 'n' &&
+				str[i+4] == 't' &&
+				str[i+5] == '=')
+			{
+				int value_size = str.Find('>', i+5) - (i+5) - 1;
+				auto value = str.Substr(i + 6, value_size);
+
+				TagInfo info;
+				info.tag = "font";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 6 + value_size + 1);
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 'f' &&
+				str[i+3] == 'o' &&
+				str[i+4] == 'n' &&
+				str[i+5] == 't' &&
+				str[i+6] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "font")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 7);
+				i--;
+			}
+		}
+
+		return tags;
+	}
+
 	void Label::ProcessText()
 	{
 		FT_Face face = nullptr;
+		FT_Face face_old = nullptr;
 		auto find_face = g_fonts.find(m_font);
 		if(find_face != g_fonts.end())
 		{
@@ -241,22 +537,265 @@ namespace Galaxy3D
 		float v_size = 1.0f / TEXTURE_SIZE_MAX;
 		int vertex_count = 0;
 
+		std::vector<TagInfo> tags;
+		if(m_rich)
+		{
+			tags = parse_rich_tags(str);
+		}
+
 		auto has_kerning = FT_HAS_KERNING(face);
 		FT_UInt previous = 0;
+		int font_size = m_font_size;
+		std::string font = m_font;
 
 		for(int i=0; i<str.Size(); i++)
 		{
 			int c = str[i];
-
+			Color color(1, 1, 1, 1);
+			bool shadow = false;
+			Color color_shadow(0, 0, 0, 1);
+			bool outline = false;
+			Color color_outline(0, 0, 0, 1);
+			
 			if(c == '\n')
 			{
 				pen_x = 0;
-				pen_y += -(m_font_size + m_line_space);
+				pen_y += -(font_size + m_line_space);
 				continue;
 			}
-			
-			CharInfo info = get_char_info(m_font, c, m_font_size);
 
+			if(m_rich)
+			{
+				TagInfo *tag_color = 0;
+				TagInfo *tag_shadow = 0;
+				TagInfo *tag_outline = 0;
+				TagInfo *tag_size = 0;
+				TagInfo *tag_font = 0;
+				int begin_max;
+
+				//	color
+				begin_max = 0;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "color" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_color = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_color != 0)
+				{
+					auto &t = *tag_color;
+					
+					GTString v(t.value);
+					v = v.ToLower();
+					std::stringstream ss;
+					ss << std::hex << v.str;
+					unsigned int color_i = 0; 
+					ss >> color_i;
+
+					int r = (color_i & 0xff000000) >> 24;
+					int g = (color_i & 0xff0000) >> 16;
+					int b = (color_i & 0xff00) >> 8;
+					int a = (color_i & 0xff);
+
+					float div = 1/255.f;
+					color = Color((float) r, (float) g, (float) b, (float) a) * div;
+				}
+
+				//	shadow
+				begin_max = -1;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "shadow" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_shadow = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_shadow != 0)
+				{
+					auto &t = *tag_shadow;
+					
+					GTString v(t.value);
+					v = v.ToLower();
+					std::stringstream ss;
+					ss << std::hex << v.str;
+					unsigned int color_i = 0; 
+					ss >> color_i;
+
+					int r = (color_i & 0xff000000) >> 24;
+					int g = (color_i & 0xff0000) >> 16;
+					int b = (color_i & 0xff00) >> 8;
+					int a = (color_i & 0xff);
+
+					float div = 1/255.f;
+					color_shadow = Color((float) r, (float) g, (float) b, (float) a) * div;
+					shadow = true;
+				}
+
+				//	outline
+				begin_max = -1;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "outline" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_outline = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_outline != 0)
+				{
+					auto &t = *tag_outline;
+					
+					GTString v(t.value);
+					v = v.ToLower();
+					std::stringstream ss;
+					ss << std::hex << v.str;
+					unsigned int color_i = 0; 
+					ss >> color_i;
+
+					int r = (color_i & 0xff000000) >> 24;
+					int g = (color_i & 0xff0000) >> 16;
+					int b = (color_i & 0xff00) >> 8;
+					int a = (color_i & 0xff);
+
+					float div = 1/255.f;
+					color_outline = Color((float) r, (float) g, (float) b, (float) a) * div;
+					outline = true;
+				}
+
+				//	size
+				begin_max = -1;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "size" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_size = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_size != 0)
+				{
+					auto &t = *tag_size;
+					
+					GTString v(t.value);
+					std::stringstream ss;
+					ss << v.str;
+					int size;
+					ss >> size;
+
+					if(font_size != size)
+					{
+						font_size = size;
+						previous = 0;
+					}
+				}
+				else
+				{
+					if(font_size != m_font_size)
+					{
+						font_size = m_font_size;
+						previous = 0;
+					}
+				}
+
+				//	font
+				begin_max = -1;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "font" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_font = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_font != 0)
+				{
+					auto &t = *tag_font;
+
+					if(font != t.value)
+					{
+						font = t.value;
+						previous = 0;
+					}
+				}
+				else
+				{
+					if(font != m_font)
+					{
+						font = m_font;
+						previous = 0;
+					}
+				}
+			}
+
+			int origin = origin_y;
+			if(font_size != m_font_size)
+			{
+				origin = face->bbox.yMax * font_size / face->units_per_EM;
+			}
+
+			if(font != m_font)
+			{
+				auto find = g_fonts.find(font);
+				if(find != g_fonts.end())
+				{
+					face_old = face;
+					face = (FT_Face) find->second;
+				}
+				else
+				{
+					font = m_font;
+				}
+
+				origin = face->bbox.yMax * font_size / face->units_per_EM;
+			}
+			else
+			{
+				if(face_old != nullptr)
+				{
+					face = face_old;
+					face_old = nullptr;
+				}
+			}
+			
+			CharInfo info = get_char_info(font, c, font_size);
+
+			//limit width
+			if(pen_x + info.bearing_x + info.uv_pixel_w > m_width)
+			{
+				pen_x = 0;
+				pen_y += -(font_size + m_line_space);
+				previous = 0;
+			}
+
+			//kerning
 			if(has_kerning && previous && info.glyph_index)
 			{
 				FT_Vector delta;
@@ -265,7 +804,7 @@ namespace Galaxy3D
 			}
 
 			int x0 = pen_x + info.bearing_x;
-			int y0 = pen_y - origin_y + info.bearing_y;
+			int y0 = pen_y - origin + info.bearing_y;
 			int x1 = x0 + info.uv_pixel_w;
 			int y1 = y0 - info.uv_pixel_h;
 
@@ -276,6 +815,67 @@ namespace Galaxy3D
 
 			pen_x += info.advance_x + m_char_space;
 
+			if(shadow)
+			{
+				Vector2 offset = Vector2(1, -1) * v_ppu;
+
+				m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
+				m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
+				m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
+				m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+				m_colors.push_back(color_shadow);
+				m_colors.push_back(color_shadow);
+				m_colors.push_back(color_shadow);
+				m_colors.push_back(color_shadow);
+				m_indices.push_back(vertex_count + 0);
+				m_indices.push_back(vertex_count + 1);
+				m_indices.push_back(vertex_count + 2);
+				m_indices.push_back(vertex_count + 0);
+				m_indices.push_back(vertex_count + 2);
+				m_indices.push_back(vertex_count + 3);
+
+				vertex_count += 4;
+			}
+
+			if(outline)
+			{
+				Vector2 offsets[4];
+				offsets[0] = Vector2(-1, 1) * v_ppu;
+				offsets[1] = Vector2(-1, -1) * v_ppu;
+				offsets[2] = Vector2(1, -1) * v_ppu;
+				offsets[3] = Vector2(1, 1) * v_ppu;
+
+				for(int j=0; j<4; j++)
+				{
+					Vector2 offset = offsets[j];
+
+					m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
+					m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
+					m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
+					m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+					m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+					m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+					m_colors.push_back(color_outline);
+					m_colors.push_back(color_outline);
+					m_colors.push_back(color_outline);
+					m_colors.push_back(color_outline);
+					m_indices.push_back(vertex_count + 0);
+					m_indices.push_back(vertex_count + 1);
+					m_indices.push_back(vertex_count + 2);
+					m_indices.push_back(vertex_count + 0);
+					m_indices.push_back(vertex_count + 2);
+					m_indices.push_back(vertex_count + 3);
+
+					vertex_count += 4;
+				}
+			}
+
 			m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
 			m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
 			m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
@@ -284,10 +884,10 @@ namespace Galaxy3D
 			m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
 			m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
 			m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-			m_colors.push_back(Color(1, 1, 1, 1));
-			m_colors.push_back(Color(1, 1, 1, 1));
-			m_colors.push_back(Color(1, 1, 1, 1));
-			m_colors.push_back(Color(1, 1, 1, 1));
+			m_colors.push_back(color);
+			m_colors.push_back(color);
+			m_colors.push_back(color);
+			m_colors.push_back(color);
 			m_indices.push_back(vertex_count + 0);
 			m_indices.push_back(vertex_count + 1);
 			m_indices.push_back(vertex_count + 2);
@@ -300,6 +900,7 @@ namespace Galaxy3D
 		}
 
 		g_font_texture->Apply();
+
 		//g_font_texture->EncodeToPNG(Application::GetDataPath() + "/Assets/font/test.png");
 	}
 }
