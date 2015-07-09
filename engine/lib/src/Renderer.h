@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "VertexType.h"
+#include "GTTime.h"
 #include <list>
 
 namespace Galaxy3D
@@ -39,6 +40,7 @@ namespace Galaxy3D
 		Renderer();
 		virtual ~Renderer();
 		virtual void Render() = 0;
+		void AddDrawCall() {GTTime::m_draw_call++;}
 
 	private:
 		static std::list<Renderer *> m_renderers;

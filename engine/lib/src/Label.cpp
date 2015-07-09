@@ -287,6 +287,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 17);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -334,6 +335,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 18);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -353,6 +355,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 8);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -402,6 +405,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 19);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -422,6 +426,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 9);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -469,6 +474,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 6 + value_size + 1);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -513,6 +519,7 @@ namespace Galaxy3D
 				tag_find.push_back(info);
 
 				str.Erase(i, 6 + value_size + 1);
+				i--;
 			}
 			else if(
 				str[i+0] == '<' &&
@@ -538,6 +545,53 @@ namespace Galaxy3D
 				str.Erase(i, 7);
 				i--;
 			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == 'i' &&
+				str[i+2] == 'm' &&
+				str[i+3] == 'a' &&
+				str[i+4] == 'g' &&
+				str[i+5] == 'e' &&
+				str[i+6] == '=')
+			{
+				int value_size = str.Find('>', i+6) - (i+6) - 1;
+				auto value = str.Substr(i + 7, value_size);
+
+				TagInfo info;
+				info.tag = "image";
+				info.value = value.Utf8();
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 7 + value_size + 1);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 'i' &&
+				str[i+3] == 'm' &&
+				str[i+4] == 'a' &&
+				str[i+5] == 'g' &&
+				str[i+6] == 'e' &&
+				str[i+7] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "image")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 8);
+				i--;
+			}
 		}
 
 		return tags;
@@ -557,6 +611,7 @@ namespace Galaxy3D
 			return;
 		}
 
+		m_image_items.clear();
 		m_vertices.clear();
 		m_uv.clear();
 		m_colors.clear();
@@ -848,43 +903,61 @@ namespace Galaxy3D
 
 			pen_x += info.advance_x + m_char_space;
 
-			if(shadow)
+			if(m_rich)
 			{
-				Vector2 offset = Vector2(1, -1) * v_ppu;
-
-				m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
-				m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
-				m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
-				m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
-				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-				m_colors.push_back(color_shadow);
-				m_colors.push_back(color_shadow);
-				m_colors.push_back(color_shadow);
-				m_colors.push_back(color_shadow);
-				m_indices.push_back(vertex_count + 0);
-				m_indices.push_back(vertex_count + 1);
-				m_indices.push_back(vertex_count + 2);
-				m_indices.push_back(vertex_count + 0);
-				m_indices.push_back(vertex_count + 2);
-				m_indices.push_back(vertex_count + 3);
-
-				vertex_count += 4;
-			}
-
-			if(outline)
-			{
-				Vector2 offsets[4];
-				offsets[0] = Vector2(-1, 1) * v_ppu;
-				offsets[1] = Vector2(-1, -1) * v_ppu;
-				offsets[2] = Vector2(1, -1) * v_ppu;
-				offsets[3] = Vector2(1, 1) * v_ppu;
-
-				for(int j=0; j<4; j++)
+				//	image
+				for(int j=0; j<(int) tags.size(); j++)
 				{
-					Vector2 offset = offsets[j];
+					auto &t = tags[j];
+					if(t.tag == "image" && i + 1 == t.begin)
+					{
+						LabelImageItem img;
+						img.name = t.value;
+						
+						auto find = g_rich_images.find(img.name);
+						if(find != g_rich_images.end())
+						{
+							auto tex = find->second.front();
+
+							int w = tex->GetWidth();
+							int h = tex->GetHeight();
+
+							img.image_index = 0;
+							img.image_count = find->second.size();
+							
+							int ix0 = pen_x;
+							int iy0 = pen_y - origin + h;
+							int ix1 = ix0 + w;
+							int iy1 = iy0 - h;
+							img.vertices.push_back(Vector2(ix0 * v_ppu, iy0 * v_ppu));
+							img.vertices.push_back(Vector2(ix0 * v_ppu, iy1 * v_ppu));
+							img.vertices.push_back(Vector2(ix1 * v_ppu, iy1 * v_ppu));
+							img.vertices.push_back(Vector2(ix1 * v_ppu, iy0 * v_ppu));
+							img.uv.push_back(Vector2(0, 0));
+							img.uv.push_back(Vector2(0, 1));
+							img.uv.push_back(Vector2(1, 1));
+							img.uv.push_back(Vector2(1, 0));
+							img.colors.push_back(color);
+							img.colors.push_back(color);
+							img.colors.push_back(color);
+							img.colors.push_back(color);
+							img.indices.push_back(0);
+							img.indices.push_back(1);
+							img.indices.push_back(2);
+							img.indices.push_back(0);
+							img.indices.push_back(2);
+							img.indices.push_back(3);
+
+							m_image_items.push_back(img);
+
+							pen_x += w + m_char_space;
+						}
+					}
+				}
+
+				if(shadow)
+				{
+					Vector2 offset = Vector2(1, -1) * v_ppu;
 
 					m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
 					m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
@@ -894,10 +967,10 @@ namespace Galaxy3D
 					m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
 					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
 					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-					m_colors.push_back(color_outline);
-					m_colors.push_back(color_outline);
-					m_colors.push_back(color_outline);
-					m_colors.push_back(color_outline);
+					m_colors.push_back(color_shadow);
+					m_colors.push_back(color_shadow);
+					m_colors.push_back(color_shadow);
+					m_colors.push_back(color_shadow);
 					m_indices.push_back(vertex_count + 0);
 					m_indices.push_back(vertex_count + 1);
 					m_indices.push_back(vertex_count + 2);
@@ -906,6 +979,41 @@ namespace Galaxy3D
 					m_indices.push_back(vertex_count + 3);
 
 					vertex_count += 4;
+				}
+
+				if(outline)
+				{
+					Vector2 offsets[4];
+					offsets[0] = Vector2(-1, 1) * v_ppu;
+					offsets[1] = Vector2(-1, -1) * v_ppu;
+					offsets[2] = Vector2(1, -1) * v_ppu;
+					offsets[3] = Vector2(1, 1) * v_ppu;
+
+					for(int j=0; j<4; j++)
+					{
+						Vector2 offset = offsets[j];
+
+						m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
+						m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
+						m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
+						m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+						m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+						m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+						m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+						m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+						m_colors.push_back(color_outline);
+						m_colors.push_back(color_outline);
+						m_colors.push_back(color_outline);
+						m_colors.push_back(color_outline);
+						m_indices.push_back(vertex_count + 0);
+						m_indices.push_back(vertex_count + 1);
+						m_indices.push_back(vertex_count + 2);
+						m_indices.push_back(vertex_count + 0);
+						m_indices.push_back(vertex_count + 2);
+						m_indices.push_back(vertex_count + 3);
+
+						vertex_count += 4;
+					}
 				}
 			}
 

@@ -137,7 +137,7 @@ namespace Galaxy3D
 				"<size=50>size</size>" + "\n" +
 				"<font=heiti>font</font>" + "\n" +
 				"fontold" + "\n" +
-				"image<image=cool></image>image");
+				"image<image=cool></image>image<image=cool></image>image");
 			m_fps->UpdateLabel();
 		}
 
