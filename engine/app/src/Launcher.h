@@ -34,6 +34,17 @@ namespace Galaxy3D
 		{
 			Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
 			Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/STHeiti-Light.ttc");
+
+			std::vector<const std::string> files;
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_1.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_2.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_3.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_4.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_5.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_6.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_7.png");
+			files.push_back(Application::GetDataPath() + "/Assets/texture/cool/cool_8.png");
+			Label::LoadImages("cool", files);
 			
 			auto label = Label::Create("", "consola", 20, true);
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -125,7 +136,8 @@ namespace Galaxy3D
 				"<outline>outline</outline>" + "\n" +
 				"<size=50>size</size>" + "\n" +
 				"<font=heiti>font</font>" + "\n" +
-				"fontold");
+				"fontold" + "\n" +
+				"image<image=cool></image>image");
 			m_fps->UpdateLabel();
 		}
 

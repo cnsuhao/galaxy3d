@@ -39,6 +39,7 @@ namespace Galaxy3D
 	static int g_texture_x;
 	static int g_texture_y;
 	static int g_texture_line_h_max;
+	static std::unordered_map<std::string, std::vector<std::shared_ptr<Texture2D>>> g_rich_images;
 
 	void Label::InitFontLib()
 	{
@@ -79,6 +80,38 @@ namespace Galaxy3D
 
 			g_fonts[name] = face;
 		}
+	}
+
+	void Label::LoadImage(const std::string &name, const std::string &file)
+	{
+		std::vector<const std::string> files;
+		files.push_back(file);
+		LoadImages(name, files);
+	}
+
+	void Label::LoadImages(const std::string &name, const std::vector<const std::string> &files)
+	{
+		std::vector<std::shared_ptr<Texture2D>> textures;
+		for(size_t i=0; i<files.size(); i++)
+		{
+			auto tex = Texture2D::LoadImageFile(files[i], FilterMode::Point, TextureWrapMode::Clamp);
+			textures.push_back(tex);
+		}
+
+		g_rich_images[name] = textures;
+	}
+
+	std::shared_ptr<Texture2D> Label::GetRichImageTexture(const std::string &name, int index)
+	{
+		std::shared_ptr<Texture2D> tex;
+
+		auto find = g_rich_images.find(name);
+		if(find != g_rich_images.end())
+		{
+			tex = find->second[index];
+		}
+
+		return tex;
 	}
 
 	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, bool rich)
@@ -556,7 +589,8 @@ namespace Galaxy3D
 			Color color_shadow(0, 0, 0, 1);
 			bool outline = false;
 			Color color_outline(0, 0, 0, 1);
-			
+			int origin = origin_y;
+
 			if(c == '\n')
 			{
 				pen_x = 0;
@@ -753,35 +787,34 @@ namespace Galaxy3D
 						previous = 0;
 					}
 				}
-			}
 
-			int origin = origin_y;
-			if(font_size != m_font_size)
-			{
-				origin = face->bbox.yMax * font_size / face->units_per_EM;
-			}
-
-			if(font != m_font)
-			{
-				auto find = g_fonts.find(font);
-				if(find != g_fonts.end())
+				if(font_size != m_font_size)
 				{
-					face_old = face;
-					face = (FT_Face) find->second;
+					origin = face->bbox.yMax * font_size / face->units_per_EM;
+				}
+
+				if(font != m_font)
+				{
+					auto find = g_fonts.find(font);
+					if(find != g_fonts.end())
+					{
+						face_old = face;
+						face = (FT_Face) find->second;
+					}
+					else
+					{
+						font = m_font;
+					}
+
+					origin = face->bbox.yMax * font_size / face->units_per_EM;
 				}
 				else
 				{
-					font = m_font;
-				}
-
-				origin = face->bbox.yMax * font_size / face->units_per_EM;
-			}
-			else
-			{
-				if(face_old != nullptr)
-				{
-					face = face_old;
-					face_old = nullptr;
+					if(face_old != nullptr)
+					{
+						face = face_old;
+						face_old = nullptr;
+					}
 				}
 			}
 			

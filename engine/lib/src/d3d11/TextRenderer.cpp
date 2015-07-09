@@ -4,7 +4,8 @@ namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
 		m_vertex_buffer(nullptr),
-		m_index_buffer(nullptr)
+		m_index_buffer(nullptr),
+		m_vertex_count(0)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
@@ -27,15 +28,20 @@ namespace Galaxy3D
 
 	void TextRenderer::UpdateLabel()
 	{
-		if(!m_label || m_label->GetVertices().empty())
+		if(!m_label)
 		{
 			return;
 		}
 
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
-			CreateVertexBuffer();
-			CreateIndexBuffer();
+			if(!m_label->GetVertices().empty())
+			{
+				CreateVertexBuffer();
+				CreateIndexBuffer();
+			}
+
+			m_vertex_count = m_label->GetVertices().size();
 		}
 		else
 		{
@@ -43,8 +49,13 @@ namespace Galaxy3D
 			{
 				Release();
 
-				CreateVertexBuffer();
-				CreateIndexBuffer();
+				if(!m_label->GetVertices().empty())
+				{
+					CreateVertexBuffer();
+					CreateIndexBuffer();
+				}
+
+				m_vertex_count = m_label->GetVertices().size();
 			}
 			else
 			{
