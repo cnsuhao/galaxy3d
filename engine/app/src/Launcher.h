@@ -18,11 +18,6 @@ namespace Galaxy3D
 {
 	class Launcher :public Component
 	{
-	public:
-		virtual ~Launcher()
-		{
-		}
-
 	protected:
 		std::shared_ptr<SpriteNode> m_node;
 		std::shared_ptr<Sprite> sps[20];
@@ -145,8 +140,6 @@ namespace Galaxy3D
 				"end");
 			m_fps->UpdateLabel();
 		}
-
-	private:
 	};
 }
 
