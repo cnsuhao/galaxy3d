@@ -21,7 +21,7 @@ namespace Galaxy3D
 		return Create(
 			texture,
 			Rect(0, 0, (float) w, (float) h),
-			Vector2((float) (w/2), (float) (h/2)),
+			Vector2(0.5f, 0.5f),
 			100,
 			Vector4(0, 0, 0, 0));
 	}
@@ -45,8 +45,8 @@ namespace Galaxy3D
 		float v_w = 1.0f / texture->GetWidth();
 		float v_h = 1.0f / texture->GetHeight();
 
-		float left = -pivot.x;
-		float top = -pivot.y;
+		float left = -pivot.x * rect.width;
+		float top = -pivot.y * rect.height;
 
 		Rect vertices(left * v_ppu, top * v_ppu, rect.width * v_ppu, rect.height * v_ppu);
 		Rect uv(rect.left * v_w, rect.top * v_h, rect.width * v_w, rect.height * v_h);

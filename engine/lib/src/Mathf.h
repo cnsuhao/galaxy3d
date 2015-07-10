@@ -32,7 +32,7 @@ namespace Galaxy3D
 		static T Clamp(T value, T min, T max) { return Min(Max(value, min), max); }
 		static float Lerp(float from, float to, float t, bool clamp_01 = true);
 		static bool FloatEqual(float a, float b) { return fabs(a - b) < Epsilon; }
-		static float Round(float f);
+		static float Round(float f);//ËÄÉáÎåÈë
 		static int RoundToInt(float f);
 		static float Sign(float f) { return f < 0 ? -1.0f : 1.0f; }
 		template<class T>
