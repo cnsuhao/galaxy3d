@@ -589,7 +589,8 @@ namespace Galaxy3D
 					}
 				}
 
-				str.Erase(i, 8);
+				str.Erase(i, 7);
+				str[i] = 0xffffffff;
 				i--;
 			}
 		}
@@ -618,6 +619,7 @@ namespace Galaxy3D
 		m_uv.clear();
 		m_colors.clear();
 		m_indices.clear();
+		m_heights.clear();
 
 		GTStringUTF32 str(m_text);
 		int pen_x = 0;
@@ -638,6 +640,8 @@ namespace Galaxy3D
 		int font_size = m_font_size;
 		std::string font = m_font;
 		int line_height = m_font_size;
+		int line_vertex_begin = 0;
+		int line = 0;
 
 		for(int i=0; i<str.Size(); i++)
 		{
@@ -873,23 +877,28 @@ namespace Galaxy3D
 					}
 				}
 			}
+
+			bool visible = (c != '\n' && c != 0xffffffff);
 			
 			CharInfo info = get_char_info(font, c, font_size);
 
-			//limit width
-			if(pen_x + info.bearing_x + info.uv_pixel_w > m_width)
+			if(visible)
 			{
-				pen_x = 0;
-				pen_y += -(font_size + m_line_space);
-				previous = 0;
-			}
+				//limit width
+				if(pen_x + info.bearing_x + info.uv_pixel_w > m_width)
+				{
+					pen_x = 0;
+					pen_y += -(font_size + m_line_space);
+					previous = 0;
+				}
 
-			//kerning
-			if(has_kerning && previous && info.glyph_index)
-			{
-				FT_Vector delta;
-				FT_Get_Kerning(face, previous, info.glyph_index, FT_KERNING_UNFITTED, &delta);
-				pen_x += delta.x >> 6;
+				//kerning
+				if(has_kerning && previous && info.glyph_index)
+				{
+					FT_Vector delta;
+					FT_Get_Kerning(face, previous, info.glyph_index, FT_KERNING_UNFITTED, &delta);
+					pen_x += delta.x >> 6;
+				}
 			}
 
 			int x0 = pen_x + info.bearing_x;
@@ -902,7 +911,7 @@ namespace Galaxy3D
 			int uv_x1 = uv_x0 + info.uv_pixel_w;
 			int uv_y1 = uv_y0 + info.uv_pixel_h;
 
-			if(c != '\n')
+			if(visible)
 			{
 				pen_x += info.advance_x + m_char_space;
 			}
@@ -913,7 +922,7 @@ namespace Galaxy3D
 				for(int j=0; j<(int) tags.size(); j++)
 				{
 					auto &t = tags[j];
-					if(t.tag == "image" && i + 1 == t.begin)
+					if(t.tag == "image" && i == t.begin)
 					{
 						LabelImageItem img;
 						img.name = t.value;
@@ -927,6 +936,7 @@ namespace Galaxy3D
 							int h = tex->GetHeight();
 
 							img.text_index = i + 1;
+							img.line_index = line;
 							img.image_index = 0;
 							img.image_count = find->second.size();
 							
@@ -975,7 +985,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(shadow && c != '\n')
+				if(shadow && visible)
 				{
 					Vector2 offset = Vector2(1, -1) * v_ppu;
 
@@ -998,10 +1008,12 @@ namespace Galaxy3D
 					m_indices.push_back(vertex_count + 2);
 					m_indices.push_back(vertex_count + 3);
 
+					m_heights.push_back(font_size);
+
 					vertex_count += 4;
 				}
 
-				if(outline && c != '\n')
+				if(outline && visible)
 				{
 					Vector2 offsets[4];
 					offsets[0] = Vector2(-1, 1) * v_ppu;
@@ -1032,12 +1044,14 @@ namespace Galaxy3D
 						m_indices.push_back(vertex_count + 2);
 						m_indices.push_back(vertex_count + 3);
 
+						m_heights.push_back(font_size);
+
 						vertex_count += 4;
 					}
 				}
 			}
 
-			if(c != '\n')
+			if(visible)
 			{
 				m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
 				m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
@@ -1058,15 +1072,52 @@ namespace Galaxy3D
 				m_indices.push_back(vertex_count + 2);
 				m_indices.push_back(vertex_count + 3);
 
+				m_heights.push_back(font_size);
+
 				vertex_count += 4;
 				previous = info.glyph_index;
 			}
 
-			if(i < str.Size() - 1 && str[i+1] == '\n')
+			//	´¦Àí»»ÐÐ
+			if(str[i] == '\n')
 			{
+				bool line_align_bottom = true;
+
+				if(line_align_bottom)
+				{
+					for(size_t j=line_vertex_begin; j<m_vertices.size(); j+=4)
+					{
+						int h = m_heights[j/4];
+
+						m_vertices[j].y -= (line_height - h) * v_ppu;
+						m_vertices[j+1].y -= (line_height - h) * v_ppu;
+						m_vertices[j+2].y -= (line_height - h) * v_ppu;
+						m_vertices[j+3].y -= (line_height - h) * v_ppu;
+					}
+
+					for(size_t j=0; j<m_image_items.size(); j++)
+					{
+						if(m_image_items[j].line_index == line)
+						{
+							auto &item = m_image_items[j];
+
+							float h = item.vertices[0].y - item.vertices[1].y ;
+
+							item.vertices[0].y -= line_height * v_ppu - h;
+							item.vertices[1].y -= line_height * v_ppu - h;
+							item.vertices[2].y -= line_height * v_ppu - h;
+							item.vertices[3].y -= line_height * v_ppu - h;
+						}
+					}
+				}
+
 				pen_x = 0;
 				pen_y += -(line_height + m_line_space);
+				
 				line_height = m_font_size;
+				line_vertex_begin = m_vertices.size();
+				line++;
+
 				continue;
 			}
 		}
