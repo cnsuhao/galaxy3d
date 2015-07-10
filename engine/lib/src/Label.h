@@ -19,6 +19,7 @@ namespace Galaxy3D
 		int image_index;
 		int image_count;
 		int text_index;
+		int line_index;
 		std::vector<Vector2> vertices;
 		std::vector<Vector2> uv;
 		std::vector<Color> colors;
@@ -34,7 +35,7 @@ namespace Galaxy3D
 	//	<outline=#000000ff></outline>
 	//	<size=30></size>
 	//	<font=msyh></font>
-	//	<image=cool></image>
+	//	<image=cool></image>	图片使用0xffffffff占一个字符位
 	class Label : public Object
 	{
 	public:
@@ -76,6 +77,7 @@ namespace Galaxy3D
 		std::vector<Vector2> m_uv;
 		std::vector<Color> m_colors;
 		std::vector<unsigned short> m_indices;
+		std::vector<int> m_heights;
 
 		Label();
 		virtual void ProcessText();

@@ -136,8 +136,8 @@ namespace Galaxy3D
 				"color<color=#ff0000ff>color<color=#00ff00ff>color</color></color>color" + "\n" +
 				"shadow<shadow>shadow</shadow>shadow" + "\n" +
 				"outline<outline>outline</outline>outline" + "\n" +
-				"size<size=50>size</size>size" + "\n" +
-				"font<font=heiti>font</font>font" + "\n" +
+				"size<size=50>big size</size>size" + "\n" +
+				"font<font=heiti>another font</font>font" + "\n" +
 				"image<image=girl></image>image<image=cool></image>image" + "\n" +
 				"end");
 			m_fps->UpdateLabel();
