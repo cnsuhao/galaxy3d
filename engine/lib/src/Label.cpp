@@ -114,7 +114,7 @@ namespace Galaxy3D
 		return tex;
 	}
 
-	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot, bool rich)
+	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot, LabelAlign::Enum align, bool rich)
 	{
 		std::shared_ptr<Label> label;
 
@@ -127,6 +127,7 @@ namespace Galaxy3D
 			label->m_font_size = font_size;
 			label->m_rich = rich;
 			label->m_pivot = pivot;
+			label->m_align = align;
 
 			label->ProcessText();
 		}
@@ -145,7 +146,9 @@ namespace Galaxy3D
 		m_width_actual(-1),
 		m_height_actual(-1),
 		m_rich(false),
-		m_pivot(LabelPivot::LeftTop)
+		m_pivot(LabelPivot::LeftTop),
+		m_align(LabelAlign::Auto),
+		m_vertex_count(0)
 	{
 	}
 
@@ -617,14 +620,10 @@ namespace Galaxy3D
 			return;
 		}
 
-		auto image_items_old = m_image_items;//	用于恢复帧动画索引
-
-		m_image_items.clear();
-		m_vertices.clear();
-		m_uv.clear();
-		m_colors.clear();
-		m_indices.clear();
-		m_heights.clear();
+		std::vector<LabelLine> lines_old = m_lines;
+		m_lines.clear();
+		m_vertex_count = 0;
+		m_image_count = 0;
 
 		GTStringUTF32 str(m_text);
 		int pen_x = 0;
@@ -645,10 +644,12 @@ namespace Galaxy3D
 		int font_size = m_font_size;
 		std::string font = m_font;
 		int line_height = m_font_size;
-		int line_vertex_begin = 0;
-		int line = 0;
 		int x_max = 0;
 		int y_min = 0;
+		int line_x_max = 0;
+		int line_y_min = 0;
+
+		LabelLine line;
 
 		for(int i=0; i<str.Size(); i++)
 		{
@@ -921,6 +922,14 @@ namespace Galaxy3D
 			{
 				y_min = y1;
 			}
+			if(line_x_max < x1)
+			{
+				line_x_max = x1;
+			}
+			if(line_y_min > y1)
+			{
+				line_y_min = y1;
+			}
 
 			int uv_x0 = info.uv_pixel_x;
 			int uv_y0 = info.uv_pixel_y;
@@ -952,7 +961,7 @@ namespace Galaxy3D
 							int h = tex->GetHeight();
 
 							img.text_index = i + 1;
-							img.line_index = line;
+							img.line_index = m_lines.size();
 							img.image_index = 0;
 							img.image_count = find->second.size();
 							
@@ -968,6 +977,14 @@ namespace Galaxy3D
 							if(y_min > iy1)
 							{
 								y_min = iy1;
+							}
+							if(line_x_max < x1)
+							{
+								line_x_max = x1;
+							}
+							if(line_y_min > y1)
+							{
+								line_y_min = y1;
 							}
 
 							img.vertices.push_back(Vector2(ix0 * v_ppu, iy0 * v_ppu));
@@ -989,7 +1006,7 @@ namespace Galaxy3D
 							img.indices.push_back(2);
 							img.indices.push_back(3);
 
-							m_image_items.push_back(img);
+							line.image_items.push_back(img);
 
 							pen_x += w + m_char_space;
 
@@ -997,14 +1014,19 @@ namespace Galaxy3D
 							{
 								line_height = h;
 							}
-
+							
 							//	继续之前的动画帧
-							if(image_items_old.size() >= m_image_items.size())
+							if(lines_old.size() > m_lines.size())
 							{
-								int index = m_image_items.size() - 1;
-								if(image_items_old[index].name == m_image_items[index].name)
+								auto line_old = lines_old[m_lines.size()];
+
+								if(line_old.image_items.size() >= line.image_items.size())
 								{
-									m_image_items[index].image_index = image_items_old[index].image_index;
+									int index = line.image_items.size() - 1;
+									if(line_old.image_items[index].name == line.image_items[index].name)
+									{
+										line.image_items[index].image_index = line_old.image_items[index].image_index;
+									}
 								}
 							}
 						}
@@ -1015,26 +1037,26 @@ namespace Galaxy3D
 				{
 					Vector2 offset = Vector2(1, -1) * v_ppu;
 
-					m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
-					m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
-					m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
-					m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
-					m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-					m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-					m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-					m_colors.push_back(color_shadow);
-					m_colors.push_back(color_shadow);
-					m_colors.push_back(color_shadow);
-					m_colors.push_back(color_shadow);
-					m_indices.push_back(vertex_count + 0);
-					m_indices.push_back(vertex_count + 1);
-					m_indices.push_back(vertex_count + 2);
-					m_indices.push_back(vertex_count + 0);
-					m_indices.push_back(vertex_count + 2);
-					m_indices.push_back(vertex_count + 3);
+					line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
+					line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
+					line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
+					line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+					line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+					line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+					line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+					line.uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+					line.colors.push_back(color_shadow);
+					line.colors.push_back(color_shadow);
+					line.colors.push_back(color_shadow);
+					line.colors.push_back(color_shadow);
+					line.indices.push_back(vertex_count + 0);
+					line.indices.push_back(vertex_count + 1);
+					line.indices.push_back(vertex_count + 2);
+					line.indices.push_back(vertex_count + 0);
+					line.indices.push_back(vertex_count + 2);
+					line.indices.push_back(vertex_count + 3);
 
-					m_heights.push_back(font_size);
+					line.heights.push_back(font_size);
 
 					vertex_count += 4;
 				}
@@ -1051,26 +1073,26 @@ namespace Galaxy3D
 					{
 						Vector2 offset = offsets[j];
 
-						m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
-						m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
-						m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
-						m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
-						m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-						m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-						m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-						m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-						m_colors.push_back(color_outline);
-						m_colors.push_back(color_outline);
-						m_colors.push_back(color_outline);
-						m_colors.push_back(color_outline);
-						m_indices.push_back(vertex_count + 0);
-						m_indices.push_back(vertex_count + 1);
-						m_indices.push_back(vertex_count + 2);
-						m_indices.push_back(vertex_count + 0);
-						m_indices.push_back(vertex_count + 2);
-						m_indices.push_back(vertex_count + 3);
+						line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
+						line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
+						line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
+						line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+						line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+						line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+						line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+						line.uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+						line.colors.push_back(color_outline);
+						line.colors.push_back(color_outline);
+						line.colors.push_back(color_outline);
+						line.colors.push_back(color_outline);
+						line.indices.push_back(vertex_count + 0);
+						line.indices.push_back(vertex_count + 1);
+						line.indices.push_back(vertex_count + 2);
+						line.indices.push_back(vertex_count + 0);
+						line.indices.push_back(vertex_count + 2);
+						line.indices.push_back(vertex_count + 3);
 
-						m_heights.push_back(font_size);
+						line.heights.push_back(font_size);
 
 						vertex_count += 4;
 					}
@@ -1079,26 +1101,26 @@ namespace Galaxy3D
 
 			if(visible)
 			{
-				m_vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
-				m_vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
-				m_vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
-				m_vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
-				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-				m_uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-				m_uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-				m_colors.push_back(color);
-				m_colors.push_back(color);
-				m_colors.push_back(color);
-				m_colors.push_back(color);
-				m_indices.push_back(vertex_count + 0);
-				m_indices.push_back(vertex_count + 1);
-				m_indices.push_back(vertex_count + 2);
-				m_indices.push_back(vertex_count + 0);
-				m_indices.push_back(vertex_count + 2);
-				m_indices.push_back(vertex_count + 3);
+				line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
+				line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
+				line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
+				line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
+				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.indices.push_back(vertex_count + 0);
+				line.indices.push_back(vertex_count + 1);
+				line.indices.push_back(vertex_count + 2);
+				line.indices.push_back(vertex_count + 0);
+				line.indices.push_back(vertex_count + 2);
+				line.indices.push_back(vertex_count + 3);
 
-				m_heights.push_back(font_size);
+				line.heights.push_back(font_size);
 
 				vertex_count += 4;
 				previous = info.glyph_index;
@@ -1112,41 +1134,56 @@ namespace Galaxy3D
 				//	以行底为基准
 				if(line_align_bottom)
 				{
-					for(size_t j=line_vertex_begin; j<m_vertices.size(); j+=4)
+					for(size_t j=0; j<line.vertices.size(); j+=4)
 					{
-						int h = m_heights[j/4];
+						int h = line.heights[j/4];
 
-						m_vertices[j].y -= (line_height - h) * v_ppu;
-						m_vertices[j+1].y -= (line_height - h) * v_ppu;
-						m_vertices[j+2].y -= (line_height - h) * v_ppu;
-						m_vertices[j+3].y -= (line_height - h) * v_ppu;
+						line.vertices[j].y -= (line_height - h) * v_ppu;
+						line.vertices[j+1].y -= (line_height - h) * v_ppu;
+						line.vertices[j+2].y -= (line_height - h) * v_ppu;
+						line.vertices[j+3].y -= (line_height - h) * v_ppu;
 					}
 
-					for(size_t j=0; j<m_image_items.size(); j++)
+					for(size_t j=0; j<line.image_items.size(); j++)
 					{
-						if(m_image_items[j].line_index == line)
-						{
-							auto &item = m_image_items[j];
+						auto &item = line.image_items[j];
 
-							float h = item.vertices[0].y - item.vertices[1].y ;
+						float h = item.vertices[0].y - item.vertices[1].y ;
 
-							item.vertices[0].y -= line_height * v_ppu - h;
-							item.vertices[1].y -= line_height * v_ppu - h;
-							item.vertices[2].y -= line_height * v_ppu - h;
-							item.vertices[3].y -= line_height * v_ppu - h;
-						}
+						item.vertices[0].y -= line_height * v_ppu - h;
+						item.vertices[1].y -= line_height * v_ppu - h;
+						item.vertices[2].y -= line_height * v_ppu - h;
+						item.vertices[3].y -= line_height * v_ppu - h;
 					}
 				}
 
 				pen_x = 0;
 				pen_y += -(line_height + m_line_space);
-				
 				line_height = m_font_size;
-				line_vertex_begin = m_vertices.size();
-				line++;
+				line.width = line_x_max;
+				line.height = -line_y_min;
+				line_x_max = 0;
+				line_y_min = 0;
+
+				m_vertex_count += line.vertices.size();
+				m_image_count += line.image_items.size();
+				m_lines.push_back(line);
+				line = LabelLine();
 
 				continue;
 			}
+		}
+
+		if(!line.vertices.empty() || !line.image_items.empty())
+		{
+			line.width = line_x_max;
+			line.height = -line_y_min;
+			line_x_max = 0;
+			line_y_min = 0;
+
+			m_vertex_count += line.vertices.size();
+			m_image_count += line.image_items.size();
+			m_lines.push_back(line);
 		}
 
 		m_width_actual = x_max;
