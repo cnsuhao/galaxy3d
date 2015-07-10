@@ -29,6 +29,17 @@ namespace Galaxy3D
 		};
 	};
 
+	struct LabelAlign
+	{
+		enum Enum
+		{
+			Auto,
+			Left,
+			Center,
+			Right,
+		};
+	};
+
 	struct LabelImageItem
 	{
 		std::string name;
@@ -40,6 +51,18 @@ namespace Galaxy3D
 		std::vector<Vector2> uv;
 		std::vector<Color> colors;
 		std::vector<unsigned short> indices;
+	};
+
+	struct LabelLine
+	{
+		int width;
+		int height;
+		std::vector<Vector2> vertices;
+		std::vector<Vector2> uv;
+		std::vector<Color> colors;
+		std::vector<unsigned short> indices;
+		std::vector<LabelImageItem> image_items;
+		std::vector<int> heights;
 	};
 
 	//	Supported rich text tags
@@ -62,7 +85,7 @@ namespace Galaxy3D
 		static void LoadImage(const std::string &name, const std::string &file);
 		static void LoadImages(const std::string &name, const std::vector<const std::string> &files);
 		static std::shared_ptr<Texture2D> GetRichImageTexture(const std::string &name, int index);
-		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::LeftTop, bool rich = false);
+		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::LeftTop, LabelAlign::Enum align = LabelAlign::Auto, bool rich = false);
 		void SetText(const std::string &text);
 		std::string GetText() const {return m_text;}
 		void SetCharSpace(int space);
@@ -76,12 +99,11 @@ namespace Galaxy3D
 		int GetWidthActual() const {return m_width_actual;}
 		int GetHeightActual() const {return m_height_actual;}
 		LabelPivot::Enum GetPivot() const {return m_pivot;}
+		LabelAlign::Enum GetAlign() const {return m_align;}
 		float GetPixelsPerUnit() const {return m_pixels_per_unit;}
-		std::vector<LabelImageItem> &GetImageItems() {return m_image_items;}
-		const std::vector<Vector2> &GetVertices() const {return m_vertices;}
-		const std::vector<Vector2> &GetUV() const {return m_uv;}
-		const std::vector<Color> &GetColors() const {return m_colors;}
-		const std::vector<unsigned short> &GetIndices() const {return m_indices;}
+		std::vector<LabelLine> &GetLines() {return m_lines;}
+		int GetVertexCount() const {return m_vertex_count;}
+		int GetImageCount() const {return m_image_count;}
 
 	private:
 		std::string m_text;
@@ -97,12 +119,10 @@ namespace Galaxy3D
 		int m_height_actual;
 		bool m_rich;
 		LabelPivot::Enum m_pivot;
-		std::vector<LabelImageItem> m_image_items;
-		std::vector<Vector2> m_vertices;
-		std::vector<Vector2> m_uv;
-		std::vector<Color> m_colors;
-		std::vector<unsigned short> m_indices;
-		std::vector<int> m_heights;
+		LabelAlign::Enum m_align;
+		std::vector<LabelLine> m_lines;
+		int m_vertex_count;
+		int m_image_count;
 
 		Label();
 		virtual void ProcessText();
