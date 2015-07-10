@@ -46,9 +46,9 @@ namespace Galaxy3D
 			files.push_back(Application::GetDataPath() + "/Assets/texture/girl/3.png");
 			Label::LoadImages("girl", files);
 			
-			auto label = Label::Create("", "consola", 20, LabelPivot::RightTop, LabelAlign::Auto, true);
+			auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-			tr->GetTransform()->SetPosition(Vector3(4.8f, 3.2f, 0));
+			tr->GetTransform()->SetPosition(Vector3(-4.8f, 3.2f, 0));
 			tr->SetLabel(label);
 			tr->SetSortingOrder(2);
 			m_fps = tr;
@@ -136,10 +136,10 @@ namespace Galaxy3D
 				"color<color=#ff0000ff>color<color=#00ff00ff>color</color></color>color" + "\n" +
 				"shadow<shadow>shadow</shadow>shadow" + "\n" +
 				"outline<outline>outline</outline>outline" + "\n" +
-				"size<size=50>bigsize</size>size" + "\n" +
+				"<underline>size<size=50>bigsize</size>with underline</underline>" + "\n" +
 				"font<font=heiti>another font</font>font" + "\n" +
-				"<image=girl></image><image=cool></image>" + "\n" +
-				"end");
+				"image<image=girl></image>girl<image=cool></image>cool" + "\n" +
+				"underline<underline>underline</underline>underline");
 			m_fps->UpdateLabel();
 		}
 	};
