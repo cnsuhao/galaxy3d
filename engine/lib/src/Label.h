@@ -72,6 +72,7 @@ namespace Galaxy3D
 	//	<shadow=#000000ff></shadow>
 	//	<outline></outline>
 	//	<outline=#000000ff></outline>
+	//	<underline></underline>
 	//	<size=30></size>
 	//	<font=msyh></font>
 	//	<image=cool></image>;图片使用0xffffffff占一个字符位

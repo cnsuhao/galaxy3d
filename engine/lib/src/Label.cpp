@@ -247,6 +247,17 @@ namespace Galaxy3D
 					g_texture_line_h_max = info.uv_pixel_h;
 				}
 
+				//insert one white pixel for underline
+				if(g_texture_x == 0 && g_texture_y == 0)
+				{
+					unsigned char white = 0xff;
+					g_font_texture->SetPixels(
+						0, 0,
+						1, 1,
+						(char *) &white);
+					g_texture_x += 1;
+				}
+
 				g_font_texture->SetPixels(
 					g_texture_x,
 					g_texture_y,
@@ -465,6 +476,57 @@ namespace Galaxy3D
 			}
 			else if(
 				str[i+0] == '<' &&
+				str[i+1] == 'u' &&
+				str[i+2] == 'n' &&
+				str[i+3] == 'd' &&
+				str[i+4] == 'e' &&
+				str[i+5] == 'r' &&
+				str[i+6] == 'l' &&
+				str[i+7] == 'i' &&
+				str[i+8] == 'n' &&
+				str[i+9] == 'e' &&
+				str[i+10] == '>')
+			{
+				TagInfo info;
+				info.tag = "underline";
+				info.begin = i;
+
+				tag_find.push_back(info);
+
+				str.Erase(i, 11);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
+				str[i+1] == '/' &&
+				str[i+2] == 'u' &&
+				str[i+3] == 'n' &&
+				str[i+4] == 'd' &&
+				str[i+5] == 'e' &&
+				str[i+6] == 'r' &&
+				str[i+7] == 'l' &&
+				str[i+8] == 'i' &&
+				str[i+9] == 'n' &&
+				str[i+10] == 'e' &&
+				str[i+11] == '>')
+			{
+				for(int j=tag_find.size()-1; j>=0; j--)
+				{
+					auto &t = tag_find[j];
+					if(t.tag == "underline")
+					{
+						t.end = i;
+						tags.push_back(t);
+						tag_find.erase(tag_find.begin() + j);
+						break;
+					}
+				}
+
+				str.Erase(i, 12);
+				i--;
+			}
+			else if(
+				str[i+0] == '<' &&
 				str[i+1] == 's' &&
 				str[i+2] == 'i' &&
 				str[i+3] == 'z' &&
@@ -659,6 +721,7 @@ namespace Galaxy3D
 			Color color_shadow(0, 0, 0, 1);
 			bool outline = false;
 			Color color_outline(0, 0, 0, 1);
+			bool underline = false;
 			int origin = origin_y;
 
 			if(m_rich)
@@ -666,6 +729,7 @@ namespace Galaxy3D
 				TagInfo *tag_color = 0;
 				TagInfo *tag_shadow = 0;
 				TagInfo *tag_outline = 0;
+				TagInfo *tag_underline = 0;
 				TagInfo *tag_size = 0;
 				TagInfo *tag_font = 0;
 				int begin_max;
@@ -775,6 +839,27 @@ namespace Galaxy3D
 					float div = 1/255.f;
 					color_outline = Color((float) r, (float) g, (float) b, (float) a) * div;
 					outline = true;
+				}
+
+				//	underline
+				begin_max = -1;
+				for(int j=0; j<(int) tags.size(); j++)
+				{
+					auto &t = tags[j];
+					if(t.tag == "underline" && i >= t.begin && i < t.end)
+					{
+						if(begin_max < t.begin)
+						{
+							tag_underline = &t;
+							begin_max = t.begin;
+						}
+					}
+				}
+
+				if(tag_underline != 0)
+				{
+					auto &t = *tag_underline;
+					underline = true;
 				}
 
 				//	size
@@ -1096,6 +1181,37 @@ namespace Galaxy3D
 
 						vertex_count += 4;
 					}
+				}
+
+				if(underline && visible)
+				{
+					int ux0 = pen_x - (info.advance_x + m_char_space);
+					int uy0 = pen_y - origin - 2;
+					int ux1 = ux0 + info.advance_x + m_char_space;
+					int uy1 = uy0 - 1;
+
+					line.vertices.push_back(Vector2(ux0 * v_ppu, uy0 * v_ppu));
+					line.vertices.push_back(Vector2(ux0 * v_ppu, uy1 * v_ppu));
+					line.vertices.push_back(Vector2(ux1 * v_ppu, uy1 * v_ppu));
+					line.vertices.push_back(Vector2(ux1 * v_ppu, uy0 * v_ppu));
+					line.uv.push_back(Vector2(0 * v_size, 0 * v_size));
+					line.uv.push_back(Vector2(0 * v_size, 1 * v_size));
+					line.uv.push_back(Vector2(1 * v_size, 1 * v_size));
+					line.uv.push_back(Vector2(1 * v_size, 0 * v_size));
+					line.colors.push_back(color);
+					line.colors.push_back(color);
+					line.colors.push_back(color);
+					line.colors.push_back(color);
+					line.indices.push_back(vertex_count + 0);
+					line.indices.push_back(vertex_count + 1);
+					line.indices.push_back(vertex_count + 2);
+					line.indices.push_back(vertex_count + 0);
+					line.indices.push_back(vertex_count + 2);
+					line.indices.push_back(vertex_count + 3);
+
+					line.heights.push_back(font_size);
+
+					vertex_count += 4;
 				}
 			}
 
