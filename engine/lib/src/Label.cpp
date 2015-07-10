@@ -114,7 +114,7 @@ namespace Galaxy3D
 		return tex;
 	}
 
-	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, bool rich)
+	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot, bool rich)
 	{
 		std::shared_ptr<Label> label;
 
@@ -126,6 +126,7 @@ namespace Galaxy3D
 			label->m_font = font;
 			label->m_font_size = font_size;
 			label->m_rich = rich;
+			label->m_pivot = pivot;
 
 			label->ProcessText();
 		}
@@ -139,8 +140,12 @@ namespace Galaxy3D
 		m_char_space(0),
 		m_line_space(0),
 		m_color(1, 1, 1, 1),
-		m_width(0x7fffffff),
-		m_height(0x7fffffff)
+		m_width(-1),
+		m_height(-1),
+		m_width_actual(-1),
+		m_height_actual(-1),
+		m_rich(false),
+		m_pivot(LabelPivot::LeftTop)
 	{
 	}
 
@@ -590,7 +595,7 @@ namespace Galaxy3D
 				}
 
 				str.Erase(i, 7);
-				str[i] = 0xffffffff;
+				str[i] = 0xffffffff;//	在图片位置插入标识符
 				i--;
 			}
 		}
@@ -612,7 +617,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		auto image_items_old = m_image_items;
+		auto image_items_old = m_image_items;//	用于恢复帧动画索引
 
 		m_image_items.clear();
 		m_vertices.clear();
@@ -642,6 +647,8 @@ namespace Galaxy3D
 		int line_height = m_font_size;
 		int line_vertex_begin = 0;
 		int line = 0;
+		int x_max = 0;
+		int y_min = 0;
 
 		for(int i=0; i<str.Size(); i++)
 		{
@@ -884,15 +891,15 @@ namespace Galaxy3D
 
 			if(visible)
 			{
-				//limit width
-				if(pen_x + info.bearing_x + info.uv_pixel_w > m_width)
+				//	limit width
+				if(m_width > 0 && pen_x + info.bearing_x + info.uv_pixel_w > m_width)
 				{
 					pen_x = 0;
 					pen_y += -(font_size + m_line_space);
 					previous = 0;
 				}
 
-				//kerning
+				//	kerning
 				if(has_kerning && previous && info.glyph_index)
 				{
 					FT_Vector delta;
@@ -905,6 +912,15 @@ namespace Galaxy3D
 			int y0 = pen_y - origin + info.bearing_y;
 			int x1 = x0 + info.uv_pixel_w;
 			int y1 = y0 - info.uv_pixel_h;
+
+			if(x_max < x1)
+			{
+				x_max = x1;
+			}
+			if(y_min > y1)
+			{
+				y_min = y1;
+			}
 
 			int uv_x0 = info.uv_pixel_x;
 			int uv_y0 = info.uv_pixel_y;
@@ -944,6 +960,16 @@ namespace Galaxy3D
 							int iy0 = pen_y;
 							int ix1 = ix0 + w;
 							int iy1 = iy0 - h;
+
+							if(x_max < ix1)
+							{
+								x_max = ix1;
+							}
+							if(y_min > iy1)
+							{
+								y_min = iy1;
+							}
+
 							img.vertices.push_back(Vector2(ix0 * v_ppu, iy0 * v_ppu));
 							img.vertices.push_back(Vector2(ix0 * v_ppu, iy1 * v_ppu));
 							img.vertices.push_back(Vector2(ix1 * v_ppu, iy1 * v_ppu));
@@ -972,7 +998,7 @@ namespace Galaxy3D
 								line_height = h;
 							}
 
-							//	刷新的时候继续之前的动画帧
+							//	继续之前的动画帧
 							if(image_items_old.size() >= m_image_items.size())
 							{
 								int index = m_image_items.size() - 1;
@@ -1083,6 +1109,7 @@ namespace Galaxy3D
 			{
 				bool line_align_bottom = true;
 
+				//	以行底为基准
 				if(line_align_bottom)
 				{
 					for(size_t j=line_vertex_begin; j<m_vertices.size(); j+=4)
@@ -1121,6 +1148,9 @@ namespace Galaxy3D
 				continue;
 			}
 		}
+
+		m_width_actual = x_max;
+		m_height_actual = -y_min;
 
 		g_font_texture->Apply();
 	}

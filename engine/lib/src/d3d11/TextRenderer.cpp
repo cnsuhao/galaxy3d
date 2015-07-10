@@ -199,10 +199,55 @@ namespace Galaxy3D
 		auto &uv = label->GetUV();
 		auto color = label->GetColor();
 		int vertex_count = vertices.size();
+		auto pivot = label->GetPivot();
+		auto aw = label->GetWidthActual();
+		auto ah = label->GetHeightActual();
+		auto w = label->GetWidth();
+		auto h = label->GetHeight();
+		float ppu = label->GetPixelsPerUnit();
+		float v_ppu = 1.0f / ppu;
+
+		if(w < 0)
+		{
+			w = aw;
+		}
+		if(h < 0)
+		{
+			h = ah;
+		}
 
 		for(int i=0; i<vertex_count; i++)
 		{
 			Vector3 pos = vertices[i];
+
+			if(	pivot == LabelPivot::Top ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Bottom)
+			{
+				pos.x -= Mathf::Round(w * 0.5f) * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::RightTop ||
+				pivot == LabelPivot::Right ||
+				pivot == LabelPivot::RightBottom)
+			{
+				pos.x -= w * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::Left ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Right)
+			{
+				pos.y += Mathf::Round(h * 0.5f) * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::LeftBottom ||
+				pivot == LabelPivot::Bottom ||
+				pivot == LabelPivot::RightBottom)
+			{
+				pos.y += h * v_ppu;
+			}
+
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
@@ -228,15 +273,61 @@ namespace Galaxy3D
 		}
 	}
 
-	static void fill_vertex_buffer(char *buffer, LabelImageItem &item, const Color &color)
+	static void fill_vertex_buffer(char *buffer, LabelImageItem &item, const std::shared_ptr<Label> &label)
 	{
 		char *p = buffer;
 		Vector2 *vertices = &item.vertices[0];
 		Vector2 *uv = &item.uv[0];
+		auto color = label->GetColor();
+		auto pivot = label->GetPivot();
+		auto aw = label->GetWidthActual();
+		auto ah = label->GetHeightActual();
+		auto w = label->GetWidth();
+		auto h = label->GetHeight();
+		float ppu = label->GetPixelsPerUnit();
+		float v_ppu = 1.0f / ppu;
+
+		if(w < 0)
+		{
+			w = aw;
+		}
+		if(h < 0)
+		{
+			h = ah;
+		}
 
 		for(int i=0; i<4; i++)
 		{
 			Vector3 pos = vertices[i];
+
+			if(	pivot == LabelPivot::Top ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Bottom)
+			{
+				pos.x -= Mathf::Round(w * 0.5f) * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::RightTop ||
+				pivot == LabelPivot::Right ||
+				pivot == LabelPivot::RightBottom)
+			{
+				pos.x -= w * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::Left ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Right)
+			{
+				pos.y += Mathf::Round(h * 0.5f) * v_ppu;
+			}
+
+			if(	pivot == LabelPivot::LeftBottom ||
+				pivot == LabelPivot::Bottom ||
+				pivot == LabelPivot::RightBottom)
+			{
+				pos.y += h * v_ppu;
+			}
+
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
@@ -350,7 +441,7 @@ namespace Galaxy3D
 			int buffer_size = sizeof(VertexMesh) * 4;
 			char *buffer = (char *) malloc(buffer_size);
 
-			fill_vertex_buffer(buffer, images[i], m_label->GetColor());
+			fill_vertex_buffer(buffer, images[i], m_label);
 
 			bool dynamic = true;
 
@@ -383,7 +474,7 @@ namespace Galaxy3D
 			int buffer_size = sizeof(VertexMesh) * 4;
 			char *buffer = (char *) malloc(buffer_size);
 
-			fill_vertex_buffer(buffer, images[i], m_label->GetColor());
+			fill_vertex_buffer(buffer, images[i], m_label);
 
 			auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 

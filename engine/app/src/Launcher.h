@@ -46,21 +46,21 @@ namespace Galaxy3D
 			files.push_back(Application::GetDataPath() + "/Assets/texture/girl/3.png");
 			Label::LoadImages("girl", files);
 			
-			auto label = Label::Create("", "consola", 20, true);
+			auto label = Label::Create("", "consola", 20, LabelPivot::RightTop, true);
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-			tr->GetTransform()->SetPosition(Vector3(-4.8f, 3.2f, 0));
+			tr->GetTransform()->SetPosition(Vector3(4.8f, 3.2f, 0));
 			tr->SetLabel(label);
 			tr->SetSortingOrder(2);
 			m_fps = tr;
 
 			auto cam = GameObject::Create("camera")->AddComponent<Camera>();
 			cam->SetOrthographicSize(Screen::GetHeight() / 200.f);
-			/*
+			
 			auto bg = Sprite::Create(Application::GetDataPath() + "/Assets/texture/mustang.jpg");
 			auto sr = GameObject::Create("renderer")->AddComponent<SpriteRenderer>();
 			sr->SetSprite(bg);
 			sr->UpdateSprite();
-			*/
+			
 			index = 0;
 			auto tex = Texture2D::LoadImageFile(Application::GetDataPath() + "/Assets/texture/test.png");
 
@@ -69,7 +69,7 @@ namespace Galaxy3D
 			{
 				for(int j=0; j<4; j++)
 				{
-					sps[i*4 + j] = Sprite::Create(tex, Rect(192.f*i, h*j, 192, h), Vector2(96, h), 100, Vector4());
+					sps[i*4 + j] = Sprite::Create(tex, Rect(192.f*i, h*j, 192, h), Vector2(0.5f, 1), 100, Vector4());
 				}
 			}
 
@@ -121,7 +121,7 @@ namespace Galaxy3D
 
 		virtual void Update()
 		{
-			/*
+			
 			index += 0.07f;
 			if(index > 19)
 			{
@@ -129,7 +129,7 @@ namespace Galaxy3D
 			}
 			m_node->SetSprite(sps[(int) index]);
 			m_renderer->UpdateSprites();
-			*/
+
 
 			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str + "\n" +
