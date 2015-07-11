@@ -1182,7 +1182,37 @@ namespace Galaxy3D
 						vertex_count += 4;
 					}
 				}
+			}
 
+			if(visible)
+			{
+				line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
+				line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
+				line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
+				line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
+				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
+				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
+				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
+				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.colors.push_back(color);
+				line.indices.push_back(vertex_count + 0);
+				line.indices.push_back(vertex_count + 1);
+				line.indices.push_back(vertex_count + 2);
+				line.indices.push_back(vertex_count + 0);
+				line.indices.push_back(vertex_count + 2);
+				line.indices.push_back(vertex_count + 3);
+
+				line.heights.push_back(font_size);
+
+				vertex_count += 4;
+				previous = info.glyph_index;
+			}
+
+			if(m_rich)
+			{
 				if(underline && visible)
 				{
 					int ux0 = pen_x - (info.advance_x + m_char_space);
@@ -1213,33 +1243,6 @@ namespace Galaxy3D
 
 					vertex_count += 4;
 				}
-			}
-
-			if(visible)
-			{
-				line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
-				line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
-				line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
-				line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
-				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
-				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
-				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
-				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y0 * v_size));
-				line.colors.push_back(color);
-				line.colors.push_back(color);
-				line.colors.push_back(color);
-				line.colors.push_back(color);
-				line.indices.push_back(vertex_count + 0);
-				line.indices.push_back(vertex_count + 1);
-				line.indices.push_back(vertex_count + 2);
-				line.indices.push_back(vertex_count + 0);
-				line.indices.push_back(vertex_count + 2);
-				line.indices.push_back(vertex_count + 3);
-
-				line.heights.push_back(font_size);
-
-				vertex_count += 4;
-				previous = info.glyph_index;
 			}
 
 			//	¥¶¿Ìªª––
