@@ -20,13 +20,26 @@ struct WZX
 	int image_count;
 };
 
+struct WZL
+{
+	static const int INFO_SIZE = 56;
+	static const int FLAG_SIZE = 44;
+	
+	char flag[FLAG_SIZE];
+	int image_count;
+	int color_count;
+	int palette_size;
+
+	std::vector<char> palette;
+};
+
 struct MirImageFormat
 {
 	enum Enum
 	{
 		None = 0,
-		Index8 = 0x103,
-		RGB565 = 0x105,
+		Index8 = 0x00a30103,
+		RGB565 = 0x00a30105,
 	};
 };
 
@@ -34,8 +47,7 @@ struct MirImageData
 {
 	static const int INFO_SIZE = 16;
 
-    short format;
-    short unknown;
+    int format;
     short w;
     short h;
     short x;

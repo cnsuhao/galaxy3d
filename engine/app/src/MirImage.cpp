@@ -29,8 +29,13 @@ std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &
 		fread(&wzx, WZX::STRUCT_SIZE, 1, f_wzx);
 	}
 
+	WZL wzl;
 	std::string wzl_name = Application::GetDataPath() + "/Assets/mir/data/" + name + ".wzl";
 	FILE *f_wzl = fopen(wzl_name.c_str(), "rb");
+	if(f_wzl != nullptr)
+	{
+		fread(&wzl, WZL::INFO_SIZE, 1, f_wzl);
+	}
 
 	for(size_t i=0; i<indices.size(); i++)
 	{
