@@ -75,7 +75,7 @@ namespace Galaxy3D
 	//	<underline></underline>
 	//	<size=30></size>
 	//	<font=msyh></font>
-	//	<image=cool></image>;图片使用0xffffffff占一个字符位
+	//	<image=cool></image>，图片使用0xffffffff占一个字符位
 	class Label : public Object
 	{
 	public:
