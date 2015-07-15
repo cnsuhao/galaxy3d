@@ -120,6 +120,7 @@ public:
 		}
 
 		auto back_images = MirImage::LoadImages("Tiles", back_indices);
+		auto middle_images = MirImage::LoadImages("SmTiles", middle_indices);
 	}
 };
 
