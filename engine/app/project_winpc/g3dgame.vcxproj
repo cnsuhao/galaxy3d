@@ -12,9 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\g3dgame.cpp" />
+    <ClCompile Include="..\src\MirImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h" />
+    <ClInclude Include="..\src\MirImage.h" />
+    <ClInclude Include="..\src\MirMap.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>
@@ -50,7 +53,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)\..\out\winpc\;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -61,7 +64,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
     </ClCompile>
