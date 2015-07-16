@@ -63,7 +63,7 @@ namespace Galaxy3D
 			cam->GetTransform()->SetPosition(Vector3((x0 + 0.5f) * 48, -(y0 + 0.5f) * 32, 0) * 0.01f);
 
 			auto renderer = GameObject::Create("center")->AddComponent<SpriteRenderer>();
-			renderer->SetSortingLayer(3);
+			renderer->SetSortingLayer(999);
 			renderer->SetSprite(Sprite::Create(Application::GetDataPath() + "/Assets/mir/center.png"));
 			renderer->UpdateSprite();
 			renderer->GetTransform()->SetPosition(cam->GetTransform()->GetPosition());
