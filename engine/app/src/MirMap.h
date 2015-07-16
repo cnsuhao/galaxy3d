@@ -262,6 +262,8 @@ public:
 				{
 					x += (t.front_images[0]->data.x) * 0.01f;
 					y += (t.front_images[0]->data.y) * 0.01f;
+
+					mat->SetShader(Shader::Find("Mir Effect"));
 				}
 
 				renderer->GetTransform()->SetPosition(Vector3(x, -y, 0));
