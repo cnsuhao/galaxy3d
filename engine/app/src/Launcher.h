@@ -74,6 +74,8 @@ namespace Galaxy3D
 			m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 				"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 			m_fps->UpdateLabel();
+
+			MirMap::UpdateTiles(map_tiles);
 		}
 	};
 }
