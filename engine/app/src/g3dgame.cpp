@@ -21,8 +21,8 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Game";
-static const int g_screen_w = 960;
-static const int g_screen_h = 640;
+static const int g_screen_w = 1280;
+static const int g_screen_h = 720;
 HINSTANCE g_hinst;
 HWND g_hwnd;
 

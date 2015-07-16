@@ -1,15 +1,72 @@
 #include "MirImage.h"
 #include "Application.h"
+#include "GTFile.h"
 #include "Debug.h"
 #include "zlib.h"
 
-std::unordered_map<std::string, std::unordered_map<int, std::weak_ptr<Texture2D>>> MirImage::m_cache;
+std::unordered_map<std::string, std::unordered_map<int, std::weak_ptr<MirImage>>> MirImage::m_cache;
+std::shared_ptr<Texture2D> MirImage::m_color_table;
 
-std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &name, const std::vector<int> &indices)
+std::shared_ptr<Texture2D> MirImage::GetColorTable()
 {
-	std::vector<std::shared_ptr<Texture2D>> textures(indices.size());
+	if(!m_color_table)
+	{
+		m_color_table = Texture2D::Create(256, 1, TextureFormat::RGBA32, FilterMode::Point, TextureWrapMode::Clamp);
+		auto bytes = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/mir/ColorTable.bytes");
+		for(int i=0; i<1024; i+=4)
+		{
+			char b = bytes[i+0];
+			char g = bytes[i+1];
+			char r = bytes[i+2];
+			char a = bytes[i+3];
 
-	std::unordered_map<int, std::weak_ptr<Texture2D>> *set = nullptr;
+			bytes[i+0] = r;
+			bytes[i+1] = g;
+			bytes[i+2] = b;
+			bytes[i+3] = -1;
+		}
+		bytes[3] = 0;
+
+		m_color_table->SetPixels(&bytes[0]);
+		m_color_table->Apply();
+	}
+
+	return m_color_table;
+}
+
+std::shared_ptr<MirImage> MirImage::LoadImage(const std::string &name, int index)
+{
+	std::shared_ptr<MirImage> image;
+
+	auto find = m_cache.find(name);
+	if(find != m_cache.end())
+	{
+		auto set = &find->second;
+		auto find_image = set->find(index);
+
+		if(find_image != set->end())
+		{
+			auto &img = find_image->second;
+
+			if(!img.expired())
+			{
+				image = img.lock();
+			}
+			else
+			{
+				set->erase(index);
+			}
+		}
+	}
+
+	return image;
+}
+
+std::vector<std::shared_ptr<MirImage>> MirImage::LoadImages(const std::string &name, const std::vector<int> &indices)
+{
+	std::vector<std::shared_ptr<MirImage>> images(indices.size());
+
+	std::unordered_map<int, std::weak_ptr<MirImage>> *set = nullptr;
 	auto find = m_cache.find(name);
 	if(find != m_cache.end())
 	{
@@ -17,7 +74,7 @@ std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &
 	}
 	else
 	{
-		m_cache[name] = std::unordered_map<int, std::weak_ptr<Texture2D>>();
+		m_cache[name] = std::unordered_map<int, std::weak_ptr<MirImage>>();
 		set = &m_cache[name];
 	}
 
@@ -44,11 +101,11 @@ std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &
 		auto find_image = set->find(index);
 		if(find_image != set->end())
 		{
-			auto &tex = find_image->second;
+			auto &img = find_image->second;
 
-			if(!tex.expired())
+			if(!img.expired())
 			{
-				textures[i] = tex.lock();
+				images[i] = img.lock();
 				continue;
 			}
 			else
@@ -65,8 +122,8 @@ std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &
                 int offset;
 				fread(&offset, 4, 1, f_wzx);
 
-				textures[i] = LoadImage(f_wzl, offset);
-				(*set)[index] = textures[i];
+				images[i] = LoadImage(f_wzl, offset, name, index);
+				(*set)[index] = images[i];
 			}
 		}
 	}
@@ -82,15 +139,16 @@ std::vector<std::shared_ptr<Texture2D>> MirImage::LoadImages(const std::string &
 		f_wzx = nullptr;
 	}
 
-	return textures;
+	return images;
 }
 
-std::shared_ptr<Texture2D> MirImage::LoadImage(FILE *f, int offset)
+std::shared_ptr<MirImage> MirImage::LoadImage(FILE *f, int offset, const std::string &name, int index)
 {
-	std::shared_ptr<Texture2D> tex;
+	std::shared_ptr<MirImage> image;
 
 	if(f != nullptr)
 	{
+		std::shared_ptr<Texture2D> tex;
 		MirImageData im;
 
 		fseek(f, offset, SEEK_SET);
@@ -106,6 +164,10 @@ std::shared_ptr<Texture2D> MirImage::LoadImage(FILE *f, int offset)
 		{
 			size = im.w * im.h * 2;
 			tex = Texture2D::Create(im.w, im.h, TextureFormat::RGB565, FilterMode::Point, TextureWrapMode::Clamp);
+		}
+		else
+		{
+			Debug::Log("unknow MirImageFormat:%x %s %d", im.format, name.c_str(), index);
 		}
 
 		if(im.zip_size > 0)
@@ -127,6 +189,8 @@ std::shared_ptr<Texture2D> MirImage::LoadImage(FILE *f, int offset)
 				free(buffer);
 
 				tex->SetPixels(&im.bmp[0]);
+				im.bmp.clear();
+				tex->Apply();
 			}
 		}
 		else
@@ -138,9 +202,15 @@ std::shared_ptr<Texture2D> MirImage::LoadImage(FILE *f, int offset)
 				fread(&im.bmp[0], size, 1, f);
 
 				tex->SetPixels(&im.bmp[0]);
+				im.bmp.clear();
+				tex->Apply();
 			}
 		}
+
+		image = std::shared_ptr<MirImage>(new MirImage());
+		image->data = im;
+		image->texture = tex;
 	}
 
-	return tex;
+	return image;
 }
