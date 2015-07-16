@@ -38,8 +38,8 @@ struct MirImageFormat
 	enum Enum
 	{
 		None = 0,
-		Index8 = 0x00a30103,
-		RGB565 = 0x00a30105,
+		Index8 = 0x0103,
+		RGB565 = 0x0105,
 	};
 };
 
@@ -47,7 +47,8 @@ struct MirImageData
 {
 	static const int INFO_SIZE = 16;
 
-    int format;
+    short format;
+	short unknow;
     short w;
     short h;
     short x;
@@ -57,15 +58,21 @@ struct MirImageData
 };
 #pragma pack()
 
-class MirImage
+struct MirImage
 {
 public:
-	static std::vector<std::shared_ptr<Texture2D>> LoadImages(const std::string &name, const std::vector<int> &indices);
+	MirImageData data;
+	std::shared_ptr<Texture2D> texture;
+
+	static std::vector<std::shared_ptr<MirImage>> LoadImages(const std::string &name, const std::vector<int> &indices);
+	static std::shared_ptr<MirImage> LoadImage(const std::string &name, int index);
+	static std::shared_ptr<Texture2D> GetColorTable();
 
 private:
-	static std::unordered_map<std::string, std::unordered_map<int, std::weak_ptr<Texture2D>>> m_cache;
-	
-	static std::shared_ptr<Texture2D> LoadImage(FILE *f, int offset);
+	static std::unordered_map<std::string, std::unordered_map<int, std::weak_ptr<MirImage>>> m_cache;
+	static std::shared_ptr<Texture2D> m_color_table;
+
+	static std::shared_ptr<MirImage> LoadImage(FILE *f, int offset, const std::string &name, int index);
 };
 
 #endif
