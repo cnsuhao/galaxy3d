@@ -286,8 +286,8 @@ namespace Galaxy3D
 
 			if(blends.size() == 2)
 			{
-				blends_index[2] = blends_index[0];
-				blends_index[3] = blends_index[1];
+				blends_index[2] = 4;
+				blends_index[3] = 8;
 			}
 		}
 

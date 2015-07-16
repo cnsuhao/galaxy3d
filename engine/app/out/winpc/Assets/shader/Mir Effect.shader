@@ -18,7 +18,7 @@ Shader Mir Effect
 		ZWrite Off
 		ZTest LEqual
 		Offset -1, -1
-		Blend SrcAlpha One
+		Blend One OneMinusSrcColor
 		BlendOp Add
 		Stencil
 		{
@@ -85,7 +85,6 @@ Shader Mir Effect
 		{
 			float x = _MainTex.Sample( _MainTex_Sampler, input.v_uv ).r;
 			float4 c = ColorTable.Sample( ColorTable_Sampler, float2(x, 1.0/255) ) * input.v_color;
-			c.a = c.r;
 
 			return c;
 		}
