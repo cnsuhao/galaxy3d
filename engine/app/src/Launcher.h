@@ -60,7 +60,7 @@ namespace Galaxy3D
 
 			MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/0.map", coords, map_tiles);
 
-			cam->GetTransform()->SetPosition(Vector3((x0 + 0.5f) * 48, -(y0 + 0.5f) * 32, 0) * 0.01f);
+			cam->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * 48), Mathf::Round(-(y0 + 0.5f) * 32), 0) * 0.01f);
 
 			auto renderer = GameObject::Create("center")->AddComponent<SpriteRenderer>();
 			renderer->SetSortingLayer(999);
