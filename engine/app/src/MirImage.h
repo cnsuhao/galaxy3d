@@ -8,6 +8,8 @@
 #undef LoadImage
 #endif
 
+#define MIR_PIXEL_TO_UNIT 0.01f
+
 using namespace Galaxy3D;
 
 #pragma pack(2)

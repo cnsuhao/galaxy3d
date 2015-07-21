@@ -24,8 +24,6 @@ struct MapHeader//52
 struct MapTileInfo//12
 {
     static const int STRUCT_SIZE = 12;
-	static const int TILE_WIDTH = 48;
-	static const int TILE_HEIGHT = 32;
 
     unsigned short back;//Tiles
     unsigned short middle;//SmTiles
@@ -67,6 +65,9 @@ struct MapTile
 class MirMap
 {
 public:
+	static const int TILE_WIDTH = 48;
+	static const int TILE_HEIGHT = 32;
+
 	static void LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles);
 	static void UpdateTiles(std::vector<MapTile> &tiles);
 };

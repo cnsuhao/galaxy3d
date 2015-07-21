@@ -163,8 +163,8 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			renderer->SetSortingOrder(0);
 			renderer->UpdateSprite();
 
-			float x = (t.x + 1) * MapTileInfo::TILE_WIDTH * 0.01f;
-			float y = (t.y + 1) * MapTileInfo::TILE_HEIGHT * 0.01f;
+			float x = (t.x + 1) * TILE_WIDTH * MIR_PIXEL_TO_UNIT;
+			float y = (t.y + 1) * TILE_HEIGHT * MIR_PIXEL_TO_UNIT;
 
 			renderer->GetTransform()->SetPosition(Vector3(x, -y, 0));
 
@@ -183,8 +183,8 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			renderer->SetSortingOrder(0);
 			renderer->UpdateSprite();
 
-			float x = (t.x + 0.5f) * MapTileInfo::TILE_WIDTH * 0.01f;
-			float y = (t.y + 0.5f) * MapTileInfo::TILE_HEIGHT * 0.01f;
+			float x = (t.x + 0.5f) * TILE_WIDTH * MIR_PIXEL_TO_UNIT;
+			float y = (t.y + 0.5f) * TILE_HEIGHT * MIR_PIXEL_TO_UNIT;
 
 			renderer->GetTransform()->SetPosition(Vector3(x, -y, 0));
 
@@ -200,8 +200,8 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			}
 			t.front_frame = 0;
 
-			float x = ((t.x) * MapTileInfo::TILE_WIDTH + t.front_images[0]->data.w/2) * 0.01f;
-			float y = ((t.y + 1) * MapTileInfo::TILE_HEIGHT - t.front_images[0]->data.h/2) * 0.01f;
+			float x = ((t.x) * TILE_WIDTH + t.front_images[0]->data.w/2) * MIR_PIXEL_TO_UNIT;
+			float y = ((t.y + 1) * TILE_HEIGHT - t.front_images[0]->data.h/2) * MIR_PIXEL_TO_UNIT;
 
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
 			auto mat = Material::Create("Mir Sprite");
@@ -214,8 +214,8 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 
 			if(t.front_images.size() > 1)
 			{
-				x += (t.front_images[0]->data.x) * 0.01f;
-				y += (t.front_images[0]->data.y) * 0.01f;
+				x += (t.front_images[0]->data.x) * MIR_PIXEL_TO_UNIT;
+				y += (t.front_images[0]->data.y) * MIR_PIXEL_TO_UNIT;
 
 				mat->SetShader(Shader::Find("Mir Effect"));
 			}

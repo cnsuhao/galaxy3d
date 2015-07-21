@@ -16,6 +16,9 @@
     <ClCompile Include="..\src\MirMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MirHero.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h">
@@ -25,6 +28,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\MirImage.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MirHero.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
