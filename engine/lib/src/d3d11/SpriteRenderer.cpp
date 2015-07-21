@@ -51,6 +51,7 @@ namespace Galaxy3D
 	{
 		if(!m_sprite)
 		{
+			DecDrawCall();
 			return;
 		}
 

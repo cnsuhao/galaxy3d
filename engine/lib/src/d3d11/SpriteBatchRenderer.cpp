@@ -44,6 +44,7 @@ namespace Galaxy3D
 	{
 		if(m_sprites.empty())
 		{
+			DecDrawCall();
 			return;
 		}
 
