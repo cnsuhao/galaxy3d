@@ -15,6 +15,7 @@
 #include "GTTime.h"
 
 #include "MirMap.h"
+#include "MirHero.h"
 
 namespace Galaxy3D
 {
@@ -26,7 +27,9 @@ namespace Galaxy3D
 		std::shared_ptr<SpriteBatchRenderer> m_renderer;
 		std::shared_ptr<TextRenderer> m_fps;
 		float index;
+
 		std::vector<MapTile> map_tiles;
+		std::shared_ptr<MirHero> hero;
 
 		virtual void Start()
 		{
@@ -58,7 +61,9 @@ namespace Galaxy3D
 				}
 			}
 
-			MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/0.map", coords, map_tiles);
+			//MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/0.map", coords, map_tiles);
+
+			hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 0, 1, 1));
 
 			cam->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * 48), Mathf::Round(-(y0 + 0.5f) * 32), 0) * 0.01f);
 
