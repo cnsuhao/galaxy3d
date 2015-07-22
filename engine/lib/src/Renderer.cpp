@@ -24,14 +24,9 @@ namespace Galaxy3D
 		m_renderers.remove(this);
 	}
 
-	void Renderer::SetSortingLayer(int layer)
+	void Renderer::SetSortingOrder(int layer, int order)
 	{
 		m_sorting_layer = layer;
-		Sort();
-	}
-
-	void Renderer::SetSortingOrder(int order)
-	{
 		m_sorting_order = order;
 		Sort();
 	}
