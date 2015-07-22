@@ -62,7 +62,7 @@ namespace Galaxy3D
 
 			//MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/0.map", coords, map_tiles);
 
-			hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 3, 2, 24));
+			hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 3, 2, 24, 0));
 
 			cam->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * 48), Mathf::Round(-(y0 + 0.5f) * 32), 0) * 0.01f);
 

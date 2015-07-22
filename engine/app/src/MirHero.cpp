@@ -21,7 +21,7 @@ static ActionFrame g_action_frames[] =
 	{8 * 8,		6, 8, 0.13f},
 	{8 * 16,	6, 8, 0.13f},
 	{8 * 24,	1, 1, 0.5f},
-	{8 * 25,	6, 8, 1.13f},
+	{8 * 25,	6, 8, 0.13f},
 	{8 * 33,	6, 8, 0.13f},
 	{8 * 41,	8, 8, 0.13f},
 	{8 * 49,	6, 8, 0.15f},
@@ -42,8 +42,8 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
 	m_frames_body(nullptr),
 	m_frames_hair(nullptr),
 	m_frames_weapon(nullptr),
-	m_action(Action::Attack),
-	m_direction(1),
+	m_action(Action::Idle),
+	m_direction(4),
 	m_frame(0)
 {
 	CreateSprites();
@@ -240,6 +240,19 @@ void MirHero::UpdateWeaponTexture()
     {
         order = (int) (m_pox_y * 10 - 1);
     }
+
+	if(	m_action == Action::Attack ||
+		m_action == Action::Attack2 ||
+		m_action == Action::Attack3)
+	{
+		if(m_direction <= 1 || m_direction >= 7)
+		{
+			if(m_frame < g_action_frames[(int) m_action].length/2)
+			{
+				order = (int) (m_pox_y * 10 + 2);
+			}
+		}
+	}
 
 	int index = g_action_frames[(int) m_action].index + g_action_frames[(int) m_action].full * m_direction + m_frame;
 	Frame &frame = m_frames_weapon->frames[index];
