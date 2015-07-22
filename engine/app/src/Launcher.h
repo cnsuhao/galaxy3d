@@ -42,8 +42,7 @@ namespace Galaxy3D
 			auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
 			tr->GetTransform()->SetPosition(Vector3(-6.4f, 3.6f, 0));
 			tr->SetLabel(label);
-			tr->SetSortingLayer(1000);
-			tr->SetSortingOrder(0);
+			tr->SetSortingOrder(1000, 0);
 			m_fps = tr;
 			m_fps->GetTransform()->SetParent(cam->GetTransform());
 
@@ -63,12 +62,12 @@ namespace Galaxy3D
 
 			//MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/0.map", coords, map_tiles);
 
-			hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 0, 1, 1));
+			hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 3, 2, 24));
 
 			cam->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * 48), Mathf::Round(-(y0 + 0.5f) * 32), 0) * 0.01f);
 
 			auto renderer = GameObject::Create("center")->AddComponent<SpriteRenderer>();
-			renderer->SetSortingLayer(999);
+			renderer->SetSortingOrder(1, 0);
 			renderer->SetSprite(Sprite::Create(Application::GetDataPath() + "/Assets/mir/center.png"));
 			renderer->UpdateSprite();
 			renderer->GetTransform()->SetPosition(cam->GetTransform()->GetPosition());
@@ -81,6 +80,7 @@ namespace Galaxy3D
 			m_fps->UpdateLabel();
 
 			MirMap::UpdateTiles(map_tiles);
+			hero->Update();
 		}
 	};
 }
