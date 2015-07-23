@@ -94,8 +94,7 @@ private:
 	void UpdateHairTexture();
 	void UpdateWeaponTexture();
 	void OnActionEnd();
-	void UpdateRun();
-	void UpdateWalk();
+	void UpdateMove(float distance);
 	void ChangeAction(Action::Enum action);
 };
 
