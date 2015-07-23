@@ -1,6 +1,7 @@
 #include "World.h"
 #include "GTTime.h"
 #include "Label.h"
+#include "Input.h"
 
 namespace Galaxy3D
 {
@@ -88,6 +89,8 @@ namespace Galaxy3D
 				it++;
 			}
 		}
+
+		Input::Update();
 
 		GTTime::m_update_time = GTTime::GetRealTimeSinceStartup() - time;
 	}

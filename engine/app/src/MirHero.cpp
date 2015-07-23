@@ -18,16 +18,34 @@ struct ActionFrame
 static ActionFrame g_action_frames[] =
 {
 	{8 * 0,		4, 8, 0.5f},
-	{8 * 8,		6, 8, 0.13f},
-	{8 * 16,	6, 8, 0.13f},
+	{8 * 8,		6, 8, 0.12f},
+	{8 * 16,	6, 8, 0.12f},
 	{8 * 24,	1, 1, 0.5f},
-	{8 * 25,	6, 8, 0.13f},
-	{8 * 33,	6, 8, 0.13f},
-	{8 * 41,	8, 8, 0.13f},
+	{8 * 25,	6, 8, 0.12f},
+	{8 * 33,	6, 8, 0.12f},
+	{8 * 41,	8, 8, 0.12f},
 	{8 * 49,	6, 8, 0.15f},
 	{8 * 57,	2, 2, 0.32f},
 	{8 * 59,	3, 8, 0.2f},
 	{8 * 67,	4, 8, 0.2f},
+};
+
+struct Direction
+{
+	int x;
+	int y;
+};
+
+static Direction g_dirs[] =
+{
+	{0, -1},
+	{1, -1},
+	{1, 0},
+	{1, 1},
+	{0, 1},
+	{-1, 1},
+	{-1, 0},
+	{-1, -1},
 };
 
 std::unordered_map<std::string, MirHero::Frames> g_frames;
@@ -35,6 +53,7 @@ std::unordered_map<std::string, MirHero::Frames> g_frames;
 MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
 	m_pox_x(x),
 	m_pox_y(y),
+	m_pox_y_offset(0),
 	m_sex(sex),
 	m_body(body),
 	m_hair(hair),
@@ -44,7 +63,9 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
 	m_frames_weapon(nullptr),
 	m_action(Action::Idle),
 	m_direction(4),
-	m_frame(0)
+	m_frame(0),
+	m_cmd_action(Action::None),
+	m_cmd_dir(-1)
 {
 	CreateSprites();
 
@@ -136,9 +157,9 @@ void MirHero::CreateSprites()
 	m_renderer_hair = CreateSprite();
 	m_renderer_weapon = CreateSprite();
 
-	float x = m_pox_x * MirMap::TILE_WIDTH * MIR_PIXEL_TO_UNIT;
-	float y = m_pox_y * MirMap::TILE_HEIGHT * MIR_PIXEL_TO_UNIT;
-	m_obj->GetTransform()->SetPosition(Vector3(x, -y, 0));
+	int x = m_pox_x * MirMap::TILE_WIDTH;
+	int y = m_pox_y * MirMap::TILE_HEIGHT;
+	m_obj->GetTransform()->SetPosition(Vector3((float) x, (float) -y, 0) * MIR_PIXEL_TO_UNIT);
 
 	EquipCloth(m_body);
 	EquipHair(m_hair);
@@ -205,7 +226,7 @@ void MirHero::UpdateBodyTexture()
 	Frame &frame = m_frames_body->frames[index];
 
 	m_renderer_body->SetSprite(frame.sprite);
-	m_renderer_body->SetSortingOrder(2, m_pox_y * 10);
+	m_renderer_body->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10));
 	m_renderer_body->UpdateSprite();
 	
 	float x = frame.info.offset_x;
@@ -220,7 +241,7 @@ void MirHero::UpdateHairTexture()
 	Frame &frame = m_frames_hair->frames[index];
 
 	m_renderer_hair->SetSprite(frame.sprite);
-	m_renderer_hair->SetSortingOrder(2, m_pox_y * 10 + 1);
+	m_renderer_hair->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10 + 1));
 	m_renderer_hair->UpdateSprite();
 	
 	float x = frame.info.offset_x;
@@ -234,11 +255,11 @@ void MirHero::UpdateWeaponTexture()
 	int order;
 	if(m_direction > 1 && m_direction < 5)
 	{
-        order = (int) (m_pox_y * 10 + 2);
+        order = (int) ((m_pox_y + m_pox_y_offset) * 10 + 2);
     }
     else
     {
-        order = (int) (m_pox_y * 10 - 1);
+        order = (int) ((m_pox_y + m_pox_y_offset) * 10 - 1);
     }
 
 	if(	m_action == Action::Attack ||
@@ -249,7 +270,7 @@ void MirHero::UpdateWeaponTexture()
 		{
 			if(m_frame < g_action_frames[(int) m_action].length/2)
 			{
-				order = (int) (m_pox_y * 10 + 2);
+				order = (int) ((m_pox_y + m_pox_y_offset) * 10 + 2);
 			}
 		}
 	}
@@ -279,10 +300,169 @@ void MirHero::Update()
 		if(m_frame >= action_frame.length)
 		{
 			m_frame = 0;
+
+			OnActionEnd();
+		}
+
+		switch(m_action)
+		{
+		case Action::Run:
+			UpdateRun();
+			break;
+		case Action::Walk:
+			UpdateWalk();
+			break;
 		}
 
 		UpdateBodyTexture();
 		UpdateHairTexture();
 		UpdateWeaponTexture();
+	}
+
+	m_cmd_dir = -1;
+	m_cmd_action = Action::None;
+}
+
+void MirHero::ChangeAction(Action::Enum action)
+{
+	m_action = action;
+	m_frame = 0;
+	m_frame_time = GTTime::GetRealTimeSinceStartup();
+
+	switch(m_action)
+	{
+	case Action::Run:
+		UpdateRun();
+		break;
+	case Action::Walk:
+		UpdateWalk();
+		break;
+	}
+
+	UpdateBodyTexture();
+	UpdateHairTexture();
+	UpdateWeaponTexture();
+}
+
+void MirHero::ActionRun(int dir)
+{
+	switch(m_action)
+	{
+	case Action::Idle:
+		m_direction = dir;
+		ChangeAction(Action::Run);
+		break;
+	case Action::Run:
+	case Action::Walk:
+		m_cmd_dir = dir;
+		m_cmd_action = Action::Run;
+		break;
+	}
+}
+
+void MirHero::UpdateRun()
+{
+	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * 2.0f / g_action_frames[(int) m_action].length;
+	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * 2.0f / g_action_frames[(int) m_action].length;
+
+	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
+	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
+	int ix = Mathf::RoundToInt(x);
+	int iy = Mathf::RoundToInt(y);
+
+	if(ix % 2 == 1)
+	{
+		ix++;
+	}
+
+	if(iy % 2 == 1)
+	{
+		iy++;
+	}
+
+	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
+}
+
+void MirHero::ActionWalk(int dir)
+{
+	switch(m_action)
+	{
+	case Action::Idle:
+		m_direction = dir;
+		ChangeAction(Action::Walk);
+		break;
+	case Action::Run:
+	case Action::Walk:
+		m_cmd_dir = dir;
+		m_cmd_action = Action::Walk;
+		break;
+	}
+}
+
+void MirHero::UpdateWalk()
+{
+	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * 1.0f / g_action_frames[(int) m_action].length;
+	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * 1.0f / g_action_frames[(int) m_action].length;
+
+	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
+	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
+	int ix = Mathf::RoundToInt(x);
+	int iy = Mathf::RoundToInt(y);
+
+	if(ix % 2 == 1)
+	{
+		ix++;
+	}
+
+	if(iy % 2 == 1)
+	{
+		iy++;
+	}
+
+	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
+}
+
+void MirHero::OnActionEnd()
+{
+	switch(m_action)
+	{
+	case Action::Run:
+		m_pox_x += g_dirs[m_direction].x * 2;
+		m_pox_y += g_dirs[m_direction].y * 2;
+		m_pox_y_offset = 0;
+
+		if(m_cmd_action == Action::Run)
+		{
+			m_direction = m_cmd_dir;
+		}
+		else if(m_cmd_action == Action::Walk)
+		{
+			m_direction = m_cmd_dir;
+			m_action = Action::Walk;
+		}
+		else
+		{
+			m_action = Action::Idle;
+		}
+		break;
+	case Action::Walk:
+		m_pox_x += g_dirs[m_direction].x;
+		m_pox_y += g_dirs[m_direction].y;
+		m_pox_y_offset = 0;
+
+		if(m_cmd_action == Action::Walk)
+		{
+			m_direction = m_cmd_dir;
+		}
+		else if(m_cmd_action == Action::Run)
+		{
+			m_direction = m_cmd_dir;
+			m_action = Action::Run;
+		}
+		else
+		{
+			m_action = Action::Idle;
+		}
+		break;
 	}
 }

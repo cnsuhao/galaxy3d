@@ -206,7 +206,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(t.front_sprites[t.front_frame]);
-			renderer->SetSortingOrder(2, t.y);
+			renderer->SetSortingOrder(2, (t.y - 1) * 10);
 			renderer->UpdateSprite();
 
 			if(t.front_images.size() > 1)

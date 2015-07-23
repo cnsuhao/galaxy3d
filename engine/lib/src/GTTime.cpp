@@ -15,7 +15,7 @@ static long long g_frequency = -1L;
 
 namespace Galaxy3D
 {
-	long long GTTime::m_time_startup;
+	long long GTTime::m_time_startup = 0;
 	long long GTTime::m_time_update;
 	float GTTime::m_time_delta = 0;
 	float GTTime::m_time_record = -1;
@@ -58,6 +58,11 @@ namespace Galaxy3D
 
 	float GTTime::GetRealTimeSinceStartup()
 	{
+		if(m_time_startup == 0)
+		{
+			m_time_startup = GetTimeMS();
+		}
+
 		long long time = GetTimeMS() - m_time_startup;
 
 		return time / 1000.0f;
