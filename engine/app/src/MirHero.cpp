@@ -288,6 +288,29 @@ void MirHero::UpdateWeaponTexture()
 	m_renderer_weapon->GetTransform()->SetLocalPosition(Vector3(x, -y, 0) * MIR_PIXEL_TO_UNIT);
 }
 
+void MirHero::UpdateMove(float distance)
+{
+	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * distance / g_action_frames[(int) m_action].length;
+	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * distance / g_action_frames[(int) m_action].length;
+
+	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
+	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
+	int ix = Mathf::RoundToInt(x);
+	int iy = Mathf::RoundToInt(y);
+
+	if(ix % 2 == 1)
+	{
+		ix++;
+	}
+
+	if(iy % 2 == 1)
+	{
+		iy++;
+	}
+
+	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
+}
+
 void MirHero::Update()
 {
 	float now = GTTime::GetRealTimeSinceStartup();
@@ -307,10 +330,10 @@ void MirHero::Update()
 		switch(m_action)
 		{
 		case Action::Run:
-			UpdateRun();
+			UpdateMove(2.0f);
 			break;
 		case Action::Walk:
-			UpdateWalk();
+			UpdateMove(1.0f);
 			break;
 		}
 
@@ -332,10 +355,10 @@ void MirHero::ChangeAction(Action::Enum action)
 	switch(m_action)
 	{
 	case Action::Run:
-		UpdateRun();
+		UpdateMove(2.0f);
 		break;
 	case Action::Walk:
-		UpdateWalk();
+		UpdateMove(1.0f);
 		break;
 	}
 
@@ -360,29 +383,6 @@ void MirHero::ActionRun(int dir)
 	}
 }
 
-void MirHero::UpdateRun()
-{
-	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * 2.0f / g_action_frames[(int) m_action].length;
-	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * 2.0f / g_action_frames[(int) m_action].length;
-
-	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
-	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
-	int ix = Mathf::RoundToInt(x);
-	int iy = Mathf::RoundToInt(y);
-
-	if(ix % 2 == 1)
-	{
-		ix++;
-	}
-
-	if(iy % 2 == 1)
-	{
-		iy++;
-	}
-
-	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
-}
-
 void MirHero::ActionWalk(int dir)
 {
 	switch(m_action)
@@ -397,29 +397,6 @@ void MirHero::ActionWalk(int dir)
 		m_cmd_action = Action::Walk;
 		break;
 	}
-}
-
-void MirHero::UpdateWalk()
-{
-	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * 1.0f / g_action_frames[(int) m_action].length;
-	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * 1.0f / g_action_frames[(int) m_action].length;
-
-	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
-	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
-	int ix = Mathf::RoundToInt(x);
-	int iy = Mathf::RoundToInt(y);
-
-	if(ix % 2 == 1)
-	{
-		ix++;
-	}
-
-	if(iy % 2 == 1)
-	{
-		iy++;
-	}
-
-	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
 }
 
 void MirHero::OnActionEnd()
