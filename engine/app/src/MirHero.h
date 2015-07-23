@@ -50,7 +50,9 @@ public:
 			Hit,
 			Die,
 
-			Count
+			Count,
+
+			None,
 		};	
 	};
 
@@ -58,11 +60,15 @@ public:
 	void EquipCloth(int id);
 	void EquipHair(int id);//boy:2 girl:1,2
 	void EquipWeapon(int id);
+	std::shared_ptr<GameObject> GetGameObject() const {return m_obj;}
 	void Update();
+	void ActionRun(int dir);
+	void ActionWalk(int dir);
 
 private:
 	int m_pox_x;
 	int m_pox_y;
+	float m_pox_y_offset;
 	int m_sex;//0:boy, 1:girl
 	int m_body;
 	int m_hair;
@@ -78,6 +84,8 @@ private:
 	int m_direction;
 	int m_frame;
 	float m_frame_time;
+	Action::Enum m_cmd_action;
+	int m_cmd_dir;
 
 	static void LoadTexture(const std::string &name, Frames **frames);
 	void CreateSprites();
@@ -85,6 +93,10 @@ private:
 	void UpdateBodyTexture();
 	void UpdateHairTexture();
 	void UpdateWeaponTexture();
+	void OnActionEnd();
+	void UpdateRun();
+	void UpdateWalk();
+	void ChangeAction(Action::Enum action);
 };
 
 #endif

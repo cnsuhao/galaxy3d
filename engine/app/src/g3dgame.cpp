@@ -8,6 +8,7 @@
 #include "Screen.h"
 #include "Camera.h"
 #include "Launcher.h"
+#include "Debug.h"
 
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")
@@ -107,15 +108,116 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 	return S_OK;
 }
 
+extern std::vector<Touch> g_input_touches;
+extern std::list<Touch> g_input_touch_buffer;
+bool g_input_down = false;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if(message != 132 && message != 32 && message != 512)
-	{
-		message = message;
-	}
-
 	switch(message)
 	{
+	case WM_LBUTTONDOWN:
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+
+			if(!g_input_down)
+			{
+				Touch t;
+				t.deltaPosition = Vector2(0, 0);
+				t.deltaTime = 0;
+				t.fingerId = 0;
+				t.phase = TouchPhase::Began;
+				t.position = Vector2((float) x, (float) y);
+				t.tapCount = 1;
+				t.time = GTTime::GetRealTimeSinceStartup();
+
+				if(!g_input_touches.empty())
+				{
+					g_input_touch_buffer.push_back(t);
+				}
+				else
+				{
+					g_input_touches.push_back(t);
+				}
+
+				g_input_down = true;
+			}
+		}
+		break;
+
+	case WM_MOUSEMOVE:
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+
+			if(g_input_down)
+			{
+				Touch t;
+				t.deltaPosition = Vector2(0, 0);
+				t.deltaTime = 0;
+				t.fingerId = 0;
+				t.phase = TouchPhase::Moved;
+				t.position = Vector2((float) x, (float) y);
+				t.tapCount = 1;
+				t.time = GTTime::GetRealTimeSinceStartup();
+
+				if(!g_input_touches.empty())
+				{
+					if(g_input_touch_buffer.empty())
+					{
+						g_input_touch_buffer.push_back(t);
+					}
+					else
+					{
+						if(g_input_touch_buffer.back().phase == TouchPhase::Moved)
+						{
+							g_input_touch_buffer.back() = t;
+						}
+						else
+						{
+							g_input_touch_buffer.push_back(t);
+						}
+					}
+				}
+				else
+				{
+					g_input_touches.push_back(t);
+				}
+			}
+		}
+		break;
+
+	case WM_LBUTTONUP:
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+
+			if(g_input_down)
+			{
+				Touch t;
+				t.deltaPosition = Vector2(0, 0);
+				t.deltaTime = 0;
+				t.fingerId = 0;
+				t.phase = TouchPhase::Ended;
+				t.position = Vector2((float) x, (float) y);
+				t.tapCount = 1;
+				t.time = GTTime::GetRealTimeSinceStartup();
+
+				if(!g_input_touches.empty())
+				{
+					g_input_touch_buffer.push_back(t);
+				}
+				else
+				{
+					g_input_touches.push_back(t);
+				}
+
+				g_input_down = false;
+			}
+		}
+		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;

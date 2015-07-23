@@ -31,6 +31,7 @@
     <ClCompile Include="..\src\GTStringUTF32.cpp" />
     <ClCompile Include="..\src\GTTime.cpp" />
     <ClCompile Include="..\src\Image.cpp" />
+    <ClCompile Include="..\src\Input.cpp" />
     <ClCompile Include="..\src\Label.cpp" />
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="..\src\GTStringUTF32.h" />
     <ClInclude Include="..\src\GTTime.h" />
     <ClInclude Include="..\src\Image.h" />
+    <ClInclude Include="..\src\Input.h" />
     <ClInclude Include="..\src\Label.h" />
     <ClInclude Include="..\src\Layer.h" />
     <ClInclude Include="..\src\LayerMask.h" />
