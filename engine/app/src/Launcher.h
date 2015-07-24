@@ -23,7 +23,18 @@ namespace Galaxy3D
 {
 	class Launcher :public Component
 	{
+	public:
+		virtual ~Launcher();
+
 	protected:
+		std::shared_ptr<TextRenderer> fps;
+		std::shared_ptr<Camera> camera;
+		std::shared_ptr<MirHero> hero;
+		std::shared_ptr<MirHero> hero2;
+		std::shared_ptr<MirHero> hero3;
+		bool touch_down;
+		Vector2 touch_pos;
+
 		virtual void Start();
 		virtual void Update();
 	};

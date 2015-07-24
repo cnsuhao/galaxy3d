@@ -5,7 +5,12 @@
 
 static const float MAP_UPDATE_DELTA_TIME = 0.1f;
 static float g_map_update_time;
-std::vector<MapTile> MirMap::m_map_tiles;
+std::vector<MapTile> g_map_tiles;
+std::string g_map;
+int g_map_x;
+int g_map_y;
+int g_map_w;
+int g_map_h;
 
 void MirMap::Load(const std::string &map, int x, int y, int w, int h)
 {
@@ -18,18 +23,79 @@ void MirMap::Load(const std::string &map, int x, int y, int w, int h)
 		}
 	}
 
-	m_map_tiles.clear();
-	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, m_map_tiles);
+	g_map = map;
+	g_map_x = x;
+	g_map_y = y;
+	g_map_w = w;
+	g_map_h = h;
+
+	g_map_tiles.clear();
+	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, g_map_tiles);
+}
+
+void MirMap::Unload()
+{
+	g_map_tiles.clear();
 }
 
 void MirMap::Update()
 {
-	UpdateTiles(m_map_tiles);
+	UpdateTiles(g_map_tiles);
 }
 
 void MirMap::Scroll(int dir_x, int dir_y, int dis)
 {
-	
+	std::vector<int> coords;
+
+	int d = 0;
+	while(d++ < dis)
+	{
+		if(dir_x != 0)
+		{
+			int x = g_map_x + (g_map_w / 2 + 1) * dir_x;
+			int y_0;
+			int y_1;
+
+			y_0 = g_map_y - g_map_h / 2 + dir_y;
+			y_1 = g_map_y + g_map_h / 2 + dir_y;
+
+			for(int i=y_0; i<=y_1; i++)
+			{
+				coords.push_back((x << 16) | i);
+			}
+		}
+
+		if(dir_y != 0)
+		{
+			int y = g_map_y + (g_map_h / 2 + 1) * dir_y;
+			int x_0;
+			int x_1;
+
+			x_0 = g_map_x - g_map_w / 2 + dir_x;
+			x_1 = g_map_x + g_map_w / 2 + dir_x;
+
+			if(dir_x > 0)
+			{
+				x_1--;
+			}
+			else if(dir_x < 0)
+			{
+				x_0++;
+			}
+
+			for(int i=x_0; i<=x_1; i++)
+			{
+				coords.push_back((i << 16) | y);
+			}
+		}
+
+		g_map_x += dir_x;
+		g_map_y += dir_y;
+	}
+
+	std::vector<MapTile> map_tiles;
+	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + g_map + ".map", coords, map_tiles);
+	g_map_tiles.insert(g_map_tiles.end(), map_tiles.begin(), map_tiles.end());
 }
 
 void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles)

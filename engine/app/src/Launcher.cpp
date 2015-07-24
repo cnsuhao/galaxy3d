@@ -1,13 +1,5 @@
 #include "Launcher.h"
 
-static std::shared_ptr<TextRenderer> fps;
-static std::shared_ptr<Camera> camera;
-static std::shared_ptr<MirHero> hero;
-static std::shared_ptr<MirHero> hero2;
-static std::shared_ptr<MirHero> hero3;
-static bool touch_down;
-static Vector2 touch_pos;
-
 void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
@@ -93,4 +85,9 @@ void Launcher::Update()
 
 	hero2->Update();
 	hero3->Update();
+}
+
+Launcher::~Launcher()
+{
+	MirMap::Unload();
 }
