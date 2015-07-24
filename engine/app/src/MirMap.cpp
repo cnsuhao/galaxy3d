@@ -248,7 +248,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		{
 			auto sprite = Sprite::Create(t.back_image->texture);
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
-			auto mat = Material::Create("Mir Sprite");
+			auto mat = Material::Create("Mir Map");
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
@@ -267,7 +267,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		{
 			auto sprite = Sprite::Create(t.middle_image->texture);
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
-			auto mat = Material::Create("Mir Sprite");
+			auto mat = Material::Create("Mir Map");
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
