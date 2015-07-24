@@ -62,10 +62,11 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
 	m_frames_hair(nullptr),
 	m_frames_weapon(nullptr),
 	m_action(Action::Idle),
-	m_direction(4),
+	m_direction(3),
 	m_frame(0),
 	m_cmd_action(Action::None),
-	m_cmd_dir(-1)
+	m_cmd_dir(-1),
+	m_is_main(false)
 {
 	CreateSprites();
 
@@ -407,6 +408,10 @@ void MirHero::OnActionEnd()
 		m_pox_x += g_dirs[m_direction].x * 2;
 		m_pox_y += g_dirs[m_direction].y * 2;
 		m_pox_y_offset = 0;
+		if(m_is_main)
+		{
+			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+		}
 
 		if(m_cmd_action == Action::Run)
 		{
@@ -426,6 +431,10 @@ void MirHero::OnActionEnd()
 		m_pox_x += g_dirs[m_direction].x;
 		m_pox_y += g_dirs[m_direction].y;
 		m_pox_y_offset = 0;
+		if(m_is_main)
+		{
+			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+		}
 
 		if(m_cmd_action == Action::Walk)
 		{
