@@ -1,9 +1,36 @@
 #include "MirMap.h"
 #include "GameObject.h"
 #include "GTString.h"
+#include "Application.h"
 
 static const float MAP_UPDATE_DELTA_TIME = 0.1f;
 static float g_map_update_time;
+std::vector<MapTile> MirMap::m_map_tiles;
+
+void MirMap::Load(const std::string &map, int x, int y, int w, int h)
+{
+	std::vector<int> coords(w * h);
+	for(int j=0; j<h; j++)
+	{
+		for(int i=0; i<w; i++)
+		{
+			coords[j * w + i] = ((i + x - w/2) << 16) | (j + y - h/2);
+		}
+	}
+
+	m_map_tiles.clear();
+	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, m_map_tiles);
+}
+
+void MirMap::Update()
+{
+	UpdateTiles(m_map_tiles);
+}
+
+void MirMap::Scroll(int dir_x, int dir_y, int dis)
+{
+	
+}
 
 void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles)
 {

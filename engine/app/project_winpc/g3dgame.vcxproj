@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\g3dgame.cpp" />
+    <ClCompile Include="..\src\Launcher.cpp" />
     <ClCompile Include="..\src\MirHero.cpp" />
     <ClCompile Include="..\src\MirImage.cpp" />
     <ClCompile Include="..\src\MirMap.cpp" />

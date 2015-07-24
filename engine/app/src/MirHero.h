@@ -64,6 +64,7 @@ public:
 	void Update();
 	void ActionRun(int dir);
 	void ActionWalk(int dir);
+	void SetMain(bool is_main) {m_is_main = is_main;}
 
 private:
 	int m_pox_x;
@@ -86,6 +87,7 @@ private:
 	float m_frame_time;
 	Action::Enum m_cmd_action;
 	int m_cmd_dir;
+	bool m_is_main;
 
 	static void LoadTexture(const std::string &name, Frames **frames);
 	void CreateSprites();
