@@ -168,6 +168,7 @@ std::shared_ptr<MirImage> MirImage::LoadImage(FILE *f, int offset, const std::st
 		else
 		{
 			Debug::Log("unknow MirImageFormat:%x %s %d", im.format, name.c_str(), index);
+			return image;
 		}
 
 		if(im.zip_size > 0)

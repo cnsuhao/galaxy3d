@@ -69,12 +69,11 @@ public:
 	static const int TILE_HEIGHT = 32;
 	
 	static void Load(const std::string &map, int x, int y, int w, int h);
+	static void Unload();
 	static void Update();
 	static void Scroll(int dir_x, int dir_y, int dis);
 
 private:
-	static std::vector<MapTile> m_map_tiles;
-
 	static void LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles);
 	static void UpdateTiles(std::vector<MapTile> &tiles);
 };
