@@ -32,11 +32,29 @@ void MirMap::Load(const std::string &map, int x, int y)
 	g_map_x = x;
 	g_map_y = y;
 
-	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, g_map_tiles);
+	LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, g_map_tiles);
 }
 
 void MirMap::Unload()
 {
+	for(auto &i : g_map_tiles)
+	{
+		auto &t = i.second;
+
+		if(t.back_sprite)
+		{
+			GameObject::Destroy(t.back_sprite->GetGameObject());
+		}
+		if(t.middle_sprite)
+		{
+			GameObject::Destroy(t.middle_sprite->GetGameObject());
+		}
+		if(t.front_sprite)
+		{
+			GameObject::Destroy(t.front_sprite->GetGameObject());
+		}
+	}
+
 	g_map_tiles.clear();
 }
 
@@ -156,7 +174,21 @@ void MirMap::Scroll(int dir_x, int dir_y, int dis)
 		g_map_y += dir_y;
 	}
 
-	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + g_map + ".map", coords, g_map_tiles);
+	LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + g_map + ".map", coords, g_map_tiles);
+}
+
+bool MirMap::CanMove(int dir_x, int dir_y, int dis)
+{
+	bool can_move = true;
+	for(int i=1; i<=dis; i++)
+	{
+		int x = g_map_x + dir_x * i;
+		int y = g_map_y + dir_y * i;
+
+		can_move = can_move && g_map_tiles[(x << 16) | y].can_move;
+	}
+
+	return can_move;
 }
 
 void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::unordered_map<int, MapTile> &tiles)
@@ -217,7 +249,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 
 			tile.x = x;
 			tile.y = y;
-            tile.can_walk = ((tile.info.back & 0x8000) == 0) && ((tile.info.front & 0x8000) == 0);
+            tile.can_move = ((tile.info.back & 0x8000) == 0) && ((tile.info.front & 0x8000) == 0);
             tile.can_fly = ((tile.info.front & 0x8000) == 0);
             tile.door_open = (tile.info.door_state & 0x8000) != 0;
 
