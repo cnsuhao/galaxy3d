@@ -74,8 +74,7 @@ public:
 	static void Scroll(int dir_x, int dir_y, int dis);
 
 private:
-	static void LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles);
-	static void UpdateTiles(std::vector<MapTile> &tiles);
+	static void LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::unordered_map<int, MapTile> &tiles);
 };
 
 #endif

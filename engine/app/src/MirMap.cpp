@@ -5,7 +5,7 @@
 
 static const float MAP_UPDATE_DELTA_TIME = 0.1f;
 static float g_map_update_time;
-std::vector<MapTile> g_map_tiles;
+std::unordered_map<int, MapTile> g_map_tiles;
 std::string g_map;
 int g_map_x;
 int g_map_y;
@@ -29,7 +29,6 @@ void MirMap::Load(const std::string &map, int x, int y, int w, int h)
 	g_map_w = w;
 	g_map_h = h;
 
-	g_map_tiles.clear();
 	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, g_map_tiles);
 }
 
@@ -40,7 +39,56 @@ void MirMap::Unload()
 
 void MirMap::Update()
 {
-	UpdateTiles(g_map_tiles);
+	float now = GTTime::GetRealTimeSinceStartup();
+	if(now - g_map_update_time > MAP_UPDATE_DELTA_TIME)
+	{
+		g_map_update_time = now;
+
+		std::vector<int> deletes;
+
+		for(auto &i : g_map_tiles)
+		{
+			auto &t = i.second;
+
+			if(!t.front_images.empty())
+			{
+				t.front_frame++;
+				if(t.front_frame >= (int) t.front_sprites.size())
+				{
+					t.front_frame = 0;
+				}
+
+				t.front_sprite->SetSprite(t.front_sprites[t.front_frame]);
+			}
+
+			if(	t.x < g_map_x - g_map_w / 2 ||
+				t.x > g_map_x + g_map_w / 2 ||
+				t.y < g_map_y - g_map_h / 2 ||
+				t.y > g_map_y + g_map_h / 2
+				)
+			{
+				if(t.back_sprite)
+				{
+					GameObject::Destroy(t.back_sprite->GetGameObject());
+				}
+				if(t.middle_sprite)
+				{
+					GameObject::Destroy(t.middle_sprite->GetGameObject());
+				}
+				if(t.front_sprite)
+				{
+					GameObject::Destroy(t.front_sprite->GetGameObject());
+				}
+
+				deletes.push_back(i.first);
+			}
+		}
+
+		for(auto i : deletes)
+		{
+			g_map_tiles.erase(i);
+		}
+	}
 }
 
 void MirMap::Scroll(int dir_x, int dir_y, int dis)
@@ -93,13 +141,12 @@ void MirMap::Scroll(int dir_x, int dir_y, int dis)
 		g_map_y += dir_y;
 	}
 
-	std::vector<MapTile> map_tiles;
-	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + g_map + ".map", coords, map_tiles);
-	g_map_tiles.insert(g_map_tiles.end(), map_tiles.begin(), map_tiles.end());
+	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + g_map + ".map", coords, g_map_tiles);
 }
 
-void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::vector<MapTile> &tiles)
+void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::unordered_map<int, MapTile> &tiles)
 {
+	std::unordered_map<int, MapTile> tiles_new;
 	std::vector<int> back_indices(coords.size());
 	std::vector<int> middle_indices(coords.size());
 	std::unordered_map<int, std::vector<int>> front_indices;
@@ -110,9 +157,13 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		MapHeader header;
 		fread(&header, MapHeader::STRUCT_SIZE, 1, f);
 
-		tiles.resize(coords.size());
 		for(size_t i=0; i<coords.size(); i++)
 		{
+			if(tiles.count(coords[i]) > 0)
+			{
+				continue;
+			}
+
 			int x = coords[i] >> 16;
 			int y = coords[i] & 0xffff;
 
@@ -193,7 +244,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 				tile.front_count = -1;
 			}
 
-			tiles[i] = tile;
+			tiles_new[coords[i]] = tile;
 		}
 
 		fclose(f);
@@ -214,9 +265,9 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 	}
 
 	//½«Í¼Æ¬°ó¶¨µ½tile
-	for(size_t i=0; i<tiles.size(); i++)
+	for(auto &i : tiles_new)
 	{
-		auto &t = tiles[i];
+		auto &t = i.second;
 
 		if(t.back_index >= 0)
 		{
@@ -240,9 +291,9 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		}
 	}
 
-	for(size_t i=0; i<tiles.size(); i++)
+	for(auto &i : tiles_new)
 	{
-		auto &t = tiles[i];
+		auto &t = i.second;
 
 		if(t.back_image)
 		{
@@ -316,30 +367,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		}
 	}
 
+	tiles.insert(tiles_new.begin(), tiles_new.end());
+
 	g_map_update_time = GTTime::GetRealTimeSinceStartup();
-}
-
-void MirMap::UpdateTiles(std::vector<MapTile> &tiles)
-{
-	float now = GTTime::GetRealTimeSinceStartup();
-	if(now - g_map_update_time > MAP_UPDATE_DELTA_TIME)
-	{
-		g_map_update_time = now;
-
-		for(size_t i=0; i<tiles.size(); i++)
-		{
-			auto &t = tiles[i];
-
-			if(!t.front_images.empty())
-			{
-				t.front_frame++;
-				if(t.front_frame >= (int) t.front_sprites.size())
-				{
-					t.front_frame = 0;
-				}
-
-				t.front_sprite->SetSprite(t.front_sprites[t.front_frame]);
-			}
-		}
-	}
 }

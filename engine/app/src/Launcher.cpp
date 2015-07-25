@@ -9,7 +9,7 @@ void Launcher::Start()
 
 	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-	tr->GetTransform()->SetPosition(Vector3(-6.4f, 3.6f, 0));
+	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
 	fps = tr;
@@ -18,7 +18,7 @@ void Launcher::Start()
 	//mir2
 	int x0 = 297;
 	int y0 = 299;
-	int w = 31;
+	int w = 23;
 	int h = 61;
 
 	MirMap::Load("0", x0, y0, w, h);
