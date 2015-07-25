@@ -368,27 +368,7 @@ void MirHero::ChangeAction(Action::Enum action)
 	UpdateWeaponTexture();
 }
 
-void MirHero::ActionRun(int dir)
-{
-	switch(m_action)
-	{
-	case Action::Idle:
-		m_direction = dir;
-		ChangeAction(Action::Run);
-		if(m_is_main)
-		{
-			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
-		}
-		break;
-	case Action::Run:
-	case Action::Walk:
-		m_cmd_dir = dir;
-		m_cmd_action = Action::Run;
-		break;
-	}
-}
-
-void MirHero::ActionWalk(int dir)
+void MirHero::ActionMove(int dir)
 {
 	switch(m_action)
 	{
@@ -403,7 +383,7 @@ void MirHero::ActionWalk(int dir)
 	case Action::Run:
 	case Action::Walk:
 		m_cmd_dir = dir;
-		m_cmd_action = Action::Walk;
+		m_cmd_action = Action::Run;
 		break;
 	}
 }
@@ -425,15 +405,6 @@ void MirHero::OnActionEnd()
 				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
 			}
 		}
-		else if(m_cmd_action == Action::Walk)
-		{
-			m_direction = m_cmd_dir;
-			m_action = Action::Walk;
-			if(m_is_main)
-			{
-				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
-			}
-		}
 		else
 		{
 			m_action = Action::Idle;
@@ -444,15 +415,7 @@ void MirHero::OnActionEnd()
 		m_pox_y += g_dirs[m_direction].y;
 		m_pox_y_offset = 0;
 
-		if(m_cmd_action == Action::Walk)
-		{
-			m_direction = m_cmd_dir;
-			if(m_is_main)
-			{
-				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
-			}
-		}
-		else if(m_cmd_action == Action::Run)
+		if(m_cmd_action == Action::Run)
 		{
 			m_direction = m_cmd_dir;
 			m_action = Action::Run;

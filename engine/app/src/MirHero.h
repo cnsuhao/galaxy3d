@@ -62,8 +62,7 @@ public:
 	void EquipWeapon(int id);
 	std::shared_ptr<GameObject> GetGameObject() const {return m_obj;}
 	void Update();
-	void ActionRun(int dir);
-	void ActionWalk(int dir);
+	void ActionMove(int dir);
 	void SetMain(bool is_main) {m_is_main = is_main;}
 
 private:
