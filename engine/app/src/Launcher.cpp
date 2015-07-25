@@ -1,5 +1,7 @@
 #include "Launcher.h"
 
+static const int CAMERA_OFFSET_Y = 2;
+
 void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
@@ -18,20 +20,41 @@ void Launcher::Start()
 	//mir2
 	int x0 = 297;
 	int y0 = 299;
-	int w = 23;
-	int h = 61;
-
-	MirMap::Load("0", x0, y0, w, h);
+	MirMap::Load("0", x0, y0);
 
 	hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 3, 2, 24, 0));
 	hero2 = std::shared_ptr<MirHero>(new MirHero(x0 + 1, y0, 6, 2, 26, 0));
 	hero3 = std::shared_ptr<MirHero>(new MirHero(x0 + 2, y0, 11, 2, 37, 0));
-
-	camera->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * 48), Mathf::Round(-(y0 + 0.5f) * 32), 0) * 0.01f);
+	
+	camera->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * MirMap::TILE_WIDTH), Mathf::Round(-(y0 + 0.5f + CAMERA_OFFSET_Y) * MirMap::TILE_HEIGHT), 0) * 0.01f);
 	camera->GetTransform()->SetParent(hero->GetGameObject()->GetTransform());
 	hero->SetMain(true);
 
 	touch_down = false;
+
+	//load main ui
+	std::vector<int> uis_index;
+	uis_index.push_back(1);
+	auto uit = MirImage::LoadImages("ui", uis_index);
+	
+	std::shared_ptr<SpriteRenderer> uir = GameObject::Create("")->AddComponent<SpriteRenderer>();
+	uir->GetTransform()->SetParent(camera->GetTransform());
+	uir->GetTransform()->SetLocalPosition(Vector3(0, -Screen::GetHeight()/2.0f, 0) * 0.01f);
+
+	auto mat = Material::Create("Mir Sprite");
+	mat->SetTexture("ColorTable", MirImage::GetColorTable());
+	uir->SetSharedMaterial(mat);
+	uir->SetSortingOrder(1000, 0);
+
+	auto uis = Sprite::Create(
+		uit[0]->texture,
+		Rect(0, 0, (float) uit[0]->texture->GetWidth(), (float) uit[0]->texture->GetHeight()),
+		Vector2(0.5f, 1),
+		100,
+		Vector4(0, 0, 0, 0));
+
+	uir->SetSprite(uis);
+	uir->UpdateSprite();
 }
 
 void Launcher::Update()
@@ -67,7 +90,7 @@ void Launcher::Update()
 	if(touch_down)
 	{
 		float center_x = Screen::GetWidth() / 2.0f;
-		float center_y = Screen::GetHeight() / 2.0f;
+		float center_y = Screen::GetHeight() / 2.0f - CAMERA_OFFSET_Y * MirMap::TILE_HEIGHT;
 
 		Vector2 dir = touch_pos - Vector2(center_x, center_y);
 		float theta = atan2(dir.x, -dir.y) * Mathf::Rad2Deg + 22.5f;
@@ -76,7 +99,7 @@ void Launcher::Update()
 			theta += 360;
 		}
 				
-		hero->ActionRun((int) (theta / 45));
+		hero->ActionMove((int) (theta / 45));
 	}
 
 	MirMap::Update();

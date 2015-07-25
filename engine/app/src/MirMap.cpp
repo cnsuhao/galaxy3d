@@ -4,30 +4,33 @@
 #include "Application.h"
 
 static const float MAP_UPDATE_DELTA_TIME = 0.1f;
+static const int MAP_WIDTH = 23;
+static const int MAP_HEIGHT_TOP = 10;
+static const int MAP_HEIGHT_BOTTOM = 34;
 static float g_map_update_time;
 std::unordered_map<int, MapTile> g_map_tiles;
 std::string g_map;
 int g_map_x;
 int g_map_y;
-int g_map_w;
-int g_map_h;
 
-void MirMap::Load(const std::string &map, int x, int y, int w, int h)
+void MirMap::Load(const std::string &map, int x, int y)
 {
-	std::vector<int> coords(w * h);
+	int w = MAP_WIDTH;
+	int h = MAP_HEIGHT_TOP + 1 + MAP_HEIGHT_BOTTOM;
+
+	std::vector<int> coords;
+	
 	for(int j=0; j<h; j++)
 	{
 		for(int i=0; i<w; i++)
 		{
-			coords[j * w + i] = ((i + x - w/2) << 16) | (j + y - h/2);
+			coords.push_back(((i + x - w/2) << 16) | (j + y - MAP_HEIGHT_TOP));
 		}
 	}
 
 	g_map = map;
 	g_map_x = x;
 	g_map_y = y;
-	g_map_w = w;
-	g_map_h = h;
 
 	MirMap::LoadTiles(Application::GetDataPath() + "/Assets/mir/Map/" + map + ".map", coords, g_map_tiles);
 }
@@ -61,10 +64,10 @@ void MirMap::Update()
 				t.front_sprite->SetSprite(t.front_sprites[t.front_frame]);
 			}
 
-			if(	t.x < g_map_x - g_map_w / 2 ||
-				t.x > g_map_x + g_map_w / 2 ||
-				t.y < g_map_y - g_map_h / 2 ||
-				t.y > g_map_y + g_map_h / 2
+			if(	t.x < g_map_x - MAP_WIDTH / 2 ||
+				t.x > g_map_x + MAP_WIDTH / 2 ||
+				t.y < g_map_y - MAP_HEIGHT_TOP ||
+				t.y > g_map_y + MAP_HEIGHT_BOTTOM
 				)
 			{
 				if(t.back_sprite)
@@ -93,6 +96,9 @@ void MirMap::Update()
 
 void MirMap::Scroll(int dir_x, int dir_y, int dis)
 {
+	int w = MAP_WIDTH;
+	int h = MAP_HEIGHT_TOP + 1 + MAP_HEIGHT_BOTTOM;
+
 	std::vector<int> coords;
 
 	int d = 0;
@@ -100,12 +106,12 @@ void MirMap::Scroll(int dir_x, int dir_y, int dis)
 	{
 		if(dir_x != 0)
 		{
-			int x = g_map_x + (g_map_w / 2 + 1) * dir_x;
+			int x = g_map_x + (w / 2 + 1) * dir_x;
 			int y_0;
 			int y_1;
 
-			y_0 = g_map_y - g_map_h / 2 + dir_y;
-			y_1 = g_map_y + g_map_h / 2 + dir_y;
+			y_0 = g_map_y - MAP_HEIGHT_TOP + dir_y;
+			y_1 = g_map_y + MAP_HEIGHT_BOTTOM + dir_y;
 
 			for(int i=y_0; i<=y_1; i++)
 			{
@@ -115,12 +121,21 @@ void MirMap::Scroll(int dir_x, int dir_y, int dis)
 
 		if(dir_y != 0)
 		{
-			int y = g_map_y + (g_map_h / 2 + 1) * dir_y;
+			int y;
+			if(dir_y > 0)
+			{
+				y = g_map_y + MAP_HEIGHT_BOTTOM + 1;
+			}
+			else
+			{
+				y = g_map_y - MAP_HEIGHT_TOP - 1;
+			}
+
 			int x_0;
 			int x_1;
 
-			x_0 = g_map_x - g_map_w / 2 + dir_x;
-			x_1 = g_map_x + g_map_w / 2 + dir_x;
+			x_0 = g_map_x - w / 2 + dir_x;
+			x_1 = g_map_x + w / 2 + dir_x;
 
 			if(dir_x > 0)
 			{

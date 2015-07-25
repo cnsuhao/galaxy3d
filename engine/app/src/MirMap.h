@@ -68,7 +68,7 @@ public:
 	static const int TILE_WIDTH = 48;
 	static const int TILE_HEIGHT = 32;
 	
-	static void Load(const std::string &map, int x, int y, int w, int h);
+	static void Load(const std::string &map, int x, int y);
 	static void Unload();
 	static void Update();
 	static void Scroll(int dir_x, int dir_y, int dis);
