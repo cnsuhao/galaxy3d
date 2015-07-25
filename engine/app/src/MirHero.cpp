@@ -373,13 +373,21 @@ void MirHero::ActionMove(int dir)
 	switch(m_action)
 	{
 	case Action::Idle:
-		m_direction = dir;
-		if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
+		if(MirMap::CanMove(g_dirs[dir].x, g_dirs[dir].y, 1))
 		{
+			m_direction = dir;
 			ChangeAction(Action::Walk);
 			if(m_is_main)
 			{
 				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+			}
+		}
+		else
+		{
+			if(dir != m_direction)
+			{
+				m_direction = dir;
+				ChangeAction(Action::Idle);
 			}
 		}
 		break;
