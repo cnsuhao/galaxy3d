@@ -10,11 +10,11 @@ namespace Galaxy3D
 	{
 	}
 
-	void Component::Destroy(std::weak_ptr<Component> &obj)
+	void Component::Destroy(std::shared_ptr<Component> &obj)
 	{
-		if(!obj.expired())
+		if(obj)
 		{
-			obj.lock()->Delete();
+			obj->Delete();
 			obj.reset();
 		}
 	}

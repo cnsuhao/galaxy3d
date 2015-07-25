@@ -16,13 +16,12 @@ namespace Galaxy3D
 		return obj;
 	}
 
-	void GameObject::Destroy(std::weak_ptr<GameObject> &obj)
+	void GameObject::Destroy(std::shared_ptr<GameObject> &obj)
 	{
-		if(!obj.expired())
+		if(obj)
 		{
-			auto o = obj.lock();
-			o->Delete();
-			o->SetActive(false);
+			obj->Delete();
+			obj->SetActive(false);
 			obj.reset();
 		}
 	}

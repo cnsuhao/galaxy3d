@@ -375,6 +375,10 @@ void MirHero::ActionRun(int dir)
 	case Action::Idle:
 		m_direction = dir;
 		ChangeAction(Action::Run);
+		if(m_is_main)
+		{
+			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+		}
 		break;
 	case Action::Run:
 	case Action::Walk:
@@ -391,6 +395,10 @@ void MirHero::ActionWalk(int dir)
 	case Action::Idle:
 		m_direction = dir;
 		ChangeAction(Action::Walk);
+		if(m_is_main)
+		{
+			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+		}
 		break;
 	case Action::Run:
 	case Action::Walk:
@@ -408,19 +416,23 @@ void MirHero::OnActionEnd()
 		m_pox_x += g_dirs[m_direction].x * 2;
 		m_pox_y += g_dirs[m_direction].y * 2;
 		m_pox_y_offset = 0;
-		if(m_is_main)
-		{
-			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
-		}
 
 		if(m_cmd_action == Action::Run)
 		{
 			m_direction = m_cmd_dir;
+			if(m_is_main)
+			{
+				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+			}
 		}
 		else if(m_cmd_action == Action::Walk)
 		{
 			m_direction = m_cmd_dir;
 			m_action = Action::Walk;
+			if(m_is_main)
+			{
+				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+			}
 		}
 		else
 		{
@@ -431,19 +443,23 @@ void MirHero::OnActionEnd()
 		m_pox_x += g_dirs[m_direction].x;
 		m_pox_y += g_dirs[m_direction].y;
 		m_pox_y_offset = 0;
-		if(m_is_main)
-		{
-			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
-		}
 
 		if(m_cmd_action == Action::Walk)
 		{
 			m_direction = m_cmd_dir;
+			if(m_is_main)
+			{
+				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+			}
 		}
 		else if(m_cmd_action == Action::Run)
 		{
 			m_direction = m_cmd_dir;
 			m_action = Action::Run;
+			if(m_is_main)
+			{
+				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+			}
 		}
 		else
 		{
