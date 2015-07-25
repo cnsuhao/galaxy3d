@@ -374,10 +374,13 @@ void MirHero::ActionMove(int dir)
 	{
 	case Action::Idle:
 		m_direction = dir;
-		ChangeAction(Action::Walk);
-		if(m_is_main)
+		if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
 		{
-			MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+			ChangeAction(Action::Walk);
+			if(m_is_main)
+			{
+				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+			}
 		}
 		break;
 	case Action::Run:
@@ -400,9 +403,25 @@ void MirHero::OnActionEnd()
 		if(m_cmd_action == Action::Run)
 		{
 			m_direction = m_cmd_dir;
-			if(m_is_main)
+			if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 2))
 			{
-				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+				m_action = Action::Run;
+				if(m_is_main)
+				{
+					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+				}
+			}
+			else if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
+			{
+				m_action = Action::Walk;
+				if(m_is_main)
+				{
+					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+				}
+			}
+			else
+			{
+				m_action = Action::Idle;
 			}
 		}
 		else
@@ -418,10 +437,25 @@ void MirHero::OnActionEnd()
 		if(m_cmd_action == Action::Run)
 		{
 			m_direction = m_cmd_dir;
-			m_action = Action::Run;
-			if(m_is_main)
+			if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 2))
 			{
-				MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+				m_action = Action::Run;
+				if(m_is_main)
+				{
+					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 2);
+				}
+			}
+			else if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
+			{
+				m_action = Action::Walk;
+				if(m_is_main)
+				{
+					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+				}
+			}
+			else
+			{
+				m_action = Action::Idle;
 			}
 		}
 		else

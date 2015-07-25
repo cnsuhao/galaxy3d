@@ -46,7 +46,7 @@ struct MapTile
 	int middle_index;
 	int front_index;
 	int front_count;
-	bool can_walk;
+	bool can_move;
 	bool can_fly;
 	bool door_open;
 
@@ -72,6 +72,7 @@ public:
 	static void Unload();
 	static void Update();
 	static void Scroll(int dir_x, int dir_y, int dis);
+	static bool CanMove(int dir_x, int dir_y, int dis);
 
 private:
 	static void LoadTiles(const std::string &map_file, const std::vector<int> &coords, std::unordered_map<int, MapTile> &tiles);
