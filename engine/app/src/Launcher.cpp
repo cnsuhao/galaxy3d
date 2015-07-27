@@ -25,6 +25,8 @@ void Launcher::Start()
 	hero = std::shared_ptr<MirHero>(new MirHero(x0, y0, 3, 2, 24, 0));
 	hero2 = std::shared_ptr<MirHero>(new MirHero(x0 + 1, y0, 6, 2, 26, 0));
 	hero3 = std::shared_ptr<MirHero>(new MirHero(x0 + 2, y0, 11, 2, 37, 0));
+
+	mon = std::shared_ptr<MirMonster>(new MirMonster(12, 0, x0, y0 + 2, 0));
 	
 	camera->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * MirMap::TILE_WIDTH), Mathf::Round(-(y0 + 0.5f + CAMERA_OFFSET_Y) * MirMap::TILE_HEIGHT), 0) * 0.01f);
 	camera->GetTransform()->SetParent(hero->GetGameObject()->GetTransform());

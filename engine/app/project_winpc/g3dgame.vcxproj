@@ -16,12 +16,14 @@
     <ClCompile Include="..\src\MirHero.cpp" />
     <ClCompile Include="..\src\MirImage.cpp" />
     <ClCompile Include="..\src\MirMap.cpp" />
+    <ClCompile Include="..\src\MirMonster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h" />
     <ClInclude Include="..\src\MirHero.h" />
     <ClInclude Include="..\src\MirImage.h" />
     <ClInclude Include="..\src\MirMap.h" />
+    <ClInclude Include="..\src\MirMonster.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>

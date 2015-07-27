@@ -50,7 +50,7 @@ static Direction g_dirs[] =
 
 std::unordered_map<std::string, MirHero::Frames> g_frames;
 
-MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
+MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex, int dir):
 	m_pox_x(x),
 	m_pox_y(y),
 	m_pox_y_offset(0),
@@ -62,7 +62,7 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex):
 	m_frames_hair(nullptr),
 	m_frames_weapon(nullptr),
 	m_action(Action::Idle),
-	m_direction(3),
+	m_direction(dir),
 	m_frame(0),
 	m_cmd_action(Action::None),
 	m_cmd_dir(-1),

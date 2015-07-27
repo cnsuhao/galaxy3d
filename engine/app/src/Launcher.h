@@ -18,6 +18,7 @@
 
 #include "MirMap.h"
 #include "MirHero.h"
+#include "MirMonster.h"
 
 namespace Galaxy3D
 {
@@ -32,6 +33,7 @@ namespace Galaxy3D
 		std::shared_ptr<MirHero> hero;
 		std::shared_ptr<MirHero> hero2;
 		std::shared_ptr<MirHero> hero3;
+		std::shared_ptr<MirMonster> mon;
 		bool touch_down;
 		Vector2 touch_pos;
 

@@ -56,10 +56,10 @@ public:
 		};	
 	};
 
-	MirHero(int x, int y, int body, int hair, int weapon, int sex = 0);
-	void EquipCloth(int id);
+	MirHero(int x, int y, int body, int hair, int weapon, int sex = 0, int dir = 4);
+	void EquipCloth(int id);//0-11
 	void EquipHair(int id);//boy:2 girl:1,2
-	void EquipWeapon(int id);
+	void EquipWeapon(int id);//0-37
 	std::shared_ptr<GameObject> GetGameObject() const {return m_obj;}
 	void Update();
 	void ActionMove(int dir);
