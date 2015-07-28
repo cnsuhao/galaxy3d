@@ -61,6 +61,32 @@ void Launcher::Start()
 
 bool Launcher::OnTouchDown(const Vector2 &pos)
 {
+	Vector3 cam_pos_pixel = camera->GetTransform()->GetPosition() * 100;
+	cam_pos_pixel.y = -cam_pos_pixel.y;
+	cam_pos_pixel += -Vector3(Screen::GetWidth() * 0.5f, Screen::GetHeight() * 0.5f);
+
+	Vector2 pixel_world = pos + Vector2(cam_pos_pixel.x, cam_pos_pixel.y);
+
+	if(mon->OnTouchDown(pixel_world))
+	{
+		auto offset = mon->GetPos() - hero->GetPos();
+		int ox = (int) offset.x;
+		int oy = (int) offset.y;
+
+		if(ox >= -1 && ox<= 1 && oy >= -1 && oy<= 1)
+		{
+			float theta = atan2(offset.x, -offset.y) * Mathf::Rad2Deg + 22.5f;
+			if(theta < 0)
+			{
+				theta += 360;
+			}
+
+			hero->ActionAttack((int) (theta / 45));
+		}
+		
+		return true;
+	}
+
 	return false;
 }
 

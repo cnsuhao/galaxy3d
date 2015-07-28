@@ -47,6 +47,8 @@ public:
 
 	MirMonster(int file, int index, int x, int y, int dir);
 	void Update();
+	bool OnTouchDown(const Vector2 &pos);
+	Vector2 GetPos() const {return Vector2((float) m_pox_x, (float) m_pox_y);}
 
 private:
 	int m_file;
