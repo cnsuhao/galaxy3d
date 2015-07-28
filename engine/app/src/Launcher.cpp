@@ -26,7 +26,7 @@ void Launcher::Start()
 	hero2 = std::shared_ptr<MirHero>(new MirHero(x0 + 1, y0, 6, 2, 26, 0));
 	hero3 = std::shared_ptr<MirHero>(new MirHero(x0 + 2, y0, 11, 2, 37, 0));
 
-	mon = std::shared_ptr<MirMonster>(new MirMonster(12, 2, x0, y0 + 2, 4));
+	mon = std::shared_ptr<MirMonster>(new MirMonster(12, 2, x0 + 1, y0 + 1, 4));
 	
 	camera->GetTransform()->SetPosition(Vector3(Mathf::Round((x0 + 0.5f) * MirMap::TILE_WIDTH), Mathf::Round(-(y0 + 0.5f + CAMERA_OFFSET_Y) * MirMap::TILE_HEIGHT), 0) * 0.01f);
 	camera->GetTransform()->SetParent(hero->GetGameObject()->GetTransform());
@@ -59,6 +59,11 @@ void Launcher::Start()
 	uir->UpdateSprite();
 }
 
+bool Launcher::OnTouchDown(const Vector2 &pos)
+{
+	return false;
+}
+
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
@@ -71,9 +76,12 @@ void Launcher::Update()
 
 		if(t->phase == TouchPhase::Began)
 		{
-			touch_down = true;
+			if(!OnTouchDown(t->position))
+			{
+				touch_down = true;
 
-			touch_pos = t->position;
+				touch_pos = t->position;
+			}
 		}
 		else if(t->phase == TouchPhase::Ended ||
 			t->phase == TouchPhase::Canceled)
