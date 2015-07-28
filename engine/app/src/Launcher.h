@@ -39,6 +39,7 @@ namespace Galaxy3D
 
 		virtual void Start();
 		virtual void Update();
+		bool OnTouchDown(const Vector2 &pos);
 	};
 }
 
