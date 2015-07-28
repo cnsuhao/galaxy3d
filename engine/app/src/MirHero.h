@@ -63,7 +63,9 @@ public:
 	std::shared_ptr<GameObject> GetGameObject() const {return m_obj;}
 	void Update();
 	void ActionMove(int dir);
+	void ActionAttack(int dir);
 	void SetMain(bool is_main) {m_is_main = is_main;}
+	Vector2 GetPos() const {return Vector2((float) m_pox_x, (float) m_pox_y);}
 
 private:
 	int m_pox_x;

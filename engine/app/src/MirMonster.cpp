@@ -110,23 +110,54 @@ void MirMonster::UpdateMove()
 {
 	float pox_x_offset = g_dirs[m_direction].x * (m_frame + 1) * 1.0f / g_action_frames_360[(int) m_action].length;
 	m_pox_y_offset = g_dirs[m_direction].y * (m_frame + 1) * 1.0f / g_action_frames_360[(int) m_action].length;
-
 	float x = (m_pox_x + pox_x_offset) * MirMap::TILE_WIDTH;
 	float y = (m_pox_y + m_pox_y_offset) * MirMap::TILE_HEIGHT;
 	int ix = Mathf::RoundToInt(x);
 	int iy = Mathf::RoundToInt(y);
-
 	if(ix % 2 == 1)
 	{
 		ix++;
 	}
-
 	if(iy % 2 == 1)
 	{
 		iy++;
 	}
+	auto pos_pixel = Vector2((float) ix, (float) iy);
 
-	m_obj->GetTransform()->SetPosition(Vector3((float) ix, (float) -iy, 0) * MIR_PIXEL_TO_UNIT);
+	m_obj->GetTransform()->SetPosition(Vector3(pos_pixel.x, -pos_pixel.y, 0) * MIR_PIXEL_TO_UNIT);
+}
+
+bool MirMonster::OnTouchDown(const Vector2 &pos)
+{
+	float x = (float) m_pox_x * MirMap::TILE_WIDTH;
+	float y = (float) m_pox_y * MirMap::TILE_HEIGHT;
+	int ix = Mathf::RoundToInt(x);
+	int iy = Mathf::RoundToInt(y);
+	if(ix % 2 == 1)
+	{
+		ix++;
+	}
+	if(iy % 2 == 1)
+	{
+		iy++;
+	}
+	auto pos_pixel = Vector2((float) ix, (float) iy);
+
+	int index = g_action_frames_360[(int) m_action].index + g_action_frames_360[(int) m_action].full * m_direction + m_frame;
+	Frame &frame = m_frames_body->frames[index];
+
+	pos_pixel.x += frame.info.offset_x;
+	pos_pixel.y += frame.info.offset_y;
+
+	if(	pos.x > pos_pixel.x &&
+		pos.y > pos_pixel.y &&
+		pos.x < pos_pixel.x + frame.info.rect.width * m_frames_body->tex_w &&
+		pos.y < pos_pixel.y + frame.info.rect.height * m_frames_body->tex_h)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void MirMonster::OnActionEnd()
@@ -149,7 +180,7 @@ void MirMonster::UpdateBodyTexture()
 	Frame &frame = m_frames_body->frames[index];
 
 	m_renderer_body->SetSprite(frame.sprite);
-	m_renderer_body->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10));
+	m_renderer_body->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10 - 2));
 	m_renderer_body->UpdateSprite();
 	
 	float x = frame.info.offset_x;

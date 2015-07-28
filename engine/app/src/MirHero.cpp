@@ -399,6 +399,17 @@ void MirHero::ActionMove(int dir)
 	}
 }
 
+void MirHero::ActionAttack(int dir)
+{
+	switch(m_action)
+	{
+	case Action::Idle:
+		m_direction = dir;
+		ChangeAction(Action::Attack);
+		break;
+	}
+}
+
 void MirHero::OnActionEnd()
 {
 	switch(m_action)
