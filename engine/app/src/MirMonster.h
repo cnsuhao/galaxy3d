@@ -46,6 +46,7 @@ public:
 	};
 
 	MirMonster(int file, int index, int x, int y, int dir);
+	void Update();
 
 private:
 	int m_file;
@@ -54,6 +55,7 @@ private:
 	int m_frame_count;
 	int m_pox_x;
 	int m_pox_y;
+	float m_pox_y_offset;
 	std::shared_ptr<GameObject> m_obj;
 	std::shared_ptr<SpriteRenderer> m_renderer_body;
 	Frames *m_frames_body;
@@ -64,8 +66,12 @@ private:
 	Action::Enum m_cmd_action;
 	int m_cmd_dir;
 
+	static void LoadTexture(const std::string &name, Frames **frames, int file);
 	void CreateSprites();
 	std::shared_ptr<SpriteRenderer> CreateSprite();
+	void UpdateBodyTexture();
+	void OnActionEnd();
+	void UpdateMove();
 };
 
 #endif
