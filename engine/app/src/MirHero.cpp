@@ -4,8 +4,8 @@
 #include "Application.h"
 #include "GTFile.h"
 #include "GTTime.h"
-#include "zlib.h"
 #include "Debug.h"
+#include "zlib.h"
 
 struct ActionFrame
 {
@@ -48,7 +48,7 @@ static Direction g_dirs[] =
 	{-1, -1},
 };
 
-std::unordered_map<std::string, MirHero::Frames> g_frames;
+static std::unordered_map<std::string, MirHero::Frames> g_frames;
 
 MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex, int dir):
 	m_pox_x(x),
