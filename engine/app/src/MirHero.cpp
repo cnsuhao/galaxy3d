@@ -21,9 +21,9 @@ static ActionFrame g_action_frames[] =
 	{8 * 8,		6, 8, 0.12f},
 	{8 * 16,	6, 8, 0.12f},
 	{8 * 24,	1, 1, 0.5f},
-	{8 * 25,	6, 8, 0.12f},
-	{8 * 33,	6, 8, 0.12f},
-	{8 * 41,	8, 8, 0.12f},
+	{8 * 25,	6, 8, 0.1f},
+	{8 * 33,	6, 8, 0.1f},
+	{8 * 41,	8, 8, 0.1f},
 	{8 * 49,	6, 8, 0.15f},
 	{8 * 57,	2, 2, 0.32f},
 	{8 * 59,	3, 8, 0.2f},
@@ -68,7 +68,7 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex, int dir)
 	m_cmd_dir(-1),
 	m_is_main(false),
 	m_attack(false),
-	m_attack_ready_time(0.4f)
+	m_attack_ready_time(0.3f)
 {
 	CreateSprites();
 
@@ -378,6 +378,8 @@ void MirHero::ActionMove(int dir)
 	{
 	case Action::Attack:
 		m_attack = false;
+		m_cmd_dir = dir;
+		m_cmd_action = Action::Walk;
 		break;
 	case Action::ReadyBattle:
 		m_attack = false;
@@ -502,8 +504,29 @@ void MirHero::OnActionEnd()
 		}
 		break;
 	case Action::Attack:
-		m_action = Action::ReadyBattle;
-		m_action_time = GTTime::GetRealTimeSinceStartup();
+		if(m_cmd_action == Action::Walk)
+		{
+			m_direction = m_cmd_dir;
+			if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
+			{
+				m_action = Action::Walk;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
+				if(m_is_main)
+				{
+					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
+				}
+			}
+			else
+			{
+				m_action = Action::Idle;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
+			}
+		}
+		else
+		{
+			m_action = Action::ReadyBattle;
+			m_action_time = GTTime::GetRealTimeSinceStartup();
+		}
 		break;
 	case Action::ReadyBattle:
 		if(m_attack)
