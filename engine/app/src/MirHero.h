@@ -83,12 +83,15 @@ private:
 	Frames *m_frames_hair;
 	Frames *m_frames_weapon;
 	Action::Enum m_action;
+	float m_action_time;
 	int m_direction;
 	int m_frame;
 	float m_frame_time;
 	Action::Enum m_cmd_action;
 	int m_cmd_dir;
 	bool m_is_main;
+	bool m_attack;
+	float m_attack_ready_time;
 
 	static void LoadTexture(const std::string &name, Frames **frames);
 	void CreateSprites();

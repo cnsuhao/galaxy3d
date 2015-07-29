@@ -66,11 +66,14 @@ MirHero::MirHero(int x, int y, int body, int hair, int weapon, int sex, int dir)
 	m_frame(0),
 	m_cmd_action(Action::None),
 	m_cmd_dir(-1),
-	m_is_main(false)
+	m_is_main(false),
+	m_attack(false),
+	m_attack_ready_time(0.4f)
 {
 	CreateSprites();
 
 	m_frame_time = GTTime::GetRealTimeSinceStartup();
+	m_action_time = GTTime::GetRealTimeSinceStartup();
 }
 
 void MirHero::LoadTexture(const std::string &name, Frames **pframes)
@@ -350,6 +353,7 @@ void MirHero::Update()
 void MirHero::ChangeAction(Action::Enum action)
 {
 	m_action = action;
+	m_action_time = GTTime::GetRealTimeSinceStartup();
 	m_frame = 0;
 	m_frame_time = GTTime::GetRealTimeSinceStartup();
 
@@ -372,6 +376,11 @@ void MirHero::ActionMove(int dir)
 {
 	switch(m_action)
 	{
+	case Action::Attack:
+		m_attack = false;
+		break;
+	case Action::ReadyBattle:
+		m_attack = false;
 	case Action::Idle:
 		if(MirMap::CanMove(g_dirs[dir].x, g_dirs[dir].y, 1))
 		{
@@ -406,6 +415,10 @@ void MirHero::ActionAttack(int dir)
 	case Action::Idle:
 		m_direction = dir;
 		ChangeAction(Action::Attack);
+		m_attack = true;
+		break;
+	case Action::ReadyBattle:
+		m_attack = true;
 		break;
 	}
 }
@@ -433,6 +446,7 @@ void MirHero::OnActionEnd()
 			else if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
 			{
 				m_action = Action::Walk;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
 				if(m_is_main)
 				{
 					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
@@ -441,11 +455,13 @@ void MirHero::OnActionEnd()
 			else
 			{
 				m_action = Action::Idle;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
 			}
 		}
 		else
 		{
 			m_action = Action::Idle;
+			m_action_time = GTTime::GetRealTimeSinceStartup();
 		}
 		break;
 	case Action::Walk:
@@ -467,6 +483,7 @@ void MirHero::OnActionEnd()
 			else if(MirMap::CanMove(g_dirs[m_direction].x, g_dirs[m_direction].y, 1))
 			{
 				m_action = Action::Walk;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
 				if(m_is_main)
 				{
 					MirMap::Scroll(g_dirs[m_direction].x, g_dirs[m_direction].y, 1);
@@ -475,11 +492,35 @@ void MirHero::OnActionEnd()
 			else
 			{
 				m_action = Action::Idle;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
 			}
 		}
 		else
 		{
 			m_action = Action::Idle;
+			m_action_time = GTTime::GetRealTimeSinceStartup();
+		}
+		break;
+	case Action::Attack:
+		m_action = Action::ReadyBattle;
+		m_action_time = GTTime::GetRealTimeSinceStartup();
+		break;
+	case Action::ReadyBattle:
+		if(m_attack)
+		{
+			if(GTTime::GetRealTimeSinceStartup() - m_action_time > m_attack_ready_time)
+			{
+				m_action = Action::Attack;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
+			}
+		}
+		else
+		{
+			if(GTTime::GetRealTimeSinceStartup() - m_action_time > m_attack_ready_time * 4)
+			{
+				m_action = Action::Idle;
+				m_action_time = GTTime::GetRealTimeSinceStartup();
+			}
 		}
 		break;
 	}
