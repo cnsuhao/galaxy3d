@@ -84,12 +84,12 @@ namespace Galaxy3D
 
 	void Label::LoadImage(const std::string &name, const std::string &file)
 	{
-		std::vector<const std::string> files;
+		std::vector<std::string> files;
 		files.push_back(file);
 		LoadImages(name, files);
 	}
 
-	void Label::LoadImages(const std::string &name, const std::vector<const std::string> &files)
+	void Label::LoadImages(const std::string &name, const std::vector<std::string> &files)
 	{
 		std::vector<std::shared_ptr<Texture2D>> textures;
 		for(size_t i=0; i<files.size(); i++)

@@ -84,7 +84,7 @@ namespace Galaxy3D
 		static std::shared_ptr<Texture2D> GetFontTexture();
 		static void LoadFont(const std::string &name, const std::string &file);
 		static void LoadImage(const std::string &name, const std::string &file);
-		static void LoadImages(const std::string &name, const std::vector<const std::string> &files);
+		static void LoadImages(const std::string &name, const std::vector<std::string> &files);
 		static std::shared_ptr<Texture2D> GetRichImageTexture(const std::string &name, int index);
 		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::LeftTop, LabelAlign::Enum align = LabelAlign::Auto, bool rich = false);
 		void SetText(const std::string &text);
