@@ -175,7 +175,7 @@ std::shared_ptr<SpriteRenderer> MirHero::CreateSprite()
 	std::shared_ptr<SpriteRenderer> s = GameObject::Create("")->AddComponent<SpriteRenderer>();
 	s->GetTransform()->SetParent(m_obj->GetTransform());
 
-	auto mat = Material::Create("Mir Sprite");
+	auto mat = Material::Create("UI/Mir Sprite");
 	mat->SetTexture("ColorTable", MirImage::GetColorTable());
 	s->SetSharedMaterial(mat);
 

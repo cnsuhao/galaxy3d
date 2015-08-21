@@ -18,7 +18,7 @@ namespace Galaxy3D
 		Vector2 TEXCOORD0;
 	};
 
-	struct VertexTerrain
+	struct VertexMesh
 	{
 		Vector3 POSITION;
 		Vector3 NORMAL;
@@ -27,14 +27,11 @@ namespace Galaxy3D
 		Vector2 TEXCOORD1;
 	};
 
-	struct VertexMesh
+	struct VertexUI
 	{
 		Vector3 POSITION;
-		Vector3 NORMAL;
-		Vector4 TANGENT;
 		Color COLOR;
 		Vector2 TEXCOORD0;
-		Vector2 TEXCOORD1;
 	};
 }
 

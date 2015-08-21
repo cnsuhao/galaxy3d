@@ -10,7 +10,7 @@ namespace Galaxy3D
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
 
-		SetSharedMaterial(Material::Create("Text"));
+		SetSharedMaterial(Material::Create("UI/Text"));
 	}
 
 	TextRenderer::~TextRenderer()
@@ -143,7 +143,7 @@ namespace Galaxy3D
 
 		if(!m_material_img)
 		{
-			m_material_img = Material::Create("Sprite");
+			m_material_img = Material::Create("UI/Sprite");
 		}
 
 		int c = 0;
@@ -296,24 +296,12 @@ namespace Galaxy3D
 				memcpy(p, &pos, sizeof(Vector3));
 				p += sizeof(Vector3);
 
-				Vector3 n;
-				memcpy(p, &n, sizeof(Vector3));
-				p += sizeof(Vector3);
-
-				Vector4 t;
-				memcpy(p, &t, sizeof(Vector4));
-				p += sizeof(Vector4);
-
 				Color c = colors[i] * color;
 				memcpy(p, &c, sizeof(Color));
 				p += sizeof(Color);
 
 				Vector2 v1 = uv[i];
 				memcpy(p, &v1, sizeof(Vector2));
-				p += sizeof(Vector2);
-
-				Vector2 v2;
-				memcpy(p, &v2, sizeof(Vector2));
 				p += sizeof(Vector2);
 			}
 		}
@@ -411,14 +399,6 @@ namespace Galaxy3D
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
-			Vector3 n;
-			memcpy(p, &n, sizeof(Vector3));
-			p += sizeof(Vector3);
-
-			Vector4 t;
-			memcpy(p, &t, sizeof(Vector4));
-			p += sizeof(Vector4);
-
 			Color c = color;
 			memcpy(p, &c, sizeof(Color));
 			p += sizeof(Color);
@@ -426,17 +406,13 @@ namespace Galaxy3D
 			Vector2 v1 = uv[i];
 			memcpy(p, &v1, sizeof(Vector2));
 			p += sizeof(Vector2);
-
-			Vector2 v2;
-			memcpy(p, &v2, sizeof(Vector2));
-			p += sizeof(Vector2);
 		}
 	}
 
 	void TextRenderer::CreateVertexBuffer()
 	{
 		int vertex_count = m_label->GetVertexCount();
-		int buffer_size = sizeof(VertexMesh) * vertex_count;
+		int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
 		fill_vertex_buffer(buffer, m_label);
@@ -463,7 +439,7 @@ namespace Galaxy3D
 	void TextRenderer::UpdateVertexBuffer()
 	{
 		int vertex_count = m_label->GetVertexCount();
-		int buffer_size = sizeof(VertexMesh) * vertex_count;
+		int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
 		fill_vertex_buffer(buffer, m_label);
@@ -532,7 +508,7 @@ namespace Galaxy3D
 			{
 				ID3D11Buffer *vertex_buffer = nullptr;
 
-				int buffer_size = sizeof(VertexMesh) * 4;
+				int buffer_size = sizeof(VertexUI) * 4;
 				char *buffer = (char *) malloc(buffer_size);
 
 				fill_vertex_buffer(buffer, images[j], m_label, lines[i]);
@@ -570,7 +546,7 @@ namespace Galaxy3D
 			{
 				ID3D11Buffer *vertex_buffer = m_vertex_buffer_img[c];
 
-				int buffer_size = sizeof(VertexMesh) * 4;
+				int buffer_size = sizeof(VertexUI) * 4;
 				char *buffer = (char *) malloc(buffer_size);
 
 				fill_vertex_buffer(buffer, images[j], m_label, lines[i]);

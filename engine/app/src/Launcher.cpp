@@ -46,7 +46,7 @@ void Launcher::Start()
 	uir->GetTransform()->SetParent(camera->GetTransform());
 	uir->GetTransform()->SetLocalPosition(Vector3(0, -Screen::GetHeight()/2.0f, 0) * 0.01f);
 
-	auto mat = Material::Create("Mir Sprite");
+	auto mat = Material::Create("UI/Mir Sprite");
 	mat->SetTexture("ColorTable", MirImage::GetColorTable());
 	uir->SetSharedMaterial(mat);
 	uir->SetSortingOrder(1000, 0);

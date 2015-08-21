@@ -10,7 +10,7 @@ namespace Galaxy3D
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
 
-		SetSharedMaterial(Material::Create("Sprite"));
+		SetSharedMaterial(Material::Create("UI/Sprite"));
 	}
 
 	SpriteRenderer::~SpriteRenderer()
@@ -100,14 +100,6 @@ namespace Galaxy3D
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
-			Vector3 n;
-			memcpy(p, &n, sizeof(Vector3));
-			p += sizeof(Vector3);
-
-			Vector4 t;
-			memcpy(p, &t, sizeof(Vector4));
-			p += sizeof(Vector4);
-
 			Color c = color;
 			memcpy(p, &c, sizeof(Color));
 			p += sizeof(Color);
@@ -115,16 +107,12 @@ namespace Galaxy3D
 			Vector2 v1 = uv[i];
 			memcpy(p, &v1, sizeof(Vector2));
 			p += sizeof(Vector2);
-
-			Vector2 v2;
-			memcpy(p, &v2, sizeof(Vector2));
-			p += sizeof(Vector2);
 		}
 	}
 
 	void SpriteRenderer::CreateVertexBuffer(const std::shared_ptr<Sprite> &sprite)
 	{
-		int buffer_size = sizeof(VertexMesh) * 4;
+		int buffer_size = sizeof(VertexUI) * 4;
 		char *buffer = (char *) malloc(buffer_size);
 
 		fill_vertex_buffer(buffer, sprite, m_color);
@@ -150,7 +138,7 @@ namespace Galaxy3D
 
 	void SpriteRenderer::UpdateVertexBuffer(const std::shared_ptr<Sprite> &sprite)
 	{
-		int buffer_size = sizeof(VertexMesh) * 4;
+		int buffer_size = sizeof(VertexUI) * 4;
 		char *buffer = (char *) malloc(buffer_size);
 
 		fill_vertex_buffer(buffer, sprite, m_color);

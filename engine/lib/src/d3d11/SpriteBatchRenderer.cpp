@@ -10,7 +10,7 @@ namespace Galaxy3D
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
 
-		SetSharedMaterial(Material::Create("Sprite"));
+		SetSharedMaterial(Material::Create("UI/Sprite"));
 	}
 
 	SpriteBatchRenderer::~SpriteBatchRenderer()
@@ -132,23 +132,11 @@ namespace Galaxy3D
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
-			Vector3 n;
-			memcpy(p, &n, sizeof(Vector3));
-			p += sizeof(Vector3);
-
-			Vector4 t;
-			memcpy(p, &t, sizeof(Vector4));
-			p += sizeof(Vector4);
-
 			memcpy(p, &c, sizeof(Color));
 			p += sizeof(Color);
 
 			Vector2 v1 = uv[i];
 			memcpy(p, &v1, sizeof(Vector2));
-			p += sizeof(Vector2);
-
-			Vector2 v2;
-			memcpy(p, &v2, sizeof(Vector2));
 			p += sizeof(Vector2);
 		}
 	}
@@ -156,13 +144,13 @@ namespace Galaxy3D
 	void SpriteBatchRenderer::CreateVertexBuffer()
 	{
 		int sprite_count = m_sprites.size();
-		int buffer_size = sizeof(VertexMesh) * 4 * sprite_count;
+		int buffer_size = sizeof(VertexUI) * 4 * sprite_count;
 		char *buffer = (char *) malloc(buffer_size);
 
 		auto j = m_sprites.begin();
 		for(int i=0; i<sprite_count; i++)
 		{
-			fill_vertex_buffer(buffer + i * (sizeof(VertexMesh) * 4), *j, m_color);
+			fill_vertex_buffer(buffer + i * (sizeof(VertexUI) * 4), *j, m_color);
 			j++;
 		}
 
@@ -188,13 +176,13 @@ namespace Galaxy3D
 	void SpriteBatchRenderer::UpdateVertexBuffer()
 	{
 		int sprite_count = m_sprites.size();
-		int buffer_size = sizeof(VertexMesh) * 4 * sprite_count;
+		int buffer_size = sizeof(VertexUI) * 4 * sprite_count;
 		char *buffer = (char *) malloc(buffer_size);
 
 		auto j = m_sprites.begin();
 		for(int i=0; i<sprite_count; i++)
 		{
-			fill_vertex_buffer(buffer + i * (sizeof(VertexMesh) * 4), *j, m_color);
+			fill_vertex_buffer(buffer + i * (sizeof(VertexUI) * 4), *j, m_color);
 			j++;
 		}
 
