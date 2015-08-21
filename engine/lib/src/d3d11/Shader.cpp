@@ -85,24 +85,22 @@ static const int SEMANTICS_SIZE_SKINNED[SEMANTICS_COUNT_SKINNED] =
 	12, 12, 16, 16, 16, 8,
 };
 
-static const int SEMANTICS_COUNT_TERRAIN = 4;
-static const std::string SEMANTICS_TERRAIN[SEMANTICS_COUNT_TERRAIN] =
+static const int SEMANTICS_COUNT_UI = 4;
+static const std::string SEMANTICS_UI[SEMANTICS_COUNT_UI] =
 {
 	POSITION,
-	NORMAL,
-	TANGENT,
+	COLOR,
 	TEXCOORD,
 };
-static const DXGI_FORMAT SEMANTICS_FORMAT_TERRAIN[SEMANTICS_COUNT_TERRAIN] =
+static const DXGI_FORMAT SEMANTICS_FORMAT_UI[SEMANTICS_COUNT_UI] =
 {
-	DXGI_FORMAT_R32G32B32_FLOAT,
 	DXGI_FORMAT_R32G32B32_FLOAT,
 	DXGI_FORMAT_R32G32B32A32_FLOAT,
 	DXGI_FORMAT_R32G32_FLOAT,
 };
-static const int SEMANTICS_SIZE_TERRAIN[SEMANTICS_COUNT_TERRAIN] =
+static const int SEMANTICS_SIZE_UI[SEMANTICS_COUNT_UI] =
 {
-	12, 12, 16, 8,
+	12, 16, 8,
 };
 
 static const int SEMANTICS_COUNT_MESH = 5;
@@ -595,7 +593,7 @@ namespace Galaxy3D
 
 	void Shader::CreateInputLayout(void *buffer, int size, const std::string &src, VertexShader *shader, const std::string &shader_name)
 	{
-		bool terrain = GTString(shader_name).StartsWith("Terrain");
+		bool ui = GTString(shader_name).StartsWith("UI");
 		bool skinned = GTString(shader_name).StartsWith("SkinnedMesh");
 		
 		std::vector<GTString> semantics = find_semantics(src);
@@ -615,17 +613,17 @@ namespace Galaxy3D
 
 			int offset = 0;
 			
-			if(terrain)
+			if(ui)
 			{
-				for(int j=0; j<SEMANTICS_COUNT_TERRAIN; j++)
+				for(int j=0; j<SEMANTICS_COUNT_UI; j++)
 				{
-					if(name.str == SEMANTICS_TERRAIN[j])
+					if(name.str == SEMANTICS_UI[j])
 					{
-						desc.SemanticName = SEMANTICS_TERRAIN[j].c_str();
+						desc.SemanticName = SEMANTICS_UI[j].c_str();
 						desc.SemanticIndex = index;
-						desc.Format = SEMANTICS_FORMAT_TERRAIN[j];
+						desc.Format = SEMANTICS_FORMAT_UI[j];
 						desc.InputSlot = 0;
-						desc.AlignedByteOffset = offset + index * SEMANTICS_SIZE_TERRAIN[j];
+						desc.AlignedByteOffset = offset + index * SEMANTICS_SIZE_UI[j];
 						desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 						desc.InstanceDataStepRate = 0;
 
@@ -633,7 +631,7 @@ namespace Galaxy3D
 						break;
 					}
 
-					offset += SEMANTICS_SIZE_TERRAIN[j];
+					offset += SEMANTICS_SIZE_UI[j];
 				}
 			}
 			else if(skinned)
@@ -683,9 +681,9 @@ namespace Galaxy3D
 		auto device = GraphicsDevice::GetInstance()->GetDevice();
 		HRESULT hr = device->CreateInputLayout(&descs[0], descs.size(), buffer, size, &shader->input_layout);
 
-		if(terrain)
+		if(ui)
 		{
-			shader->vertex_stride = sizeof(VertexTerrain);
+			shader->vertex_stride = sizeof(VertexUI);
 		}
 		else if(skinned)
 		{

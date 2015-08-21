@@ -4,9 +4,9 @@
 #include "Application.h"
 
 static const float MAP_UPDATE_DELTA_TIME = 0.1f;
-static const int MAP_WIDTH = 23;
-static const int MAP_HEIGHT_TOP = 10;
-static const int MAP_HEIGHT_BOTTOM = 34;
+static const int MAP_WIDTH = 1;// 23;
+static const int MAP_HEIGHT_TOP = 1;// 10;
+static const int MAP_HEIGHT_BOTTOM = 1;// 34;
 static float g_map_update_time;
 std::unordered_map<int, MapTile> g_map_tiles;
 std::string g_map;
@@ -346,7 +346,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		{
 			auto sprite = Sprite::Create(t.back_image->texture);
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
-			auto mat = Material::Create("Mir Map");
+			auto mat = Material::Create("UI/Mir Map");
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
@@ -365,7 +365,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 		{
 			auto sprite = Sprite::Create(t.middle_image->texture);
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
-			auto mat = Material::Create("Mir Map");
+			auto mat = Material::Create("UI/Mir Map");
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
@@ -393,7 +393,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			float y = ((t.y + 1) * TILE_HEIGHT - t.front_images[0]->data.h/2) * MIR_PIXEL_TO_UNIT;
 
 			auto renderer = GameObject::Create("tile")->AddComponent<SpriteRenderer>();
-			auto mat = Material::Create("Mir Sprite");
+			auto mat = Material::Create("UI/Mir Sprite");
 			mat->SetTexture("ColorTable", MirImage::GetColorTable());
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(t.front_sprites[t.front_frame]);
@@ -405,7 +405,7 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 				x += (t.front_images[0]->data.x) * MIR_PIXEL_TO_UNIT;
 				y += (t.front_images[0]->data.y) * MIR_PIXEL_TO_UNIT;
 
-				mat->SetShader(Shader::Find("Mir Effect"));
+				mat->SetShader(Shader::Find("UI/Mir Effect"));
 			}
 
 			renderer->GetTransform()->SetPosition(Vector3(x, -y, 0));

@@ -1,4 +1,4 @@
-Shader Sprite
+UI/Shader Sprite
 {
 	Tags
 	{
@@ -42,8 +42,8 @@ Shader Sprite
 		struct VS_INPUT
 		{
 			float4 Position : POSITION;
-			float2 Texcoord0 : TEXCOORD0;
 			float4 Color : COLOR;
+			float2 Texcoord0 : TEXCOORD0;
 		};
 
 		struct PS_INPUT

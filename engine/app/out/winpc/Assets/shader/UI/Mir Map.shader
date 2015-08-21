@@ -1,4 +1,4 @@
-Shader Mir Sprite
+UI/Shader Mir Map
 {
 	Tags
 	{
@@ -18,7 +18,7 @@ Shader Mir Sprite
 		ZWrite Off
 		ZTest LEqual
 		Offset -1, -1
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend Off
 		BlendOp Add
 		Stencil
 		{
@@ -42,8 +42,8 @@ Shader Mir Sprite
 		struct VS_INPUT
 		{
 			float4 Position : POSITION;
-			float2 Texcoord0 : TEXCOORD0;
 			float4 Color : COLOR;
+			float2 Texcoord0 : TEXCOORD0;
 		};
 
 		struct PS_INPUT
