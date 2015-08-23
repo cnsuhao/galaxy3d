@@ -111,6 +111,12 @@
     <ClCompile Include="..\src\Input.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\d3d11\Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MeshRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -248,9 +254,6 @@
     <ClInclude Include="..\src\d3d11\Material.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\ShaderPropertyType.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\LayerMask.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -270,6 +273,15 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Input.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Mesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ShaderPropertyType.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

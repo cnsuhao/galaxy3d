@@ -94,7 +94,7 @@ namespace Galaxy3D
 		std::vector<std::shared_ptr<Texture2D>> textures;
 		for(size_t i=0; i<files.size(); i++)
 		{
-			auto tex = Texture2D::LoadImageFile(files[i], FilterMode::Point, TextureWrapMode::Clamp);
+			auto tex = Texture2D::LoadFromFile(files[i], FilterMode::Point, TextureWrapMode::Clamp);
 			textures.push_back(tex);
 		}
 

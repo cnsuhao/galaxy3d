@@ -18,6 +18,7 @@
     <ClCompile Include="..\src\d3d11\Camera.cpp" />
     <ClCompile Include="..\src\d3d11\GraphicsDevice.cpp" />
     <ClCompile Include="..\src\d3d11\Material.cpp" />
+    <ClCompile Include="..\src\d3d11\Mesh.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="..\src\Label.cpp" />
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
+    <ClCompile Include="..\src\MeshRenderer.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
     <ClCompile Include="..\src\Quaternion.cpp" />
     <ClCompile Include="..\src\Ray.cpp" />
@@ -56,12 +58,12 @@
     <ClInclude Include="..\src\d3d11\Camera.h" />
     <ClInclude Include="..\src\d3d11\GraphicsDevice.h" />
     <ClInclude Include="..\src\d3d11\Material.h" />
+    <ClInclude Include="..\src\d3d11\Mesh.h" />
     <ClInclude Include="..\src\d3d11\PixelShader.h" />
     <ClInclude Include="..\src\d3d11\RenderStates.h" />
     <ClInclude Include="..\src\d3d11\Shader.h" />
     <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h" />
     <ClInclude Include="..\src\d3d11\ShaderPass.h" />
-    <ClInclude Include="..\src\d3d11\ShaderPropertyType.h" />
     <ClInclude Include="..\src\d3d11\ShaderSampler.h" />
     <ClInclude Include="..\src\d3d11\ShaderTexture.h" />
     <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h" />
@@ -83,6 +85,7 @@
     <ClInclude Include="..\src\LayerMask.h" />
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
+    <ClInclude Include="..\src\MeshRenderer.h" />
     <ClInclude Include="..\src\Object.h" />
     <ClInclude Include="..\src\Quaternion.h" />
     <ClInclude Include="..\src\Ray.h" />
@@ -90,6 +93,7 @@
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\Screen.h" />
     <ClInclude Include="..\src\ShaderNode.h" />
+    <ClInclude Include="..\src\ShaderPropertyType.h" />
     <ClInclude Include="..\src\Sprite.h" />
     <ClInclude Include="..\src\SpriteNode.h" />
     <ClInclude Include="..\src\Texture.h" />

@@ -8,8 +8,8 @@ namespace Galaxy3D
 {
 	class Object
 	{
-	public:
-		virtual ~Object() {}
+    public:
+        virtual ~Object() {}
 		virtual void SetName(const std::string &value) {m_name = value;}
 		std::string GetName() const {return m_name;}
 

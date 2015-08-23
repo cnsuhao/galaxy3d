@@ -88,7 +88,7 @@ namespace Galaxy3D
 		return std::shared_ptr<Texture2D>(new Texture2D(w, h, format, filter_mode, wrap_mode));
 	}
 
-	std::shared_ptr<Texture2D> Texture2D::LoadImageData(char *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
+	std::shared_ptr<Texture2D> Texture2D::CreateWithData(char *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
 	{
 		std::shared_ptr<Texture2D> tex;
 
@@ -141,14 +141,14 @@ namespace Galaxy3D
 		return tex;
 	}
 
-	std::shared_ptr<Texture2D> Texture2D::LoadImageFile(const std::string &file, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
+	std::shared_ptr<Texture2D> Texture2D::LoadFromFile(const std::string &file, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
 	{
 		std::shared_ptr<Texture2D> tex;
 
 		if(GTFile::Exist(file))
 		{
 			auto data = GTFile::ReadAllBytes(file);
-			tex = LoadImageData(&data[0], data.size(), filter_mode, wrap_mode);
+			tex = CreateWithData(&data[0], data.size(), filter_mode, wrap_mode);
 			tex->SetName(file);
 		}
 

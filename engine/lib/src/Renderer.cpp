@@ -141,6 +141,7 @@ namespace Galaxy3D
 		auto camera = Camera::GetCurrent();
 
 		GTTime::m_draw_call = 0;
+
 		for(auto i : m_renderers)
 		{
 			auto obj = i->GetGameObject();
@@ -151,8 +152,15 @@ namespace Galaxy3D
 				((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
 			{
 				i->Render();
-				GTTime::m_draw_call++;
 			}
 		}
 	}
+
+    void Renderer::DrawIndexed(int count, int offset)
+    {
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        context->DrawIndexed(count, offset, 0);
+
+        GTTime::m_draw_call++;
+    }
 }

@@ -17,6 +17,7 @@ namespace Galaxy3D
 	public:
 		static void Sort();
 		static void RenderAll();
+        virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
 		void SetSortingOrder(int layer, int order);
@@ -26,6 +27,8 @@ namespace Galaxy3D
 		std::shared_ptr<Material> GetSharedMaterial() const;
 		std::vector<std::shared_ptr<Material>> GetMaterials() const;
 		std::shared_ptr<Material> GetMaterial() const;
+        void SetLightmapIndex(int lightmap_index) {m_lightmap_index = lightmap_index;}
+        void SetLightmapTilingOffset(Vector4 lightmap_tiling_offset) {m_lightmap_tiling_offset = lightmap_tiling_offset;}
 
 	protected:
 		bool m_cast_shadow;
@@ -37,10 +40,8 @@ namespace Galaxy3D
 		int m_sorting_order;
 
 		Renderer();
-		virtual ~Renderer();
+        void DrawIndexed(int count, int offset);
 		virtual void Render() = 0;
-		void AddDrawCall() const {GTTime::m_draw_call++;}
-		void DecDrawCall() const {GTTime::m_draw_call--;}
 
 	private:
 		static std::list<Renderer *> m_renderers;
