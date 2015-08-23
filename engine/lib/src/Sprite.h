@@ -12,7 +12,7 @@ namespace Galaxy3D
 	class Sprite : Object
 	{
 	public:
-		static std::shared_ptr<Sprite> Create(const std::string &file);
+		static std::shared_ptr<Sprite> LoadFromFile(const std::string &file);
 		static std::shared_ptr<Sprite> Create(const std::shared_ptr<Texture2D> &texture);
 		//	rect:指定原贴图上的像素矩形区域，左上为起点
 		//	pivot:中心点，相对于sprite rect，(0，0)为左上角，（1，1）为右下角

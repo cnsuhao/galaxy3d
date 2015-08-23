@@ -44,13 +44,11 @@ namespace Galaxy3D
 	{
 		if(m_sprites.empty())
 		{
-			DecDrawCall();
 			return;
 		}
 
 		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
 		{
-			DecDrawCall();
 			return;
 		}
 
@@ -76,7 +74,7 @@ namespace Galaxy3D
 		pass->rs->Apply();
 		mat->ApplyPass(0);
 
-		context->DrawIndexed(6 * m_sprites.size(), 0, 0);
+        DrawIndexed(6 * m_sprites.size(), 0);
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}

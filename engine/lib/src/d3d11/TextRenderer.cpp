@@ -122,13 +122,9 @@ namespace Galaxy3D
 			pass->rs->Apply();
 			mat->ApplyPass(0);
 
-			context->DrawIndexed(m_label->GetVertexCount() / 4 * 6, 0, 0);
+			DrawIndexed(m_label->GetVertexCount() / 4 * 6, 0);
 
 			GraphicsDevice::GetInstance()->ClearShaderResources();
-		}
-		else
-		{
-			DecDrawCall();
 		}
 
 		RenderLabelImage();
@@ -177,11 +173,9 @@ namespace Galaxy3D
 				pass->rs->Apply();
 				mat->ApplyPass(0);
 
-				context->DrawIndexed(6, 0, 0);
+				DrawIndexed(6, 0);
 
 				GraphicsDevice::GetInstance()->ClearShaderResources();
-
-				AddDrawCall();
 
 				if(img.image_count > 1)
 				{

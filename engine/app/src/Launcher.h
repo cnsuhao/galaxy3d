@@ -15,6 +15,7 @@
 #include "GTTime.h"
 #include "Input.h"
 #include "Debug.h"
+#include "Mesh.h"
 
 #include "MirMap.h"
 #include "MirHero.h"

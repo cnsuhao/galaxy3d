@@ -13,7 +13,7 @@ namespace Galaxy3D
 
 	public:
 		static void Destroy(std::shared_ptr<Component> &obj);
-		virtual ~Component() {}
+        virtual ~Component() {}
 		std::shared_ptr<GameObject> GetGameObject() const {return m_gameobject.lock();}
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		void Enable(bool enable);

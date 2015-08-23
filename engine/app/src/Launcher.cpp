@@ -1,4 +1,6 @@
 #include "Launcher.h"
+#include "Layer.h"
+#include "LayerMask.h"
 
 static const int CAMERA_OFFSET_Y = 2;
 
@@ -6,8 +8,9 @@ void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
 
-	camera= GameObject::Create("camera")->AddComponent<Camera>();
+	camera = GameObject::Create("camera")->AddComponent<Camera>();
 	camera->SetOrthographicSize(Screen::GetHeight() / 200.f);
+    camera->SetCullingMask(LayerMask::GetMask(Layer::UI));
 
 	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -16,8 +19,10 @@ void Launcher::Start()
 	tr->SetSortingOrder(1000, 0);
 	fps = tr;
 	fps->GetTransform()->SetParent(camera->GetTransform());
+    fps->GetGameObject()->SetLayer(Layer::UI);
 
 	//mir2
+    /*
 	int x0 = 297;
 	int y0 = 299;
 	MirMap::Load("0", x0, y0);
@@ -42,6 +47,13 @@ void Launcher::Start()
 	uis_index.push_back(1);
 	auto uit = MirImage::LoadImages("ui", uis_index);
 	
+    auto uis = Sprite::Create(
+        uit[0]->texture,
+        Rect(0, 0, (float) uit[0]->texture->GetWidth(), (float) uit[0]->texture->GetHeight()),
+        Vector2(0.5f, 1),
+        100,
+        Vector4(0, 0, 0, 0));
+
 	std::shared_ptr<SpriteRenderer> uir = GameObject::Create("")->AddComponent<SpriteRenderer>();
 	uir->GetTransform()->SetParent(camera->GetTransform());
 	uir->GetTransform()->SetLocalPosition(Vector3(0, -Screen::GetHeight()/2.0f, 0) * 0.01f);
@@ -50,18 +62,13 @@ void Launcher::Start()
 	mat->SetTexture("ColorTable", MirImage::GetColorTable());
 	uir->SetSharedMaterial(mat);
 	uir->SetSortingOrder(1000, 0);
-
-	auto uis = Sprite::Create(
-		uit[0]->texture,
-		Rect(0, 0, (float) uit[0]->texture->GetWidth(), (float) uit[0]->texture->GetHeight()),
-		Vector2(0.5f, 1),
-		100,
-		Vector4(0, 0, 0, 0));
-
 	uir->SetSprite(uis);
 	uir->UpdateSprite();
-}
+    */
 
+    auto mesh = Mesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/Arthas_Mesh.mesh");
+}
+/*
 bool Launcher::OnTouchDown(const Vector2 &pos)
 {
 	Vector3 cam_pos_pixel = camera->GetTransform()->GetPosition() * 100;
@@ -92,13 +99,14 @@ bool Launcher::OnTouchDown(const Vector2 &pos)
 
 	return false;
 }
-
+*/
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
 
+    /*
 	if(Input::GetTouchCount() > 0)
 	{
 		auto t = Input::GetTouch(0);
@@ -143,15 +151,14 @@ void Launcher::Update()
 
 	MirMap::Update();
 	hero->Update();
-	camera->UpdateMatrix();
-
+    camera->UpdateMatrix();
 	hero2->Update();
 	hero3->Update();
-
-	mon->Update();
+    mon->Update();
+    */
 }
 
 Launcher::~Launcher()
 {
-	MirMap::Unload();
+	//MirMap::Unload();
 }
