@@ -3,6 +3,7 @@
 #include "GTFile.h"
 #include "MeshRenderer.h"
 #include "ShaderPropertyType.h"
+#include "Texture2D.h"
 
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
 
@@ -19,7 +20,7 @@ namespace Galaxy3D
         return str;
     }
 
-    static std::shared_ptr<Material> read_material(char *&p)
+    static std::shared_ptr<Material> read_material(char *&p, const std::string &dir)
     {
         std::string mat_name = read_string(p);
         std::string mat_guid = read_string(p);
@@ -60,8 +61,11 @@ namespace Galaxy3D
                 case ShaderPropertyType::TexEnv:
                 {
                     std::string tex_name = read_string(p);
+                    std::string tex_path = dir + "/" + tex_name;
 
-                    //mat->SetTexture(property_name, );
+                    auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, TextureWrapMode::Clamp);
+
+                    mat->SetTexture(property_name, tex);
                 }
                 break;
                 case ShaderPropertyType::Vector:
@@ -78,7 +82,9 @@ namespace Galaxy3D
         return mat;
     }
 
-    Mesh::Mesh()
+    Mesh::Mesh():
+        m_vertex_buffer(nullptr),
+        m_index_buffer(nullptr)
     {
     }
 
@@ -98,7 +104,7 @@ namespace Galaxy3D
             char *p = &bytes[0];
 
             std::string obj_name = read_string(p);
-            auto obj = GameObject::Create(obj_name);
+            obj = GameObject::Create(obj_name);
 
             int renderer_count;
             BUFFER_READ(renderer_count, p, 4);
@@ -122,7 +128,7 @@ namespace Galaxy3D
 
                 auto renderer = renderer_obj->AddComponent<MeshRenderer>();
 
-                ReadMesh(p, renderer.get());
+                ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')));
 
                 int lightmap_index;
                 BUFFER_READ(lightmap_index, p, 4);
@@ -140,7 +146,7 @@ namespace Galaxy3D
         return obj;
     }
 
-    void Mesh::ReadMesh(char *&p, Renderer *r)
+    void Mesh::ReadMesh(char *&p, Renderer *r, const std::string &dir)
     {
         auto renderer = (MeshRenderer *) r;
 
@@ -172,9 +178,70 @@ namespace Galaxy3D
         std::vector<std::shared_ptr<Material>> mats(mat_count);
         for(int i=0; i<mat_count; i++)
         {
-            mats[i] = read_material(p);
+            mats[i] = read_material(p, dir);
         }
 
         renderer->SetSharedMaterials(mats);
+    }
+
+    ID3D11Buffer *Mesh::GetVertexBuffer()
+    {
+        if(m_vertex_buffer == nullptr)
+        {
+            int buffer_size = sizeof(VertexMesh) * m_vertices.size();
+            char *buffer = (char *) &m_vertices[0];
+
+            bool dynamic = false;
+
+            auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+            D3D11_BUFFER_DESC bd;
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+            bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            bd.ByteWidth = buffer_size;
+
+            D3D11_SUBRESOURCE_DATA data;
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = buffer;
+            HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
+        }
+
+        return m_vertex_buffer;
+    }
+
+    ID3D11Buffer *Mesh::GetIndexBuffer()
+    {
+        if(m_index_buffer == nullptr)
+        {
+            std::vector<unsigned short> uv;
+            for(size_t i=0; i<m_sub_indices.size(); i++)
+            {
+                int size = m_sub_indices[i].size();
+                int old_size = uv.size();
+                uv.resize(old_size + size);
+                memcpy(&uv[old_size], &m_sub_indices[i][0], size * 2);
+            }
+
+            int buffer_size = sizeof(unsigned short) * uv.size();
+            char *buffer = (char *) &uv[0];
+
+            auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+            D3D11_BUFFER_DESC bd;
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
+            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+            bd.ByteWidth = buffer_size;
+
+            D3D11_SUBRESOURCE_DATA data;
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = buffer;
+            HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
+        }
+
+        return m_index_buffer;
     }
 }

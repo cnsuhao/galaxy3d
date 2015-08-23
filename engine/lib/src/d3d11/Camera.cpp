@@ -119,6 +119,8 @@ namespace Galaxy3D
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
 
+        GTTime::m_draw_call = 0;
+
 		for(auto i : m_cameras)
 		{
 			auto obj = i->GetGameObject();
@@ -147,8 +149,11 @@ namespace Galaxy3D
 		context->OMSetRenderTargets(1, &render_buffer, depth_buffer);
 
 		//clear
-		context->ClearRenderTargetView(render_buffer, (const float *) &m_clear_color);
-		context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        if(m_clear_flags == CameraClearFlags::SolidColor)
+        {
+            context->ClearRenderTargetView(render_buffer, (const float *) &m_clear_color);
+            context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        }
 		
 		//render
 		m_current = GetGameObject()->GetComponent<Camera>();

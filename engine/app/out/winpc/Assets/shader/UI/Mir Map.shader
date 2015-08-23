@@ -16,7 +16,7 @@ UI/Shader Mir Map
 	{
 		Cull Off
 		ZWrite Off
-		ZTest LEqual
+		ZTest Always
 		Offset -1, -1
 		Blend Off
 		BlendOp Add

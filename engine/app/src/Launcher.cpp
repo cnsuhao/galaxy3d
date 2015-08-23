@@ -3,6 +3,8 @@
 #include "LayerMask.h"
 
 static const int CAMERA_OFFSET_Y = 2;
+GameObject *pmesh;
+float rot_y = 0;
 
 void Launcher::Start()
 {
@@ -11,6 +13,8 @@ void Launcher::Start()
 	camera = GameObject::Create("camera")->AddComponent<Camera>();
 	camera->SetOrthographicSize(Screen::GetHeight() / 200.f);
     camera->SetCullingMask(LayerMask::GetMask(Layer::UI));
+    camera->SetDepth(1);
+    camera->SetClearFlags(CameraClearFlags::Nothing);
 
 	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -66,8 +70,18 @@ void Launcher::Start()
 	uir->UpdateSprite();
     */
 
+    auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetOrthographic(false);
+    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
+    cam3d->SetDepth(0);
+
     auto mesh = Mesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/Arthas_Mesh.mesh");
+    mesh->SetLayerRecursive(Layer::Default);
+    pmesh = mesh.get();
 }
+
 /*
 bool Launcher::OnTouchDown(const Vector2 &pos)
 {
@@ -100,11 +114,15 @@ bool Launcher::OnTouchDown(const Vector2 &pos)
 	return false;
 }
 */
+
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
+
+    rot_y += 0.15f;
+    pmesh->GetTransform()->SetRotation(Quaternion::Euler(0, rot_y, 0));
 
     /*
 	if(Input::GetTouchCount() > 0)
