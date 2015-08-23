@@ -181,4 +181,17 @@ namespace Galaxy3D
 			}
 		}
 	}
+
+    void GameObject::SetLayerRecursive(int layer)
+    {
+        SetLayer(layer);
+
+        auto transform = m_transform.lock();
+        int child_count = transform->GetChildCount();
+        for(int i=0; i<child_count; i++)
+        {
+            auto child = transform->GetChild(i);
+            child->GetGameObject()->SetLayerRecursive(layer);
+        }
+    }
 }

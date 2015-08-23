@@ -14,7 +14,7 @@ Diffuse
 
 	RenderStates rs
 	{
-		Cull Back
+        Cull Back
 		ZWrite On
 		ZTest LEqual
 		Offset -1, -1
@@ -43,7 +43,6 @@ Diffuse
 			float4 Position : POSITION;
             float3 Normal : NORMAL;
             float4 Tangent : TANGENT;
-			float4 Color : COLOR;
 			float2 Texcoord0 : TEXCOORD0;
             float2 Texcoord1 : TEXCOORD1;
 		};
@@ -52,7 +51,6 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-			float4 v_color : COLOR;
 		};
 
 		PS_INPUT main( VS_INPUT input )
@@ -61,7 +59,6 @@ Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
-			output.v_color = input.Color;
     
 			return output;
 		}
@@ -76,12 +73,11 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-			float4 v_color : COLOR;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample( _MainTex_Sampler, input.v_uv ) * input.v_color;
+			float4 c = _MainTex.Sample( _MainTex_Sampler, input.v_uv );
 			return c;
 		}
 	}

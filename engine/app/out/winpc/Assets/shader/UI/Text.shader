@@ -16,7 +16,7 @@ UI/Shader Text
 	{
 		Cull Off
 		ZWrite Off
-		ZTest LEqual
+		ZTest Always
 		Offset -1, -1
 		Blend SrcAlpha OneMinusSrcAlpha
 		BlendOp Add

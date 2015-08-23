@@ -26,6 +26,7 @@ namespace Galaxy3D
 		void SetActive(bool active);
 		int GetLayer() const {return m_layer;}
 		void SetLayer(int layer) {m_layer = layer;}
+        void SetLayerRecursive(int layer);
 
 	private:
 		std::list<std::shared_ptr<Component>> m_components;

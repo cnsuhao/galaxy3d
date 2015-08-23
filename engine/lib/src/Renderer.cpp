@@ -140,8 +140,6 @@ namespace Galaxy3D
 	{
 		auto camera = Camera::GetCurrent();
 
-		GTTime::m_draw_call = 0;
-
 		for(auto i : m_renderers)
 		{
 			auto obj = i->GetGameObject();
