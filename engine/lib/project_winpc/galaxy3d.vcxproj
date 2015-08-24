@@ -21,6 +21,7 @@
     <ClCompile Include="..\src\d3d11\Mesh.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
+    <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\TextRenderer.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="..\src\d3d11\ShaderPass.h" />
     <ClInclude Include="..\src\d3d11\ShaderSampler.h" />
     <ClInclude Include="..\src\d3d11\ShaderTexture.h" />
+    <ClInclude Include="..\src\d3d11\SkinnedMeshRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteRenderer.h" />
     <ClInclude Include="..\src\d3d11\TextRenderer.h" />

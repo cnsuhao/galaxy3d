@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "GTFile.h"
 #include "MeshRenderer.h"
+#include "SkinnedMeshRenderer.h"
 #include "ShaderPropertyType.h"
 #include "Texture2D.h"
 
@@ -94,7 +95,116 @@ namespace Galaxy3D
         return mesh;
     }
 
-    std::shared_ptr<GameObject> Mesh::LoadFromFile(const std::string &file)
+    std::shared_ptr<GameObject> Mesh::LoadSkinnedMesh(const std::string &file)
+    {
+        std::shared_ptr<GameObject> obj;
+
+        if(GTFile::Exist(file))
+        {
+            auto bytes = GTFile::ReadAllBytes(file);
+            char *p = &bytes[0];
+
+            std::string obj_name = read_string(p);
+            obj = GameObject::Create(obj_name);
+
+            int bone_count;
+            BUFFER_READ(bone_count, p, 4);
+            for(int i=0; i<bone_count; i++)
+            {
+                std::string bone_path = read_string(p);
+                std::string bone_name = read_string(p);
+
+                Vector3 pos;
+                BUFFER_READ(pos, p, sizeof(Vector3));
+                Quaternion rot;
+                BUFFER_READ(rot, p, sizeof(Quaternion));
+                Vector3 sca;
+                BUFFER_READ(sca, p, sizeof(Vector3));
+
+                std::string parent = read_string(p);
+            }
+
+            int clip_count;
+            BUFFER_READ(clip_count, p, 4);
+            for(int i=0; i<clip_count; i++)
+            {
+                std::string clip_name = read_string(p);
+
+                float frame_rate;
+                BUFFER_READ(frame_rate, p, 4);
+                float length;
+                BUFFER_READ(length, p, 4);
+                char wrap_mode;
+                BUFFER_READ(wrap_mode, p, 1);
+
+                int path_count;
+                BUFFER_READ(path_count, p, 4);
+                for(int j=0; j<path_count; j++)
+                {
+                    std::string path = read_string(p);
+
+                    int curve_count;
+                    BUFFER_READ(curve_count, p, 4);
+                    for(int k=0; k<curve_count; k++)
+                    {
+                        int key_count;
+                        BUFFER_READ(key_count, p, 4);
+                        for(int m=0; m<key_count; m++)
+                        {
+                            float in_tangent;
+                            BUFFER_READ(in_tangent, p, 4);
+                            float out_tangent;
+                            BUFFER_READ(out_tangent, p, 4);
+                            int tangent_mode;
+                            BUFFER_READ(tangent_mode, p, 4);
+                            float time;
+                            BUFFER_READ(time, p, 4);
+                            float value;
+                            BUFFER_READ(value, p, 4);
+                        }
+                    }
+                }
+            }
+
+            int renderer_count;
+            BUFFER_READ(renderer_count, p, 4);
+            for(int i=0; i<renderer_count; i++)
+            {
+                std::string renderer_name = read_string(p);
+
+                Vector3 pos;
+                BUFFER_READ(pos, p, sizeof(Vector3));
+                Quaternion rot;
+                BUFFER_READ(rot, p, sizeof(Quaternion));
+                Vector3 sca;
+                BUFFER_READ(sca, p, sizeof(Vector3));
+
+                int renderer_bone_count;
+                BUFFER_READ(renderer_bone_count, p, 4);
+                for(int j=0; j<renderer_bone_count; j++)
+                {
+                    std::string bone_name = read_string(p);
+                }
+
+                auto renderer_obj = GameObject::Create(renderer_name);
+                auto renderer_tran = renderer_obj->GetTransform();
+                renderer_tran->SetParent(obj->GetTransform());
+                renderer_tran->SetPosition(pos);
+                renderer_tran->SetRotation(rot);
+                renderer_tran->SetScale(sca);
+
+                auto renderer = renderer_obj->AddComponent<SkinnedMeshRenderer>();
+
+                auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), true);
+
+                renderer->SetMesh(mesh);
+            }
+        }
+
+        return obj;
+    }
+
+    std::shared_ptr<GameObject> Mesh::LoadStaticMesh(const std::string &file)
     {
         std::shared_ptr<GameObject> obj;
 
@@ -122,13 +232,15 @@ namespace Galaxy3D
                 auto renderer_obj = GameObject::Create(renderer_name);
                 auto renderer_tran = renderer_obj->GetTransform();
                 renderer_tran->SetParent(obj->GetTransform());
-                renderer_tran->SetLocalPosition(pos);
-                renderer_tran->SetLocalRotation(rot);
-                renderer_tran->SetLocalScale(sca);
+                renderer_tran->SetPosition(pos);
+                renderer_tran->SetRotation(rot);
+                renderer_tran->SetScale(sca);
 
                 auto renderer = renderer_obj->AddComponent<MeshRenderer>();
 
-                ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')));
+                auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), false);
+
+                renderer->SetMesh(mesh);
 
                 int lightmap_index;
                 BUFFER_READ(lightmap_index, p, 4);
@@ -146,17 +258,23 @@ namespace Galaxy3D
         return obj;
     }
 
-    void Mesh::ReadMesh(char *&p, Renderer *r, const std::string &dir)
+    std::shared_ptr<Mesh> Mesh::ReadMesh(char *&p, Renderer *renderer, const std::string &dir, bool skin)
     {
-        auto renderer = (MeshRenderer *) r;
-
-        auto mesh = Galaxy3D::Mesh::Create();
+        auto mesh = Mesh::Create();
 
         int vertex_count;
         BUFFER_READ(vertex_count, p, 4);
 
-        mesh->m_vertices.resize(vertex_count);
-        BUFFER_READ(mesh->m_vertices[0], p, vertex_count * sizeof(VertexMesh));
+        if(skin)
+        {
+            mesh->m_vertices_skinned.resize(vertex_count);
+            BUFFER_READ(mesh->m_vertices_skinned[0], p, vertex_count * sizeof(VertexSkinned));
+        }
+        else
+        {
+            mesh->m_vertices.resize(vertex_count);
+            BUFFER_READ(mesh->m_vertices[0], p, vertex_count * sizeof(VertexMesh));
+        }
 
         int sub_count;
         BUFFER_READ(sub_count, p, 4);
@@ -171,7 +289,13 @@ namespace Galaxy3D
             BUFFER_READ(mesh->m_sub_indices[i][0], p, index_count * 2);
         }
 
-        renderer->SetMesh(mesh);
+        if(skin)
+        {
+            int pose_count;
+            BUFFER_READ(pose_count, p, 4);
+            mesh->m_bind_poses.resize(pose_count);
+            BUFFER_READ(mesh->m_bind_poses[0], p, pose_count * sizeof(Matrix4x4));
+        }
 
         int mat_count;
         BUFFER_READ(mat_count, p, 4);
@@ -182,6 +306,8 @@ namespace Galaxy3D
         }
 
         renderer->SetSharedMaterials(mats);
+
+        return mesh;
     }
 
     ID3D11Buffer *Mesh::GetVertexBuffer()
