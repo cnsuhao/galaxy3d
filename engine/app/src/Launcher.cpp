@@ -77,12 +77,15 @@ void Launcher::Start()
     cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
     cam3d->SetDepth(0);
 
-    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/Arthas_mesh.mesh");
+    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.mesh");
     mesh->SetLayerRecursive(Layer::Default);
+    mesh->GetTransform()->SetPosition(Vector3(-1.5f, 0, 0));
     pmesh = mesh.get();
 
-    auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas_skin.anim");
+    auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim->SetLayerRecursive(Layer::Default);
+    anim->GetTransform()->SetPosition(Vector3(2, 0, 0));
+    anim->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
 }
 
 /*

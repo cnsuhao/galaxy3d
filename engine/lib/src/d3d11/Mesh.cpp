@@ -21,11 +21,16 @@ namespace Galaxy3D
         return str;
     }
 
-    static std::shared_ptr<Material> read_material(char *&p, const std::string &dir)
+    static std::shared_ptr<Material> read_material(char *&p, const std::string &dir, bool skin)
     {
         std::string mat_name = read_string(p);
         std::string mat_guid = read_string(p);
         std::string shader_name = read_string(p);
+
+        if(skin)
+        {
+            shader_name = "SkinnedMesh/" + shader_name;
+        }
 
         auto mat = Material::Create(shader_name);
 
@@ -166,9 +171,9 @@ namespace Galaxy3D
                 }
             }
 
-            int renderer_count;
-            BUFFER_READ(renderer_count, p, 4);
-            for(int i=0; i<renderer_count; i++)
+            int skinn_count;
+            BUFFER_READ(skinn_count, p, 4);
+            for(int i=0; i<skinn_count; i++)
             {
                 std::string renderer_name = read_string(p);
 
@@ -194,10 +199,35 @@ namespace Galaxy3D
                 renderer_tran->SetScale(sca);
 
                 auto renderer = renderer_obj->AddComponent<SkinnedMeshRenderer>();
-
                 auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), true);
-
                 renderer->SetMesh(mesh);
+            }
+
+            int static_count;
+            BUFFER_READ(static_count, p, 4);
+            for(int i=0; i<static_count; i++)
+            {
+                std::string renderer_name = read_string(p);
+
+                Vector3 pos;
+                BUFFER_READ(pos, p, sizeof(Vector3));
+                Quaternion rot;
+                BUFFER_READ(rot, p, sizeof(Quaternion));
+                Vector3 sca;
+                BUFFER_READ(sca, p, sizeof(Vector3));
+
+                auto renderer_obj = GameObject::Create(renderer_name);
+                auto renderer_tran = renderer_obj->GetTransform();
+                renderer_tran->SetPosition(pos);
+                renderer_tran->SetRotation(rot);
+                renderer_tran->SetScale(sca);
+
+                auto renderer = renderer_obj->AddComponent<MeshRenderer>();
+                auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), false);
+                renderer->SetMesh(mesh);
+
+                std::string parent = read_string(p);
+                //renderer_tran->SetParent(obj->GetTransform());
             }
         }
 
@@ -302,7 +332,7 @@ namespace Galaxy3D
         std::vector<std::shared_ptr<Material>> mats(mat_count);
         for(int i=0; i<mat_count; i++)
         {
-            mats[i] = read_material(p, dir);
+            mats[i] = read_material(p, dir, skin);
         }
 
         renderer->SetSharedMaterials(mats);
@@ -314,8 +344,19 @@ namespace Galaxy3D
     {
         if(m_vertex_buffer == nullptr)
         {
-            int buffer_size = sizeof(VertexMesh) * m_vertices.size();
-            char *buffer = (char *) &m_vertices[0];
+            int buffer_size;
+            char *buffer;
+
+            if(!m_vertices.empty())
+            {
+                buffer_size = sizeof(VertexMesh) * m_vertices.size();
+                buffer = (char *) &m_vertices[0];
+            }
+            else
+            {
+                buffer_size = sizeof(VertexSkinned) * m_vertices_skinned.size();
+                buffer = (char *) &m_vertices_skinned[0];
+            }
 
             bool dynamic = false;
 
