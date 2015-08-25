@@ -1,10 +1,11 @@
 #include "Mesh.h"
+#include "Texture2D.h"
+#include "ShaderPropertyType.h"
 #include "Material.h"
 #include "GTFile.h"
 #include "MeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
-#include "ShaderPropertyType.h"
-#include "Texture2D.h"
+#include "Animation.h"
 
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
 
@@ -111,6 +112,10 @@ namespace Galaxy3D
 
             std::string obj_name = read_string(p);
             obj = GameObject::Create(obj_name);
+            auto tran = obj->GetTransform();
+            auto anim = obj->AddComponent<Animation>();
+
+            std::unordered_map<std::string, std::shared_ptr<Transform>> bones;
 
             int bone_count;
             BUFFER_READ(bone_count, p, 4);
@@ -127,7 +132,33 @@ namespace Galaxy3D
                 BUFFER_READ(sca, p, sizeof(Vector3));
 
                 std::string parent = read_string(p);
+
+                auto bone_tran = GameObject::Create(bone_name)->GetTransform();
+                bone_tran->SetPosition(pos);
+                bone_tran->SetRotation(rot);
+                bone_tran->SetScale(sca);
+
+                bones[bone_path] = bone_tran;
+
+                if(parent == "")
+                {
+                    bone_tran->SetParent(tran);
+                }
+                else
+                {
+                    auto find = bones.find(parent);
+                    if(find != bones.end())
+                    {
+                        bone_tran->SetParent(find->second);
+                    }
+                    else
+                    {
+                        bones[bone_path] = bone_tran;
+                    }
+                }
             }
+
+            std::unordered_map<std::string, AnimationState> states;
 
             int clip_count;
             BUFFER_READ(clip_count, p, 4);
@@ -142,34 +173,51 @@ namespace Galaxy3D
                 char wrap_mode;
                 BUFFER_READ(wrap_mode, p, 1);
 
+                AnimationClip clip;
+                clip.SetName(clip_name);
+                clip.frame_rate = frame_rate;
+                clip.length = length;
+                clip.wrap_mode = (WrapMode::Enum) wrap_mode;
+
                 int path_count;
                 BUFFER_READ(path_count, p, 4);
                 for(int j=0; j<path_count; j++)
                 {
                     std::string path = read_string(p);
 
+                    CurveBinding cb;
+                    cb.path = path;
+
+                    auto find = bones.find(path);
+                    if(find != bones.end())
+                    {
+                        cb.transform = find->second;
+                    }
+
                     int curve_count;
                     BUFFER_READ(curve_count, p, 4);
+
+                    cb.curves.resize(curve_count);
+
                     for(int k=0; k<curve_count; k++)
                     {
                         int key_count;
                         BUFFER_READ(key_count, p, 4);
-                        for(int m=0; m<key_count; m++)
-                        {
-                            float in_tangent;
-                            BUFFER_READ(in_tangent, p, 4);
-                            float out_tangent;
-                            BUFFER_READ(out_tangent, p, 4);
-                            int tangent_mode;
-                            BUFFER_READ(tangent_mode, p, 4);
-                            float time;
-                            BUFFER_READ(time, p, 4);
-                            float value;
-                            BUFFER_READ(value, p, 4);
-                        }
+
+                        AnimationCurve &curve = cb.curves[k];
+                        curve.keys.resize(key_count);
+
+                        BUFFER_READ(curve.keys[0], p, sizeof(Keyframe) * key_count);
                     }
+
+                    clip.curves[path] = cb;
                 }
+
+                AnimationState state(clip);
+                states[clip_name] = state;
             }
+
+            anim->SetAnimationStates(states);
 
             int skinn_count;
             BUFFER_READ(skinn_count, p, 4);
@@ -227,7 +275,12 @@ namespace Galaxy3D
                 renderer->SetMesh(mesh);
 
                 std::string parent = read_string(p);
-                //renderer_tran->SetParent(obj->GetTransform());
+
+                auto find = bones.find(parent);
+                if(find != bones.end())
+                {
+                    renderer_tran->SetParent(find->second);
+                }
             }
         }
 

@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Animation.cpp" />
+    <ClCompile Include="..\src\AnimationCurve.cpp" />
     <ClCompile Include="..\src\Application.cpp" />
     <ClCompile Include="..\src\Bounds.cpp" />
     <ClCompile Include="..\src\Color.cpp" />
@@ -51,6 +53,10 @@
     <ClCompile Include="..\src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Animation.h" />
+    <ClInclude Include="..\src\AnimationClip.h" />
+    <ClInclude Include="..\src\AnimationCurve.h" />
+    <ClInclude Include="..\src\AnimationState.h" />
     <ClInclude Include="..\src\Application.h" />
     <ClInclude Include="..\src\Bounds.h" />
     <ClInclude Include="..\src\CameraClearFlags.h" />
@@ -107,6 +113,7 @@
     <ClInclude Include="..\src\Vector4.h" />
     <ClInclude Include="..\src\VertexType.h" />
     <ClInclude Include="..\src\World.h" />
+    <ClInclude Include="..\src\WrapMode.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AC93FC0A-71EC-44F8-AD28-5861E03FCA3B}</ProjectGuid>
