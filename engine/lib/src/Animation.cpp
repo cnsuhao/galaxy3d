@@ -1,5 +1,6 @@
 #include "Animation.h"
 #include "GTTime.h"
+#include <map>
 
 namespace Galaxy3D
 {
@@ -151,9 +152,7 @@ namespace Galaxy3D
 
     void Animation::UpdateBones()
     {
-        Vector3 pos(0, 0, 0);
-        Quaternion rot(0, 0, 0, 0);
-        Vector3 sca(0, 0, 0);
+        std::map<std::string, Transform *> changed_bones;
 
         for(auto i = m_blends.begin(); i != m_blends.end(); i++)
         {
@@ -162,10 +161,71 @@ namespace Galaxy3D
 
             for(auto j = state->clip.curves.begin(); j != state->clip.curves.end(); j++)
             {
+                auto &cb = j->second;
 
-                //j->second.transform
+                if(i == m_blends.begin())
+                {
+                    cb.transform->SetLocalPositionDirect(Vector3(0, 0, 0));
+                    cb.transform->SetLocalRotationDirect(Quaternion(0, 0, 0, 0));
+                    cb.transform->SetLocalScaleDirect(Vector3(0, 0, 0));
+                }
+
+                Vector3 pos = cb.transform->GetLocalPosition();
+                Quaternion rot = cb.transform->GetLocalRotation();
+                Vector3 sca = cb.transform->GetLocalScale();
+
+                for(size_t k=0; k<cb.curves.size(); k++)
+                {
+                    auto &curve = cb.curves[k];
+                    if(!curve.keys.empty())
+                    {
+                        float value = curve.Evaluate(state->time) * weight;
+
+                        auto p = (CurveProperty::Enum) k;
+                        switch(p)
+                        {
+                            case CurveProperty::LocalPosX: pos.x += value; break;
+                            case CurveProperty::LocalPosY: pos.y += value; break;
+                            case CurveProperty::LocalPosZ: pos.z += value; break;
+
+                            case CurveProperty::LocalRotX: rot.x += value; break;
+                            case CurveProperty::LocalRotY: rot.y += value; break;
+                            case CurveProperty::LocalRotZ: rot.z += value; break;
+                            case CurveProperty::LocalRotW: rot.w += value; break;
+
+                            case CurveProperty::LocalScaX: sca.x += value; break;
+                            case CurveProperty::LocalScaY: sca.y += value; break;
+                            case CurveProperty::LocalScaZ: sca.z += value; break;
+                        }
+                    }
+                }
+
+                cb.transform->SetLocalPositionDirect(pos);
+                cb.transform->SetLocalRotationDirect(rot);
+                cb.transform->SetLocalScaleDirect(sca);
+
+                if(changed_bones.count(cb.path) == 0)
+                {
+                    std::pair<std::string, Transform *> p(cb.path, cb.transform.get());
+                    changed_bones.insert(p);
+                }
             }
         }
+
+        //mark root as changed, then all bones children changed
+        //first element in map is the root bone
+        changed_bones.begin()->second->Changed();
+    }
+
+    AnimationState *Animation::GetAnimationState(const std::string &clip)
+    {
+        auto find = m_states.find(clip);
+        if(find != m_states.end())
+        {
+            return &find->second;
+        }
+
+        return nullptr;
     }
 
     void Animation::Stop(AnimationState &state)
@@ -173,5 +233,42 @@ namespace Galaxy3D
         state.enabled = false;
         state.time = 0;
         state.fade.Clear();
+    }
+
+    void Animation::Play(AnimationState &state)
+    {
+        state.time_start = GTTime::GetRealTimeSinceStartup();
+        state.enabled = true;
+    }
+
+    bool Animation::Play(const std::string &clip, PlayMode::Enum mode)
+    {
+        auto find = m_states.find(clip);
+        if(find == m_states.end())
+        {
+            return false;
+        }
+
+        AnimationState *state = &find->second;
+
+        for(auto i = m_states.begin() ; i != m_states.end(); i++)
+        {
+            AnimationState *s = &i->second;
+
+            if(mode == PlayMode::StopAll && state != s && s->enabled)
+            {
+                Stop(*s);
+            }
+            else if(mode == PlayMode::StopSameLayer && s->layer == state->layer && state != s && s->enabled)
+            {
+                Stop(*s);
+            }
+            else if(state == s && !s->enabled)
+            {
+                Play(*s);
+            }
+        }
+
+        return true;
     }
 }

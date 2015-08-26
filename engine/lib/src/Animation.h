@@ -7,14 +7,23 @@
 
 namespace Galaxy3D
 {
+    struct PlayMode
+    {
+        enum Enum
+        {
+            StopSameLayer = 0,
+            StopAll = 4,
+        };
+    };
+
     class Animation : public Component
     {
     public:
-        Animation():
-            m_wrap_mode(WrapMode::Default)
-        {}
+        Animation() {}
         virtual ~Animation() {}
         void SetAnimationStates(const std::unordered_map<std::string, AnimationState> &states) {m_states = states;}
+        bool Play(const std::string &clip, PlayMode::Enum mode = PlayMode::StopSameLayer);
+        AnimationState *GetAnimationState(const std::string &clip);
 
     private:
         struct Blend
@@ -34,13 +43,13 @@ namespace Galaxy3D
         };
 
         std::unordered_map<std::string, AnimationState> m_states;
-        WrapMode::Enum m_wrap_mode;
         std::list<Blend> m_blends;
 
         virtual void Start();
         virtual void Update();
         void UpdateBlend();
         void UpdateBones();
+        void Play(AnimationState &state);
         void Stop(AnimationState &state);
     };
 }

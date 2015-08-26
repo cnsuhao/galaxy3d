@@ -1,6 +1,4 @@
 #include "Launcher.h"
-#include "Layer.h"
-#include "LayerMask.h"
 
 static const int CAMERA_OFFSET_Y = 2;
 GameObject *pmesh;
@@ -86,6 +84,11 @@ void Launcher::Start()
     anim->SetLayerRecursive(Layer::Default);
     anim->GetTransform()->SetPosition(Vector3(2, 0, 0));
     anim->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
+
+    std::string clip = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
+    auto anim_com = anim->GetComponent<Animation>();
+    anim_com->GetAnimationState(clip)->wrap_mode = WrapMode::Loop;
+    anim_com->Play(clip);
 }
 
 /*

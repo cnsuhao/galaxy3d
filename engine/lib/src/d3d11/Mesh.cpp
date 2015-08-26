@@ -204,10 +204,12 @@ namespace Galaxy3D
                         int key_count;
                         BUFFER_READ(key_count, p, 4);
 
-                        AnimationCurve &curve = cb.curves[k];
-                        curve.keys.resize(key_count);
-
-                        BUFFER_READ(curve.keys[0], p, sizeof(Keyframe) * key_count);
+                        if(key_count > 0)
+                        {
+                            AnimationCurve &curve = cb.curves[k];
+                            curve.keys.resize(key_count);
+                            BUFFER_READ(curve.keys[0], p, sizeof(Keyframe) * key_count);
+                        }
                     }
 
                     clip.curves[path] = cb;

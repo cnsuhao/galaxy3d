@@ -16,6 +16,9 @@
 #include "Input.h"
 #include "Debug.h"
 #include "Mesh.h"
+#include "Layer.h"
+#include "LayerMask.h"
+#include "Animation.h"
 
 #include "MirMap.h"
 #include "MirHero.h"
