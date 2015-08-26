@@ -31,6 +31,9 @@ namespace Galaxy3D
 		const Quaternion &GetRotation();
 		void SetScale(const Vector3 &sca);
 		const Vector3 &GetScale();
+        void SetLocalPositionDirect(const Vector3 &pos) {m_local_position = pos;}
+        void SetLocalRotationDirect(const Quaternion &rot) {m_local_rotation = rot;}
+        void SetLocalScaleDirect(const Vector3 &sca) {m_local_scale = sca;}
 		Vector3 TransformPoint(const Vector3 &point);
 		Vector3 TransformDirection(const Vector3 &dir);
 		Vector3 InverseTransformPoint(const Vector3 &point);
@@ -40,6 +43,7 @@ namespace Galaxy3D
 		Vector3 GetRight();
 		Vector3 GetUp();
 		Vector3 GetForward();
+        void Changed();
 
 	private:
 		std::weak_ptr<Transform> m_parent;
@@ -58,7 +62,6 @@ namespace Galaxy3D
 		void RemoveChild(std::weak_ptr<Transform> &child);
 		void AddChild(std::weak_ptr<Transform> &child);
 		void ApplyChange();
-		void Changed();
 	};
 }
 
