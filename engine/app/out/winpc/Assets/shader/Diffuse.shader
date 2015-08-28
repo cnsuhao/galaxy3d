@@ -17,7 +17,7 @@ Diffuse
         Cull Back
 		ZWrite On
 		ZTest LEqual
-		Offset -1, -1
+		Offset 0, 0
 		Blend Off
 		Stencil
 		{
@@ -38,6 +38,11 @@ Diffuse
 			matrix WorldViewProjection;
 		};
 
+        cbuffer cbuffer1 : register( b1 )
+        {
+            float4 _MainColor;
+        };
+
 		struct VS_INPUT
 		{
 			float4 Position : POSITION;
@@ -51,6 +56,7 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float4 v_color : COLOR;
 		};
 
 		PS_INPUT main( VS_INPUT input )
@@ -59,7 +65,8 @@ Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
-    
+            output.v_color = _MainColor;
+
 			return output;
 		}
 	}
@@ -73,11 +80,12 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float4 v_color : COLOR;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample( _MainTex_Sampler, input.v_uv );
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
 			return c;
 		}
 	}

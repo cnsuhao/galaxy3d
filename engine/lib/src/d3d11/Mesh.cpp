@@ -236,9 +236,16 @@ namespace Galaxy3D
 
                 int renderer_bone_count;
                 BUFFER_READ(renderer_bone_count, p, 4);
+                std::vector<std::shared_ptr<Transform>> renderer_bones(renderer_bone_count);
                 for(int j=0; j<renderer_bone_count; j++)
                 {
                     std::string bone_name = read_string(p);
+
+                    auto find = bones.find(bone_name);
+                    if(find != bones.end())
+                    {
+                        renderer_bones[j] = find->second;
+                    }
                 }
 
                 auto renderer_obj = GameObject::Create(renderer_name);
@@ -251,6 +258,7 @@ namespace Galaxy3D
                 auto renderer = renderer_obj->AddComponent<SkinnedMeshRenderer>();
                 auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), true);
                 renderer->SetMesh(mesh);
+                renderer->SetBones(renderer_bones);
             }
 
             int static_count;

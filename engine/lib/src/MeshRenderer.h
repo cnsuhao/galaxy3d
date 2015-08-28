@@ -11,7 +11,7 @@ namespace Galaxy3D
     public:
         virtual ~MeshRenderer() {}
         virtual void Render();
-        void SetMesh(std::shared_ptr<Mesh> &mesh) {m_mesh = mesh;}
+        void SetMesh(const std::shared_ptr<Mesh> &mesh) {m_mesh = mesh;}
 
     private:
         std::shared_ptr<Mesh> m_mesh;

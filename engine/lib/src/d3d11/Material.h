@@ -24,7 +24,9 @@ namespace Galaxy3D
 		void SetMainTextureOffset(const Vector2 &offset) {m_main_texture_offset = offset;}
 		void SetMainTextureScale(const Vector2 &scale) {m_main_texture_scale = scale;}
 		void SetVector(const std::string &name, const Vector4 &vector);
+        void SetVectorArray(const std::string &name, const std::vector<Vector4> &vectors);
 		void SetColor(const std::string &name, const Color &color);
+        void SetMainColor(const Color &color);
 		void SetMatrix(const std::string &name, const Matrix4x4 &matrix);
 		void SetMatrixArray(const std::string &name, const std::vector<Matrix4x4> &matrices);
 		void SetTexture(const std::string &name, const std::shared_ptr<Texture> &texture);
@@ -42,6 +44,7 @@ namespace Galaxy3D
 		std::unordered_map<std::string, std::vector<Matrix4x4>> m_matrix_arrays;
 		std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
 		std::unordered_map<std::string, Vector4> m_vectors;
+        std::unordered_map<std::string, std::vector<Vector4>> m_vector_arrays;
 		int m_render_queue;
 		Vector2 m_main_texture_offset;
 		Vector2 m_main_texture_scale;

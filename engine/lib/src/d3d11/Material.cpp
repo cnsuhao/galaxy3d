@@ -4,6 +4,7 @@
 #include "Renderer.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
+static const std::string MAIN_COLOR_NAME = "_MainColor";
 
 namespace Galaxy3D
 {
@@ -29,6 +30,7 @@ namespace Galaxy3D
 	Material::Material():
 		m_render_queue(-1)
 	{
+        SetMainColor(Color(1, 1, 1, 1));
 	}
 
 	void Material::SetShader(const std::shared_ptr<Shader> &shader)
@@ -53,6 +55,11 @@ namespace Galaxy3D
 		m_colors[name] = color;
 	}
 
+    void Material::SetMainColor(const Color &color)
+    {
+        m_colors[MAIN_COLOR_NAME] = color;
+    }
+
 	void Material::SetMatrix(const std::string &name, const Matrix4x4 &matrix)
 	{
 		m_matrices[name] = matrix;
@@ -62,6 +69,11 @@ namespace Galaxy3D
 	{
 		m_matrix_arrays[name] = matrices;
 	}
+
+    void Material::SetVectorArray(const std::string &name, const std::vector<Vector4> &vectors)
+    {
+        m_vector_arrays[name] = vectors;
+    }
 
 	void Material::SetTexture(const std::string &name, const std::shared_ptr<Texture> &texture)
 	{
@@ -117,22 +129,22 @@ namespace Galaxy3D
 	{
 		auto shader_pass = m_shader->GetPass(pass);
 
-		for(auto i : m_vectors)
+		for(auto &i : m_vectors)
 		{
 			set_constant_buffer(i.first, (void *) &i.second, sizeof(Vector4), shader_pass);
 		}
 
-		for(auto i : m_colors)
+		for(auto &i : m_colors)
 		{
 			set_constant_buffer(i.first, (void *) &i.second, sizeof(Color), shader_pass);
 		}
 		
-		for(auto i : m_matrices)
+		for(auto &i : m_matrices)
 		{
 			set_constant_buffer(i.first, (void *) &i.second, sizeof(Matrix4x4), shader_pass);
 		}
 
-		for(auto i : m_matrix_arrays)
+		for(auto &i : m_matrix_arrays)
 		{
 			int size = i.second.size();
 			if(size > 48)
@@ -145,7 +157,20 @@ namespace Galaxy3D
 			}
 		}
 
-		for(auto i : m_textures)
+        for(auto &i : m_vector_arrays)
+        {
+            int size = i.second.size();
+            if(size > 108)
+            {
+                Debug::Log("vector array size is too big:%d", size);
+            }
+            else
+            {
+                set_constant_buffer(i.first, (void *) &i.second[0], sizeof(Vector4) * size, shader_pass);
+            }
+        }
+
+		for(auto &i: m_textures)
 		{
 			auto find = shader_pass->ps->textures.find(i.first);
 			if(find != shader_pass->ps->textures.end())
@@ -173,22 +198,22 @@ namespace Galaxy3D
 		context->VSSetShader(shader_pass->vs->shader, NULL, 0);
 		context->PSSetShader(shader_pass->ps->shader, NULL, 0);
 
-		for(auto i : shader_pass->vs->cbuffers)
+		for(auto &i : shader_pass->vs->cbuffers)
 		{
 			context->VSSetConstantBuffers(i.second.slot, 1, &i.second.buffer);
 		}
 
-		for(auto i : shader_pass->ps->cbuffers)
+		for(auto &i : shader_pass->ps->cbuffers)
 		{
 			context->PSSetConstantBuffers(i.second.slot, 1, &i.second.buffer);
 		}
 
-		for(auto i : shader_pass->ps->textures)
+		for(auto &i : shader_pass->ps->textures)
 		{
 			context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
 		}
 
-		for(auto i : shader_pass->ps->samplers)
+		for(auto &i : shader_pass->ps->samplers)
 		{
 			context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
 		}
