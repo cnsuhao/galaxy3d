@@ -20,6 +20,7 @@ namespace Galaxy3D
         ID3D11Buffer *GetVertexBuffer();
         ID3D11Buffer *GetIndexBuffer();
         int GetIndexCount(int submesh) {return m_sub_indices[submesh].size();}
+        const std::vector<Matrix4x4> &GetBindPoses() const {return m_bind_poses;}
 
     private:
         std::vector<VertexMesh> m_vertices;

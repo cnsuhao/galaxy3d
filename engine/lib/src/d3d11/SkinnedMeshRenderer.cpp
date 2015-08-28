@@ -15,7 +15,18 @@ namespace Galaxy3D
         auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto camera = Camera::GetCurrent();
 
-        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
+        //bones
+        auto &bindposes = m_mesh->GetBindPoses();
+        std::vector<Vector4> bone_matrix(m_bones.size() * 3);
+        for(size_t i=0; i<m_bones.size(); i++)
+        {
+            auto mat = m_bones[i]->GetLocalToWorldMatrix() * bindposes[i];
+            bone_matrix[i * 3 + 0] = mat.GetRow(0);
+            bone_matrix[i * 3 + 1] = mat.GetRow(1);
+            bone_matrix[i * 3 + 2] = mat.GetRow(2);
+        }
+
+        Matrix4x4 view_projection = camera->GetViewProjectionMatrix();
 
         auto mats = GetSharedMaterials();
         for(size_t i=0; i<mats.size(); i++)
@@ -23,8 +34,9 @@ namespace Galaxy3D
             auto mat = mats[i];
             auto shader = mat->GetShader();
 
-            mat->SetMatrix("WorldViewProjection", wvp);
-
+            mat->SetMatrix("ViewProjection", view_projection);
+            mat->SetVectorArray("Bones", bone_matrix);
+            
             int offset = 0;
             int index_count = m_mesh->GetIndexCount(i);
 
