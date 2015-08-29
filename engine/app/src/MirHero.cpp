@@ -231,7 +231,6 @@ void MirHero::UpdateBodyTexture()
 
 	m_renderer_body->SetSprite(frame.sprite);
 	m_renderer_body->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10));
-	m_renderer_body->UpdateSprite();
 	
 	float x = frame.info.offset_x;
 	float y = frame.info.offset_y;
@@ -246,7 +245,6 @@ void MirHero::UpdateHairTexture()
 
 	m_renderer_hair->SetSprite(frame.sprite);
 	m_renderer_hair->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10 + 1));
-	m_renderer_hair->UpdateSprite();
 	
 	float x = frame.info.offset_x;
 	float y = frame.info.offset_y;
@@ -284,7 +282,6 @@ void MirHero::UpdateWeaponTexture()
 
 	m_renderer_weapon->SetSprite(frame.sprite);
 	m_renderer_weapon->SetSortingOrder(2, order);
-	m_renderer_weapon->UpdateSprite();
 	
 	float x = frame.info.offset_x;
 	float y = frame.info.offset_y;

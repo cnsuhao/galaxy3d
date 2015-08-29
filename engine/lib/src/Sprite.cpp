@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "VertexType.h"
 
 namespace Galaxy3D
 {
@@ -71,7 +72,99 @@ namespace Galaxy3D
 		return sprite;
 	}
 
-	Sprite::Sprite()
+	Sprite::Sprite():
+        m_vertex_buffer(nullptr),
+        m_index_buffer(nullptr)
 	{
 	}
+
+    Sprite::~Sprite()
+    {
+        SAFE_RELEASE(m_vertex_buffer);
+        SAFE_RELEASE(m_index_buffer);
+    }
+
+    static void fill_vertex_buffer(char *buffer, Sprite *sprite)
+    {
+        char *p = buffer;
+        Vector2 *vertices = sprite->GetVertices();
+        Vector2 *uv = sprite->GetUV();
+
+        for(int i=0; i<4; i++)
+        {
+            Vector3 pos = vertices[i];
+            memcpy(p, &pos, sizeof(Vector3));
+            p += sizeof(Vector3);
+
+            Color c = Color(1, 1, 1, 1);
+            memcpy(p, &c, sizeof(Color));
+            p += sizeof(Color);
+
+            Vector2 v1 = uv[i];
+            memcpy(p, &v1, sizeof(Vector2));
+            p += sizeof(Vector2);
+        }
+    }
+
+    ID3D11Buffer *Sprite::GetVertexBuffer()
+    {
+        if(m_vertex_buffer == nullptr)
+        {
+            int buffer_size = sizeof(VertexUI) * 4;
+            char *buffer = (char *) malloc(buffer_size);
+
+            fill_vertex_buffer(buffer, this);
+
+            bool dynamic = true;
+
+            auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+            D3D11_BUFFER_DESC bd;
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+            bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            bd.ByteWidth = buffer_size;
+
+            D3D11_SUBRESOURCE_DATA data;
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = buffer;
+            HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
+
+            free(buffer);
+        }
+
+        return m_vertex_buffer;
+    }
+
+    ID3D11Buffer *Sprite::GetIndexBuffer()
+    {
+        if(m_index_buffer == nullptr)
+        {
+            unsigned short *uv = this->GetIndices();
+            int buffer_size = sizeof(unsigned short) * 6;
+            char *buffer = (char *) malloc(buffer_size);
+            char *p = buffer;
+
+            memcpy(p, uv, buffer_size);
+
+            auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+            D3D11_BUFFER_DESC bd;
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
+            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+            bd.ByteWidth = buffer_size;
+
+            D3D11_SUBRESOURCE_DATA data;
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = buffer;
+            HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
+
+            free(buffer);
+        }
+
+        return m_index_buffer;
+    }
 }

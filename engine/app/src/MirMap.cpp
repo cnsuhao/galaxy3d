@@ -351,7 +351,6 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
 			renderer->SetSortingOrder(0, 0);
-			renderer->UpdateSprite();
 
 			float x = (t.x + 1) * TILE_WIDTH * MIR_PIXEL_TO_UNIT;
 			float y = (t.y + 1) * TILE_HEIGHT * MIR_PIXEL_TO_UNIT;
@@ -370,7 +369,6 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(sprite);
 			renderer->SetSortingOrder(1, 0);
-			renderer->UpdateSprite();
 
 			float x = (t.x + 0.5f) * TILE_WIDTH * MIR_PIXEL_TO_UNIT;
 			float y = (t.y + 0.5f) * TILE_HEIGHT * MIR_PIXEL_TO_UNIT;
@@ -398,7 +396,6 @@ void MirMap::LoadTiles(const std::string &map_file, const std::vector<int> &coor
 			renderer->SetSharedMaterial(mat);
 			renderer->SetSprite(t.front_sprites[t.front_frame]);
 			renderer->SetSortingOrder(2, (t.y - 1) * 10);
-			renderer->UpdateSprite();
 
 			if(t.front_images.size() > 1)
 			{
