@@ -154,6 +154,10 @@ namespace Galaxy3D
             context->ClearRenderTargetView(render_buffer, (const float *) &m_clear_color);
             context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
+        else if(m_clear_flags == CameraClearFlags::Depth)
+        {
+            context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        }
 		
 		//render
 		m_current = GetGameObject()->GetComponent<Camera>();

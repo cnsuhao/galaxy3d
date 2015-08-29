@@ -181,7 +181,6 @@ void MirMonster::UpdateBodyTexture()
 
 	m_renderer_body->SetSprite(frame.sprite);
 	m_renderer_body->SetSortingOrder(2, (int) ((m_pox_y + m_pox_y_offset) * 10 - 2));
-	m_renderer_body->UpdateSprite();
 	
 	float x = frame.info.offset_x;
 	float y = frame.info.offset_y;

@@ -95,6 +95,12 @@ namespace Galaxy3D
     {
     }
 
+    Mesh::~Mesh()
+    {
+        SAFE_RELEASE(m_vertex_buffer);
+        SAFE_RELEASE(m_index_buffer);
+    }
+
     std::shared_ptr<Mesh> Mesh::Create()
     {
         std::shared_ptr<Mesh> mesh(new Mesh());
@@ -415,10 +421,14 @@ namespace Galaxy3D
                 buffer_size = sizeof(VertexMesh) * m_vertices.size();
                 buffer = (char *) &m_vertices[0];
             }
-            else
+            else if(!m_vertices_skinned.empty())
             {
                 buffer_size = sizeof(VertexSkinned) * m_vertices_skinned.size();
                 buffer = (char *) &m_vertices_skinned[0];
+            }
+            else
+            {
+                return nullptr;
             }
 
             bool dynamic = false;
@@ -443,7 +453,7 @@ namespace Galaxy3D
 
     ID3D11Buffer *Mesh::GetIndexBuffer()
     {
-        if(m_index_buffer == nullptr)
+        if(m_index_buffer == nullptr && !m_sub_indices.empty())
         {
             std::vector<unsigned short> uv;
             for(size_t i=0; i<m_sub_indices.size(); i++)
