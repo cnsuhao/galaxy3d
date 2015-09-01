@@ -10,7 +10,7 @@ namespace Galaxy3D
 	//	批量绘制精灵，精灵位置由精灵transform控制，不受renderer影响
 	//	不允许添加空的sprite，要置空sprite，请使用RemoveSprite
 	//	修改sprite属性后，要调用UpdateSprites更新顶点buffer
-	//	SetColor会影响所有批次内sprite
+	//	SetColor会影响批次内所有sprite
 	class SpriteBatchRenderer : public Renderer
 	{
 	public:
