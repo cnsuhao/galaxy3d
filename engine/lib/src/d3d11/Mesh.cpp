@@ -481,7 +481,7 @@ namespace Galaxy3D
             data.pSysMem = buffer;
             HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
         }
-
+        
         return m_index_buffer;
     }
 }
