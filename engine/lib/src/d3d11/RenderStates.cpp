@@ -135,6 +135,7 @@ namespace Galaxy3D
 		GTString str = s;
 		str = str.Replace("\r\n", "\n");
 		str = str.Replace("\t", "");
+        str = str.Replace("    ", "");
 		std::vector<GTString> lines = str.Split("\n", true);
 
 		int stencil_index = -1;

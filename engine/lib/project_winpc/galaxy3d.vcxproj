@@ -26,6 +26,7 @@
     <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteRenderer.cpp" />
+    <ClCompile Include="..\src\d3d11\Terrain.cpp" />
     <ClCompile Include="..\src\d3d11\TextRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\Texture2D.cpp" />
     <ClCompile Include="..\src\Debug.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="..\src\d3d11\SkinnedMeshRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h" />
     <ClInclude Include="..\src\d3d11\SpriteRenderer.h" />
+    <ClInclude Include="..\src\d3d11\Terrain.h" />
     <ClInclude Include="..\src\d3d11\TextRenderer.h" />
     <ClInclude Include="..\src\d3d11\Texture2D.h" />
     <ClInclude Include="..\src\d3d11\VertexShader.h" />
