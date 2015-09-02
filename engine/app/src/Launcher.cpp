@@ -1,5 +1,4 @@
 #include "Launcher.h"
-#include "Terrain.h"
 
 using namespace Galaxy3D;
 
@@ -14,8 +13,8 @@ void Launcher::Start()
 	camera = GameObject::Create("camera")->AddComponent<Camera>();
 	camera->SetOrthographicSize(Screen::GetHeight() / 200.f);
     camera->SetCullingMask(LayerMask::GetMask(Layer::UI));
-    camera->SetDepth(0);
-    camera->SetClearFlags(CameraClearFlags::SolidColor);
+    camera->SetDepth(1);
+    camera->SetClearFlags(CameraClearFlags::Nothing);
 
 	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -32,8 +31,8 @@ void Launcher::Start()
     cam3d->SetClipPlane(0.3f, 1000.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
-    cam3d->SetDepth(1);
-    cam3d->SetClearFlags(CameraClearFlags::Depth);
+    cam3d->SetDepth(0);
+    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.mesh");
     mesh->SetLayerRecursive(Layer::Default);
@@ -57,15 +56,13 @@ void Launcher::Start()
 
     auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
+    cam3d->SetFieldOfView(30);
     cam3d->SetClipPlane(0.3f, 1000.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
-    cam3d->SetDepth(1);
-    cam3d->SetClearFlags(CameraClearFlags::Depth);
-
-    GameObject *terrain_obj = GameObject::Create("terrain").get();
-    auto ter = terrain_obj->AddComponent<Terrain>();
-    ter->SetCamera(cam3d);
+    cam3d->SetDepth(0);
+    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam3d->GetTransform()->SetPosition(Vector3(100, 25, 30));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
 
     std::vector<std::string> terrain_texs;
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/1.png");
@@ -73,12 +70,21 @@ void Launcher::Start()
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/3.png");
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/4.png");
 
+    GameObject *terrain_obj = GameObject::Create("terrain").get();
+    terrain_obj->SetLayer(Layer::Default);
+
+    auto ter = terrain_obj->AddComponent<Terrain>();
+    ter->SetCamera(cam3d);
+
     ter->LoadData(
         513,
         200 / 512.0f, 600.0f,
         Application::GetDataPath() + "/Assets/terrain/Terrain.raw",
         Application::GetDataPath() + "/Assets/terrain/Terrain.png",
         terrain_texs, 3);
+    auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
+    renderer->SetTerrain(ter);
+    renderer->SetSharedMaterial(ter->GetSharedMaterial());
 }
 
 void Launcher::Update()
