@@ -34,13 +34,13 @@ namespace Galaxy3D
             shader_name = "SkinnedMesh/" + shader_name;
         }
 
-        if( "Specular" == shader_name ||
-            "Nature/Tree Soft Occlusion Leaves" == shader_name ||
-            "Transparent/Cutout/Diffuse" == shader_name ||
-            "Transparent/Diffuse" == shader_name ||
-            "Particles/Additive" == shader_name)
+        if("Specular" == shader_name)
         {
             shader_name = "Diffuse";
+        }
+        else if("Nature/Tree Soft Occlusion Leaves" == shader_name)
+        {
+            shader_name = "Transparent/Cutout/Diffuse";
         }
 
         auto mat = Material::Create(shader_name);
