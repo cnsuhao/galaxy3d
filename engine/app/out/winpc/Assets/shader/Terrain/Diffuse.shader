@@ -23,32 +23,32 @@ Terrain/Diffuse
 
     HLVS vs
     {
-        cbuffer cbuffer0 : register( b0 )
+        cbuffer cbuffer0 : register(b0)
         {
             matrix WorldViewProjection;
         };
 
-        cbuffer cbuffer1 : register( b1 )
+        cbuffer cbuffer1 : register(b1)
         {
             float4 TerrainSize;
         };
 
-        cbuffer cbuffer2 : register( b2 )
+        cbuffer cbuffer2 : register(b2)
         {
             matrix World;
         };
 
-        cbuffer cbuffer3 : register( b3 )
+        cbuffer cbuffer3 : register(b3)
         {
             float4 LightDirection;
         };
 
-        cbuffer cbuffer4 : register( b4 )
+        cbuffer cbuffer4 : register(b4)
         {
             float4 ClipPlane;
         };
 
-        cbuffer cbuffer5 : register( b5 )
+        cbuffer cbuffer5 : register(b5)
         {
             float4 ClipEnable;
         };
@@ -72,23 +72,23 @@ Terrain/Diffuse
             float v_clip : TEXCOORD4;
         };
 
-        PS_INPUT main( VS_INPUT input )
+        PS_INPUT main(VS_INPUT input)
         {
-            PS_INPUT output = (PS_INPUT) 0;
+            PS_INPUT output = (PS_INPUT)0;
 
-            output.v_pos = mul( input.Position, WorldViewProjection );
+            output.v_pos = mul(input.Position, WorldViewProjection);
             output.v_uv = input.Texcoord0;
             output.v_uv_alpha = float2(input.Position.x, input.Position.z) * TerrainSize.x;
             output.v_uv_alpha.y = 1.0 - output.v_uv_alpha.y;
 
             float3 normal_world = mul(input.Normal, (float3x3) World);
-            output.v_light_dir_world = - LightDirection.xyz;
+            output.v_light_dir_world = -LightDirection.xyz;
             output.v_normal_world = normal_world;
 
             //clip
             if(int(ClipEnable.x) != 0)
             {
-                float3 pos_world = mul( input.Position.xyz, (float3x3) World );
+                float3 pos_world = mul(input.Position.xyz, (float3x3) World);
                 output.v_clip = dot(ClipPlane.xyz, pos_world) + ClipPlane.w;
             }
 
@@ -98,36 +98,36 @@ Terrain/Diffuse
 
     HLPS ps
     {
-        cbuffer cbuffer0 : register( b0 )
+        cbuffer cbuffer0 : register(b0)
         {
             float4 _Color;
         };
 
-        cbuffer cbuffer1 : register( b1 )
+        cbuffer cbuffer1 : register(b1)
         {
             float4 GlobalAmbient;
         };
 
-        cbuffer cbuffer2 : register( b2 )
+        cbuffer cbuffer2 : register(b2)
         {
             float4 LightColor;
         };
 
-        cbuffer cbuffer3 : register( b3 )
+        cbuffer cbuffer3 : register(b3)
         {
             float4 ClipEnablePS;
         };
 
-        Texture2D AlphaMap : register( t0 );
-        SamplerState AlphaMap_Sampler : register( s0 );
-        Texture2D Layer_0 : register( t1 );
-        SamplerState Layer_0_Sampler : register( s1 );
-        Texture2D Layer_1 : register( t2 );
-        SamplerState Layer_1_Sampler : register( s2 );
-        Texture2D Layer_2 : register( t3 );
-        SamplerState Layer_2_Sampler : register( s3 );
-        Texture2D Layer_3 : register( t4 );
-        SamplerState Layer_3_Sampler : register( s4 );
+        Texture2D AlphaMap : register(t0);
+        SamplerState AlphaMap_Sampler : register(s0);
+        Texture2D Layer_0 : register(t1);
+        SamplerState Layer_0_Sampler : register(s1);
+        Texture2D Layer_1 : register(t2);
+        SamplerState Layer_1_Sampler : register(s2);
+        Texture2D Layer_2 : register(t3);
+        SamplerState Layer_2_Sampler : register(s3);
+        Texture2D Layer_3 : register(t4);
+        SamplerState Layer_3_Sampler : register(s4);
 
         struct PS_INPUT
         {
@@ -139,21 +139,21 @@ Terrain/Diffuse
             float v_clip : TEXCOORD4;
         };
 
-        float4 main( PS_INPUT input ) : SV_Target
+        float4 main(PS_INPUT input) : SV_Target
         {
             if(int(ClipEnablePS.x) != 0)
             {
                 clip(input.v_clip);
             }
 
-            float4 alpha = AlphaMap.Sample( AlphaMap_Sampler, input.v_uv_alpha );
+            float4 alpha = AlphaMap.Sample(AlphaMap_Sampler, input.v_uv_alpha);
 
-            float4 color = float4( 0.0, 0.0, 0.0, 0.0 );
+            float4 color = float4(0.0, 0.0, 0.0, 0.0);
 
-            color += Layer_0.Sample( Layer_0_Sampler, input.v_uv ) * alpha.r;
-            color += Layer_1.Sample( Layer_1_Sampler, input.v_uv ) * alpha.g;
-            color += Layer_2.Sample( Layer_2_Sampler, input.v_uv ) * alpha.b;
-            color += Layer_3.Sample( Layer_3_Sampler, input.v_uv ) * alpha.a;
+            color += Layer_0.Sample(Layer_0_Sampler, input.v_uv) * alpha.r;
+            color += Layer_1.Sample(Layer_1_Sampler, input.v_uv) * alpha.g;
+            color += Layer_2.Sample(Layer_2_Sampler, input.v_uv) * alpha.b;
+            color += Layer_3.Sample(Layer_3_Sampler, input.v_uv) * alpha.a;
 
             //light
             {
@@ -206,7 +206,7 @@ Terrain/Diffuse
             mat3 world_3x3 = mat4to3(World);
 
             vec3 normal_world = world_3x3 * Normal;
-            v_light_dir_world = - LightDirection.xyz;
+            v_light_dir_world = -LightDirection.xyz;
             v_normal_world = normal_world;
 
             //clip
