@@ -5,6 +5,7 @@
 #include "TextureFormat.h"
 #include <d3d11.h>
 #include <vector>
+#include <unordered_map>
 
 namespace Galaxy3D
 {
@@ -14,7 +15,8 @@ namespace Galaxy3D
 		//support jpg 8 24, png 8 24 32
 		static std::shared_ptr<Texture2D> Create(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
 		static std::shared_ptr<Texture2D> CreateWithData(char *data, int size, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
-		static std::shared_ptr<Texture2D> LoadFromFile(const std::string &file, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
+		//cached by file name
+        static std::shared_ptr<Texture2D> LoadFromFile(const std::string &file, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
 		virtual ~Texture2D();
 		void SetPixels(const char *colors);
 		void SetPixels(int x, int y, int w, int h, const char *colors);
@@ -25,6 +27,7 @@ namespace Galaxy3D
 		ID3D11SamplerState *GetSampler() const {return m_sampler;}
 
 	private:
+        static std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_texture_cache;
 		char *m_colors;
 		int m_color_buffer_size;
 		TextureFormat::Enum m_format;

@@ -6,6 +6,7 @@
 #include "MeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Animation.h"
+#include <unordered_map>
 
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
 
@@ -31,6 +32,15 @@ namespace Galaxy3D
         if(skin)
         {
             shader_name = "SkinnedMesh/" + shader_name;
+        }
+
+        if( "Specular" == shader_name ||
+            "Nature/Tree Soft Occlusion Leaves" == shader_name ||
+            "Transparent/Cutout/Diffuse" == shader_name ||
+            "Transparent/Diffuse" == shader_name ||
+            "Particles/Additive" == shader_name)
+        {
+            shader_name = "Diffuse";
         }
 
         auto mat = Material::Create(shader_name);
