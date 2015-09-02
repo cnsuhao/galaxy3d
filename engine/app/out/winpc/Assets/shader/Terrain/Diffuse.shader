@@ -38,21 +38,6 @@ Terrain/Diffuse
             matrix World;
         };
 
-        cbuffer cbuffer3 : register(b3)
-        {
-            float4 LightDirection;
-        };
-
-        cbuffer cbuffer4 : register(b4)
-        {
-            float4 ClipPlane;
-        };
-
-        cbuffer cbuffer5 : register(b5)
-        {
-            float4 ClipEnable;
-        };
-
         struct VS_INPUT
         {
             float4 Position : POSITION;
@@ -67,9 +52,6 @@ Terrain/Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
-            float3 v_light_dir_world : TEXCOORD2;
-            float3 v_normal_world : TEXCOORD3;
-            float v_clip : TEXCOORD4;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -81,43 +63,12 @@ Terrain/Diffuse
             output.v_uv_alpha = float2(input.Position.x, input.Position.z) * TerrainSize.x;
             output.v_uv_alpha.y = 1.0 - output.v_uv_alpha.y;
 
-            float3 normal_world = mul(input.Normal, (float3x3) World);
-            output.v_light_dir_world = -LightDirection.xyz;
-            output.v_normal_world = normal_world;
-
-            //clip
-            if(int(ClipEnable.x) != 0)
-            {
-                float3 pos_world = mul(input.Position.xyz, (float3x3) World);
-                output.v_clip = dot(ClipPlane.xyz, pos_world) + ClipPlane.w;
-            }
-
             return output;
         }
     }
 
     HLPS ps
     {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 _Color;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            float4 GlobalAmbient;
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
-            float4 LightColor;
-        };
-
-        cbuffer cbuffer3 : register(b3)
-        {
-            float4 ClipEnablePS;
-        };
-
         Texture2D AlphaMap : register(t0);
         SamplerState AlphaMap_Sampler : register(s0);
         Texture2D Layer_0 : register(t1);
@@ -134,18 +85,10 @@ Terrain/Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
-            float3 v_light_dir_world : TEXCOORD2;
-            float3 v_normal_world : TEXCOORD3;
-            float v_clip : TEXCOORD4;
         };
 
         float4 main(PS_INPUT input) : SV_Target
         {
-            if(int(ClipEnablePS.x) != 0)
-            {
-                clip(input.v_clip);
-            }
-
             float4 alpha = AlphaMap.Sample(AlphaMap_Sampler, input.v_uv_alpha);
 
             float4 color = float4(0.0, 0.0, 0.0, 0.0);
@@ -154,21 +97,6 @@ Terrain/Diffuse
             color += Layer_1.Sample(Layer_1_Sampler, input.v_uv) * alpha.g;
             color += Layer_2.Sample(Layer_2_Sampler, input.v_uv) * alpha.b;
             color += Layer_3.Sample(Layer_3_Sampler, input.v_uv) * alpha.a;
-
-            //light
-            {
-                color = color * _Color;
-
-                float3 normal = normalize(input.v_normal_world);
-                float3 light_dir = normalize(input.v_light_dir_world);
-
-                float n_dot_l = saturate(dot(normal, light_dir));
-
-                float3 ambient = GlobalAmbient.rgb * color.rgb;
-                float3 diffuse = LightColor.rgb * n_dot_l * color.rgb * 2;
-
-                color.rgb = ambient + diffuse;
-            }
 
             return color;
         }

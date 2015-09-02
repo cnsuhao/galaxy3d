@@ -9,7 +9,6 @@ namespace Galaxy3D
     class MeshRenderer : public Renderer
     {
     public:
-        virtual ~MeshRenderer() {}
         virtual void Render();
         void SetMesh(const std::shared_ptr<Mesh> &mesh) {m_mesh = mesh;}
 

@@ -18,6 +18,8 @@
 #include "Layer.h"
 #include "LayerMask.h"
 #include "Animation.h"
+#include "Terrain.h"
+#include "TerrainRenderer.h"
 
 namespace Galaxy3D
 {

@@ -30,7 +30,7 @@ namespace Galaxy3D
 
             mat->SetMatrix("WorldViewProjection", wvp);
 
-            int offset = 0;
+            int index_offset = 0;
             int index_count = m_mesh->GetIndexCount(i);
 
             auto pass_count = shader->GetPassCount();
@@ -51,10 +51,10 @@ namespace Galaxy3D
                 pass->rs->Apply();
                 mat->ApplyPass(j);
 
-                DrawIndexed(index_count, offset);
+                DrawIndexed(index_count, index_offset);
             }
 
-            offset += index_count;
+            index_offset += index_count;
         }
 
         GraphicsDevice::GetInstance()->ClearShaderResources();
