@@ -53,9 +53,12 @@ namespace Galaxy3D
 		    const std::vector<std::string> &file_textures,
 		    float texture_size);
         void SetCamera(const std::shared_ptr<Camera> &camera) {m_camera = camera;}
-	    float GetHeight(const Vector3 &world_pos);
+	    float GetHeight(const Vector3 &world_pos) const;
+        std::shared_ptr<Material> GetSharedMaterial() const {return m_shared_material;}
         ID3D11Buffer *GetVertexBuffer();
         ID3D11Buffer *GetIndexBuffer();
+        void UseGeoLod(bool use) {m_use_geo = use;}
+        int GetIndexCount() const { return m_use_geo ? m_geo_indices.size() : m_indices.size();}
 
     private:
         int m_map_size;
@@ -69,6 +72,7 @@ namespace Galaxy3D
         GeoMipmapPatch *m_geo_patches;
         int m_geo_patch_count_per_side;
         std::vector<int> m_geo_indices;
+        bool m_use_geo;
 
         void UpdateIndexBuffer();
         void DeleteBuffers();

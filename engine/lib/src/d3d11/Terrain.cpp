@@ -15,7 +15,8 @@ namespace Galaxy3D
 		m_vertex_buffer(0),
 		m_index_buffer(0),
         m_geo_patches(0),
-        m_geo_patch_count_per_side(0)
+        m_geo_patch_count_per_side(0),
+        m_use_geo(false)
 	{
 	}
 
@@ -156,7 +157,7 @@ namespace Galaxy3D
 		}
 	}
 
-	float Terrain::GetHeight(const Vector3 &world_pos)
+	float Terrain::GetHeight(const Vector3 &world_pos) const
 	{
 		Vector3 pos = GetTransform()->InverseTransformPoint(world_pos);
 		int x = int(pos.x / m_xz_unit);
@@ -469,7 +470,7 @@ namespace Galaxy3D
             D3D11_SUBRESOURCE_DATA dsd;
             ZeroMemory(&dsd, sizeof(dsd));
             dsd.pSysMem = buffer;
-            device->CreateBuffer(&dbd, &dsd, (ID3D11Buffer **) &m_vertex_buffer);
+            device->CreateBuffer(&dbd, &dsd, &m_vertex_buffer);
 		}
 
 		return m_vertex_buffer;
@@ -493,11 +494,14 @@ namespace Galaxy3D
             D3D11_SUBRESOURCE_DATA dsd;
             ZeroMemory(&dsd, sizeof(dsd));
             dsd.pSysMem = &m_indices[0];
-            device->CreateBuffer(&dbd, &dsd, (ID3D11Buffer **) &m_index_buffer);
+            device->CreateBuffer(&dbd, &dsd, &m_index_buffer);
 		}
 
-		UpdateGeoMipmap();
-		UpdateIndexBuffer();
+        if(m_use_geo)
+        {
+            UpdateGeoMipmap();
+            UpdateIndexBuffer();
+        }
 
 		return m_index_buffer;
 	}
@@ -519,9 +523,9 @@ namespace Galaxy3D
 
 		D3D11_MAPPED_SUBRESOURCE dms;
 		ZeroMemory(&dms, sizeof(dms));
-		context->Map((ID3D11Buffer *) m_index_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
+		context->Map(m_index_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
 		memcpy(dms.pData, buffer, buffer_size);
-        context->Unmap((ID3D11Buffer *)m_index_buffer, 0);
+        context->Unmap(m_index_buffer, 0);
 	}
 
 	void Terrain::DeleteBuffers()
