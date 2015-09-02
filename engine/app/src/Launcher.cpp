@@ -1,4 +1,5 @@
 #include "Launcher.h"
+#include "Terrain.h"
 
 using namespace Galaxy3D;
 
@@ -25,7 +26,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(camera->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-
+    /*
     auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetClipPlane(0.3f, 1000.0f);
@@ -52,6 +53,32 @@ void Launcher::Start()
     auto ui = GameObject::Create("")->AddComponent<SpriteRenderer>();
     ui->SetSprite(Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/arthas.jpg"));
     ui->GetGameObject()->SetLayer(Layer::UI);
+    */
+
+    auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetOrthographic(false);
+    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
+    cam3d->SetDepth(1);
+    cam3d->SetClearFlags(CameraClearFlags::Depth);
+
+    GameObject *terrain_obj = GameObject::Create("terrain").get();
+    auto ter = terrain_obj->AddComponent<Terrain>();
+    ter->SetCamera(cam3d);
+
+    std::vector<std::string> terrain_texs;
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/1.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/2.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/3.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/4.png");
+
+    ter->LoadData(
+        513,
+        200 / 512.0f, 600.0f,
+        Application::GetDataPath() + "/Assets/terrain/Terrain.raw",
+        Application::GetDataPath() + "/Assets/terrain/Terrain.png",
+        terrain_texs, 3);
 }
 
 void Launcher::Update()
@@ -60,8 +87,10 @@ void Launcher::Update()
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
 
+    /*
     rot_y += 0.15f;
     pmesh->GetTransform()->SetRotation(Quaternion::Euler(0, rot_y, 0));
+    */
 
 	if(Input::GetTouchCount() > 0)
 	{

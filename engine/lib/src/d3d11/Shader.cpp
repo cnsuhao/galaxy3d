@@ -353,6 +353,7 @@ namespace Galaxy3D
 				type_name = type_name.Replace("\r\n", "\n");
 				type_name = type_name.Replace("\r", "\n");
 				type_name = type_name.Replace("\t", "");
+                type_name = type_name.Replace("    ", "");
 				auto split = type_name.Split("\n", true);
 
 				type_name = split.back().TrimSpace();
@@ -408,6 +409,7 @@ namespace Galaxy3D
 
 				GTString block = i.block;
 				block = block.Replace("\t", "");
+                block = block.Replace("    ", "");
 				block = block.Replace("\r", "\n");
 				auto lines = block.Split("\n", true);
 				for(auto j : lines)
@@ -764,6 +766,7 @@ namespace Galaxy3D
 				type = type.Replace("\r", "");
 				type = type.Replace("\n", "");
 				type = type.Replace("\t", "");
+                type = type.Replace("    ", "");
 				type = type.TrimSpace();
 				int size = 0;
 
@@ -1003,6 +1006,7 @@ namespace Galaxy3D
 
 				GTString block = i.block;
 				block = block.Replace("\t", "");
+                block = block.Replace("    ", "");
 				block = block.Replace("\r", "\n");
 				auto lines = block.Split("\n", true);
 				for(auto j : lines)
