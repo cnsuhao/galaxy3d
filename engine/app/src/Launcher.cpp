@@ -85,6 +85,9 @@ void Launcher::Start()
     auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
     renderer->SetTerrain(ter);
     renderer->SetSharedMaterial(ter->GetSharedMaterial());
+
+    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap);
 }
 
 void Launcher::Update()

@@ -52,6 +52,7 @@ Terrain/Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
+            float2 v_uv_2 : TEXCOORD2;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -62,6 +63,8 @@ Terrain/Diffuse
             output.v_uv = input.Texcoord0;
             output.v_uv_alpha = float2(input.Position.x, input.Position.z) * TerrainSize.x;
             output.v_uv_alpha.y = 1.0 - output.v_uv_alpha.y;
+            output.v_uv_2 = input.Texcoord1;
+            output.v_uv_2.y = 1.0 - output.v_uv_2.y;
 
             return output;
         }
@@ -79,12 +82,15 @@ Terrain/Diffuse
         SamplerState Layer_2_Sampler : register(s3);
         Texture2D Layer_3 : register(t4);
         SamplerState Layer_3_Sampler : register(s4);
+        Texture2D _Lightmap : register( t5 );
+        SamplerState _Lightmap_Sampler : register( s5 );
 
         struct PS_INPUT
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
+            float2 v_uv_2 : TEXCOORD2;
         };
 
         float4 main(PS_INPUT input) : SV_Target
@@ -97,6 +103,16 @@ Terrain/Diffuse
             color += Layer_1.Sample(Layer_1_Sampler, input.v_uv) * alpha.g;
             color += Layer_2.Sample(Layer_2_Sampler, input.v_uv) * alpha.b;
             color += Layer_3.Sample(Layer_3_Sampler, input.v_uv) * alpha.a;
+
+            //doubleLDR
+            color.rgb = color.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
+
+            //RGBM
+            /*
+            float4 lightmap_color = _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 );
+            lightmap_color.rgb = lightmap_color.rgb * (8.0 * lightmap_color.a);
+            color.rgb = color.rgb * lightmap_color.rgb;
+            */
 
             return color;
         }

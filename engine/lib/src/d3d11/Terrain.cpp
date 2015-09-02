@@ -66,6 +66,7 @@ namespace Galaxy3D
                 auto &vertex = m_vertices[i * m_map_size + j];
                 vertex.POSITION = Vector3(x, y, z);
                 vertex.TEXCOORD0 = Vector2(x, z) * uv_unit;
+                vertex.TEXCOORD1 = Vector2(x, z) * (1.0 / ((m_map_size - 1) * xz_unit));
 
 				if(i < m_map_size - 1 && j < m_map_size - 1)
 				{
