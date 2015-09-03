@@ -20,6 +20,7 @@
 #include "Animation.h"
 #include "Terrain.h"
 #include "TerrainRenderer.h"
+#include "LightmapSettings.h"
 
 namespace Galaxy3D
 {

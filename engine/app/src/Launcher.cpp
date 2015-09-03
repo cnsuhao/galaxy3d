@@ -61,8 +61,8 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(100, 25, 40));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(100, 8, 115));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, -140, 0));
 
     std::vector<std::string> terrain_texs;
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/1.png");
@@ -86,8 +86,11 @@ void Launcher::Start()
     renderer->SetTerrain(ter);
     renderer->SetSharedMaterial(ter->GetSharedMaterial());
 
-    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
-    ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap);
+    auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
+
+    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Objects/LightmapFar-0.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    LightmapSettings::lightmaps.push_back(lightmap);
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);

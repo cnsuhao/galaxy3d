@@ -26,7 +26,7 @@ Transparent/Diffuse
 
         cbuffer cbuffer1 : register( b1 )
         {
-            float4 _MainColor;
+            float4 _Color;
         };
 
 		struct VS_INPUT
@@ -51,7 +51,7 @@ Transparent/Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
-            output.v_color = _MainColor;
+            output.v_color = _Color;
 
 			return output;
 		}
