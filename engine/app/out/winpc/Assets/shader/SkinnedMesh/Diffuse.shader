@@ -40,7 +40,7 @@ SkinnedMesh/Diffuse
 
         cbuffer cbuffer1 : register( b1 )
         {
-            float4 _MainColor;
+            float4 _Color;
         };
 
         cbuffer cbuffer2 : register( b2 )
@@ -90,7 +90,7 @@ SkinnedMesh/Diffuse
 
             output.v_pos = mul(skinned_pos_world, ViewProjection);
 			output.v_uv = input.Texcoord0;
-            output.v_color = _MainColor;
+            output.v_color = _Color;
     
 			return output;
 		}

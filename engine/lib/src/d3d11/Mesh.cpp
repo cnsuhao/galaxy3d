@@ -6,6 +6,7 @@
 #include "MeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Animation.h"
+#include "LightmapSettings.h"
 #include <unordered_map>
 
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
@@ -360,6 +361,13 @@ namespace Galaxy3D
                 {
                     renderer->SetLightmapIndex(lightmap_index);
                     renderer->SetLightmapTilingOffset(lightmap_tiling_offset);
+
+                    if(lightmap_index < (int) LightmapSettings::lightmaps.size())
+                    {
+                        auto mat = renderer->GetSharedMaterial();
+                        mat->SetVector("_LightmapST", lightmap_tiling_offset);
+                        mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[lightmap_index]);
+                    }
                 }
             }
         }

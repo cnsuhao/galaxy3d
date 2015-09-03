@@ -82,8 +82,8 @@ Terrain/Diffuse
         SamplerState Layer_2_Sampler : register(s3);
         Texture2D Layer_3 : register(t4);
         SamplerState Layer_3_Sampler : register(s4);
-        Texture2D _Lightmap : register( t5 );
-        SamplerState _Lightmap_Sampler : register( s5 );
+        Texture2D _Lightmap : register(t5);
+        SamplerState _Lightmap_Sampler : register(s5);
 
         struct PS_INPUT
         {
