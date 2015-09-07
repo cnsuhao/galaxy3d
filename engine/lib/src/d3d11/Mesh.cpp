@@ -81,7 +81,7 @@ namespace Galaxy3D
                     std::string tex_name = read_string(p);
                     std::string tex_path = dir + "/" + tex_name;
 
-                    auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, TextureWrapMode::Clamp);
+                    auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, TextureWrapMode::Clamp, true);
 
                     mat->SetTexture(property_name, tex);
                 }

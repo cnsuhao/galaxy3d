@@ -61,7 +61,7 @@ namespace Galaxy3D
 	static const D3D11_FILTER FILTER_MODES[3] =
 	{
 		D3D11_FILTER_MIN_MAG_MIP_POINT,
-		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D11_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D11_FILTER_ANISOTROPIC,
 	};
 
@@ -90,7 +90,7 @@ namespace Galaxy3D
 		return std::shared_ptr<Texture2D>(new Texture2D(w, h, format, filter_mode, wrap_mode));
 	}
 
-	std::shared_ptr<Texture2D> Texture2D::CreateWithData(char *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
+	std::shared_ptr<Texture2D> Texture2D::CreateWithData(char *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode, bool mipmap)
 	{
 		std::shared_ptr<Texture2D> tex;
 
@@ -133,6 +133,7 @@ namespace Galaxy3D
 		if(pixels != 0)
 		{
 			tex = Create(w, h, format, filter_mode, wrap_mode);
+            tex->m_mipmap = mipmap;
 			tex->SetPixels(pixels);
 			tex->Apply();
 
@@ -143,7 +144,7 @@ namespace Galaxy3D
 		return tex;
 	}
 
-	std::shared_ptr<Texture2D> Texture2D::LoadFromFile(const std::string &file, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
+	std::shared_ptr<Texture2D> Texture2D::LoadFromFile(const std::string &file, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode, bool mipmap)
 	{
         std::shared_ptr<Texture2D> tex;
 
@@ -155,7 +156,7 @@ namespace Galaxy3D
         else if(GTFile::Exist(file))
         {
             auto data = GTFile::ReadAllBytes(file);
-            tex = CreateWithData(&data[0], data.size(), filter_mode, wrap_mode);
+            tex = CreateWithData(&data[0], data.size(), filter_mode, wrap_mode, mipmap);
             tex->SetName(file);
 
             m_texture_cache[file] = tex;
@@ -227,7 +228,7 @@ namespace Galaxy3D
 		auto device = GraphicsDevice::GetInstance()->GetDevice();
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 
-		bool mipmap = false;
+		bool mipmap = m_mipmap;
 
 		D3D11_TEXTURE2D_DESC desc;
         desc.Width = static_cast<UINT>(m_width);
@@ -320,6 +321,7 @@ namespace Galaxy3D
 			sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			sampDesc.MinLOD = 0;
 			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+            sampDesc.MipLODBias = 0;
 			device->CreateSamplerState(&sampDesc, &m_sampler);
 		}
 	}

@@ -87,7 +87,7 @@ namespace Galaxy3D
         m_shared_material->SetTexture("AlphaMap", tex);
 		for(size_t i=0; i<4 && i<file_textures.size(); i++)
 		{
-            tex = Texture2D::LoadFromFile(file_textures[i], FilterMode::Bilinear, TextureWrapMode::Repeat);
+            tex = Texture2D::LoadFromFile(file_textures[i], FilterMode::Bilinear, TextureWrapMode::Repeat, true);
             m_shared_material->SetTexture(GTString::Format("Layer_%d", i).str, tex);
 		}
 
