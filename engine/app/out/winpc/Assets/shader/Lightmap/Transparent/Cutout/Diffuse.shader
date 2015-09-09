@@ -1,4 +1,4 @@
-Transparent/Cutout/Diffuse
+Lightmap/Transparent/Cutout/Diffuse
 {
 	Tags
 	{
@@ -29,6 +29,11 @@ Transparent/Cutout/Diffuse
             float4 _Color;
         };
 
+        cbuffer cbuffer2 : register( b2 )
+        {
+            float4 _LightmapST;
+        };
+
 		struct VS_INPUT
 		{
 			float4 Position : POSITION;
@@ -42,6 +47,7 @@ Transparent/Cutout/Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float2 v_uv_2 : TEXCOORD1;
             float4 v_color : COLOR;
 		};
 
@@ -51,6 +57,8 @@ Transparent/Cutout/Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
+            output.v_uv_2 = input.Texcoord1 * _LightmapST.xy + _LightmapST.zw;
+            output.v_uv_2.y = 1.0 - output.v_uv_2.y;
             output.v_color = _Color;
 
 			return output;
@@ -66,11 +74,14 @@ Transparent/Cutout/Diffuse
         
 		Texture2D _MainTex : register( t0 );
 		SamplerState _MainTex_Sampler : register( s0 );
+        Texture2D _Lightmap : register(t1);
+        SamplerState _Lightmap_Sampler : register(s1);
 
 		struct PS_INPUT
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float2 v_uv_2 : TEXCOORD1;
             float4 v_color : COLOR;
 		};
 
@@ -78,6 +89,7 @@ Transparent/Cutout/Diffuse
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
             clip(c.a - _Cutoff);
+            c.rgb = c.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
 			return c;
 		}
 	}

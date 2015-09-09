@@ -1,8 +1,8 @@
-Transparent/Cutout/Diffuse
+Lightmap/Diffuse
 {
 	Tags
 	{
-		Queue AlphaTest
+		Queue Geometry
 	}
 
 	Pass
@@ -14,7 +14,21 @@ Transparent/Cutout/Diffuse
 
 	RenderStates rs
 	{
-        Cull Off
+        Cull Back
+		ZWrite On
+		ZTest LEqual
+		Offset 0, 0
+		Blend Off
+		Stencil
+		{
+			Ref referenceValue
+			ReadMask readMask
+			WriteMask writeMask
+			Comp comparisonFunction
+			Pass stencilOperation
+			Fail stencilOperation
+			ZFail stencilOperation
+		}
 	}
 
 	HLVS vs
@@ -27,6 +41,11 @@ Transparent/Cutout/Diffuse
         cbuffer cbuffer1 : register( b1 )
         {
             float4 _Color;
+        };
+
+        cbuffer cbuffer2 : register( b2 )
+        {
+            float4 _LightmapST;
         };
 
 		struct VS_INPUT
@@ -42,6 +61,7 @@ Transparent/Cutout/Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float2 v_uv_2 : TEXCOORD1;
             float4 v_color : COLOR;
 		};
 
@@ -51,6 +71,8 @@ Transparent/Cutout/Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
+            output.v_uv_2 = input.Texcoord1 * _LightmapST.xy + _LightmapST.zw;
+            output.v_uv_2.y = 1.0 - output.v_uv_2.y;
             output.v_color = _Color;
 
 			return output;
@@ -59,25 +81,23 @@ Transparent/Cutout/Diffuse
 
 	HLPS ps
 	{
-        cbuffer cbuffer0 : register( b0 )
-        {
-            float4 _Cutoff;
-        };
-        
-		Texture2D _MainTex : register( t0 );
-		SamplerState _MainTex_Sampler : register( s0 );
+		Texture2D _MainTex : register(t0);
+		SamplerState _MainTex_Sampler : register(s0);
+        Texture2D _Lightmap : register(t1);
+        SamplerState _Lightmap_Sampler : register(s1);
 
 		struct PS_INPUT
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float2 v_uv_2 : TEXCOORD1;
             float4 v_color : COLOR;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
-            clip(c.a - _Cutoff);
+            c.rgb = c.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
 			return c;
 		}
 	}
