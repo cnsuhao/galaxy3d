@@ -94,6 +94,17 @@ void Launcher::Start()
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
+
+    auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
+    anim->SetLayerRecursive(Layer::Default);
+    anim->GetTransform()->SetPosition(Vector3(91, 0, 103));
+    anim->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
+    anim->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
+
+    std::string clip = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
+    auto anim_com = anim->GetComponent<Animation>();
+    anim_com->GetAnimationState(clip)->wrap_mode = WrapMode::Loop;
+    anim_com->Play(clip);
 }
 
 void Launcher::Update()
