@@ -7,6 +7,7 @@
 #include "SkinnedMeshRenderer.h"
 #include "Animation.h"
 #include "LightmapSettings.h"
+#include "GTString.h"
 #include <unordered_map>
 
 #include "Debug.h"
@@ -35,6 +36,11 @@ namespace Galaxy3D
         if(skin)
         {
             shader_name = "SkinnedMesh/" + shader_name;
+        }
+
+        if(GTString(shader_name).StartsWith("Legacy Shaders/"))
+        {
+            shader_name = shader_name.substr(std::string("Legacy Shaders/").size());
         }
 
         if("Specular" == shader_name)

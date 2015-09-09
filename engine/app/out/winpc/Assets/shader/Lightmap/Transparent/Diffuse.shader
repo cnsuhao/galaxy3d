@@ -1,8 +1,8 @@
-Transparent/Cutout/Diffuse
+Lightmap/Transparent/Diffuse
 {
 	Tags
 	{
-		Queue AlphaTest
+		Queue Transparent
 	}
 
 	Pass
@@ -14,7 +14,7 @@ Transparent/Cutout/Diffuse
 
 	RenderStates rs
 	{
-        Cull Back
+        Blend SrcAlpha OneMinusSrcAlpha
 	}
 
 	HLVS vs
@@ -59,11 +59,6 @@ Transparent/Cutout/Diffuse
 
 	HLPS ps
 	{
-        cbuffer cbuffer0 : register( b0 )
-        {
-            float4 _Cutoff;
-        };
-        
 		Texture2D _MainTex : register( t0 );
 		SamplerState _MainTex_Sampler : register( s0 );
 
@@ -77,7 +72,6 @@ Transparent/Cutout/Diffuse
 		float4 main( PS_INPUT input) : SV_Target
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
-            clip(c.a - _Cutoff);
 			return c;
 		}
 	}

@@ -1,8 +1,8 @@
-Transparent/Cutout/Diffuse
+Lightmap/Particles/Additive
 {
 	Tags
 	{
-		Queue AlphaTest
+		Queue Transparent
 	}
 
 	Pass
@@ -14,7 +14,11 @@ Transparent/Cutout/Diffuse
 
 	RenderStates rs
 	{
-        Cull Back
+        Cull Off
+		ZWrite Off
+		ZTest LEqual
+		Offset 0, 0
+        Blend SrcAlpha One
 	}
 
 	HLVS vs
@@ -23,11 +27,6 @@ Transparent/Cutout/Diffuse
 		{
 			matrix WorldViewProjection;
 		};
-
-        cbuffer cbuffer1 : register( b1 )
-        {
-            float4 _Color;
-        };
 
 		struct VS_INPUT
 		{
@@ -42,7 +41,6 @@ Transparent/Cutout/Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
 		};
 
 		PS_INPUT main( VS_INPUT input )
@@ -51,7 +49,6 @@ Transparent/Cutout/Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
-            output.v_color = _Color;
 
 			return output;
 		}
@@ -61,7 +58,7 @@ Transparent/Cutout/Diffuse
 	{
         cbuffer cbuffer0 : register( b0 )
         {
-            float4 _Cutoff;
+            float4 _TintColor;
         };
         
 		Texture2D _MainTex : register( t0 );
@@ -71,13 +68,11 @@ Transparent/Cutout/Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
-            clip(c.a - _Cutoff);
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _TintColor * 2;
 			return c;
 		}
 	}
