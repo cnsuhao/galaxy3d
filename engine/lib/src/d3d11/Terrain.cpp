@@ -81,7 +81,7 @@ namespace Galaxy3D
 			}
 		}
         
-        auto tex = Texture2D::LoadFromFile(file_alphamap, FilterMode::Point, TextureWrapMode::Clamp);
+        auto tex = Texture2D::LoadFromFile(file_alphamap, FilterMode::Bilinear, TextureWrapMode::Clamp);
         m_shared_material = Material::Create("Terrain/Diffuse");
         m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * xz_unit), 0, 0, 0));
         m_shared_material->SetTexture("AlphaMap", tex);

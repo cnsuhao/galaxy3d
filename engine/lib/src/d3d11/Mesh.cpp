@@ -9,6 +9,8 @@
 #include "LightmapSettings.h"
 #include <unordered_map>
 
+#include "Debug.h"
+
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
 
 namespace Galaxy3D
@@ -365,6 +367,8 @@ namespace Galaxy3D
                     if(lightmap_index < (int) LightmapSettings::lightmaps.size())
                     {
                         auto mat = renderer->GetSharedMaterial();
+
+                        mat->SetShader(Shader::Find("Lightmap/" + mat->GetShader()->GetName()));
                         mat->SetVector("_LightmapST", lightmap_tiling_offset);
                         mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[lightmap_index]);
                     }
