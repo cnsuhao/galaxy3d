@@ -33,14 +33,29 @@ Diffuse
 
 	HLVS vs
 	{
-		cbuffer cbuffer0 : register( b0 )
+		cbuffer cbuffer0 : register(b0)
 		{
 			matrix WorldViewProjection;
 		};
 
-        cbuffer cbuffer1 : register( b1 )
+        cbuffer cbuffer1 : register(b1)
         {
             float4 _Color;
+        };
+
+        cbuffer cbuffer2 : register(b2)
+        {
+            matrix World;
+        };
+
+        cbuffer cbuffer3 : register(b3)
+        {
+            float4 LightDirection;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
+            float4 EyePosition;
         };
 
 		struct VS_INPUT
@@ -57,15 +72,25 @@ Diffuse
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
             float4 v_color : COLOR;
+            float3 v_light_dir_world : TEXCOORD1;
+            float3 v_eye_dir_world : TEXCOORD2;
+            float3 v_normal_world : TEXCOORD3;
 		};
 
-		PS_INPUT main( VS_INPUT input )
+		PS_INPUT main(VS_INPUT input)
 		{
 			PS_INPUT output = (PS_INPUT) 0;
 
-			output.v_pos = mul( input.Position, WorldViewProjection );
+			output.v_pos = mul(input.Position, WorldViewProjection);
 			output.v_uv = input.Texcoord0;
             output.v_color = _Color;
+
+            float4 pos_world = mul(input.Position, World);
+            float3 normal_world = mul(input.Normal, World);
+
+            output.v_light_dir_world = - LightDirection.xyz;
+            output.v_eye_dir_world = EyePosition.xyz - pos_world.xyz;
+            output.v_normal_world = normal_world;
 
 			return output;
 		}
@@ -73,6 +98,16 @@ Diffuse
 
 	HLPS ps
 	{
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 GlobalAmbient;
+        };
+
+        cbuffer cbuffer1 : register(b1)
+        {
+            float4 LightColor;
+        };
+
 		Texture2D _MainTex : register(t0);
 		SamplerState _MainTex_Sampler : register(s0);
 
@@ -81,11 +116,26 @@ Diffuse
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
             float4 v_color : COLOR;
+            float3 v_light_dir_world : TEXCOORD1;
+            float3 v_eye_dir_world : TEXCOORD2;
+            float3 v_normal_world : TEXCOORD3;
 		};
 
-		float4 main( PS_INPUT input) : SV_Target
+		float4 main(PS_INPUT input) : SV_Target
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
+
+            float3 normal = normalize(input.v_normal_world);
+            float3 light_dir = normalize(input.v_light_dir_world);
+            float3 eye_dir = normalize(input.v_eye_dir_world);
+
+            float3 h = normalize(light_dir + eye_dir);
+            float diff = saturate(dot(normal, light_dir));
+            float nh = saturate(dot(normal, h));
+            float spec = pow(nh, 128) * c.a;
+
+            c.rgb = GlobalAmbient.rgb * c.rgb + (c.rgb * LightColor.rgb * diff + LightColor.rgb * spec) * 2;
+
 			return c;
 		}
 	}

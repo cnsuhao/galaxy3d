@@ -105,6 +105,11 @@ void Launcher::Start()
     auto anim_com = anim->GetComponent<Animation>();
     anim_com->GetAnimationState(clip)->wrap_mode = WrapMode::Loop;
     anim_com->Play(clip);
+
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
+    RenderSettings::light_directional_intensity = 1;
+    RenderSettings::light_directional_direction = Vector3(0, -1, -1);
 }
 
 void Launcher::Update()

@@ -1,4 +1,5 @@
 #include "MeshRenderer.h"
+#include "RenderSettings.h"
 
 namespace Galaxy3D
 {
@@ -29,6 +30,11 @@ namespace Galaxy3D
             auto shader = mat->GetShader();
 
             mat->SetMatrix("WorldViewProjection", wvp);
+            mat->SetMatrix("World", GetTransform()->GetLocalToWorldMatrix());
+            mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
+            mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
+            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
+            mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
 
             int index_offset = 0;
             int index_count = m_mesh->GetIndexCount(i);
