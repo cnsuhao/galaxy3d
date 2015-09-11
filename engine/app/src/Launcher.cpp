@@ -89,11 +89,6 @@ void Launcher::Update()
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
 
-    /*
-    rot_y += 0.15f;
-    pmesh->GetTransform()->SetRotation(Quaternion::Euler(0, rot_y, 0));
-    */
-
 	if(Input::GetTouchCount() > 0)
 	{
 		auto t = Input::GetTouch(0);
