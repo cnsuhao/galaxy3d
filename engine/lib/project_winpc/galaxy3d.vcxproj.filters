@@ -114,9 +114,6 @@
     <ClCompile Include="..\src\d3d11\Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\MeshRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -133,6 +130,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LightmapSettings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSettings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -296,9 +299,6 @@
     <ClInclude Include="..\src\d3d11\Mesh.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\MeshRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ShaderPropertyType.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -327,6 +327,12 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\LightmapSettings.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSettings.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\MeshRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
