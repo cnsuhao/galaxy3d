@@ -25,35 +25,6 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(camera->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-    /*
-    auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam3d->SetOrthographic(false);
-    cam3d->SetClipPlane(0.3f, 1000.0f);
-    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 1, -5));
-    cam3d->SetDepth(0);
-    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-
-    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.mesh");
-    mesh->SetLayerRecursive(Layer::Default);
-    mesh->GetTransform()->SetPosition(Vector3(-1.5f, 0, 0));
-    pmesh = mesh.get();
-
-    auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
-    anim->SetLayerRecursive(Layer::Default);
-    anim->GetTransform()->SetPosition(Vector3(2, 0, 0));
-    anim->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
-
-    std::string clip = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
-    auto anim_com = anim->GetComponent<Animation>();
-    anim_com->GetAnimationState(clip)->wrap_mode = WrapMode::Loop;
-    anim_com->Play(clip);
-
-    auto ui = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    ui->SetSprite(Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/arthas.jpg"));
-    ui->GetGameObject()->SetLayer(Layer::UI);
-    */
-
     auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(30);
@@ -61,9 +32,9 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(100, 8, 115));
+    cam3d->GetTransform()->SetPosition(Vector3(101, 7, 115));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, -140, 0));
-
+    
     std::vector<std::string> terrain_texs;
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/1.png");
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/2.png");
@@ -94,10 +65,10 @@ void Launcher::Start()
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
-
+    
     auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim->SetLayerRecursive(Layer::Default);
-    anim->GetTransform()->SetPosition(Vector3(91, 0, 103));
+    anim->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
     anim->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
     anim->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
 

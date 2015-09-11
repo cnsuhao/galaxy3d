@@ -33,14 +33,14 @@ namespace Galaxy3D
         std::string mat_guid = read_string(p);
         std::string shader_name = read_string(p);
 
-        if(skin)
-        {
-            shader_name = "SkinnedMesh/" + shader_name;
-        }
-
         if(GTString(shader_name).StartsWith("Legacy Shaders/"))
         {
             shader_name = shader_name.substr(std::string("Legacy Shaders/").size());
+        }
+
+        if(skin)
+        {
+            shader_name = "SkinnedMesh/" + shader_name;
         }
 
         if("Specular" == shader_name)
@@ -88,7 +88,7 @@ namespace Galaxy3D
                 {
                     std::string tex_name = read_string(p);
                     std::string tex_path = dir + "/" + tex_name;
-
+                    
                     auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, TextureWrapMode::Clamp, true);
 
                     mat->SetTexture(property_name, tex);
@@ -291,7 +291,7 @@ namespace Galaxy3D
             for(int i=0; i<static_count; i++)
             {
                 std::string renderer_name = read_string(p);
-
+                Debug::Log("%s", renderer_name.c_str());
                 Vector3 pos;
                 BUFFER_READ(pos, p, sizeof(Vector3));
                 Quaternion rot;
@@ -315,6 +315,10 @@ namespace Galaxy3D
                 if(find != bones.end())
                 {
                     renderer_tran->SetParent(find->second);
+                }
+                else
+                {
+                    renderer_tran->SetParent(tran);
                 }
             }
         }
