@@ -44,6 +44,7 @@
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
+    <ClCompile Include="..\src\Physics.cpp" />
     <ClCompile Include="..\src\Quaternion.cpp" />
     <ClCompile Include="..\src\Ray.cpp" />
     <ClCompile Include="..\src\Rect.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\Object.h" />
+    <ClInclude Include="..\src\Physics.h" />
     <ClInclude Include="..\src\Quaternion.h" />
     <ClInclude Include="..\src\Ray.h" />
     <ClInclude Include="..\src\Rect.h" />
@@ -154,11 +156,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
-    <IncludePath>..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
-    <IncludePath>..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -164,4 +164,114 @@ namespace Galaxy3D
 		Renderer::RenderAll();
 		m_current.reset();
 	}
+
+    Vector3 Camera::ScreenToViewportPoint(const Vector3 &position)
+    {
+        float x = position.x / Screen::GetWidth();
+        x = (x - m_rect.left) / m_rect.width;
+
+        float y = position.y / Screen::GetHeight();
+        y = (y - m_rect.top) / m_rect.height;
+
+        return Vector3(x, y, 0);
+    }
+
+    Vector3 Camera::ViewportToWorldPoint(const Vector3 &position)
+    {
+        Vector3 pos;
+
+        if(m_orthographic)
+        {
+            float plane_h = m_orthographic_size * 2;
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float vp_x = (position.x - 0.5f) * plane_w;
+            float vp_y = (position.y - 0.5f) * plane_h;
+
+            pos = Vector3(vp_x, vp_y, position.z);
+            pos = GetTransform()->TransformPoint(pos);
+        }
+        else
+        {
+            float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float vp_x = (position.x - 0.5f) * plane_w;
+            float vp_y = (position.y - 0.5f) * plane_h;
+            float vp_z = m_near_clip_plane;
+
+            float x = vp_x / vp_z * position.z;
+            float y = vp_y / vp_z * position.z;
+            float z = position.z;
+            pos = Vector3(x , y , z);
+            pos = GetTransform()->GetRotation() * pos;
+            pos = GetTransform()->GetPosition() + pos;
+        }
+
+        return pos;
+    }
+
+    Vector3 Camera::WorldToViewportPoint(const Vector3 &position)
+    {
+        Vector3 pos = position - GetTransform()->GetPosition();
+        pos = Quaternion::Inverse(GetTransform()->GetRotation()) * pos;
+
+        if(m_orthographic)
+        {
+            float plane_h = m_orthographic_size * 2;
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+
+            float z = pos.z;
+            float y = pos.y / plane_h + 0.5f;
+            float x = pos.x / plane_w + 0.5f;
+
+            pos = Vector3(x, y, z);
+        }
+        else
+        {
+            float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+
+            float z = pos.z;
+            float y = pos.y / z * m_near_clip_plane / plane_h + 0.5f;
+            float x = pos.x / z * m_near_clip_plane / plane_w + 0.5f;
+
+            pos = Vector3(x, y, z);
+        }
+
+        return pos;
+    }
+
+    Ray Camera::ScreenPointToRay(const Vector3 &position)
+    {
+        Vector3 vp = ScreenToViewportPoint(position);
+
+        if(m_orthographic)
+        {
+            Vector3 dir = Vector3(0, 0, 1);
+            float plane_h = m_orthographic_size * 2;
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float vp_x = (vp.x - 0.5f) * plane_w;
+            float vp_y = (vp.y - 0.5f) * plane_h;
+            Vector3 origin = Vector3(vp_x, vp_y, m_near_clip_plane);
+            origin = GetTransform()->GetRotation() * origin;
+            origin = GetTransform()->GetPosition() + origin;
+            dir = GetTransform()->TransformDirection(dir);
+
+            return Ray(origin, dir);
+        }
+        else
+        {
+            float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
+            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float vp_x = (vp.x - 0.5f) * plane_w;
+            float vp_y = (vp.y - 0.5f) * plane_h;
+            float vp_z = m_near_clip_plane;
+
+            Vector3 dir = Vector3(vp_x, vp_y, vp_z);
+            Vector3 origin = GetTransform()->GetRotation() * dir;
+            origin = GetTransform()->GetPosition() + dir;
+            dir = GetTransform()->TransformDirection(dir);
+
+            return Ray(origin, dir);
+        }
+    }
 }

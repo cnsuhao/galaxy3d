@@ -14,6 +14,7 @@
 #pragma comment(lib, "png.lib")
 #pragma comment(lib, "zlib.lib")
 #pragma comment(lib, "freetype.lib")
+#pragma comment(lib, "bullet.lib")
 #pragma comment(lib, "galaxy3d.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
@@ -128,7 +129,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				t.deltaTime = 0;
 				t.fingerId = 0;
 				t.phase = TouchPhase::Began;
-				t.position = Vector2((float) x, (float) y);
+				t.position = Vector2((float) x, (float) Screen::GetHeight() - y - 1);
 				t.tapCount = 1;
 				t.time = GTTime::GetRealTimeSinceStartup();
 
@@ -158,7 +159,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				t.deltaTime = 0;
 				t.fingerId = 0;
 				t.phase = TouchPhase::Moved;
-				t.position = Vector2((float) x, (float) y);
+				t.position = Vector2((float) x, (float) Screen::GetHeight() - y - 1);
 				t.tapCount = 1;
 				t.time = GTTime::GetRealTimeSinceStartup();
 
@@ -200,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				t.deltaTime = 0;
 				t.fingerId = 0;
 				t.phase = TouchPhase::Ended;
-				t.position = Vector2((float) x, (float) y);
+				t.position = Vector2((float) x, (float) Screen::GetHeight() - y - 1);
 				t.tapCount = 1;
 				t.time = GTTime::GetRealTimeSinceStartup();
 

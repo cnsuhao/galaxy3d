@@ -10,11 +10,11 @@ void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
 
-	camera = GameObject::Create("camera")->AddComponent<Camera>();
-	camera->SetOrthographicSize(Screen::GetHeight() / 200.f);
-    camera->SetCullingMask(LayerMask::GetMask(Layer::UI));
-    camera->SetDepth(1);
-    camera->SetClearFlags(CameraClearFlags::Nothing);
+    cam2d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
+    cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
+    cam2d->SetDepth(1);
+    cam2d->SetClearFlags(CameraClearFlags::Nothing);
 
 	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
@@ -22,10 +22,10 @@ void Launcher::Start()
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
 	fps = tr;
-	fps->GetTransform()->SetParent(camera->GetTransform());
+	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-    auto cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(30);
     cam3d->SetClipPlane(0.3f, 1000.0f);
@@ -56,7 +56,7 @@ void Launcher::Start()
     auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
     renderer->SetTerrain(ter);
     renderer->SetSharedMaterial(ter->GetSharedMaterial());
-
+    
     auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
 
@@ -81,6 +81,10 @@ void Launcher::Start()
     RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
     RenderSettings::light_directional_intensity = 1;
     RenderSettings::light_directional_direction = Vector3(0, -1, -1);
+
+    Physics::Init();
+    std::vector<char> terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw");
+    Physics::CreateTerrainRigidBody(513, (short *) &terrain_data[0], 0, 10);
 }
 
 void Launcher::Update()
@@ -95,7 +99,16 @@ void Launcher::Update()
 
 		if(t->phase == TouchPhase::Began)
 		{
-			
+            Vector3 pos = t->position;
+
+            Ray ray = cam3d->ScreenPointToRay(pos);
+
+            Vector3 hit;
+            Vector3 nor;
+            if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
+            {
+                Debug::Log(hit.ToString().c_str());
+            }
 		}
 		else if(
             t->phase == TouchPhase::Ended ||
@@ -105,11 +118,14 @@ void Launcher::Update()
 		}
 		else if(t->phase == TouchPhase::Moved)
 		{
-			
+            Vector3 pos = t->position;
 		}
 	}
+
+    Physics::Step();
 }
 
 Launcher::~Launcher()
 {
+    Physics::Done();
 }

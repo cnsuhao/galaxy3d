@@ -138,6 +138,9 @@
     <ClCompile Include="..\src\d3d11\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Physics.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -333,6 +336,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\d3d11\MeshRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Physics.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
