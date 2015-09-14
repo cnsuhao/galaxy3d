@@ -12,6 +12,7 @@
 #include "TextRenderer.h"
 #include "GTString.h"
 #include "GTTime.h"
+#include "GTFile.h"
 #include "Input.h"
 #include "Debug.h"
 #include "Mesh.h"
@@ -22,6 +23,7 @@
 #include "TerrainRenderer.h"
 #include "LightmapSettings.h"
 #include "RenderSettings.h"
+#include "Physics.h"
 
 namespace Galaxy3D
 {
@@ -32,7 +34,8 @@ namespace Galaxy3D
 
 	protected:
 		std::shared_ptr<TextRenderer> fps;
-		std::shared_ptr<Camera> camera;
+		std::shared_ptr<Camera> cam2d;
+        std::shared_ptr<Camera> cam3d;
 		Vector2 touch_pos;
 
 		virtual void Start();

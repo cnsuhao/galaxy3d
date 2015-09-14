@@ -29,6 +29,10 @@ namespace Galaxy3D
 		void SetRect(const Rect &rect) {m_rect = rect;}
 		void UpdateMatrix();
 		const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
+        Vector3 ScreenToViewportPoint(const Vector3 &position);
+        Vector3 ViewportToWorldPoint(const Vector3 &position);
+        Vector3 WorldToViewportPoint(const Vector3 &position);
+        Ray ScreenPointToRay(const Vector3 &position);
 
 	protected:
 		virtual void Start();

@@ -8,9 +8,8 @@
 #include "Animation.h"
 #include "LightmapSettings.h"
 #include "GTString.h"
-#include <unordered_map>
-
 #include "Debug.h"
+#include <unordered_map>
 
 #define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
 
@@ -291,7 +290,7 @@ namespace Galaxy3D
             for(int i=0; i<static_count; i++)
             {
                 std::string renderer_name = read_string(p);
-                Debug::Log("%s", renderer_name.c_str());
+
                 Vector3 pos;
                 BUFFER_READ(pos, p, sizeof(Vector3));
                 Quaternion rot;
