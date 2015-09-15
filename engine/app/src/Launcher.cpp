@@ -2,9 +2,8 @@
 
 using namespace Galaxy3D;
 
-static const int CAMERA_OFFSET_Y = 2;
-GameObject *pmesh;
-float rot_y = 0;
+std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
+std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 
 void Launcher::Start()
 {
@@ -66,17 +65,19 @@ void Launcher::Start()
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
     
-    anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
-    anim->SetLayerRecursive(Layer::Default);
-    anim->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
-    anim->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
-    anim->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
+    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
+    anim_obj->SetLayerRecursive(Layer::Default);
+    anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
+    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
+    anim_obj->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
 
-    std::string clip = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
-    auto anim_com = anim->GetComponent<Animation>();
-    anim_com->GetAnimationState(clip)->wrap_mode = WrapMode::Loop;
-    anim_com->Play(clip);
+    cam3d->GetTransform()->SetParent(anim_obj->GetTransform());
 
+    anim = anim_obj->GetComponent<Animation>();
+    anim->GetAnimationState(clip_idle)->wrap_mode = WrapMode::Loop;
+    anim->GetAnimationState(clip_move)->wrap_mode = WrapMode::Loop;
+    anim->Play(clip_idle);
+    
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
     RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
     RenderSettings::light_directional_intensity = 1;
@@ -85,6 +86,8 @@ void Launcher::Start()
     Physics::Init();
     std::vector<char> terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw");
     Physics::CreateTerrainRigidBody(513, (short *) &terrain_data[0], 0, 10);
+
+    time_move_begin = -1;
 }
 
 void Launcher::Update()
@@ -107,9 +110,12 @@ void Launcher::Update()
             Vector3 nor;
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
-                Debug::Log(hit.ToString().c_str());
+                time_move_begin = GTTime::GetRealTimeSinceStartup();
+                pos_old = anim->GetTransform()->GetPosition();
+                pos_new = hit + Vector3(0, 0.05f, 0);
+                time_move_end = time_move_begin + (pos_new - pos_old).Magnitude() / 5;
 
-                anim->GetTransform()->SetPosition(hit + Vector3(0, 0.05f, 0));
+                anim->Play(clip_move);
             }
 		}
 		else if(
@@ -125,6 +131,27 @@ void Launcher::Update()
 	}
 
     Physics::Step();
+
+    if(time_move_begin > 0)
+    {
+        float t;
+        float now = GTTime::GetRealTimeSinceStartup();
+        if(now > time_move_end)
+        {
+            time_move_begin = -1;
+            t = 1;
+
+            anim->Play(clip_idle);
+        }
+        else
+        {
+            t = (now - time_move_begin) / (time_move_end - time_move_begin);
+        }
+
+        Vector3 pos = Vector3::Lerp(pos_old, pos_new, t, false);
+        anim->GetTransform()->SetPosition(pos);
+        cam3d->UpdateMatrix();
+    }
 }
 
 Launcher::~Launcher()
