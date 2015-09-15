@@ -177,7 +177,7 @@ namespace Galaxy3D
 	{
 		Vector3 cam_pos_in_model = GetTransform()->InverseTransformPoint(m_camera->GetTransform()->GetPosition());
 		Matrix4x4 wvp = m_camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
-		//FrustumBounds frustum(wvp);
+		FrustumBounds frustum(wvp);
 		
 		for(int i=0; i<m_geo_patch_count_per_side; i++)
 		{
@@ -189,8 +189,7 @@ namespace Galaxy3D
 				int n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 2;
 				Vector3 center_pos = m_vertices[m * m_map_size + n].POSITION;
 
-				//patch.visible = frustum.ContainsSphere(center_pos, patch.bounding_sphere_radius) >= 0;
-                patch.visible = true;
+				patch.visible = frustum.ContainsSphere(center_pos, patch.bounding_sphere_radius) >= 0;
 
 				if(!patch.visible)
 				{

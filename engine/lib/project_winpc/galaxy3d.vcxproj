@@ -32,6 +32,7 @@
     <ClCompile Include="..\src\d3d11\TextRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\Texture2D.cpp" />
     <ClCompile Include="..\src\Debug.cpp" />
+    <ClCompile Include="..\src\FrustumBounds.cpp" />
     <ClCompile Include="..\src\GameObject.cpp" />
     <ClCompile Include="..\src\GTFile.cpp" />
     <ClCompile Include="..\src\GTString.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="..\src\d3d11\VertexShader.h" />
     <ClInclude Include="..\src\Debug.h" />
     <ClInclude Include="..\src\FilterMode.h" />
+    <ClInclude Include="..\src\FrustumBounds.h" />
     <ClInclude Include="..\src\GameObject.h" />
     <ClInclude Include="..\src\GTFile.h" />
     <ClInclude Include="..\src\GTString.h" />
