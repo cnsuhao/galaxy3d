@@ -8,7 +8,7 @@
 #include "Material.h"
 #include "Camera.h"
 #include "VertexType.h"
-//#include "FrustumBounds.h"
+#include "FrustumBounds.h"
 
 namespace Galaxy3D
 {

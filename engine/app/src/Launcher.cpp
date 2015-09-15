@@ -66,7 +66,7 @@ void Launcher::Start()
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
     
-    auto anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
+    anim = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim->SetLayerRecursive(Layer::Default);
     anim->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
     anim->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
@@ -108,6 +108,8 @@ void Launcher::Update()
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
                 Debug::Log(hit.ToString().c_str());
+
+                anim->GetTransform()->SetPosition(hit + Vector3(0, 0.05f, 0));
             }
 		}
 		else if(
