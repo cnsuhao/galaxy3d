@@ -36,8 +36,11 @@ namespace Galaxy3D
 		std::shared_ptr<TextRenderer> fps;
 		std::shared_ptr<Camera> cam2d;
         std::shared_ptr<Camera> cam3d;
-        std::shared_ptr<GameObject> anim;
-		Vector2 touch_pos;
+        std::shared_ptr<Animation> anim;
+        float time_move_begin;
+        float time_move_end;
+        Vector3 pos_old;
+        Vector3 pos_new;
 
 		virtual void Start();
 		virtual void Update();
