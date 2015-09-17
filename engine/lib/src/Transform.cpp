@@ -274,4 +274,17 @@ namespace Galaxy3D
 	{
 		return GetRotation() * Vector3(0, 0, 1);
 	}
+
+    void Transform::SetForward(const Vector3 &forward)
+    {
+        Vector3 origin = Vector3(0, 0, 1);
+        Vector3 fn = Vector3::Normalize(forward);
+        if(fn != origin)
+        {
+            float deg = Vector3::Angle(origin, fn);
+            Vector3 axis = origin * forward;
+
+            SetRotation(Quaternion::AngleAxis(deg, axis));
+        }
+    }
 }

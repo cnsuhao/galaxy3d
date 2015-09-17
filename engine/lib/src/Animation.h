@@ -23,7 +23,9 @@ namespace Galaxy3D
         virtual ~Animation() {}
         void SetAnimationStates(const std::unordered_map<std::string, AnimationState> &states) {m_states = states;}
         bool Play(const std::string &clip, PlayMode::Enum mode = PlayMode::StopSameLayer);
+        void CrossFade(const std::string &clip, float fade_length = 0.3f, PlayMode::Enum mode = PlayMode::StopSameLayer);
         AnimationState *GetAnimationState(const std::string &clip);
+        void SetBones(const std::unordered_map<std::string, std::shared_ptr<Transform>> &bones) {m_bones = bones;}
 
     private:
         struct Blend
@@ -44,6 +46,7 @@ namespace Galaxy3D
 
         std::unordered_map<std::string, AnimationState> m_states;
         std::list<Blend> m_blends;
+        std::unordered_map<std::string, std::shared_ptr<Transform>> m_bones;
 
         virtual void Start();
         virtual void Update();

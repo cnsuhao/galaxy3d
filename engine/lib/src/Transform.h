@@ -43,6 +43,7 @@ namespace Galaxy3D
 		Vector3 GetRight();
 		Vector3 GetUp();
 		Vector3 GetForward();
+        void SetForward(const Vector3 &forward);
         void Changed();
 
 	private:

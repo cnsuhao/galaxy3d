@@ -60,6 +60,17 @@ namespace Galaxy3D
 			Mathf::Lerp(from.z, to.z, t, clamp_01));
 	}
 
+    float Vector3::Angle(const Vector3 &from, const Vector3 &to)
+    {
+        Vector3 fn = Vector3::Normalize(from);
+        Vector3 tn = Vector3::Normalize(to);
+
+        float dot = fn.Dot(tn);
+        float deg = acos(dot) * Mathf::Rad2Deg;
+
+        return deg;
+    }
+
 	Vector3 Vector3::operator -() const
 	{
 		float _x = -x;
