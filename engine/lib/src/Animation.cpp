@@ -1,6 +1,7 @@
 #include "Animation.h"
 #include "GTTime.h"
 #include <map>
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -34,6 +35,11 @@ namespace Galaxy3D
                 {
                     state->fade.Clear();
                 }
+
+                if(state->fade.weight > 0.5f)
+                {
+                    state->fade.weight = state->fade.weight;
+                }
             }
             else if(state->fade.mode == FadeMode::Out)
             {
@@ -41,6 +47,11 @@ namespace Galaxy3D
                 if(state->fade.weight <= 0)
                 {
                     Stop(*state);
+                }
+
+                if(state->fade.weight < 0.5f)
+                {
+                    state->fade.weight = state->fade.weight;
                 }
             }
 
@@ -152,69 +163,119 @@ namespace Galaxy3D
 
     void Animation::UpdateBones()
     {
-        std::map<std::string, Transform *> changed_bones;
-
-        for(auto i = m_blends.begin(); i != m_blends.end(); i++)
+        for(auto i=m_bones.begin(); i!=m_bones.end(); i++)
         {
-            auto state = i->state;
-            float weight = i->weight;
+            std::vector<Vector3> poss;
+            std::vector<Quaternion> rots;
+            std::vector<Vector3> scas;
+            std::vector<float> weights;
+            float no_effect_weight = 0;
 
-            for(auto j = state->clip.curves.begin(); j != state->clip.curves.end(); j++)
+            for(auto j=m_blends.begin(); j!=m_blends.end(); j++)
             {
-                auto &cb = j->second;
+                auto state = j->state;
+                float weight = j->weight;
 
-                if(i == m_blends.begin())
+                auto find = state->clip.curves.find(i->first);
+                if(find != state->clip.curves.end())
                 {
-                    cb.transform->SetLocalPositionDirect(Vector3(0, 0, 0));
-                    cb.transform->SetLocalRotationDirect(Quaternion(0, 0, 0, 0));
-                    cb.transform->SetLocalScaleDirect(Vector3(0, 0, 0));
-                }
+                    Vector3 pos;
+                    Quaternion rot;
+                    Vector3 sca;
+                    auto &cb = find->second;
 
-                Vector3 pos = cb.transform->GetLocalPosition();
-                Quaternion rot = cb.transform->GetLocalRotation();
-                Vector3 sca = cb.transform->GetLocalScale();
-
-                for(size_t k=0; k<cb.curves.size(); k++)
-                {
-                    auto &curve = cb.curves[k];
-                    if(!curve.keys.empty())
+                    for(size_t k=0; k<cb.curves.size(); k++)
                     {
-                        float value = curve.Evaluate(state->time) * weight;
-
-                        auto p = (CurveProperty::Enum) k;
-                        switch(p)
+                        auto &curve = cb.curves[k];
+                        if(!curve.keys.empty())
                         {
-                            case CurveProperty::LocalPosX: pos.x += value; break;
-                            case CurveProperty::LocalPosY: pos.y += value; break;
-                            case CurveProperty::LocalPosZ: pos.z += value; break;
+                            float value = curve.Evaluate(state->time);
 
-                            case CurveProperty::LocalRotX: rot.x += value; break;
-                            case CurveProperty::LocalRotY: rot.y += value; break;
-                            case CurveProperty::LocalRotZ: rot.z += value; break;
-                            case CurveProperty::LocalRotW: rot.w += value; break;
+                            auto p = (CurveProperty::Enum) k;
+                            switch(p)
+                            {
+                                case CurveProperty::LocalPosX:
+                                    pos.x = value;
+                                    break;
+                                case CurveProperty::LocalPosY:
+                                    pos.y = value;
+                                    break;
+                                case CurveProperty::LocalPosZ:
+                                    pos.z = value;
+                                    break;
 
-                            case CurveProperty::LocalScaX: sca.x += value; break;
-                            case CurveProperty::LocalScaY: sca.y += value; break;
-                            case CurveProperty::LocalScaZ: sca.z += value; break;
+                                case CurveProperty::LocalRotX:
+                                    rot.x = value;
+                                    break;
+                                case CurveProperty::LocalRotY:
+                                    rot.y = value;
+                                    break;
+                                case CurveProperty::LocalRotZ:
+                                    rot.z = value;
+                                    break;
+                                case CurveProperty::LocalRotW:
+                                    rot.w = value;
+                                    break;
+
+                                case CurveProperty::LocalScaX:
+                                    sca.x = value;
+                                    break;
+                                case CurveProperty::LocalScaY:
+                                    sca.y = value;
+                                    break;
+                                case CurveProperty::LocalScaZ:
+                                    sca.z = value;
+                                    break;
+                            }
                         }
                     }
+
+                    poss.push_back(pos);
+                    rots.push_back(rot);
+                    scas.push_back(sca);
+                    weights.push_back(weight);
                 }
-
-                cb.transform->SetLocalPositionDirect(pos);
-                cb.transform->SetLocalRotationDirect(rot);
-                cb.transform->SetLocalScaleDirect(sca);
-
-                if(changed_bones.count(cb.path) == 0)
+                else
                 {
-                    std::pair<std::string, Transform *> p(cb.path, cb.transform.get());
-                    changed_bones.insert(p);
+                    no_effect_weight += weight;
                 }
+            }
+
+            int in_effect_count = weights.size();
+            for(int j=0; j<in_effect_count; j++)
+            {
+                float per_add = no_effect_weight / in_effect_count;
+                weights[j] += per_add;
+            }
+
+            Vector3 pos_final(0, 0, 0);
+            Quaternion rot_final(0, 0, 0, 0);
+            Vector3 sca_final(0, 0, 0);
+            for(int j=0; j<in_effect_count; j++)
+            {
+                pos_final.x += poss[j].x * weights[j];
+                pos_final.y += poss[j].y * weights[j];
+                pos_final.z += poss[j].z * weights[j];
+
+                rot_final.x += rots[j].x * weights[j];
+                rot_final.y += rots[j].y * weights[j];
+                rot_final.z += rots[j].z * weights[j];
+                rot_final.w += rots[j].w * weights[j];
+
+                sca_final.x += scas[j].x * weights[j];
+                sca_final.y += scas[j].y * weights[j];
+                sca_final.z += scas[j].z * weights[j];
+            }
+
+            if(in_effect_count > 0)
+            {
+                i->second->SetLocalPositionDirect(pos_final);
+                i->second->SetLocalRotationDirect(rot_final);
+                i->second->SetLocalScaleDirect(sca_final);
             }
         }
 
-        //mark root as changed, then all bones children changed
-        //first element in map is the root bone
-        changed_bones.begin()->second->Changed();
+        GetTransform()->Changed();
     }
 
     AnimationState *Animation::GetAnimationState(const std::string &clip)
@@ -241,6 +302,70 @@ namespace Galaxy3D
         state.enabled = true;
     }
 
+    void Animation::CrossFade(const std::string &clip, float fade_length, PlayMode::Enum mode)
+    {
+        auto find = m_states.find(clip);
+        if(find == m_states.end())
+        {
+            return;
+        }
+
+        AnimationState *state = &find->second;
+
+        for(auto i=m_states.begin(); i!=m_states.end(); i++)
+        {
+            AnimationState *s = &i->second;
+
+            if(mode == PlayMode::StopAll && state != s && s->enabled)
+            {
+                if(s->fade.mode == FadeMode::None)
+                {
+                    s->fade.mode = FadeMode::Out;
+                    s->fade.length = fade_length;
+                    s->fade.weight = s->weight;
+                }
+                else if(s->fade.mode == FadeMode::In)
+                {
+                    s->fade.mode = FadeMode::Out;
+                    s->fade.length = fade_length;
+                }
+            }
+            else if(mode == PlayMode::StopSameLayer && s->layer == state->layer && state != s && s->enabled)
+            {
+                if(s->fade.mode == FadeMode::None)
+                {
+                    s->fade.mode = FadeMode::Out;
+                    s->fade.length = fade_length;
+                    s->fade.weight = s->weight;
+                }
+                else if(s->fade.mode == FadeMode::In)
+                {
+                    s->fade.mode = FadeMode::Out;
+                    s->fade.length = fade_length;
+                }
+            }
+            else if(state == s)
+            {
+                if(!s->enabled)
+                {
+                    Play(*s);
+
+                    s->fade.mode = FadeMode::In;
+                    s->fade.length = fade_length;
+                    s->fade.weight = 0;
+                }
+                else
+                {
+                    if(s->fade.mode == FadeMode::Out)
+                    {
+                        s->fade.mode = FadeMode::In;
+                        s->fade.length = fade_length;
+                    }
+                }
+            }
+        }
+    }
+
     bool Animation::Play(const std::string &clip, PlayMode::Enum mode)
     {
         auto find = m_states.find(clip);
@@ -251,7 +376,7 @@ namespace Galaxy3D
 
         AnimationState *state = &find->second;
 
-        for(auto i = m_states.begin() ; i != m_states.end(); i++)
+        for(auto i=m_states.begin(); i!=m_states.end(); i++)
         {
             AnimationState *s = &i->second;
 

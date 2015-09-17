@@ -34,6 +34,7 @@ namespace Galaxy3D
 		static Vector3 Max(const Vector3 &a, const Vector3 &b);
 		static Vector3 Min(const Vector3 &a, const Vector3 &b);
 		static Vector3 Lerp(const Vector3 &from, const Vector3 &to, float t, bool clamp_01 = true);
+        static float Angle(const Vector3 &from, const Vector3 &to);
 
 	public:
 		float x;

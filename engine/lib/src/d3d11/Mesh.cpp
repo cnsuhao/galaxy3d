@@ -182,6 +182,8 @@ namespace Galaxy3D
                 }
             }
 
+            anim->SetBones(bones);
+
             std::unordered_map<std::string, AnimationState> states;
 
             int clip_count;

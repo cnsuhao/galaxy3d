@@ -71,7 +71,7 @@ void Launcher::Start()
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
     anim_obj->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
 
-    cam3d->GetTransform()->SetParent(anim_obj->GetTransform());
+    //cam3d->GetTransform()->SetParent(anim_obj->GetTransform());
 
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState(clip_idle)->wrap_mode = WrapMode::Loop;
@@ -113,9 +113,10 @@ void Launcher::Update()
                 time_move_begin = GTTime::GetRealTimeSinceStartup();
                 pos_old = anim->GetTransform()->GetPosition();
                 pos_new = hit + Vector3(0, 0.05f, 0);
-                time_move_end = time_move_begin + (pos_new - pos_old).Magnitude() / 5;
+                time_move_end = time_move_begin + (pos_new - pos_old).Magnitude() / 3;
 
-                anim->Play(clip_move);
+                anim->CrossFade(clip_move);
+                anim->GetTransform()->SetForward(pos_new - pos_old);
             }
 		}
 		else if(
@@ -141,7 +142,7 @@ void Launcher::Update()
             time_move_begin = -1;
             t = 1;
 
-            anim->Play(clip_idle);
+            anim->CrossFade(clip_idle);
         }
         else
         {
