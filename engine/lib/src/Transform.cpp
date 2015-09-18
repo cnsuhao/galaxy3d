@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "GameObject.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -279,12 +280,20 @@ namespace Galaxy3D
     {
         Vector3 origin = Vector3(0, 0, 1);
         Vector3 fn = Vector3::Normalize(forward);
+
         if(fn != origin)
         {
             float deg = Vector3::Angle(origin, fn);
-            Vector3 axis = origin * forward;
-
-            SetRotation(Quaternion::AngleAxis(deg, axis));
+            Vector3 axis = origin * fn;
+            
+            if(axis == Vector3(0, 0, 0))
+            {
+                SetRotation(Quaternion::AngleAxis(deg, GetUp()));
+            }
+            else
+            {
+                SetRotation(Quaternion::AngleAxis(deg, axis));
+            }
         }
     }
 }
