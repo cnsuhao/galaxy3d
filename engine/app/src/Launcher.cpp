@@ -5,6 +5,8 @@ using namespace Galaxy3D;
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 
+Vector3 cam_offset;
+
 void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
@@ -71,7 +73,7 @@ void Launcher::Start()
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
     anim_obj->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
 
-    //cam3d->GetTransform()->SetParent(anim_obj->GetTransform());
+    cam_offset = cam3d->GetTransform()->GetPosition() - anim_obj->GetTransform()->GetPosition();
 
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState(clip_idle)->wrap_mode = WrapMode::Loop;
@@ -123,7 +125,6 @@ void Launcher::Update()
             t->phase == TouchPhase::Ended ||
 			t->phase == TouchPhase::Canceled)
 		{
-			
 		}
 		else if(t->phase == TouchPhase::Moved)
 		{
@@ -151,6 +152,7 @@ void Launcher::Update()
 
         Vector3 pos = Vector3::Lerp(pos_old, pos_new, t, false);
         anim->GetTransform()->SetPosition(pos);
+        cam3d->GetTransform()->SetPosition(pos + cam_offset);
         cam3d->UpdateMatrix();
     }
 }
