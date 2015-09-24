@@ -5,8 +5,6 @@ using namespace Galaxy3D;
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 
-Vector3 cam_offset;
-
 void Launcher::Start()
 {
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
@@ -86,8 +84,14 @@ void Launcher::Start()
     RenderSettings::light_directional_direction = Vector3(0, -1, -1);
 
     Physics::Init();
-    std::vector<char> terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw");
-    Physics::CreateTerrainRigidBody(513, (short *) &terrain_data[0], 0, 10);
+
+    int file_size;
+    void *terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw", &file_size);
+    if(terrain_data != NULL)
+    {
+        Physics::CreateTerrainRigidBody(513, (short *) terrain_data, 0, 10);
+        free(terrain_data);
+    }
 
     time_move_begin = -1;
 }
@@ -115,7 +119,8 @@ void Launcher::Update()
                 time_move_begin = GTTime::GetRealTimeSinceStartup();
                 pos_old = anim->GetTransform()->GetPosition();
                 pos_new = hit + Vector3(0, 0.05f, 0);
-                time_move_end = time_move_begin + (pos_new - pos_old).Magnitude() / 3;
+                float move_time = (pos_new - pos_old).Magnitude() / 3;
+                time_move_end = time_move_begin + move_time;
 
                 anim->CrossFade(clip_move);
                 anim->GetTransform()->SetForward(pos_new - pos_old);

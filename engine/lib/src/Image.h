@@ -11,8 +11,8 @@ namespace Galaxy3D
 	{
 	public:
 		//return pixels from malloc
-		static char *LoadJpg(char *data, int size, int *w, int *h, int *bitsPerPixel);
-		static char *LoadPng(char *data, int size, int *w, int *h, int *bitsPerPixel);
+		static char *LoadJpg(void *data, int size, int *w, int *h, int *bitsPerPixel);
+		static char *LoadPng(void *data, int size, int *w, int *h, int *bitsPerPixel);
 		static void EncodeToPNG(Texture2D *tex, int bits_per_pixel, const std::string &file);
 	};
 }

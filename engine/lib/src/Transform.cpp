@@ -1,6 +1,5 @@
 #include "Transform.h"
 #include "GameObject.h"
-#include "Debug.h"
 
 namespace Galaxy3D
 {

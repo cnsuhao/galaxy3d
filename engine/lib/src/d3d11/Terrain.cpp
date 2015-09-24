@@ -42,120 +42,132 @@ namespace Galaxy3D
         m_map_size = size_heightmap;
 		m_xz_unit = xz_unit;
 
-		std::vector<char> buffer = GTFile::ReadAllBytes(file_heightmap);
-		int point_cout = m_map_size * m_map_size;
-		if(point_cout * 2 != buffer.size())
-		{
-			return;
-		}
-
-        m_vertices.resize(point_cout);
-        m_indices.resize((m_map_size - 1) * (m_map_size - 1) * 2 * 3);
-
-		float uv_unit = 1 / texture_size;
-		int k = 0;
-		for(int i=0; i<m_map_size; i++)
-		{
-			for(int j=0; j<m_map_size; j++)
-			{
-				unsigned short ushort = *((unsigned short *) &buffer[(i * m_map_size + j) * 2]);
-				float y = y_unit * ushort / 65535.0f;
-				float x = j * xz_unit;
-				float z = (m_map_size - 1 - i) * xz_unit;
-
-                auto &vertex = m_vertices[i * m_map_size + j];
-                vertex.POSITION = Vector3(x, y, z);
-                vertex.TEXCOORD0 = Vector2(x, z) * uv_unit;
-                vertex.TEXCOORD1 = Vector2(x, z) * (1.0f / ((m_map_size - 1) * xz_unit));
-
-				if(i < m_map_size - 1 && j < m_map_size - 1)
-				{
-                    m_indices[k++] = i * m_map_size + j;
-                    m_indices[k++] = (i + 1) * m_map_size + (j + 1);
-                    m_indices[k++] = (i + 1) * m_map_size + j;
-
-                    m_indices[k++] = i * m_map_size + j;
-                    m_indices[k++] = i * m_map_size + (j + 1);
-                    m_indices[k++] = (i + 1) * m_map_size + (j + 1);
-				}
-			}
-		}
+        int file_size;
+        char *buffer = (char *) GTFile::ReadAllBytes(file_heightmap, &file_size);
         
-        auto tex = Texture2D::LoadFromFile(file_alphamap, FilterMode::Bilinear, TextureWrapMode::Clamp);
-        m_shared_material = Material::Create("Terrain/Diffuse");
-        m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * xz_unit), 0, 0, 0));
-        m_shared_material->SetTexture("AlphaMap", tex);
-		for(size_t i=0; i<4 && i<file_textures.size(); i++)
-		{
-            tex = Texture2D::LoadFromFile(file_textures[i], FilterMode::Bilinear, TextureWrapMode::Repeat, true);
-            m_shared_material->SetTexture(GTString::Format("Layer_%d", i).str, tex);
-		}
+        if(buffer == NULL)
+        {
+            return;
+        }
 
-		CalculateNormals();
+        do
+        {
+            int point_cout = m_map_size * m_map_size;
+            if(point_cout * 2 != file_size)
+            {
+                break;
+            }
 
-		m_geo_patch_count_per_side = (m_map_size - 1)/(GEO_PATCH_SIZE - 1);
-        m_geo_patches = new GeoMipmapPatch[m_geo_patch_count_per_side * m_geo_patch_count_per_side];
+            m_vertices.resize(point_cout);
+            m_indices.resize((m_map_size - 1) * (m_map_size - 1) * 2 * 3);
 
-		for(int i=0; i<m_geo_patch_count_per_side; i++)
-		{
-			for(int j=0; j<m_geo_patch_count_per_side; j++)
-			{
-				GeoMipmapPatch &patch = m_geo_patches[i * m_geo_patch_count_per_side + j];
+            float uv_unit = 1 / texture_size;
+            int k = 0;
+            for(int i=0; i<m_map_size; i++)
+            {
+                for(int j=0; j<m_map_size; j++)
+                {
+                    unsigned short ushort = *((unsigned short *) &buffer[(i * m_map_size + j) * 2]);
+                    float y = y_unit * ushort / 65535.0f;
+                    float x = j * xz_unit;
+                    float z = (m_map_size - 1 - i) * xz_unit;
 
-				patch.level = GEO_LEVEL_MAX;
-				patch.visible = true;
+                    auto &vertex = m_vertices[i * m_map_size + j];
+                    vertex.POSITION = Vector3(x, y, z);
+                    vertex.TEXCOORD0 = Vector2(x, z) * uv_unit;
+                    vertex.TEXCOORD1 = Vector2(x, z) * (1.0f / ((m_map_size - 1) * xz_unit));
 
-				int m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 2;
-				int n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 2;
-				Vector3 center_pos = m_vertices[m * m_map_size + n].POSITION;
+                    if(i < m_map_size - 1 && j < m_map_size - 1)
+                    {
+                        m_indices[k++] = i * m_map_size + j;
+                        m_indices[k++] = (i + 1) * m_map_size + (j + 1);
+                        m_indices[k++] = (i + 1) * m_map_size + j;
 
-				float max = 0;
+                        m_indices[k++] = i * m_map_size + j;
+                        m_indices[k++] = i * m_map_size + (j + 1);
+                        m_indices[k++] = (i + 1) * m_map_size + (j + 1);
+                    }
+                }
+            }
 
-				m = i * (GEO_PATCH_SIZE - 1) + 0;
-				n = j * (GEO_PATCH_SIZE - 1) + 0;
-				Vector3 corner_pos = m_vertices[m * m_map_size + n].POSITION;
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
-				Vector3 corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
-				Vector3 corner_lerp = (center_pos + corner_pos) * 0.5f;
-				Vector3 left_top_delta = corner_center_pos - corner_lerp;
-				max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
-				
-				m = i * (GEO_PATCH_SIZE - 1) + 0;
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
-				corner_pos = m_vertices[m * m_map_size + n].POSITION;
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
-				corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
-				corner_lerp = (center_pos + corner_pos) * 0.5f;
-				left_top_delta += corner_center_pos - corner_lerp;
-				max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+            auto tex = Texture2D::LoadFromFile(file_alphamap, FilterMode::Bilinear, TextureWrapMode::Clamp);
+            m_shared_material = Material::Create("Terrain/Diffuse");
+            m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * xz_unit), 0, 0, 0));
+            m_shared_material->SetTexture("AlphaMap", tex);
+            for(size_t i=0; i<4 && i<file_textures.size(); i++)
+            {
+                tex = Texture2D::LoadFromFile(file_textures[i], FilterMode::Bilinear, TextureWrapMode::Repeat, true);
+                m_shared_material->SetTexture(GTString::Format("Layer_%d", i).str, tex);
+            }
 
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
-				corner_pos = m_vertices[m * m_map_size + n].POSITION;
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
-				corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
-				corner_lerp = (center_pos + corner_pos) * 0.5f;
-				left_top_delta += corner_center_pos - corner_lerp;
-				max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+            CalculateNormals();
 
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
-				n = j * (GEO_PATCH_SIZE - 1) + 0;
-				corner_pos = m_vertices[m * m_map_size + n].POSITION;
-				m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
-				n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
-				corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
-				corner_lerp = (center_pos + corner_pos) * 0.5f;
-				left_top_delta += corner_center_pos - corner_lerp;
-				max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+            m_geo_patch_count_per_side = (m_map_size - 1)/(GEO_PATCH_SIZE - 1);
+            m_geo_patches = new GeoMipmapPatch[m_geo_patch_count_per_side * m_geo_patch_count_per_side];
 
-				patch.delta = fabs(left_top_delta.y) * 0.25f;
-				patch.center = center_pos;
-				patch.bounding_sphere_radius = sqrt(max);
-			}
-		}
+            for(int i=0; i<m_geo_patch_count_per_side; i++)
+            {
+                for(int j=0; j<m_geo_patch_count_per_side; j++)
+                {
+                    GeoMipmapPatch &patch = m_geo_patches[i * m_geo_patch_count_per_side + j];
+
+                    patch.level = GEO_LEVEL_MAX;
+                    patch.visible = true;
+
+                    int m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 2;
+                    int n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 2;
+                    Vector3 center_pos = m_vertices[m * m_map_size + n].POSITION;
+
+                    float max = 0;
+
+                    m = i * (GEO_PATCH_SIZE - 1) + 0;
+                    n = j * (GEO_PATCH_SIZE - 1) + 0;
+                    Vector3 corner_pos = m_vertices[m * m_map_size + n].POSITION;
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
+                    Vector3 corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
+                    Vector3 corner_lerp = (center_pos + corner_pos) * 0.5f;
+                    Vector3 left_top_delta = corner_center_pos - corner_lerp;
+                    max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+
+                    m = i * (GEO_PATCH_SIZE - 1) + 0;
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
+                    corner_pos = m_vertices[m * m_map_size + n].POSITION;
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
+                    corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
+                    corner_lerp = (center_pos + corner_pos) * 0.5f;
+                    left_top_delta += corner_center_pos - corner_lerp;
+                    max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
+                    corner_pos = m_vertices[m * m_map_size + n].POSITION;
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
+                    corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
+                    corner_lerp = (center_pos + corner_pos) * 0.5f;
+                    left_top_delta += corner_center_pos - corner_lerp;
+                    max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1);
+                    n = j * (GEO_PATCH_SIZE - 1) + 0;
+                    corner_pos = m_vertices[m * m_map_size + n].POSITION;
+                    m = i * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) * 3 / 4;
+                    n = j * (GEO_PATCH_SIZE - 1) + (GEO_PATCH_SIZE - 1) / 4;
+                    corner_center_pos = m_vertices[m * m_map_size + n].POSITION;
+                    corner_lerp = (center_pos + corner_pos) * 0.5f;
+                    left_top_delta += corner_center_pos - corner_lerp;
+                    max = Mathf::Max((corner_pos - center_pos).SqrMagnitude(), max);
+
+                    patch.delta = fabs(left_top_delta.y) * 0.25f;
+                    patch.center = center_pos;
+                    patch.bounding_sphere_radius = sqrt(max);
+                }
+            }
+        } while(false);
+
+        free(buffer);
 	}
 
 	float Terrain::GetHeight(const Vector3 &world_pos) const

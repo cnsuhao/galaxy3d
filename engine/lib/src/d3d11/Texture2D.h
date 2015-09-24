@@ -14,7 +14,7 @@ namespace Galaxy3D
 	public:
 		//support jpg 8 24, png 8 24 32
 		static std::shared_ptr<Texture2D> Create(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
-		static std::shared_ptr<Texture2D> CreateWithData(char *data, int size, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp, bool mipmap = false);
+		static std::shared_ptr<Texture2D> CreateWithData(void *data, int size, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp, bool mipmap = false);
 		//cached by file name
         static std::shared_ptr<Texture2D> LoadFromFile(const std::string &file, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp, bool mipmap = false);
 		virtual ~Texture2D();
