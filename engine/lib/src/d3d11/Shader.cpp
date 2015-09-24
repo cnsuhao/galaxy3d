@@ -281,7 +281,8 @@ namespace Galaxy3D
 			auto find_path = m_paths.find(name);
 			if(find_path != m_paths.end())
 			{
-				auto shader_src = GTFile::ReadAllText(find_path->second);
+                std::string shader_src;
+				GTFile::ReadAllText(find_path->second, shader_src);
 				
 				auto s = std::shared_ptr<Shader>(new Shader());
 				s->SetName(name);

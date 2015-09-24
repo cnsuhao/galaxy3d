@@ -36,6 +36,7 @@ namespace Galaxy3D
 		std::shared_ptr<TextRenderer> fps;
 		std::shared_ptr<Camera> cam2d;
         std::shared_ptr<Camera> cam3d;
+        Vector3 cam_offset;
         std::shared_ptr<Animation> anim;
         float time_move_begin;
         float time_move_end;

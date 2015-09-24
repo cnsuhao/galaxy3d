@@ -131,8 +131,9 @@ namespace Galaxy3D
 
         if(GTFile::Exist(file))
         {
-            auto bytes = GTFile::ReadAllBytes(file);
-            char *p = &bytes[0];
+            int file_size;
+            void *bytes = GTFile::ReadAllBytes(file, &file_size);
+            char *p = (char *) bytes;
 
             std::string obj_name = read_string(p);
             obj = GameObject::Create(obj_name);
@@ -322,6 +323,8 @@ namespace Galaxy3D
                     renderer_tran->SetParent(tran);
                 }
             }
+
+            free(bytes);
         }
 
         return obj;
@@ -333,8 +336,9 @@ namespace Galaxy3D
 
         if(GTFile::Exist(file))
         {
-            auto bytes = GTFile::ReadAllBytes(file);
-            char *p = &bytes[0];
+            int file_size;
+            void *bytes = GTFile::ReadAllBytes(file, &file_size);
+            char *p = (char *) bytes;
 
             std::string obj_name = read_string(p);
             obj = GameObject::Create(obj_name);
@@ -385,6 +389,8 @@ namespace Galaxy3D
                     }
                 }
             }
+
+            free(bytes);
         }
 
         return obj;

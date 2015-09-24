@@ -90,7 +90,7 @@ namespace Galaxy3D
 		return std::shared_ptr<Texture2D>(new Texture2D(w, h, format, filter_mode, wrap_mode));
 	}
 
-	std::shared_ptr<Texture2D> Texture2D::CreateWithData(char *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode, bool mipmap)
+	std::shared_ptr<Texture2D> Texture2D::CreateWithData(void *data, int size, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode, bool mipmap)
 	{
 		std::shared_ptr<Texture2D> tex;
 
@@ -155,11 +155,16 @@ namespace Galaxy3D
         }
         else if(GTFile::Exist(file))
         {
-            auto data = GTFile::ReadAllBytes(file);
-            tex = CreateWithData(&data[0], data.size(), filter_mode, wrap_mode, mipmap);
-            tex->SetName(file);
+            int file_size;
+            char *bytes = (char *) GTFile::ReadAllBytes(file, &file_size);
+            if(bytes != NULL)
+            {
+                tex = CreateWithData(bytes, file_size, filter_mode, wrap_mode, mipmap);
+                free(bytes);
 
-            m_texture_cache[file] = tex;
+                tex->SetName(file);
+                m_texture_cache[file] = tex;
+            }
         }
 
 		return tex;

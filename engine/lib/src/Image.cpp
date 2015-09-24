@@ -18,7 +18,7 @@ namespace Galaxy3D
 		int size;
 	};
 
-	char *Image::LoadJpg(char *data, int size, int *w, int *h, int *bitsPerPixel)
+	char *Image::LoadJpg(void *data, int size, int *w, int *h, int *bitsPerPixel)
 	{
 		char *pixels = 0;
 
@@ -95,7 +95,7 @@ namespace Galaxy3D
 	{
 	}
 
-	char *Image::LoadPng(char *data, int size, int *w, int *h, int *bitsPerPixel)
+	char *Image::LoadPng(void *data, int size, int *w, int *h, int *bitsPerPixel)
 	{
 		char *pixels = 0;
 		
