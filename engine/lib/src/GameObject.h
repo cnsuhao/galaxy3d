@@ -19,7 +19,8 @@ namespace Galaxy3D
 		static void Destroy(std::shared_ptr<GameObject> &obj);
 		virtual ~GameObject();
 		template<class T> std::shared_ptr<T> AddComponent();
-		template<class T> std::shared_ptr<T> GetComponent();
+		template<class T> std::shared_ptr<T> GetComponent() const;
+        std::shared_ptr<Component> GetComponentPtr(Component *com) const;
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		bool IsActiveInHierarchy() const {return m_active_in_hierarchy;}
 		bool IsActiveSelf()const {return m_active_self;}
@@ -59,12 +60,12 @@ namespace Galaxy3D
 		return t;
 	}
 
-	template<class T> std::shared_ptr<T> GameObject::GetComponent()
+	template<class T> std::shared_ptr<T> GameObject::GetComponent() const
 	{
 		for(auto i : m_components)
 		{
 			auto t = std::dynamic_pointer_cast<T>(i);
-			if(t)
+			if(t && !t->m_deleted)
 			{
 				return t;
 			}
@@ -73,7 +74,7 @@ namespace Galaxy3D
 		for(auto i : m_components_new)
 		{
 			auto t = std::dynamic_pointer_cast<T>(i);
-			if(t)
+			if(t && !t->m_deleted)
 			{
 				return t;
 			}

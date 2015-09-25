@@ -92,8 +92,15 @@ void Launcher::Start()
         Physics::CreateTerrainRigidBody(513, (short *) terrain_data, 0, 10);
         free(terrain_data);
     }
+}
 
-    time_move_begin = -1;
+static void on_tween_finished(Component *com)
+{
+    auto anim = com->GetGameObject()->GetComponent<Animation>();
+    if(anim)
+    {
+        anim->CrossFade(clip_idle);
+    }
 }
 
 void Launcher::Update()
@@ -116,14 +123,30 @@ void Launcher::Update()
             Vector3 nor;
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
-                time_move_begin = GTTime::GetRealTimeSinceStartup();
-                pos_old = anim->GetTransform()->GetPosition();
-                pos_new = hit + Vector3(0, 0.05f, 0);
+                Vector3 pos_old = anim->GetTransform()->GetPosition();
+                Vector3 pos_new = hit + Vector3(0, 0.05f, 0);
                 float move_time = (pos_new - pos_old).Magnitude() / 3;
-                time_move_end = time_move_begin + move_time;
 
                 anim->CrossFade(clip_move);
                 anim->GetTransform()->SetForward(pos_new - pos_old);
+
+                auto tp = anim->GetGameObject()->GetComponent<TweenPosition>();
+                if(tp)
+                {
+                    auto com = std::dynamic_pointer_cast<Component>(tp);
+                    Component::Destroy(com);
+                }
+               
+                tp = anim->GetGameObject()->AddComponent<TweenPosition>();
+
+                tp->delay = 0;
+                tp->duration = move_time;
+                tp->from = pos_old;
+                tp->to = pos_new;
+                tp->is_world = true;
+                tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+                tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+                tp->on_finished = on_tween_finished;
             }
 		}
 		else if(
@@ -138,28 +161,13 @@ void Launcher::Update()
 	}
 
     Physics::Step();
+}
 
-    if(time_move_begin > 0)
-    {
-        float t;
-        float now = GTTime::GetRealTimeSinceStartup();
-        if(now > time_move_end)
-        {
-            time_move_begin = -1;
-            t = 1;
-
-            anim->CrossFade(clip_idle);
-        }
-        else
-        {
-            t = (now - time_move_begin) / (time_move_end - time_move_begin);
-        }
-
-        Vector3 pos = Vector3::Lerp(pos_old, pos_new, t, false);
-        anim->GetTransform()->SetPosition(pos);
-        cam3d->GetTransform()->SetPosition(pos + cam_offset);
-        cam3d->UpdateMatrix();
-    }
+void Launcher::LateUpdate()
+{
+    Vector3 pos = anim->GetTransform()->GetPosition();
+    cam3d->GetTransform()->SetPosition(pos + cam_offset);
+    cam3d->UpdateMatrix();
 }
 
 Launcher::~Launcher()
