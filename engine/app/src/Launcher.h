@@ -24,6 +24,7 @@
 #include "LightmapSettings.h"
 #include "RenderSettings.h"
 #include "Physics.h"
+#include "TweenPosition.h"
 
 namespace Galaxy3D
 {
@@ -38,13 +39,10 @@ namespace Galaxy3D
         std::shared_ptr<Camera> cam3d;
         Vector3 cam_offset;
         std::shared_ptr<Animation> anim;
-        float time_move_begin;
-        float time_move_end;
-        Vector3 pos_old;
-        Vector3 pos_new;
 
 		virtual void Start();
 		virtual void Update();
+        virtual void LateUpdate();
 	};
 }
 

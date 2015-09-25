@@ -194,4 +194,25 @@ namespace Galaxy3D
             child->GetGameObject()->SetLayerRecursive(layer);
         }
     }
+
+    std::shared_ptr<Component> GameObject::GetComponentPtr(Component *com) const
+    {
+        for(auto i : m_components)
+        {
+            if(i.get() == com && !i->m_deleted)
+            {
+                return i;
+            }
+        }
+
+        for(auto i : m_components_new)
+        {
+            if(i.get() == com && !i->m_deleted)
+            {
+                return i;
+            }
+        }
+
+        return std::shared_ptr<Component>();
+    }
 }
