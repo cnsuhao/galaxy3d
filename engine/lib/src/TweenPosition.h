@@ -8,7 +8,7 @@
 
 namespace Galaxy3D
 {
-    typedef void (*OnTweenFinished)(Component *com);
+    typedef void (*OnTweenFinished)(Component *tween, std::weak_ptr<Component> &target);
 
     class TweenPosition : public Component
     {
@@ -19,8 +19,10 @@ namespace Galaxy3D
             on_finished(NULL),
             is_world(false)
         {}
+        void Reset();
 
     protected:
+        void SetPosition(float t);
         virtual void Start();
         virtual void Update();
 
@@ -30,6 +32,7 @@ namespace Galaxy3D
         Vector3 from;
         Vector3 to;
         AnimationCurve curve;
+        std::weak_ptr<Component> target;
         OnTweenFinished on_finished;
         bool is_world;
 

@@ -16,6 +16,7 @@ namespace Galaxy3D
         virtual ~Component() {}
 		std::shared_ptr<GameObject> GetGameObject() const {return m_gameobject.lock();}
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
+        std::shared_ptr<Component> GetComponentPtr() const;
 		void Enable(bool enable);
 		bool IsEnable() const {return m_enable;}
 

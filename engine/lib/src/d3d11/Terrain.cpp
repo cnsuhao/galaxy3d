@@ -32,19 +32,19 @@ namespace Galaxy3D
 
 	void Terrain::LoadData(
 			int size_heightmap,
-			float xz_unit,
-			float y_unit,
+			float unit_size,
+			float unit_height,
 			const std::string &file_heightmap,
 			const std::string &file_alphamap,
 			const std::vector<std::string> &file_textures,
 			float texture_size)
 	{
         m_map_size = size_heightmap;
-		m_xz_unit = xz_unit;
+		m_xz_unit = unit_size / (m_map_size - 1);
 
         int file_size;
         char *buffer = (char *) GTFile::ReadAllBytes(file_heightmap, &file_size);
-        
+
         if(buffer == NULL)
         {
             return;
@@ -61,21 +61,21 @@ namespace Galaxy3D
             m_vertices.resize(point_cout);
             m_indices.resize((m_map_size - 1) * (m_map_size - 1) * 2 * 3);
 
-            float uv_unit = 1 / texture_size;
+            float uv_unit = 1.0f / texture_size;
             int k = 0;
             for(int i=0; i<m_map_size; i++)
             {
                 for(int j=0; j<m_map_size; j++)
                 {
                     unsigned short ushort = *((unsigned short *) &buffer[(i * m_map_size + j) * 2]);
-                    float y = y_unit * ushort / 65535.0f;
-                    float x = j * xz_unit;
-                    float z = (m_map_size - 1 - i) * xz_unit;
+                    float y = unit_height * ushort / 65535.0f;
+                    float x = j * m_xz_unit;
+                    float z = (m_map_size - 1 - i) * m_xz_unit;
 
                     auto &vertex = m_vertices[i * m_map_size + j];
                     vertex.POSITION = Vector3(x, y, z);
                     vertex.TEXCOORD0 = Vector2(x, z) * uv_unit;
-                    vertex.TEXCOORD1 = Vector2(x, z) * (1.0f / ((m_map_size - 1) * xz_unit));
+                    vertex.TEXCOORD1 = Vector2(x, z) * (1.0f / ((m_map_size - 1) * m_xz_unit));
 
                     if(i < m_map_size - 1 && j < m_map_size - 1)
                     {
@@ -92,7 +92,7 @@ namespace Galaxy3D
 
             auto tex = Texture2D::LoadFromFile(file_alphamap, FilterMode::Bilinear, TextureWrapMode::Clamp);
             m_shared_material = Material::Create("Terrain/Diffuse");
-            m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * xz_unit), 0, 0, 0));
+            m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * m_xz_unit), 0, 0, 0));
             m_shared_material->SetTexture("AlphaMap", tex);
             for(size_t i=0; i<4 && i<file_textures.size(); i++)
             {

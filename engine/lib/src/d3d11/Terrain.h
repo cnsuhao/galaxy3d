@@ -46,8 +46,8 @@ namespace Galaxy3D
 	    ~Terrain();
 	    void LoadData(
 		    int size_heightmap,
-		    float xz_unit,
-		    float y_unit,
+            float unit_size,
+            float unit_height,
 		    const std::string &file_heightmap,
 		    const std::string &file_alphamap,
 		    const std::vector<std::string> &file_textures,

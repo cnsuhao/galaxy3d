@@ -48,4 +48,9 @@ namespace Galaxy3D
 			}
 		}
 	}
+
+    std::shared_ptr<Component> Component::GetComponentPtr() const
+    {
+        return GetGameObject()->GetComponentPtr(this);
+    }
 }
