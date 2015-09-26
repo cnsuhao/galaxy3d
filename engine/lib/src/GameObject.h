@@ -20,7 +20,7 @@ namespace Galaxy3D
 		virtual ~GameObject();
 		template<class T> std::shared_ptr<T> AddComponent();
 		template<class T> std::shared_ptr<T> GetComponent() const;
-        std::shared_ptr<Component> GetComponentPtr(Component *com) const;
+        std::shared_ptr<Component> GetComponentPtr(const Component *com) const;
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		bool IsActiveInHierarchy() const {return m_active_in_hierarchy;}
 		bool IsActiveSelf()const {return m_active_self;}

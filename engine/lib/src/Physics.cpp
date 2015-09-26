@@ -30,7 +30,11 @@ namespace Galaxy3D
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
     }
 
-    void Physics::CreateTerrainRigidBody(int size_heightmap, short *data, float height_min, float height_max)
+    void Physics::CreateTerrainRigidBody(
+        int size_heightmap,
+        short *data,
+        float unit_size,
+        float unit_height)
     {
         if(g_terrain_data != nullptr)
         {
@@ -39,22 +43,33 @@ namespace Galaxy3D
         int point_count = size_heightmap * size_heightmap;
         g_terrain_data = new short[point_count];
         memcpy(g_terrain_data, data, point_count * sizeof(short));
+        /*
+        for(int i=0; i<size_heightmap; i++)
+        {
+            memcpy(&g_terrain_data[i], &data[size_heightmap - 1 - i], size_heightmap * sizeof(short));
+        }*/
+        //g_terrain_data[513 * 512 + 0] = 30000;
+
+        float xz_scale = unit_size / (size_heightmap - 1);
+        float y_scale = unit_height / 65535;
 
         btHeightfieldTerrainShape *terrain = new btHeightfieldTerrainShape(
             size_heightmap,
             size_heightmap,
             g_terrain_data,
-            1,
-            height_min,
-            height_max,
+            y_scale,
+            -unit_height,//height_min
+            unit_height,//height_max
             1,
             PHY_SHORT,
             false);
+        
+        terrain->setLocalScaling(btVector3(xz_scale, 1, xz_scale));
         g_collision_shapes.push_back(terrain);
 
         btTransform ground_transform;
         ground_transform.setIdentity();
-        ground_transform.setOrigin(btVector3((size_heightmap - 1) * 0.5f, (height_min + height_max) * 0.5f, (size_heightmap - 1) * 0.5f));
+        ground_transform.setOrigin(btVector3(unit_size * 0.5f, 0, unit_size * 0.5f));
 
         btScalar mass(0);
         btVector3 local_inertia(0, 0, 0);

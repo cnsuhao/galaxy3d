@@ -34,7 +34,7 @@ namespace Galaxy3D
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
 
-		//	start
+		// start
 		std::unordered_map<GameObject *, std::shared_ptr<GameObject>> starts(m_gameobjects);
 		do
 		{
@@ -54,7 +54,7 @@ namespace Galaxy3D
 			m_gameobjects_new.clear();
 		}while(!starts.empty());
 
-		//	update
+		// update
 		for(auto &i : m_gameobjects)
 		{
 			auto &obj = i.second;
@@ -65,7 +65,7 @@ namespace Galaxy3D
 			}
 		}
 
-		//	late update
+		// late update
 		for(auto &i : m_gameobjects)
 		{
 			auto &obj = i.second;
@@ -76,7 +76,7 @@ namespace Galaxy3D
 			}
 		}
 
-		//	delete
+		// delete
 		auto it = m_gameobjects.begin();
 		while(it != m_gameobjects.end())
 		{

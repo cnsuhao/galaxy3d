@@ -109,7 +109,7 @@ namespace Galaxy3D
 			GTTime::m_time_record = now;
 			GTTime::m_frame_record = frame;
 
-			Debug::Log("fps:%d render:%.3f update:%.3f dc:%d", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000, GTTime::m_draw_call);
+			//Debug::Log("fps:%d render:%.3f update:%.3f dc:%d", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000, GTTime::m_draw_call);
 		}
 
 		GTTime::m_frame_count++;
@@ -202,8 +202,7 @@ namespace Galaxy3D
             float y = vp_y / vp_z * position.z;
             float z = position.z;
             pos = Vector3(x , y , z);
-            pos = GetTransform()->GetRotation() * pos;
-            pos = GetTransform()->GetPosition() + pos;
+            pos = GetTransform()->TransformPoint(pos);
         }
 
         return pos;
@@ -246,15 +245,15 @@ namespace Galaxy3D
 
         if(m_orthographic)
         {
-            Vector3 dir = Vector3(0, 0, 1);
             float plane_h = m_orthographic_size * 2;
             float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
             float vp_x = (vp.x - 0.5f) * plane_w;
             float vp_y = (vp.y - 0.5f) * plane_h;
-            Vector3 origin = Vector3(vp_x, vp_y, m_near_clip_plane);
-            origin = GetTransform()->GetRotation() * origin;
-            origin = GetTransform()->GetPosition() + origin;
+
+            Vector3 dir = Vector3(0, 0, 1);
             dir = GetTransform()->TransformDirection(dir);
+            Vector3 origin = Vector3(vp_x, vp_y, m_near_clip_plane);
+            origin = GetTransform()->TransformPoint(origin);
 
             return Ray(origin, dir);
         }
@@ -267,9 +266,8 @@ namespace Galaxy3D
             float vp_z = m_near_clip_plane;
 
             Vector3 dir = Vector3(vp_x, vp_y, vp_z);
-            Vector3 origin = GetTransform()->GetRotation() * dir;
-            origin = GetTransform()->GetPosition() + dir;
             dir = GetTransform()->TransformDirection(dir);
+            Vector3 origin = GetTransform()->GetPosition();
 
             return Ray(origin, dir);
         }

@@ -195,7 +195,7 @@ namespace Galaxy3D
         }
     }
 
-    std::shared_ptr<Component> GameObject::GetComponentPtr(Component *com) const
+    std::shared_ptr<Component> GameObject::GetComponentPtr(const Component *com) const
     {
         for(auto i : m_components)
         {

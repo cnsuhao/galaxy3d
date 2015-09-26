@@ -48,7 +48,7 @@ void Launcher::Start()
 
     ter->LoadData(
         513,
-        200 / 512.0f, 600.0f,
+        200.0f, 600.0f,
         Application::GetDataPath() + "/Assets/terrain/Terrain.raw",
         Application::GetDataPath() + "/Assets/terrain/Terrain.png",
         terrain_texs, 3);
@@ -61,10 +61,10 @@ void Launcher::Start()
 
     auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Objects/LightmapFar-0.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.push_back(lightmap);
-
+    /*
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
-    
+    */
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim_obj->SetLayerRecursive(Layer::Default);
     anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
@@ -89,17 +89,17 @@ void Launcher::Start()
     void *terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw", &file_size);
     if(terrain_data != NULL)
     {
-        Physics::CreateTerrainRigidBody(513, (short *) terrain_data, 0, 10);
+        Physics::CreateTerrainRigidBody(513, (short *) terrain_data, 200.0f, 600.0f);
         free(terrain_data);
     }
 }
 
-static void on_tween_finished(Component *com)
+void Launcher::OnTweenFinished(Component *tween, std::weak_ptr<Component> &target)
 {
-    auto anim = com->GetGameObject()->GetComponent<Animation>();
-    if(anim)
+    if(!target.expired())
     {
-        anim->CrossFade(clip_idle);
+        auto thiz = std::dynamic_pointer_cast<Launcher>(target.lock());
+        thiz->anim->CrossFade(clip_idle);
     }
 }
 
@@ -116,37 +116,44 @@ void Launcher::Update()
 		if(t->phase == TouchPhase::Began)
 		{
             Vector3 pos = t->position;
-
             Ray ray = cam3d->ScreenPointToRay(pos);
 
             Vector3 hit;
             Vector3 nor;
+            //if(Physics::RarCast(Vector3(100, 5000, 100), Vector3(0, -1, 0), 10000, hit, nor))
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
+                Debug::Log("%s", hit.ToString().c_str());
+
                 Vector3 pos_old = anim->GetTransform()->GetPosition();
                 Vector3 pos_new = hit + Vector3(0, 0.05f, 0);
-                float move_time = (pos_new - pos_old).Magnitude() / 3;
+                float speed = 3.0f;
+                float move_time = (pos_new - pos_old).Magnitude() / speed;
+                Vector3 dir = pos_new - pos_old;
+                dir.y = 0;
 
                 anim->CrossFade(clip_move);
-                anim->GetTransform()->SetForward(pos_new - pos_old);
+                anim->GetTransform()->SetForward(dir);
 
                 auto tp = anim->GetGameObject()->GetComponent<TweenPosition>();
                 if(tp)
                 {
-                    auto com = std::dynamic_pointer_cast<Component>(tp);
-                    Component::Destroy(com);
+                    tp->Reset();
                 }
-               
-                tp = anim->GetGameObject()->AddComponent<TweenPosition>();
+                else
+                {
+                    tp = anim->GetGameObject()->AddComponent<TweenPosition>();
+                    tp->delay = 0;
+                    tp->is_world = true;
+                    tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+                    tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+                    tp->target = GetComponentPtr();
+                    tp->on_finished = OnTweenFinished;
+                }
 
-                tp->delay = 0;
-                tp->duration = move_time;
                 tp->from = pos_old;
                 tp->to = pos_new;
-                tp->is_world = true;
-                tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-                tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-                tp->on_finished = on_tween_finished;
+                tp->duration = move_time;
             }
 		}
 		else if(
