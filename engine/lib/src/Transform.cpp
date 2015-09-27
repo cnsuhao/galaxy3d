@@ -282,17 +282,24 @@ namespace Galaxy3D
 
         if(fn != origin)
         {
-            float deg = Vector3::Angle(origin, fn);
-            Vector3 axis = origin * fn;
-            
-            if(axis == Vector3(0, 0, 0))
+            if(!Mathf::FloatEqual(fn.SqrMagnitude(), 0))
             {
-                SetRotation(Quaternion::AngleAxis(deg, GetUp()));
+                float deg = Vector3::Angle(origin, fn);
+                Vector3 axis = origin * fn;
+
+                if(axis == Vector3(0, 0, 0))
+                {
+                    SetRotation(Quaternion::AngleAxis(deg, GetUp()));
+                }
+                else
+                {
+                    SetRotation(Quaternion::AngleAxis(deg, axis));
+                }
             }
-            else
-            {
-                SetRotation(Quaternion::AngleAxis(deg, axis));
-            }
+        }
+        else
+        {
+            SetRotation(Quaternion::Identity());
         }
     }
 }

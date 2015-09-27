@@ -1,26 +1,26 @@
-#include "TweenPosition.h"
+#include "TweenRotation.h"
 #include "Transform.h"
 
 namespace Galaxy3D
 {
-    void TweenPosition::SetValue(float t)
+    void TweenRotation::SetValue(float t)
     {
         float value = curve.Evaluate(t);
 
-        Vector3 pos = Vector3::Lerp(from, to, value);
+        Quaternion rot = Quaternion::Lerp(from, to, value);
         if(on_set_value != NULL)
         {
-            on_set_value(this, target, &pos);
+            on_set_value(this, target, &rot);
         }
         else
         {
             if(is_world)
             {
-                GetTransform()->SetPosition(pos);
+                GetTransform()->SetRotation(rot);
             }
             else
             {
-                GetTransform()->SetLocalPosition(pos);
+                GetTransform()->SetLocalRotation(rot);
             }
         }
     }

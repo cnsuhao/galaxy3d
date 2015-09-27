@@ -15,6 +15,7 @@ namespace Galaxy3D
 		bool operator !=(const Quaternion &v) const;
 		bool operator ==(const Quaternion &v) const;
 		Vector3 ToEulerAngles() const;
+        void Normalize();
 		std::string ToString() const;
 
 		inline static Quaternion Identity() {return m_identity;}
@@ -22,6 +23,7 @@ namespace Galaxy3D
 		static Quaternion AngleAxis(float angle, const Vector3 &axis);
 		static Quaternion Euler(float x, float y, float z);
 		static Quaternion Euler(const Vector3 &e) {return Euler(e.x, e.y, e.z);}
+        static Quaternion Lerp(const Quaternion &from, const Quaternion &to, float t);
 
 	public:
 		float x;
