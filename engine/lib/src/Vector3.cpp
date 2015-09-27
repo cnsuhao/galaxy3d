@@ -1,7 +1,8 @@
 #include "Vector3.h"
 #include "Vector2.h"
-#include <math.h>
 #include "Mathf.h"
+#include "Debug.h"
+#include <math.h>
 #include <sstream>
 
 namespace Galaxy3D
@@ -18,15 +19,16 @@ namespace Galaxy3D
 
 	void Vector3::Normalize()
 	{
-		float sq = sqrt(x*x + y*y + z*z);
+        float sqr_magnitude = SqrMagnitude();
+        if(!Mathf::FloatEqual(sqr_magnitude, 0))
+        {
+            float sq = sqrt(sqr_magnitude);
 
-		if(sq < -Mathf::Epsilon || sq > Mathf::Epsilon)
-		{
-			float inv = 1.0f / sq;
-			x = x * inv;
-			y = y * inv;
-			z = z * inv;
-		}
+            float inv = 1.0f / sq;
+            x = x * inv;
+            y = y * inv;
+            z = z * inv;
+        }
 	}
 
 	Vector3 Vector3::Normalize(const Vector3 &value)
@@ -62,10 +64,10 @@ namespace Galaxy3D
 
     float Vector3::Angle(const Vector3 &from, const Vector3 &to)
     {
-        Vector3 fn = Vector3::Normalize(from);
-        Vector3 tn = Vector3::Normalize(to);
+        float mod = from.SqrMagnitude() * to.SqrMagnitude();
+        float dot = from.Dot(to) / sqrt(mod);
+        dot = Mathf::Clamp(dot, -1.0f, 1.0f);
 
-        float dot = fn.Dot(tn);
         float deg = acos(dot) * Mathf::Rad2Deg;
 
         return deg;

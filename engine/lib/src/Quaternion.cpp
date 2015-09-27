@@ -88,4 +88,31 @@ namespace Galaxy3D
 
 		return around_y * around_x * around_z;
 	}
+
+    Quaternion Quaternion::Lerp(const Quaternion &from, const Quaternion &to, float t)
+    {
+        Quaternion lerp = Quaternion(
+            Mathf::Lerp(from.x, to.x, t, false),
+            Mathf::Lerp(from.y, to.y, t, false),
+            Mathf::Lerp(from.z, to.z, t, false),
+            Mathf::Lerp(from.w, to.w, t, false));
+        lerp.Normalize();
+
+        return lerp;
+    }
+
+    void Quaternion::Normalize()
+    {
+        float sqr_magnitude = x*x + y*y + z*z + w*w;
+        if(!Mathf::FloatEqual(sqr_magnitude, 0))
+        {
+            float sq = sqrt(sqr_magnitude);
+
+            float inv = 1.0f / sq;
+            x = x * inv;
+            y = y * inv;
+            z = z * inv;
+            w = w * inv;
+        }
+    }
 }

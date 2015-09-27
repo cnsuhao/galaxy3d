@@ -25,6 +25,7 @@
 #include "RenderSettings.h"
 #include "Physics.h"
 #include "TweenPosition.h"
+#include "TweenRotation.h"
 
 namespace Galaxy3D
 {

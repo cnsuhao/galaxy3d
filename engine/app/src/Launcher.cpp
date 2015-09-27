@@ -142,38 +142,83 @@ void Launcher::Update()
             Vector3 nor;
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
-                Debug::Log("%s", hit.ToString().c_str());
-
                 Vector3 pos_old = anim->GetTransform()->GetPosition();
                 Vector3 pos_new = hit + Vector3(0, 0.05f, 0);
-                float speed = 3.0f;
-                float move_time = (pos_new - pos_old).Magnitude() / speed;
+                float move_speed = 3.0f;
+                float move_time = (pos_new - pos_old).Magnitude() / move_speed;
                 Vector3 dir = pos_new - pos_old;
                 dir.y = 0;
 
                 anim->CrossFade(clip_move);
-                anim->GetTransform()->SetForward(dir);
 
-                auto tp = anim->GetGameObject()->GetComponent<TweenPosition>();
-                if(tp)
                 {
-                    tp->Reset();
-                }
-                else
-                {
-                    tp = anim->GetGameObject()->AddComponent<TweenPosition>();
-                    tp->delay = 0;
-                    tp->is_world = true;
-                    tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-                    tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-                    tp->target = GetComponentPtr();
-                    tp->on_set_value = OnTweenSetValue;
-                    tp->on_finished = OnTweenFinished;
+                    // tween position
+                    auto tp = anim->GetGameObject()->GetComponent<TweenPosition>();
+                    if(tp)
+                    {
+                        tp->Reset();
+                    }
+                    else
+                    {
+                        tp = anim->GetGameObject()->AddComponent<TweenPosition>();
+                        tp->delay = 0;
+                        tp->is_world = true;
+                        tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+                        tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+                        tp->target = GetComponentPtr();
+                        tp->on_set_value = OnTweenSetValue;
+                        tp->on_finished = OnTweenFinished;
+                    }
+
+                    tp->from = pos_old;
+                    tp->to = pos_new;
+                    tp->duration = move_time;
                 }
 
-                tp->from = pos_old;
-                tp->to = pos_new;
-                tp->duration = move_time;
+                {
+                    Vector3 origin = anim->GetTransform()->GetForward();
+                    Vector3 fn = Vector3::Normalize(dir);
+                    
+                    if(!Mathf::FloatEqual(fn.SqrMagnitude(), 0) && fn != origin)
+                    {
+                        // tween rotation
+                        float deg = Vector3::Angle(origin, fn);
+                        Vector3 axis = origin * fn;
+                        Quaternion rot;
+
+                        float rot_speed = 270.0f;
+                        float rot_time = deg / rot_speed;
+
+                        if(axis == Vector3(0, 0, 0))
+                        {
+                            rot = Quaternion::AngleAxis(deg, anim->GetTransform()->GetUp());
+                        }
+                        else
+                        {
+                            rot = Quaternion::AngleAxis(deg, axis);
+                        }
+
+                        auto tr = anim->GetGameObject()->GetComponent<TweenRotation>();
+                        if(tr)
+                        {
+                            tr->Reset();
+                        }
+                        else
+                        {
+                            tr = anim->GetGameObject()->AddComponent<TweenRotation>();
+                            tr->delay = 0;
+                            tr->is_world = true;
+                            tr->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+                            tr->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+                        }
+
+                        Quaternion rot_now = anim->GetTransform()->GetRotation();
+
+                        tr->from = rot_now;
+                        tr->to = rot * rot_now;
+                        tr->duration = rot_time;
+                    }
+                }
             }
 		}
 		else if(
