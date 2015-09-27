@@ -31,9 +31,9 @@ namespace Galaxy3D
 
 #define SAFE_RELEASE(p) \
 	do { \
-		if(p != nullptr) { \
+		if(p != NULL) { \
 			p->Release(); \
-			p = nullptr; \
+			p = NULL; \
 		} \
 	}while(false)
 

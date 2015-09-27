@@ -108,8 +108,8 @@ namespace Galaxy3D
     }
 
     Mesh::Mesh():
-        m_vertex_buffer(nullptr),
-        m_index_buffer(nullptr)
+        m_vertex_buffer(NULL),
+        m_index_buffer(NULL)
     {
     }
 
@@ -450,7 +450,7 @@ namespace Galaxy3D
 
     ID3D11Buffer *Mesh::GetVertexBuffer()
     {
-        if(m_vertex_buffer == nullptr)
+        if(m_vertex_buffer == NULL)
         {
             int buffer_size;
             char *buffer;
@@ -467,7 +467,7 @@ namespace Galaxy3D
             }
             else
             {
-                return nullptr;
+                return NULL;
             }
 
             bool dynamic = false;
@@ -492,7 +492,7 @@ namespace Galaxy3D
 
     ID3D11Buffer *Mesh::GetIndexBuffer()
     {
-        if(m_index_buffer == nullptr && !m_sub_indices.empty())
+        if(m_index_buffer == NULL && !m_sub_indices.empty())
         {
             std::vector<unsigned short> uv;
             for(size_t i=0; i<m_sub_indices.size(); i++)

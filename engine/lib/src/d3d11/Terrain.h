@@ -59,6 +59,8 @@ namespace Galaxy3D
         ID3D11Buffer *GetIndexBuffer();
         void UseGeoLod(bool use) {m_use_geo = use;}
         int GetIndexCount() const { return m_use_geo ? m_geo_indices.size() : m_indices.size();}
+        const std::vector<VertexMesh> &GetVertices() const {return m_vertices;}
+        const std::vector<int> &GetIndices() const {return m_indices;}
 
     private:
         int m_map_size;

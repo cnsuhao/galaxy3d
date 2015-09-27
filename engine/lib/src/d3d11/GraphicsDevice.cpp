@@ -10,12 +10,12 @@ namespace Galaxy3D
 	}
 
 	GraphicsDevice::GraphicsDevice():
-		m_d3d_device(nullptr),
-		m_swap_chain(nullptr),
-		m_immediate_context(nullptr),
-		m_render_target_view(nullptr),
-		m_depth_stencil_texture(nullptr),
-		m_depth_stencil_view(nullptr)
+		m_d3d_device(NULL),
+		m_swap_chain(NULL),
+		m_immediate_context(NULL),
+		m_render_target_view(NULL),
+		m_depth_stencil_texture(NULL),
+		m_depth_stencil_view(NULL)
 	{
 	}
 

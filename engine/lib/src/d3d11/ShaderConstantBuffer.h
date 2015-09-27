@@ -12,7 +12,7 @@ namespace Galaxy3D
 		int slot;
 		int size;
 
-		ShaderConstantBuffer():buffer(nullptr),slot(-1),size(-1) {}
+		ShaderConstantBuffer():buffer(NULL),slot(-1),size(-1) {}
 		void Release()
 		{
 			SAFE_RELEASE(buffer);

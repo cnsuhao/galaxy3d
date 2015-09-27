@@ -4,8 +4,8 @@ namespace Galaxy3D
 {
 	SpriteBatchRenderer::SpriteBatchRenderer():
 		m_color(1, 1, 1, 1),
-		m_vertex_buffer(nullptr),
-		m_index_buffer(nullptr)
+		m_vertex_buffer(NULL),
+		m_index_buffer(NULL)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
@@ -47,7 +47,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
+		if(m_vertex_buffer == NULL || m_index_buffer == NULL)
 		{
 			return;
 		}
@@ -86,7 +86,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
+		if(m_vertex_buffer == NULL || m_index_buffer == NULL)
 		{
 			CreateVertexBuffer();
 			CreateIndexBuffer();

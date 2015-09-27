@@ -31,6 +31,7 @@ namespace Galaxy3D
 	class Launcher :public Component
 	{
 	public:
+        static void OnTweenSetValue(Component *tween, std::weak_ptr<Component> &target, void *value);
         static void OnTweenFinished(Component *tween, std::weak_ptr<Component> &target);
 		virtual ~Launcher();
 

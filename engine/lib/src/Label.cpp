@@ -670,8 +670,8 @@ namespace Galaxy3D
 
 	void Label::ProcessText()
 	{
-		FT_Face face = nullptr;
-		FT_Face face_old = nullptr;
+		FT_Face face = NULL;
+		FT_Face face_old = NULL;
 		auto find_face = g_fonts.find(m_font);
 		if(find_face != g_fonts.end())
 		{
@@ -963,10 +963,10 @@ namespace Galaxy3D
 				}
 				else
 				{
-					if(face_old != nullptr)
+					if(face_old != NULL)
 					{
 						face = face_old;
-						face_old = nullptr;
+						face_old = NULL;
 					}
 				}
 			}

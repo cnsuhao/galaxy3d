@@ -73,8 +73,8 @@ namespace Galaxy3D
 	}
 
 	Sprite::Sprite():
-        m_vertex_buffer(nullptr),
-        m_index_buffer(nullptr)
+        m_vertex_buffer(NULL),
+        m_index_buffer(NULL)
 	{
 	}
 
@@ -108,7 +108,7 @@ namespace Galaxy3D
 
     ID3D11Buffer *Sprite::GetVertexBuffer()
     {
-        if(m_vertex_buffer == nullptr)
+        if(m_vertex_buffer == NULL)
         {
             int buffer_size = sizeof(VertexUI) * 4;
             char *buffer = (char *) malloc(buffer_size);
@@ -139,7 +139,7 @@ namespace Galaxy3D
 
     ID3D11Buffer *Sprite::GetIndexBuffer()
     {
-        if(m_index_buffer == nullptr)
+        if(m_index_buffer == NULL)
         {
             unsigned short *uv = this->GetIndices();
             int buffer_size = sizeof(unsigned short) * 6;

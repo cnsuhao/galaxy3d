@@ -115,9 +115,9 @@ namespace Galaxy3D
 	std::string RenderStates::m_current_states[KeyCount];
 
 	RenderStates::RenderStates():
-		resterizer_state(nullptr),
-		depth_stencil_state(nullptr),
-		blend_state(nullptr)
+		resterizer_state(NULL),
+		depth_stencil_state(NULL),
+		blend_state(NULL)
 	{
 		m_values[0] = CullNames[0];
 		m_values[1] = ZWriteNames[0];

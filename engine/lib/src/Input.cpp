@@ -20,7 +20,7 @@ namespace Galaxy3D
             return &g_input_touches[index];
         }
         
-        return nullptr;
+        return NULL;
 	}
 
 	void Input::Update()
