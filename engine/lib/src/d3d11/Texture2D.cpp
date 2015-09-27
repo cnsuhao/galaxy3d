@@ -77,10 +77,10 @@ namespace Galaxy3D
 		SAFE_RELEASE(m_texture_res);
 		SAFE_RELEASE(m_sampler);
 
-		if(m_colors != nullptr)
+		if(m_colors != NULL)
 		{
 			free(m_colors);
-			m_colors = nullptr;
+			m_colors = NULL;
 			m_color_buffer_size = 0;
 		}
 	}
@@ -280,7 +280,7 @@ namespace Galaxy3D
 			init_data.SysMemPitch = m_width * bytes;
 		}
 
-		if(m_texture == nullptr)
+		if(m_texture == NULL)
 		{
 			HRESULT hr = device->CreateTexture2D(&desc, (mipmap || init_data.pSysMem == 0) ? 0 : &init_data, &m_texture);
 
@@ -299,7 +299,7 @@ namespace Galaxy3D
 			delete [] buffer;
 		}
 
-		if(m_texture_res == nullptr)
+		if(m_texture_res == NULL)
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
 			memset(&srvd, 0, sizeof(srvd));
@@ -315,7 +315,7 @@ namespace Galaxy3D
 			}
 		}
 
-		if(m_sampler == nullptr)
+		if(m_sampler == NULL)
 		{
 			D3D11_SAMPLER_DESC sampDesc;
 			ZeroMemory(&sampDesc, sizeof(sampDesc));

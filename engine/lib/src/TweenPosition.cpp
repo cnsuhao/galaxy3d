@@ -18,13 +18,20 @@ namespace Galaxy3D
         float value = curve.Evaluate(t);
 
         Vector3 pos = Vector3::Lerp(from, to, value);
-        if(is_world)
+        if(on_set_value != NULL)
         {
-            GetTransform()->SetPosition(pos);
+            on_set_value(this, target, &pos);
         }
         else
         {
-            GetTransform()->SetLocalPosition(pos);
+            if(is_world)
+            {
+                GetTransform()->SetPosition(pos);
+            }
+            else
+            {
+                GetTransform()->SetLocalPosition(pos);
+            }
         }
     }
 

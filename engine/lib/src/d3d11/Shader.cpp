@@ -859,7 +859,7 @@ namespace Galaxy3D
 				name = name.Replace(" ", "");
 
 				ShaderTexture tex;
-				tex.texture = nullptr;
+				tex.texture = NULL;
 				tex.slot = index;
 				shader->textures[name.str] = tex;
 
@@ -918,7 +918,7 @@ namespace Galaxy3D
 				name = name.Replace(" ", "");
 
 				ShaderSampler sam;
-				sam.sampler = nullptr;
+				sam.sampler = NULL;
 				sam.slot = index;
 				shader->samplers[name.str] = sam;
 

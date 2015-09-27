@@ -17,7 +17,7 @@ namespace Galaxy3D
 		std::unordered_map<std::string, ShaderTexture> textures;
 		std::unordered_map<std::string, ShaderSampler> samplers;
 
-		PixelShader():shader(nullptr) {}
+		PixelShader():shader(NULL) {}
 		void Release()
 		{
 			SAFE_RELEASE(shader);

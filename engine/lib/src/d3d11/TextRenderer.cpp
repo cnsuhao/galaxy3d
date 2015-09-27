@@ -3,8 +3,8 @@
 namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
-		m_vertex_buffer(nullptr),
-		m_index_buffer(nullptr),
+		m_vertex_buffer(NULL),
+		m_index_buffer(NULL),
 		m_vertex_count(0)
 	{
 		m_sorting_layer = 0;
@@ -34,7 +34,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer == nullptr || m_index_buffer == nullptr)
+		if(m_vertex_buffer == NULL || m_index_buffer == NULL)
 		{
 			if(m_label->GetVertexCount() > 0)
 			{
@@ -98,7 +98,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer != nullptr && m_index_buffer != nullptr)
+		if(m_vertex_buffer != NULL && m_index_buffer != NULL)
 		{
 			auto mat = GetSharedMaterial();
 			auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
@@ -500,7 +500,7 @@ namespace Galaxy3D
 			auto &images = lines[i].image_items;
 			for(size_t j=0; j<images.size(); j++)
 			{
-				ID3D11Buffer *vertex_buffer = nullptr;
+				ID3D11Buffer *vertex_buffer = NULL;
 
 				int buffer_size = sizeof(VertexUI) * 4;
 				char *buffer = (char *) malloc(buffer_size);
@@ -568,7 +568,7 @@ namespace Galaxy3D
 			auto &images = lines[i].image_items;
 			for(size_t j=0; j<images.size(); j++)
 			{
-				ID3D11Buffer *index_buffer = nullptr;
+				ID3D11Buffer *index_buffer = NULL;
 
 				unsigned short *uv = &images[j].indices[0];
 				int buffer_size = sizeof(unsigned short) * 6;

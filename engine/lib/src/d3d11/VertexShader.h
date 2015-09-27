@@ -17,7 +17,7 @@ namespace Galaxy3D
 		int vertex_stride;
 		std::unordered_map<std::string, ShaderConstantBuffer> cbuffers;
 
-		VertexShader():shader(nullptr),input_layout(nullptr),vertex_stride(-1) {}
+		VertexShader():shader(NULL),input_layout(NULL),vertex_stride(-1) {}
 		void Release()
 		{
 			SAFE_RELEASE(shader);

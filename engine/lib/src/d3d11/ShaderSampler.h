@@ -11,7 +11,7 @@ namespace Galaxy3D
 		ID3D11SamplerState *sampler;
 		int slot;
 
-		ShaderSampler():sampler(nullptr),slot(-1) {}
+		ShaderSampler():sampler(NULL),slot(-1) {}
 	};
 }
 

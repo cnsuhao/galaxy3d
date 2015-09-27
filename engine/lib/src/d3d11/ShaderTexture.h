@@ -11,7 +11,7 @@ namespace Galaxy3D
 		ID3D11ShaderResourceView *texture;
 		int slot;
 
-		ShaderTexture():texture(nullptr),slot(-1) {}
+		ShaderTexture():texture(NULL),slot(-1) {}
 	};
 }
 

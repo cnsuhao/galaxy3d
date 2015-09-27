@@ -186,7 +186,7 @@ namespace Galaxy3D
 		int width = tex->GetWidth();
 		int height = tex->GetHeight();
 		const char *colors = tex->GetPixels();
-		if(colors == nullptr)
+		if(colors == NULL)
 		{
 			return;
 		}

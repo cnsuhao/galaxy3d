@@ -7,17 +7,17 @@
 
 namespace Galaxy3D
 {
-    btDefaultCollisionConfiguration *g_config = nullptr;
-    btCollisionDispatcher *g_dispatcher = nullptr;
-    btDbvtBroadphase *g_broadphase = nullptr;
-    btSequentialImpulseConstraintSolver *g_solver = nullptr;
-    btDiscreteDynamicsWorld *g_dynamics_world = nullptr;
+    btDefaultCollisionConfiguration *g_config = NULL;
+    btCollisionDispatcher *g_dispatcher = NULL;
+    btDbvtBroadphase *g_broadphase = NULL;
+    btSequentialImpulseConstraintSolver *g_solver = NULL;
+    btDiscreteDynamicsWorld *g_dynamics_world = NULL;
     btAlignedObjectArray<btCollisionShape *> g_collision_shapes;
-    short *g_terrain_data = nullptr;
+    btTriangleIndexVertexArray *g_terrain_mesh_data = NULL;
 
     void Physics::Init()
     {
-        if(g_config != nullptr)
+        if(g_config != NULL)
         {
             Debug::Log("Physics had init error");
         }
@@ -30,53 +30,32 @@ namespace Galaxy3D
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
     }
 
-    void Physics::CreateTerrainRigidBody(
-        int size_heightmap,
-        short *data,
-        float unit_size,
-        float unit_height)
+    void Physics::CreateTerrainRigidBody(const Terrain *terrain)
     {
-        if(g_terrain_data != nullptr)
-        {
-            delete [] g_terrain_data;
-        }
-        int point_count = size_heightmap * size_heightmap;
-        g_terrain_data = new short[point_count];
-        memcpy(g_terrain_data, data, point_count * sizeof(short));
-        /*
-        for(int i=0; i<size_heightmap; i++)
-        {
-            memcpy(&g_terrain_data[i], &data[size_heightmap - 1 - i], size_heightmap * sizeof(short));
-        }*/
-        //g_terrain_data[513 * 512 + 0] = 30000;
+        auto &vertices = terrain->GetVertices();
+        auto &indices = terrain->GetIndices();
 
-        float xz_scale = unit_size / (size_heightmap - 1);
-        float y_scale = unit_height / 65535;
+        g_terrain_mesh_data = new btTriangleIndexVertexArray(  
+            indices.size() / 3,
+            (int *) &indices[0],
+            3 * sizeof(int),
+            vertices.size(),
+            (btScalar *) &vertices[0],
+            sizeof(VertexMesh));
 
-        btHeightfieldTerrainShape *terrain = new btHeightfieldTerrainShape(
-            size_heightmap,
-            size_heightmap,
-            g_terrain_data,
-            y_scale,
-            -unit_height,//height_min
-            unit_height,//height_max
-            1,
-            PHY_SHORT,
-            false);
-        
-        terrain->setLocalScaling(btVector3(xz_scale, 1, xz_scale));
-        g_collision_shapes.push_back(terrain);
+        btBvhTriangleMeshShape *mesh = new btBvhTriangleMeshShape(g_terrain_mesh_data, true);
+        g_collision_shapes.push_back(mesh);
 
         btTransform ground_transform;
         ground_transform.setIdentity();
-        ground_transform.setOrigin(btVector3(unit_size * 0.5f, 0, unit_size * 0.5f));
+        ground_transform.setOrigin(btVector3(0, 0, 0));
 
         btScalar mass(0);
         btVector3 local_inertia(0, 0, 0);
 
         //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
         btDefaultMotionState* motion_state = new btDefaultMotionState(ground_transform);
-        btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, terrain, local_inertia);
+        btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, mesh, local_inertia);
         btRigidBody* body = new btRigidBody(rbInfo);
         body->setRollingFriction(1);
         body->setFriction(1);
@@ -136,23 +115,14 @@ namespace Galaxy3D
         g_collision_shapes.clear();
 
         delete g_dynamics_world;
-        g_dynamics_world = nullptr;
-
         delete g_solver;
-        g_solver = nullptr;
-
         delete g_broadphase;
-        g_broadphase = nullptr;
-
         delete g_dispatcher;
-        g_dispatcher = nullptr;
-
         delete g_config;
-        g_config = nullptr;
 
-        if(g_terrain_data != nullptr)
+        if(g_terrain_mesh_data != NULL)
         {
-            delete [] g_terrain_data;
+            delete [] g_terrain_mesh_data;
         }
     }
 }

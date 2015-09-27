@@ -38,12 +38,12 @@ namespace Galaxy3D
 
 		Texture2D(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode):
 			Texture(w, h, filter_mode, wrap_mode),
-			m_colors(nullptr),
+			m_colors(NULL),
 			m_color_buffer_size(0),
 			m_format(format),
-			m_texture(nullptr),
-			m_texture_res(nullptr),
-			m_sampler(nullptr),
+			m_texture(NULL),
+			m_texture_res(NULL),
+			m_sampler(NULL),
             m_mipmap(false)
 		{}
 	};

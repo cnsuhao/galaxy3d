@@ -61,10 +61,10 @@ void Launcher::Start()
 
     auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Objects/LightmapFar-0.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.push_back(lightmap);
-    /*
+    
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
-    */
+    
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim_obj->SetLayerRecursive(Layer::Default);
     anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
@@ -84,13 +84,33 @@ void Launcher::Start()
     RenderSettings::light_directional_direction = Vector3(0, -1, -1);
 
     Physics::Init();
+    Physics::CreateTerrainRigidBody(ter.get());
 
-    int file_size;
-    void *terrain_data = GTFile::ReadAllBytes(Application::GetDataPath() + "/Assets/terrain/Terrain.raw", &file_size);
-    if(terrain_data != NULL)
+    //set anim to ground
+    Vector3 anim_pos = anim->GetTransform()->GetPosition();
+    Vector3 hit;
+    Vector3 nor;
+    if(Physics::RarCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit, nor))
     {
-        Physics::CreateTerrainRigidBody(513, (short *) terrain_data, 200.0f, 600.0f);
-        free(terrain_data);
+        hit.y += 0.05f;
+        anim->GetTransform()->SetPosition(hit);
+    }
+}
+
+void Launcher::OnTweenSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
+{
+    if(!target.expired())
+    {
+        auto thiz = std::dynamic_pointer_cast<Launcher>(target.lock());
+        Vector3 *pos = (Vector3 *) value;
+
+        Vector3 hit;
+        Vector3 nor;
+        if(Physics::RarCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit, nor))
+        {
+            hit.y += 0.05f;
+            thiz->anim->GetTransform()->SetPosition(hit);
+        }
     }
 }
 
@@ -120,7 +140,6 @@ void Launcher::Update()
 
             Vector3 hit;
             Vector3 nor;
-            //if(Physics::RarCast(Vector3(100, 5000, 100), Vector3(0, -1, 0), 10000, hit, nor))
             if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
                 Debug::Log("%s", hit.ToString().c_str());
@@ -148,6 +167,7 @@ void Launcher::Update()
                     tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
                     tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
                     tp->target = GetComponentPtr();
+                    tp->on_set_value = OnTweenSetValue;
                     tp->on_finished = OnTweenFinished;
                 }
 

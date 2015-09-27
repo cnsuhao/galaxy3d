@@ -12,7 +12,7 @@ namespace Galaxy3D
         auto vertex_buffer = m_terrain->GetVertexBuffer();
         auto index_buffer = m_terrain->GetIndexBuffer();
 
-        if(vertex_buffer == nullptr || index_buffer == nullptr)
+        if(vertex_buffer == NULL || index_buffer == NULL)
         {
             return;
         }

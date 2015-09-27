@@ -286,7 +286,7 @@ namespace Galaxy3D
             return &find->second;
         }
 
-        return nullptr;
+        return NULL;
     }
 
     void Animation::Stop(AnimationState &state)
