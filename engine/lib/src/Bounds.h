@@ -9,19 +9,15 @@ namespace Galaxy3D
 	struct Bounds
     {
 		Bounds();
-        Bounds(const Vector3 &center, const Vector3 &size):
+        Bounds(const Vector3 &center, const Vector3 &extents):
 			center(center),
-			size(size),
-			extents(size * 0.5f),
-			max_(center + extents),
-			min_(center - extents)
+			extents(extents)
 		{}
+        Vector3 GetMax() const {return center + extents;}
+        Vector3 GetMin() const {return center - extents;}
 
         Vector3 center;
         Vector3 extents;
-        Vector3 max_;
-        Vector3 min_;
-        Vector3 size;
 
 		bool Contains(const Vector3 &point) const;
 		void Encapsulate(const Vector3 &point);
