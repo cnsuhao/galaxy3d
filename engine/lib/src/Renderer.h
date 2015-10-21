@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "VertexType.h"
+#include "Bounds.h"
 #include "GTTime.h"
 #include <list>
 
@@ -29,6 +30,8 @@ namespace Galaxy3D
 		std::shared_ptr<Material> GetMaterial() const;
         void SetLightmapIndex(int lightmap_index) {m_lightmap_index = lightmap_index;}
         void SetLightmapTilingOffset(Vector4 lightmap_tiling_offset) {m_lightmap_tiling_offset = lightmap_tiling_offset;}
+        void SetBounds(const Bounds &bounds) {m_bounds = bounds;}
+        Bounds GetBounds() const {return m_bounds;}
 
 	protected:
 		bool m_cast_shadow;
@@ -38,6 +41,8 @@ namespace Galaxy3D
 		Vector4 m_lightmap_tiling_offset;
 		int m_sorting_layer;
 		int m_sorting_order;
+        // aabb in world space
+        Bounds m_bounds;
 
 		Renderer();
         void DrawIndexed(int count, int offset);

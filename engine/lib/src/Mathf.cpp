@@ -75,16 +75,18 @@ namespace Galaxy3D
 		else
 		{
 			float inv_x = 1 / dir.x;
+            Vector3 box_min = box.GetMin();
+            Vector3 box_max = box.GetMax();
 
 			if(inv_x > 0)
 			{
-				t_x_min = (box.min_.x - ray.origin.x) * inv_x;
-				t_x_max = (box.max_.x - ray.origin.x) * inv_x;
+				t_x_min = (box_min.x - ray.origin.x) * inv_x;
+				t_x_max = (box_max.x - ray.origin.x) * inv_x;
 			}
 			else
 			{
-				t_x_min = (box.max_.x - ray.origin.x) * inv_x;
-				t_x_max = (box.min_.x - ray.origin.x) * inv_x;
+				t_x_min = (box_max.x - ray.origin.x) * inv_x;
+				t_x_max = (box_min.x - ray.origin.x) * inv_x;
 			}
 		}
 
@@ -96,16 +98,18 @@ namespace Galaxy3D
 		else
 		{
 			float inv_y = 1 / dir.y;
+            Vector3 box_min = box.GetMin();
+            Vector3 box_max = box.GetMax();
 
 			if(inv_y > 0)
 			{
-				t_y_min = (box.min_.y - ray.origin.y) * inv_y;
-				t_y_max = (box.max_.y - ray.origin.y) * inv_y;
+				t_y_min = (box_min.y - ray.origin.y) * inv_y;
+				t_y_max = (box_max.y - ray.origin.y) * inv_y;
 			}
 			else
 			{
-				t_y_min = (box.max_.y - ray.origin.y) * inv_y;
-				t_y_max = (box.min_.y - ray.origin.y) * inv_y;
+				t_y_min = (box_max.y - ray.origin.y) * inv_y;
+				t_y_max = (box_min.y - ray.origin.y) * inv_y;
 			}
 		}
 
@@ -117,16 +121,18 @@ namespace Galaxy3D
 		else
 		{
 			float inv_z = 1 / dir.z;
+            Vector3 box_min = box.GetMin();
+            Vector3 box_max = box.GetMax();
 
 			if(inv_z > 0)
 			{
-				t_z_min = (box.min_.z - ray.origin.z) * inv_z;
-				t_z_max = (box.max_.z - ray.origin.z) * inv_z;
+				t_z_min = (box_min.z - ray.origin.z) * inv_z;
+				t_z_max = (box_max.z - ray.origin.z) * inv_z;
 			}
 			else
 			{
-				t_z_min = (box.max_.z - ray.origin.z) * inv_z;
-				t_z_max = (box.min_.z - ray.origin.z) * inv_z;
+				t_z_min = (box_max.z - ray.origin.z) * inv_z;
+				t_z_max = (box_min.z - ray.origin.z) * inv_z;
 			}
 		}
 

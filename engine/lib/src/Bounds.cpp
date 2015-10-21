@@ -5,10 +5,7 @@ namespace Galaxy3D
 {
 	Bounds::Bounds():
 		center(0, 0, 0),
-		size(0, 0, 0),
-		extents(0, 0, 0),
-		max_(0, 0, 0),
-		min_(0, 0, 0)
+		extents(0, 0, 0)
 	{
 	}
 
@@ -25,9 +22,6 @@ namespace Galaxy3D
 		{
 			Vector3 dir = point - center;
 			extents = Vector3::Max(extents, Vector3(fabs(dir.x), fabs(dir.y), fabs(dir.z)));
-			size = extents * 2;
-			max_ = center + extents;
-			min_ = center - extents;
 		}
 	}
 }
