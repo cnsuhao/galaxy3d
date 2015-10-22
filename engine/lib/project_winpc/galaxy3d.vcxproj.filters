@@ -153,6 +153,9 @@
     <ClCompile Include="..\src\TweenRotation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Octree.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -363,6 +366,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\TweenRotation.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Octree.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

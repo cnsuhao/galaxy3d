@@ -64,6 +64,7 @@ void Launcher::Start()
     
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
     mesh->SetLayerRecursive(Layer::Default);
+    Renderer::BuildOctree(mesh);
     
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/Arthas.anim");
     anim_obj->SetLayerRecursive(Layer::Default);
