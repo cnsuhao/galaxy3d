@@ -364,11 +364,24 @@ namespace Galaxy3D
                 renderer_tran->SetScale(sca);
 
                 auto renderer = renderer_obj->AddComponent<MeshRenderer>();
-
                 auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), false);
-
                 renderer->SetMesh(mesh);
 
+                // caculate world bounds
+                Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
+                Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
+                for(size_t j=0; j<mesh->m_vertices.size(); j++)
+                {
+                    auto &v = mesh->m_vertices[j].POSITION;
+                    auto v_world = renderer_tran->TransformPoint(v);
+
+                    box_max = Vector3::Max(box_max, v_world);
+                    box_min = Vector3::Min(box_min, v_world);
+                }
+                Bounds bounds((box_max + box_min) * 0.5f, (box_max - box_min) * 0.5f);
+                renderer->SetBounds(bounds);
+
+                // lightmap
                 int lightmap_index;
                 BUFFER_READ(lightmap_index, p, 4);
                 Vector4 lightmap_tiling_offset;

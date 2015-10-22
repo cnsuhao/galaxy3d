@@ -2,10 +2,12 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "LayerMask.h"
+#include "Octree.h"
 
 namespace Galaxy3D
 {
 	std::list<Renderer *> Renderer::m_renderers;
+    std::shared_ptr<Octree> Renderer::m_octree;
 
 	Renderer::Renderer():
 		m_cast_shadow(false),
@@ -161,5 +163,10 @@ namespace Galaxy3D
         context->DrawIndexed(count, offset, 0);
 
         GTTime::m_draw_call++;
+    }
+
+    void Renderer::BuildOctree(const std::shared_ptr<GameObject> &obj)
+    {
+        m_octree = std::shared_ptr<Octree>(new Octree(obj));
     }
 }

@@ -13,11 +13,14 @@
 
 namespace Galaxy3D
 {
+    class Octree;
+
 	class Renderer : public Component
 	{
 	public:
 		static void Sort();
 		static void RenderAll();
+        static void BuildOctree(const std::shared_ptr<GameObject> &obj);
         virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
@@ -50,6 +53,7 @@ namespace Galaxy3D
 
 	private:
 		static std::list<Renderer *> m_renderers;
+        static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
 		static bool Less(const Renderer *c1, const Renderer *c2);

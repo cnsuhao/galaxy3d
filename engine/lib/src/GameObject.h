@@ -20,6 +20,7 @@ namespace Galaxy3D
 		virtual ~GameObject();
 		template<class T> std::shared_ptr<T> AddComponent();
 		template<class T> std::shared_ptr<T> GetComponent() const;
+        template<class T> std::vector<std::shared_ptr<T>> GetComponentsInChildren() const;
         std::shared_ptr<Component> GetComponentPtr(const Component *com) const;
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		bool IsActiveInHierarchy() const {return m_active_in_hierarchy;}
@@ -82,6 +83,41 @@ namespace Galaxy3D
 
 		return std::shared_ptr<T>();
 	}
+
+    template<class T> std::vector<std::shared_ptr<T>> GameObject::GetComponentsInChildren() const
+    {
+        std::vector<std::shared_ptr<T>> coms;
+
+        for(auto i : m_components)
+        {
+            auto t = std::dynamic_pointer_cast<T>(i);
+            if(t && !t->m_deleted)
+            {
+                coms.push_back(t);
+            }
+        }
+
+        for(auto i : m_components_new)
+        {
+            auto t = std::dynamic_pointer_cast<T>(i);
+            if(t && !t->m_deleted)
+            {
+                coms.push_back(t);
+            }
+        }
+
+        auto transform = GetTransform();
+        int child_count = transform->GetChildCount();
+        for(int i=0; i<child_count; i++)
+        {
+            auto child = transform->GetChild(i);
+            auto child_coms = child->GetGameObject()->GetComponentsInChildren<T>();
+            
+            coms.insert(coms.end(), child_coms.begin(), child_coms.end());
+        }
+
+        return coms;
+    }
 }
 
 #endif
