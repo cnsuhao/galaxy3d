@@ -9,11 +9,13 @@
 #include "VertexType.h"
 #include "Bounds.h"
 #include "GTTime.h"
+#include "FrustumBounds.h"
 #include <list>
 
 namespace Galaxy3D
 {
     class Octree;
+    struct OctreeNode;
 
 	class Renderer : public Component
 	{
@@ -57,6 +59,7 @@ namespace Galaxy3D
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
 		static bool Less(const Renderer *c1, const Renderer *c2);
+        static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
 	};
 }
 

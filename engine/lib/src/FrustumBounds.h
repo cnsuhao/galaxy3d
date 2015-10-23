@@ -6,6 +6,16 @@
 
 namespace Galaxy3D
 {
+    struct ContainsResult
+    {
+        enum Enum
+        {
+            In,
+            Out,
+            Cross
+        };
+    };
+
 	class FrustumBounds
 	{
 	public:
@@ -15,12 +25,12 @@ namespace Galaxy3D
 		FrustumBounds(const Matrix4x4 &mat);
 		bool ContainsPoint(const Vector3 &point) const;
 		int ContainsSphere(const Vector3 &center, float radius) const;
+        int ContainsBounds(const Vector3 &center, const Vector3 &extents) const;
 
 	private:
+        Vector4 m_frustum_planes[6];
+
 		FrustumBounds(){}
-
-	private:
-		Vector4 m_frustum_planes[6];
 	};
 }
 
