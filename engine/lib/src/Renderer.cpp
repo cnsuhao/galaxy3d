@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "LayerMask.h"
 #include "Octree.h"
+#include "FrustumBounds.h"
 
 namespace Galaxy3D
 {
@@ -139,9 +140,49 @@ namespace Galaxy3D
 		return mat;
 	}
 
+    void Renderer::ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node)
+    {
+        auto contains = frustum.ContainsBounds(node->center, node->extents);
+        if(contains == ContainsResult::Out)
+        {
+            // all renderers in this node are invisible
+            node->SetVisible(false);
+        }
+        else
+        {
+            for(size_t i=0; i<node->renderers.size(); i++)
+            {
+                auto &renderer = node->renderers[i].lock();
+                auto bounds = renderer->GetBounds();
+                contains = frustum.ContainsBounds(bounds.center, bounds.extents);
+                if(contains == ContainsResult::Out)
+                {
+                    renderer->SetVisible(false);
+                }
+                else
+                {
+                    renderer->SetVisible(true);
+                }
+            }
+
+            for(int i=0; i<8; i++)
+            {
+                auto &child = node->children[i];
+
+                if(child)
+                {
+                    ViewFrustumCulling(frustum, child);
+                }
+            }
+        }
+    }
+
 	void Renderer::RenderAll()
 	{
 		auto camera = Camera::GetCurrent();
+
+        FrustumBounds frustum(camera->GetViewProjectionMatrix());
+        ViewFrustumCulling(frustum, m_octree->GetRootNode());
 
 		for(auto i : m_renderers)
 		{

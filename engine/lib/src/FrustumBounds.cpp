@@ -78,18 +78,62 @@ namespace Galaxy3D
 			float distance = m_frustum_planes[i].x * center.x + m_frustum_planes[i].y * center.y + m_frustum_planes[i].z * center.z + m_frustum_planes[i].w;
 			if(distance < -radius)
 			{
-				//外部
-				return -1;
+				return ContainsResult::Out;
 			}
 
 			if(fabs(distance) < radius)
 			{
-				//相交
-				return 0;
+				return ContainsResult::Cross;
 			}
 		}
 
-		//内部
-		return 1;
+		return ContainsResult::In;
 	}
+
+    int FrustumBounds::ContainsBounds(const Vector3 &center, const Vector3 &extents) const
+    {
+        Vector3 corners[8];
+        corners[0] = center + Vector3(extents.x, extents.y, extents.z);
+        corners[1] = center + Vector3(-extents.x, extents.y, extents.z);
+        corners[2] = center + Vector3(-extents.x, extents.y, -extents.z);
+        corners[3] = center + Vector3(extents.x, extents.y, -extents.z);
+        corners[4] = center + Vector3(extents.x, -extents.y, extents.z);
+        corners[5] = center + Vector3(-extents.x, -extents.y, extents.z);
+        corners[6] = center + Vector3(-extents.x, -extents.y, -extents.z);
+        corners[7] = center + Vector3(extents.x, -extents.y, -extents.z);
+
+        int in_plane_count = 0;
+
+        for(int i=0; i<6; i++)
+        {
+            int in_count = 0;
+
+            for(int j=0; j<8; j++)
+            {
+                Vector3 point = corners[j];
+                float distance = m_frustum_planes[i].x * point.x + m_frustum_planes[i].y * point.y + m_frustum_planes[i].z * point.z + m_frustum_planes[i].w;
+                if(distance >= 0)
+                {
+                    in_count++;
+                }
+            }
+
+            // all points in same side to one plane
+            if(in_count == 0)
+            {
+                return ContainsResult::Out;
+            }
+            else if(in_count == 8)
+            {
+                in_plane_count++;
+            }
+        }
+
+        if(in_plane_count == 6)
+        {
+            return ContainsResult::In;
+        }
+
+        return ContainsResult::Cross;
+    }
 }
