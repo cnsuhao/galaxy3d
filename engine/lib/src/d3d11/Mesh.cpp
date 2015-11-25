@@ -42,15 +42,6 @@ namespace Galaxy3D
             shader_name = "SkinnedMesh/" + shader_name;
         }
 
-        if("Specular" == shader_name)
-        {
-            shader_name = "Diffuse";
-        }
-        else if("Nature/Tree Soft Occlusion Leaves" == shader_name)
-        {
-            shader_name = "Transparent/Cutout/Diffuse";
-        }
-
         auto mat = Material::Create(shader_name);
 
         int property_count;
@@ -71,7 +62,10 @@ namespace Galaxy3D
                     Color value;
                     BUFFER_READ(value, p, sizeof(Color));
 
-                    mat->SetColor(property_name, value);
+                    if(mat)
+                    {
+                        mat->SetColor(property_name, value);
+                    }
                 }
                 break;
                 case ShaderPropertyType::Float:
@@ -80,17 +74,23 @@ namespace Galaxy3D
                     float value;
                     BUFFER_READ(value, p, 4);
 
-                    mat->SetVector(property_name, Vector4(value, 0, 0, 0));
+                    if(mat)
+                    {
+                        mat->SetVector(property_name, Vector4(value, 0, 0, 0));
+                    }
                 }
                 break;
                 case ShaderPropertyType::TexEnv:
                 {
                     std::string tex_name = read_string(p);
                     std::string tex_path = dir + "/" + tex_name;
-                    
+
                     auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, TextureWrapMode::Clamp, true);
 
-                    mat->SetTexture(property_name, tex);
+                    if(mat)
+                    {
+                        mat->SetTexture(property_name, tex);
+                    }
                 }
                 break;
                 case ShaderPropertyType::Vector:
@@ -98,7 +98,10 @@ namespace Galaxy3D
                     Vector4 value;
                     BUFFER_READ(value, p, sizeof(Vector4));
 
-                    mat->SetVector(property_name, value);
+                    if(mat)
+                    {
+                        mat->SetVector(property_name, value);
+                    }
                 }
                 break;
             }
@@ -396,9 +399,12 @@ namespace Galaxy3D
                     {
                         auto mat = renderer->GetSharedMaterial();
 
-                        mat->SetShader(Shader::Find("Lightmap/" + mat->GetShader()->GetName()));
-                        mat->SetVector("_LightmapST", lightmap_tiling_offset);
-                        mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[lightmap_index]);
+                        if(mat)
+                        {
+                            mat->SetShader(Shader::Find("Lightmap/" + mat->GetShader()->GetName()));
+                            mat->SetVector("_LightmapST", lightmap_tiling_offset);
+                            mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[lightmap_index]);
+                        }
                     }
                 }
             }

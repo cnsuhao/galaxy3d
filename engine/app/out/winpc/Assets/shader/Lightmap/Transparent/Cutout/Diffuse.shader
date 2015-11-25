@@ -5,30 +5,17 @@ Lightmap/Transparent/Cutout/Diffuse
 		Queue AlphaTest
 	}
 
-    Pass front
+    Pass
     {
         VS vs
         PS ps
-        RenderStates rs_front
+        RenderStates rs
     }
 
-	Pass back
-	{
-		VS vs
-		PS ps
-		RenderStates rs_back
-	}
-
-	RenderStates rs_front
+	RenderStates rs
 	{
         Cull Back
 	}
-
-    RenderStates rs_back
-    {
-        Cull Front
-        ZTest Less
-    }
 
 	HLVS vs
 	{

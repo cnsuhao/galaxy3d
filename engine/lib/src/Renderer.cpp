@@ -181,8 +181,11 @@ namespace Galaxy3D
 	{
 		auto camera = Camera::GetCurrent();
 
-        FrustumBounds frustum(camera->GetViewProjectionMatrix());
-        ViewFrustumCulling(frustum, m_octree->GetRootNode());
+        if(m_octree)
+        {
+            FrustumBounds frustum(camera->GetViewProjectionMatrix());
+            ViewFrustumCulling(frustum, m_octree->GetRootNode());
+        }
 
 		for(auto i : m_renderers)
 		{
