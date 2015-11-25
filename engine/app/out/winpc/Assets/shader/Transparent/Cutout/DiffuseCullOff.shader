@@ -1,4 +1,4 @@
-Transparent/Cutout/Diffuse Cull Off
+Transparent/Cutout/DiffuseCullOff
 {
 	Tags
 	{

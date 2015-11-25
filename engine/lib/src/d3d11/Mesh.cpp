@@ -42,6 +42,8 @@ namespace Galaxy3D
             shader_name = "SkinnedMesh/" + shader_name;
         }
 
+        shader_name = GTString(shader_name).Replace(" ", "").str;
+
         auto mat = Material::Create(shader_name);
 
         int property_count;

@@ -33,7 +33,8 @@ namespace Galaxy3D
         }
 
         Matrix4x4 view_projection = camera->GetViewProjectionMatrix();
-
+        
+        int offset = 0;
         auto mats = GetSharedMaterials();
         for(size_t i=0; i<mats.size(); i++)
         {
@@ -47,7 +48,6 @@ namespace Galaxy3D
             mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
             mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
 
-            int offset = 0;
             int index_count = m_mesh->GetIndexCount(i);
 
             auto pass_count = shader->GetPassCount();

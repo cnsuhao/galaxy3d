@@ -52,7 +52,7 @@ namespace Galaxy3D
 
     void Octree::SplitNode(const std::shared_ptr<OctreeNode> &node)
     {
-        Debug::Log("%d %d", node->renderers.size(), node->depth);
+        //Debug::Log("%d %d", node->renderers.size(), node->depth);
 
         if(node->renderers.size() <= 1)
         {
