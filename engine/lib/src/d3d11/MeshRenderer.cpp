@@ -1,6 +1,5 @@
 #include "MeshRenderer.h"
 #include "RenderSettings.h"
-#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -67,11 +66,6 @@ namespace Galaxy3D
             }
 
             index_offset += index_count;
-
-            if(i > 0)
-            {
-                //Debug::Log("%d", index_count);
-            }
         }
 
         GraphicsDevice::GetInstance()->ClearShaderResources();

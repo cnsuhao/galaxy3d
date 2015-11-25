@@ -85,8 +85,8 @@ Lightmap/Self-Illumin/Diffuse
 		float4 main(PS_INPUT input) : SV_Target
 		{
             float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
+            c.rgb = c.rgb + c.rgb * _Illum.Sample(_Illum_Sampler, input.v_uv).a * 2;
             c.rgb = c.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
-            c.rgb = c.rgb + c.rgb * _Illum.Sample(_Illum_Sampler, input.v_uv).a;
             return c;
 		}
 	}
