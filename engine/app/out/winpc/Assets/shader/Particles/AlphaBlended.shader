@@ -71,7 +71,7 @@ Particles/AlphaBlended
 		float4 main( PS_INPUT input) : SV_Target
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _TintColor * 2;
-			return float4(1, 1, 1, 1);
+			return c;
 		}
 	}
 
