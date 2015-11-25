@@ -165,11 +165,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

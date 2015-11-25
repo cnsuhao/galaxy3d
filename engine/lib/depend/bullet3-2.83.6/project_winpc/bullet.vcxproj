@@ -350,10 +350,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <IncludePath>..\src;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath>..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

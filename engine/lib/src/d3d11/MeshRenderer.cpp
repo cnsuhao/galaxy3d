@@ -27,6 +27,11 @@ namespace Galaxy3D
         for(size_t i=0; i<mats.size(); i++)
         {
             auto mat = mats[i];
+            if(!mat)
+            {
+                continue;
+            }
+
             auto shader = mat->GetShader();
 
             mat->SetMatrix("WorldViewProjection", wvp);
