@@ -16,6 +16,13 @@ namespace Galaxy3D
 {
     class Octree;
     struct OctreeNode;
+    class Renderer;
+
+    struct RenderBatch
+    {
+        Renderer *renderer;
+        int material_index;
+    };
 
 	class Renderer : public Component
 	{
@@ -51,15 +58,18 @@ namespace Galaxy3D
 
 		Renderer();
         void DrawIndexed(int count, int offset);
-		virtual void Render() = 0;
+		virtual void Render(int material_index) = 0;
 
 	private:
-		static std::list<Renderer *> m_renderers;
+        static std::list<RenderBatch> m_batches;
         static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
 		static bool Less(const Renderer *c1, const Renderer *c2);
+        static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
+        void AddBatches();
+        void RemoveBatches();
 	};
 }
 

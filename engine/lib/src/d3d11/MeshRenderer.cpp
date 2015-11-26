@@ -3,7 +3,7 @@
 
 namespace Galaxy3D
 {
-    void MeshRenderer::Render()
+    void MeshRenderer::Render(int material_index)
     {
         if(!m_mesh)
         {
@@ -24,10 +24,17 @@ namespace Galaxy3D
         Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
 
         int index_offset = 0;
-        auto mats = GetSharedMaterials();
-        for(size_t i=0; i<mats.size(); i++)
+        for(int i=0; i<material_index; i++)
         {
-            auto mat = mats[i];
+            index_offset += m_mesh->GetIndexCount(i);
+        }
+
+        auto mats = GetSharedMaterials();
+        do
+        {
+            int index_count = m_mesh->GetIndexCount(material_index);
+            auto mat = mats[material_index];
+
             if(!mat)
             {
                 continue;
@@ -42,14 +49,12 @@ namespace Galaxy3D
             mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
             mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
 
-            int index_count = m_mesh->GetIndexCount(i);
-
             auto pass_count = shader->GetPassCount();
             for(int j=0; j<pass_count; j++)
             {
                 auto pass = shader->GetPass(j);
 
-                if(i == 0 && j == 0)
+                if(j == 0)
                 {
                     context->IASetInputLayout(pass->vs->input_layout);
                     UINT stride = pass->vs->vertex_stride;
@@ -64,9 +69,7 @@ namespace Galaxy3D
 
                 DrawIndexed(index_count, index_offset);
             }
-
-            index_offset += index_count;
-        }
+        }while(false);
 
         GraphicsDevice::GetInstance()->ClearShaderResources();
     }

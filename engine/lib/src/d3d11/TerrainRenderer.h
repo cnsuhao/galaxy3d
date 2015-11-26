@@ -9,8 +9,10 @@ namespace Galaxy3D
     class TerrainRenderer : public Renderer
     {
     public:
-        virtual void Render();
         void SetTerrain(const std::shared_ptr<Terrain> &terrain) {m_terrain = terrain;}
+
+    protected:
+        virtual void Render(int material_index);
 
     private:
         std::shared_ptr<Terrain> m_terrain;

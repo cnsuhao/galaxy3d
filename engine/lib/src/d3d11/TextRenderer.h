@@ -16,7 +16,7 @@ namespace Galaxy3D
 		void UpdateLabel();//设置label后，需要手动调用
 
 	protected:
-		virtual void Render();
+		virtual void Render(int material_index);
 
 	private:
 		std::shared_ptr<Label> m_label;

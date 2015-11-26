@@ -16,7 +16,7 @@ namespace Galaxy3D
         m_sprite = sprite;
 	}
 
-	void SpriteRenderer::Render()
+	void SpriteRenderer::Render(int material_index)
 	{
 		if(!m_sprite)
 		{

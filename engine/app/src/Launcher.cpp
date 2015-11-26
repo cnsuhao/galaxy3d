@@ -32,7 +32,7 @@ void Launcher::Start()
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(-43.2f, 5.2f, -31.4f));//(-65.13f, 5.47f, 4.76f)
+    cam3d->GetTransform()->SetPosition(Vector3(-65.13f, 5.47f, 4.76f));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(15.7f, 129.4f, 0));
 
     auto lightmap_0 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
@@ -43,7 +43,7 @@ void Launcher::Start()
 
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
     scene->SetLayerRecursive(Layer::Default);
-    //Renderer::BuildOctree(scene);
+    Renderer::BuildOctree(scene);
 
     /*
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();

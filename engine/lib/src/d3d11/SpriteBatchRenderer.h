@@ -22,7 +22,7 @@ namespace Galaxy3D
 		void UpdateSprites();//添加完所有sprite node后，需要手动调用
 
 	protected:
-		virtual void Render();
+		virtual void Render(int material_index);
 		
 	private:
 		std::list<std::shared_ptr<SpriteNode>> m_sprites;

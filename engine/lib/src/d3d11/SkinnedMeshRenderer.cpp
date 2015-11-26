@@ -3,7 +3,7 @@
 
 namespace Galaxy3D
 {
-    void SkinnedMeshRenderer::Render()
+    void SkinnedMeshRenderer::Render(int material_index)
     {
         if(!m_mesh)
         {
@@ -34,11 +34,19 @@ namespace Galaxy3D
 
         Matrix4x4 view_projection = camera->GetViewProjectionMatrix();
         
-        int offset = 0;
+        int index_offset = 0;
         auto mats = GetSharedMaterials();
         for(size_t i=0; i<mats.size(); i++)
         {
+            int index_count = m_mesh->GetIndexCount(i);
             auto mat = mats[i];
+
+            if(material_index != i)
+            {
+                index_offset += index_count;
+                continue;
+            }
+
             auto shader = mat->GetShader();
 
             mat->SetMatrix("ViewProjection", view_projection);
@@ -47,8 +55,6 @@ namespace Galaxy3D
             mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
             mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
             mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
-
-            int index_count = m_mesh->GetIndexCount(i);
 
             auto pass_count = shader->GetPassCount();
             for(int j=0; j<pass_count; j++)
@@ -68,10 +74,10 @@ namespace Galaxy3D
                 pass->rs->Apply();
                 mat->ApplyPass(j);
 
-                DrawIndexed(index_count, offset);
+                DrawIndexed(index_count, index_offset);
             }
 
-            offset += index_count;
+            break;
         }
 
         GraphicsDevice::GetInstance()->ClearShaderResources();

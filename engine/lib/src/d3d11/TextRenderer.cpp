@@ -91,7 +91,7 @@ namespace Galaxy3D
 		}
 	}
 
-	void TextRenderer::Render()
+	void TextRenderer::Render(int material_index)
 	{
 		if(!m_label)
 		{
