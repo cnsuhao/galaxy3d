@@ -35,18 +35,16 @@ namespace Galaxy3D
         Matrix4x4 view_projection = camera->GetViewProjectionMatrix();
         
         int index_offset = 0;
-        auto mats = GetSharedMaterials();
-        for(size_t i=0; i<mats.size(); i++)
+        for(int i=0; i<material_index; i++)
         {
-            int index_count = m_mesh->GetIndexCount(i);
-            auto mat = mats[i];
+            index_offset += m_mesh->GetIndexCount(i);
+        }
 
-            if(material_index != i)
-            {
-                index_offset += index_count;
-                continue;
-            }
-
+        auto mats = GetSharedMaterials();
+        do
+        {
+            int index_count = m_mesh->GetIndexCount(material_index);
+            auto mat = mats[material_index];
             auto shader = mat->GetShader();
 
             mat->SetMatrix("ViewProjection", view_projection);
@@ -61,7 +59,7 @@ namespace Galaxy3D
             {
                 auto pass = shader->GetPass(j);
 
-                if(i == 0 && j == 0)
+                if(j == 0)
                 {
                     context->IASetInputLayout(pass->vs->input_layout);
                     UINT stride = pass->vs->vertex_stride;
@@ -76,9 +74,7 @@ namespace Galaxy3D
 
                 DrawIndexed(index_count, index_offset);
             }
-
-            break;
-        }
+        }while(false);
 
         GraphicsDevice::GetInstance()->ClearShaderResources();
     }
