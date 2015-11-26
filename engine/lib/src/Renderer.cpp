@@ -7,7 +7,7 @@
 
 namespace Galaxy3D
 {
-	std::list<Renderer *> Renderer::m_renderers;
+    std::list<RenderBatch> Renderer::m_batches;
     std::shared_ptr<Octree> Renderer::m_octree;
 
 	Renderer::Renderer():
@@ -20,30 +20,30 @@ namespace Galaxy3D
 		m_sorting_order(-1),
         m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1) * Mathf::MaxFloatValue)
 	{
-		m_renderers.push_back(this);
 	}
 
 	Renderer::~Renderer()
 	{
-		m_renderers.remove(this);
+        RemoveBatches();
 	}
 
 	void Renderer::SetSortingOrder(int layer, int order)
 	{
 		m_sorting_layer = layer;
 		m_sorting_order = order;
+
 		Sort();
 	}
 
 	void Renderer::Sort()
 	{
-		m_renderers.sort(Less);
+        m_batches.sort(LessBatch);
 	}
 
 	bool Renderer::Less(const Renderer *c1, const Renderer *c2)
 	{
-		auto m1 = c1->GetSharedMaterial();
-		auto m2 = c2->GetSharedMaterial();
+		auto &m1 = c1->GetSharedMaterial();
+		auto &m2 = c2->GetSharedMaterial();
 
 		if(!m1 || !m2)
 		{
@@ -80,20 +80,95 @@ namespace Galaxy3D
 		return q1 < q2;
 	}
 
+    bool Renderer::LessBatch(const RenderBatch &b1, const RenderBatch &b2)
+    {
+        auto &m1 = b1.renderer->GetSharedMaterials()[b1.material_index];
+        auto &m2 = b2.renderer->GetSharedMaterials()[b2.material_index];
+
+        if(!m1 || !m2)
+        {
+            return false;
+        }
+
+        int q1 = m1->GetRenderQueue();
+        if(q1 < 0)
+        {
+            q1 = m1->GetShader()->GetRenderQueue();
+        }
+
+        int q2 = m2->GetRenderQueue();
+        if(q2 < 0)
+        {
+            q2 = m2->GetShader()->GetRenderQueue();
+        }
+
+        if(q1 == q2)
+        {
+            if(b1.renderer->m_sorting_layer >= 0 && b2.renderer->m_sorting_layer >= 0)
+            {
+                if(b1.renderer->m_sorting_layer == b2.renderer->m_sorting_layer)
+                {
+                    return b1.renderer->m_sorting_order < b2.renderer->m_sorting_order;
+                }
+                else
+                {
+                    return b1.renderer->m_sorting_layer < b2.renderer->m_sorting_layer;
+                }
+            }
+        }
+
+        return q1 < q2;
+    }
+
+    void Renderer::AddBatches()
+    {
+        for(size_t i=0; i<m_shared_materials.size(); i++)
+        {
+            RenderBatch batch;
+            batch.renderer = this;
+            batch.material_index = i;
+
+            m_batches.push_back(batch);
+        }
+    }
+
+    void Renderer::RemoveBatches()
+    {
+        for(auto i=m_batches.begin(); i!=m_batches.end(); )
+        {
+            if(i->renderer == this)
+            {
+                i = m_batches.erase(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+    }
+
 	void Renderer::SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials)
 	{
+        RemoveBatches();
+
 		m_shared_materials = materials;
+
+        AddBatches();
 
 		Sort();
 	}
 
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
 	{
+        RemoveBatches();
+
 		m_shared_materials.clear();
 
 		if(material)
 		{
 			m_shared_materials.push_back(material);
+
+            AddBatches();
 		}
 
 		Sort();
@@ -187,18 +262,18 @@ namespace Galaxy3D
             ViewFrustumCulling(frustum, m_octree->GetRootNode());
         }
 
-		for(auto i : m_renderers)
-		{
-			auto obj = i->GetGameObject();
+        for(auto &i : m_batches)
+        {
+            auto obj = i.renderer->GetGameObject();
 
-			if(	obj->IsActiveInHierarchy() &&
-				i->IsEnable() &&
-				i->IsVisible() &&
-				((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
-			{
-				i->Render();
-			}
-		}
+            if(	obj->IsActiveInHierarchy() &&
+                i.renderer->IsEnable() &&
+                i.renderer->IsVisible() &&
+                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+            {
+                i.renderer->Render(i.material_index);
+            }
+        }
 	}
 
     void Renderer::DrawIndexed(int count, int offset)

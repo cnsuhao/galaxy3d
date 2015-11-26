@@ -40,7 +40,7 @@ namespace Galaxy3D
 		}
 	}
 
-	void SpriteBatchRenderer::Render()
+	void SpriteBatchRenderer::Render(int material_index)
 	{
 		if(m_sprites.empty())
 		{

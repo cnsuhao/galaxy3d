@@ -2,7 +2,7 @@
 
 namespace Galaxy3D
 {
-    void TerrainRenderer::Render()
+    void TerrainRenderer::Render(int material_index)
     {
         if(!m_terrain)
         {

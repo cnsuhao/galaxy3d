@@ -15,7 +15,7 @@ namespace Galaxy3D
 		std::shared_ptr<Sprite> GetSprite() const {return m_sprite;}
 
 	protected:
-		virtual void Render();
+		virtual void Render(int material_index);
 
 	private:
 		Color m_color;
