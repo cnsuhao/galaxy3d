@@ -21,6 +21,7 @@ namespace Galaxy3D
 	float GTTime::m_time_record = -1;
 	int GTTime::m_frame_count = 0;
 	int GTTime::m_frame_record;
+    float GTTime::m_time = 0;
 	int GTTime::m_fps;
 	float GTTime::m_render_time;
 	float GTTime::m_update_time;
@@ -55,6 +56,11 @@ namespace Galaxy3D
 
 		return t;
 	}
+
+    float GTTime::GetTime()
+    {
+        return m_time;
+    }
 
 	float GTTime::GetRealTimeSinceStartup()
 	{

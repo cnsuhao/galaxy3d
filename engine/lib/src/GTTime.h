@@ -11,9 +11,10 @@ namespace Galaxy3D
 		friend class Launcher;
 
 	public:
-		static int GetFrameCount(){return m_frame_count;}
+		static int GetFrameCount() {return m_frame_count;}
+        static float GetTime();//calls have same time value in same frame
 		static float GetRealTimeSinceStartup();
-		static float GetDeltaTime(){return m_time_delta;}
+		static float GetDeltaTime() {return m_time_delta;}
 		static long long GetTimeMS();
 
 	private:
@@ -21,12 +22,13 @@ namespace Galaxy3D
 		static long long m_time_update;
 		static float m_time_delta;
 		static float m_time_record;
+        static float m_time;
 		static int m_frame_count;
 		static int m_frame_record;
 		static int m_fps;
 		static float m_render_time;
 		static float m_update_time;
-		static int m_draw_call; 
+		static int m_draw_call;
 	};
 }
 

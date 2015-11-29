@@ -26,6 +26,7 @@
 #include "Physics.h"
 #include "TweenPosition.h"
 #include "TweenRotation.h"
+#include "ParticleSystem.h"
 
 namespace Galaxy3D
 {
