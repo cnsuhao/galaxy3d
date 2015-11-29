@@ -33,6 +33,8 @@ namespace Galaxy3D
 	void World::Update()
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
+        GTTime::m_time_delta = time - GTTime::m_time;
+        GTTime::m_time = time;
 
 		// start
 		std::unordered_map<GameObject *, std::shared_ptr<GameObject>> starts(m_gameobjects);
@@ -98,6 +100,8 @@ namespace Galaxy3D
 	void World::Init()
 	{
 		Label::InitFontLib();
+
+        srand((unsigned int) GTTime::GetTimeMS());
 	}
 
 	void World::Done()

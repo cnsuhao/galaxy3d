@@ -1,9 +1,15 @@
 #include "Launcher.h"
 
+#define DEMO_0 0
+#define DEMO_1 0
+#define PS_TEST 1
+
 using namespace Galaxy3D;
 
+#if DEMO_0
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
+#endif
 
 void Launcher::Start()
 {
@@ -24,6 +30,22 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
+#if PS_TEST
+    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetOrthographic(false);
+    cam3d->SetFieldOfView(60);
+    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->SetDepth(0);
+    cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
+    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -10));
+
+    auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
+    ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
+#endif
+
+#if DEMO_1
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(45);
@@ -44,8 +66,9 @@ void Launcher::Start()
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
     scene->SetLayerRecursive(Layer::Default);
     Renderer::BuildOctree(scene);
+#endif
 
-    /*
+#if DEMO_0
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(30);
@@ -117,9 +140,11 @@ void Launcher::Start()
     {
         hit.y += 0.05f;
         anim->GetTransform()->SetPosition(hit);
-    }*/
+    }
+#endif
 }
 
+#if DEMO_0
 void Launcher::OnTweenSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
 {
     if(!target.expired())
@@ -145,13 +170,15 @@ void Launcher::OnTweenFinished(Component *tween, std::weak_ptr<Component> &targe
         thiz->anim->CrossFade(clip_idle);
     }
 }
+#endif
 
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
-    /*
+
+#if DEMO_0
 	if(Input::GetTouchCount() > 0)
 	{
 		auto t = Input::GetTouch(0);
@@ -255,17 +282,22 @@ void Launcher::Update()
 		}
 	}
 
-    Physics::Step();*/
+    Physics::Step();
+#endif
 }
 
 void Launcher::LateUpdate()
-{/*
+{
+#if DEMO_0
     Vector3 pos = anim->GetTransform()->GetPosition();
     cam3d->GetTransform()->SetPosition(pos + cam_offset);
-    cam3d->UpdateMatrix();*/
+    cam3d->UpdateMatrix();
+#endif
 }
 
 Launcher::~Launcher()
 {
-    //Physics::Done();
+#if DEMO_0
+    Physics::Done();
+#endif
 }
