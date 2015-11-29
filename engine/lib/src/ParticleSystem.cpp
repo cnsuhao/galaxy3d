@@ -44,7 +44,7 @@ namespace Galaxy3D
                 }
             }
 
-            time = t - start_delay;
+            time = (t - start_delay) * playback_speed;
         }
     }
 
@@ -66,7 +66,7 @@ namespace Galaxy3D
 
     void ParticleSystem::UpdateParticles()
     {
-        float delta_time = GTTime::GetDeltaTime();
+        float delta_time = GTTime::GetDeltaTime() * playback_speed;
 
         for(auto i=m_particles.begin(); i!=m_particles.end(); )
         {
