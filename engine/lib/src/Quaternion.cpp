@@ -101,6 +101,57 @@ namespace Galaxy3D
         return lerp;
     }
 
+    Quaternion Quaternion::FromToRotation(const Vector3 &from_direction, const Vector3 &to_direction)
+    {
+        Vector3 origin = Vector3::Normalize(from_direction);
+        Vector3 fn = Vector3::Normalize(to_direction);
+
+        if(fn != origin)
+        {
+            if(!Mathf::FloatEqual(fn.SqrMagnitude(), 0) && !Mathf::FloatEqual(origin.SqrMagnitude(), 0))
+            {
+                float deg = Vector3::Angle(origin, fn);
+                Vector3 axis = origin * fn;
+
+                if(axis == Vector3(0, 0, 0))
+                {
+                    if(!Mathf::FloatEqual(origin.x, 0))
+                    {
+                        float x = -origin.y / origin.x;
+                        float y = 1;
+                        float z = 0;
+
+                        axis = Vector3(x, y, z);
+                    }
+                    else if(!Mathf::FloatEqual(origin.y, 0))
+                    {
+                        float y = -origin.z / origin.y;
+                        float x = 0;
+                        float z = 1;
+
+                        axis = Vector3(x, y, z);
+                    }
+                    else
+                    {
+                        float z = -origin.x / origin.z;
+                        float y = 0;
+                        float x = 1;
+
+                        axis = Vector3(x, y, z);
+                    }
+
+                    return Quaternion::AngleAxis(deg, axis);
+                }
+                else
+                {
+                    return Quaternion::AngleAxis(deg, axis);
+                }
+            }
+        }
+
+        return Quaternion::Identity();
+    }
+
     void Quaternion::Normalize()
     {
         float sqr_magnitude = x*x + y*y + z*z + w*w;

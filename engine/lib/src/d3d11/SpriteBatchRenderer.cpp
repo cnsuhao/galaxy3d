@@ -189,7 +189,7 @@ namespace Galaxy3D
 		D3D11_MAPPED_SUBRESOURCE dms;
 		ZeroMemory(&dms, sizeof(dms));
 		context->Map(m_vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
-		memcpy(dms.pData, &buffer[0], buffer_size);
+		memcpy(dms.pData, buffer, buffer_size);
 		context->Unmap(m_vertex_buffer, 0);
 
 		free(buffer);

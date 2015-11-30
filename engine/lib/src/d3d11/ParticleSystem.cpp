@@ -19,13 +19,74 @@ namespace Galaxy3D
         psr->particle_system = GetGameObject()->GetComponent<ParticleSystem>();
     }
 
+    int ParticleSystem::GetParticleCountMax() const
+    {
+        return Mathf::Min(Mathf::RoundToInt(emission_rate * start_lifetime * 1.1f), max_particles);
+    }
+
+    void ParticleSystem::UpdateBuffer()
+    {
+        GetVertexBuffer();
+
+        int particle_count = GetParticleCount();
+
+        if(m_vertex_buffer != NULL && particle_count > 0)
+        {
+            int buffer_size = sizeof(VertexMesh) * 4 * particle_count;
+            char *buffer = (char *) malloc(buffer_size);
+            VertexMesh *p = (VertexMesh *) buffer;
+
+            int j=0;
+            for(auto i=m_particles.begin(); i!=m_particles.end(); i++)
+            {
+                VertexMesh &v = p[j*4];
+                VertexMesh &v1 = p[j*4+1];
+                VertexMesh &v2 = p[j*4+2];
+                VertexMesh &v3 = p[j*4+3];
+
+                v.TEXCOORD0 = Vector2(0, 0);
+                v1.TEXCOORD0 = Vector2(0, 1);
+                v2.TEXCOORD0 = Vector2(1, 1);
+                v3.TEXCOORD0 = Vector2(1, 0);
+
+                v.POSITION = Vector3(-i->size * 0.5f, i->size * 0.5f, 0);
+                v1.POSITION = Vector3(-i->size * 0.5f, -i->size * 0.5f, 0);
+                v2.POSITION = Vector3(i->size * 0.5f, -i->size * 0.5f, 0);
+                v3.POSITION = Vector3(i->size * 0.5f, i->size * 0.5f, 0);
+
+                for(int k=0; k<4; k++)
+                {
+                    Vector3 pos = Quaternion::AngleAxis(i->rotation, i->axis_of_rotation) * p[j*4+k].POSITION;
+                    if(m_target_camera)
+                    {
+                        Quaternion rot = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
+                        pos = rot * pos;
+                    }
+                    p[j*4+k].POSITION = pos + i->position;
+                }
+
+                j++;
+            }
+
+            auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+            D3D11_MAPPED_SUBRESOURCE dms;
+            ZeroMemory(&dms, sizeof(dms));
+            context->Map(m_vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
+            memcpy(dms.pData, buffer, buffer_size);
+            context->Unmap(m_vertex_buffer, 0);
+
+            free(buffer);
+        }
+    }
+
     ID3D11Buffer *ParticleSystem::GetVertexBuffer()
     {
         if(m_vertex_buffer == NULL)
         {
-            int particle_max = (int) (emission_rate * start_lifetime);
+            int particle_max = GetParticleCountMax();
 
-            int buffer_size = sizeof(VertexUI) * 4 * particle_max;
+            int buffer_size = sizeof(VertexMesh) * 4 * particle_max;
             char *buffer = (char *) malloc(buffer_size);
 
             bool dynamic = true;
@@ -54,20 +115,20 @@ namespace Galaxy3D
     {
         if(m_index_buffer == NULL)
         {
-            int particle_max = (int) (emission_rate * start_lifetime);
+            int particle_max = GetParticleCountMax();
 
             int buffer_size = sizeof(unsigned short) * 6 * particle_max;
             char *buffer = (char *) malloc(buffer_size);
             unsigned short *p = (unsigned short *) buffer;
 
-            for(int i=0; i<particle_max; i+=6)
+            for(int i=0; i<particle_max; i++)
             {
-                p[i] = i;
-                p[i+1] = i+1;
-                p[i+2] = i+2;
-                p[i+3] = i;
-                p[i+4] = i+2;
-                p[i+5] = i+3;
+                p[i*6] = i*4;
+                p[i*6+1] = i*4+1;
+                p[i*6+2] = i*4+2;
+                p[i*6+3] = i*4;
+                p[i*6+4] = i*4+2;
+                p[i*6+5] = i*4+3;
             }
 
             auto device = GraphicsDevice::GetInstance()->GetDevice();
@@ -150,6 +211,7 @@ namespace Galaxy3D
         for(auto i=m_particles.begin(); i!=m_particles.end(); )
         {
             i->position += i->velocity * delta_time;
+            i->rotation += i->angular_velocity * delta_time;
             i->lifetime -= delta_time;
 
             if(i->lifetime < 0)
@@ -162,10 +224,5 @@ namespace Galaxy3D
                 i++;
             }
         }
-    }
-
-    void ParticleSystem::UpdateBuffer()
-    {
-
     }
 }
