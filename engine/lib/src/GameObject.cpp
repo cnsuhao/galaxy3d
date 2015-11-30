@@ -134,6 +134,7 @@ namespace Galaxy3D
 		com->m_gameobject = obj;
 		com->m_transform = m_transform;
 		com->SetName(GetName());
+        com->Awake();
 	}
 
 	void GameObject::SetActive(bool active)

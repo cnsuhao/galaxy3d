@@ -22,6 +22,8 @@
     <ClCompile Include="..\src\d3d11\Material.cpp" />
     <ClCompile Include="..\src\d3d11\Mesh.cpp" />
     <ClCompile Include="..\src\d3d11\MeshRenderer.cpp" />
+    <ClCompile Include="..\src\d3d11\ParticleSystem.cpp" />
+    <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
     <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp" />
@@ -46,7 +48,6 @@
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
     <ClCompile Include="..\src\Octree.cpp" />
-    <ClCompile Include="..\src\ParticleSystem.cpp" />
     <ClCompile Include="..\src\Physics.cpp" />
     <ClCompile Include="..\src\Quaternion.cpp" />
     <ClCompile Include="..\src\Ray.cpp" />
@@ -78,6 +79,8 @@
     <ClInclude Include="..\src\d3d11\Material.h" />
     <ClInclude Include="..\src\d3d11\Mesh.h" />
     <ClInclude Include="..\src\d3d11\MeshRenderer.h" />
+    <ClInclude Include="..\src\d3d11\ParticleSystem.h" />
+    <ClInclude Include="..\src\d3d11\ParticleSystemRenderer.h" />
     <ClInclude Include="..\src\d3d11\PixelShader.h" />
     <ClInclude Include="..\src\d3d11\RenderStates.h" />
     <ClInclude Include="..\src\d3d11\Shader.h" />
@@ -111,7 +114,6 @@
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\Object.h" />
     <ClInclude Include="..\src\Octree.h" />
-    <ClInclude Include="..\src\ParticleSystem.h" />
     <ClInclude Include="..\src\Physics.h" />
     <ClInclude Include="..\src\Quaternion.h" />
     <ClInclude Include="..\src\Ray.h" />

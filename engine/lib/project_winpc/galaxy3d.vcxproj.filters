@@ -156,7 +156,10 @@
     <ClCompile Include="..\src\Octree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ParticleSystem.cpp">
+    <ClCompile Include="..\src\d3d11\ParticleSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -374,7 +377,10 @@
     <ClInclude Include="..\src\Octree.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ParticleSystem.h">
+    <ClInclude Include="..\src\d3d11\ParticleSystem.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\ParticleSystemRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

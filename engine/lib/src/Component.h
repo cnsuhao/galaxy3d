@@ -26,6 +26,7 @@ namespace Galaxy3D
 
 		Component();
 		//没有OnDestroy，用析构函数
+        virtual void Awake() {}
 		virtual void Start() {}
 		virtual void Update() {}
 		virtual void LateUpdate() {}
