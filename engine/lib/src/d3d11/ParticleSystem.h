@@ -6,6 +6,7 @@
 #include "Vector3.h"
 #include "Mathf.h"
 #include "GraphicsDevice.h"
+#include "Camera.h"
 #include <list>
 
 namespace Galaxy3D
@@ -78,6 +79,8 @@ namespace Galaxy3D
         ID3D11Buffer *GetVertexBuffer();
         ID3D11Buffer *GetIndexBuffer();
         int GetParticleCount() const {return m_particles.size();}
+        int GetParticleCountMax() const;
+        void SetTargetCamera(const std::shared_ptr<Camera> &camera) {m_target_camera = camera;}
 
     protected:
         virtual void Awake();
@@ -88,6 +91,7 @@ namespace Galaxy3D
         float m_time_emit;
         ID3D11Buffer *m_vertex_buffer;
         ID3D11Buffer *m_index_buffer;
+        std::shared_ptr<Camera> m_target_camera;
 
         void UpdateEmitter();
         void Emit(const Vector3 &position, const Vector3 &velocity, float size, float lifetime, const Color &color);
