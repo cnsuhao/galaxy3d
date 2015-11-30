@@ -43,6 +43,12 @@ void Launcher::Start()
 
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
     ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
+    auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+    auto psm = Material::Create("Particles/Additive");
+    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/arthas.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    psm->SetMainTexture(pst);
+    psr->SetSharedMaterial(psm);
+
 #endif
 
 #if DEMO_1

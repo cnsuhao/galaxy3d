@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "Vector3.h"
 #include "Mathf.h"
+#include "GraphicsDevice.h"
 #include <list>
 
 namespace Galaxy3D
@@ -69,21 +70,29 @@ namespace Galaxy3D
             time(0),
             emitter_shape(ParticleEmitterShape::Box),
             emitter_shape_box_size(5, 5, 5),
-            m_time_emit(-1)
+            m_time_emit(-1),
+            m_vertex_buffer(NULL),
+            m_index_buffer(NULL)
         {}
         virtual ~ParticleSystem();
+        ID3D11Buffer *GetVertexBuffer();
+        ID3D11Buffer *GetIndexBuffer();
+        int GetParticleCount() const {return m_particles.size();}
 
     protected:
-        virtual void Start();
+        virtual void Awake();
         virtual void Update();
 
     private:
         std::list<Particle> m_particles;
         float m_time_emit;
+        ID3D11Buffer *m_vertex_buffer;
+        ID3D11Buffer *m_index_buffer;
 
         void UpdateEmitter();
         void Emit(const Vector3 &position, const Vector3 &velocity, float size, float lifetime, const Color &color);
         void UpdateParticles();
+        void UpdateBuffer();
     };
 }
 
