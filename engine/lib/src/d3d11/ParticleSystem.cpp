@@ -32,17 +32,22 @@ namespace Galaxy3D
 
         if(m_vertex_buffer != NULL && particle_count > 0)
         {
-            int buffer_size = sizeof(VertexMesh) * 4 * particle_count;
+            int buffer_size = sizeof(VertexUI) * 4 * particle_count;
             char *buffer = (char *) malloc(buffer_size);
-            VertexMesh *p = (VertexMesh *) buffer;
+            VertexUI *p = (VertexUI *) buffer;
 
             int j=0;
             for(auto i=m_particles.begin(); i!=m_particles.end(); i++)
             {
-                VertexMesh &v = p[j*4];
-                VertexMesh &v1 = p[j*4+1];
-                VertexMesh &v2 = p[j*4+2];
-                VertexMesh &v3 = p[j*4+3];
+                VertexUI &v = p[j*4];
+                VertexUI &v1 = p[j*4+1];
+                VertexUI &v2 = p[j*4+2];
+                VertexUI &v3 = p[j*4+3];
+
+                v.COLOR = i->color;
+                v1.COLOR = i->color;
+                v2.COLOR = i->color;
+                v3.COLOR = i->color;
 
                 v.TEXCOORD0 = Vector2(0, 0);
                 v1.TEXCOORD0 = Vector2(0, 1);
@@ -86,7 +91,7 @@ namespace Galaxy3D
         {
             int particle_max = GetParticleCountMax();
 
-            int buffer_size = sizeof(VertexMesh) * 4 * particle_max;
+            int buffer_size = sizeof(VertexUI) * 4 * particle_max;
             char *buffer = (char *) malloc(buffer_size);
 
             bool dynamic = true;
@@ -177,7 +182,17 @@ namespace Galaxy3D
                             float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
                             Vector3 scale = GetTransform()->GetScale();
 
-                            Emit(Vector3(x * scale.x, y * scale.y, z * scale.z), Vector3(0, 0, 1) * start_speed, start_size, start_lifetime, start_color);
+                            Color color;
+                            if(start_color_gradient.HasKey())
+                            {
+                                color = start_color_gradient.GetColor(fmodf(time, duration) / duration);
+                            }
+                            else
+                            {
+                                color = start_color;
+                            }
+
+                            Emit(Vector3(x * scale.x, y * scale.y, z * scale.z), Vector3(0, 0, 1) * start_speed, start_size, start_lifetime, color);
                         }
 
                         m_time_emit = t;
@@ -193,6 +208,7 @@ namespace Galaxy3D
     {
         Particle p;
         p.axis_of_rotation = Vector3(0, 0, 1);
+        p.start_color = color;
         p.color = color;
         p.start_lifetime = lifetime;
         p.lifetime = lifetime;
@@ -215,9 +231,16 @@ namespace Galaxy3D
             i->rotation += angular_velocity * delta_time;
             i->lifetime -= delta_time;
 
+            float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
+
+            if(color_gradient.HasKey())
+            {
+                i->color = i->start_color * color_gradient.GetColor(t);
+            }
+
             if(!size_curve.keys.empty())
             {
-                i->size = i->start_size * size_curve.Evaluate((i->start_lifetime - i->lifetime) / i->start_lifetime);
+                i->size = i->start_size * size_curve.Evaluate(t);
             }
 
             if(i->lifetime < 0)

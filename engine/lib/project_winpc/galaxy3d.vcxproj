@@ -73,6 +73,7 @@
     <ClInclude Include="..\src\Bounds.h" />
     <ClInclude Include="..\src\CameraClearFlags.h" />
     <ClInclude Include="..\src\Color.h" />
+    <ClInclude Include="..\src\ColorGradient.h" />
     <ClInclude Include="..\src\Component.h" />
     <ClInclude Include="..\src\d3d11\Camera.h" />
     <ClInclude Include="..\src\d3d11\GraphicsDevice.h" />

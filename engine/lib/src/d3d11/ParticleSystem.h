@@ -8,6 +8,7 @@
 #include "GraphicsDevice.h"
 #include "Camera.h"
 #include "AnimationCurve.h"
+#include "ColorGradient.h"
 #include <list>
 
 namespace Galaxy3D
@@ -16,6 +17,7 @@ namespace Galaxy3D
     {
         Vector3 axis_of_rotation;
         float rotation;
+        Color start_color;
         Color color;
         float start_lifetime;
         float lifetime;
@@ -43,6 +45,7 @@ namespace Galaxy3D
         float playback_speed;
         bool local_space;
         Color start_color;
+        ColorGradient start_color_gradient;
         float start_delay;
         float start_lifetime;
         float start_rotation;
@@ -53,6 +56,7 @@ namespace Galaxy3D
         float emission_rate;
         ParticleEmitterShape::Enum emitter_shape;
         Vector3 emitter_shape_box_size;
+        ColorGradient color_gradient;
         AnimationCurve size_curve;
         float angular_velocity;
 

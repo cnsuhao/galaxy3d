@@ -1,12 +1,12 @@
 #include "Launcher.h"
 
-#define DEMO_0 0
-#define DEMO_1 0
-#define PS_TEST 1
+#define DEMO_TERRAIN 0
+#define DEMO_SCENE 0
+#define DEMO_DUST 1
 
 using namespace Galaxy3D;
 
-#if DEMO_0
+#if DEMO_TERRAIN
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 #endif
@@ -30,7 +30,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-#if PS_TEST
+#if DEMO_DUST
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(60);
@@ -47,7 +47,16 @@ void Launcher::Start()
     ps->start_lifetime = 12;
     ps->start_speed = 0.2f;
     ps->start_size = 32;
+    ps->start_color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+    ps->start_color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.3f, 25 / 255.0f));
+    ps->start_color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
+    ps->start_color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
     ps->emitter_shape_box_size = Vector3(25, 1, 39.9f);
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.471f, 1));
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+    ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
+    ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0.994f, Color(10, 18, 38, 255) * (1 / 255.0f)));
     ps->size_curve = AnimationCurve();
     ps->size_curve.keys.push_back(Keyframe(0, 0.5f, 0.5f, 0.5f));
     ps->size_curve.keys.push_back(Keyframe(1, 0.5f, 0.5f, 0.5f));
@@ -64,7 +73,7 @@ void Launcher::Start()
 
 #endif
 
-#if DEMO_1
+#if DEMO_SCENE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(45);
@@ -87,7 +96,7 @@ void Launcher::Start()
     Renderer::BuildOctree(scene);
 #endif
 
-#if DEMO_0
+#if DEMO_TERRAIN
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(30);
@@ -163,7 +172,7 @@ void Launcher::Start()
 #endif
 }
 
-#if DEMO_0
+#if DEMO_TERRAIN
 void Launcher::OnTweenSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
 {
     if(!target.expired())
@@ -197,7 +206,7 @@ void Launcher::Update()
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
 
-#if DEMO_0
+#if DEMO_TERRAIN
 	if(Input::GetTouchCount() > 0)
 	{
 		auto t = Input::GetTouch(0);
@@ -307,7 +316,7 @@ void Launcher::Update()
 
 void Launcher::LateUpdate()
 {
-#if DEMO_0
+#if DEMO_TERRAIN
     Vector3 pos = anim->GetTransform()->GetPosition();
     cam3d->GetTransform()->SetPosition(pos + cam_offset);
     cam3d->UpdateMatrix();
@@ -316,7 +325,7 @@ void Launcher::LateUpdate()
 
 Launcher::~Launcher()
 {
-#if DEMO_0
+#if DEMO_TERRAIN
     Physics::Done();
 #endif
 }
