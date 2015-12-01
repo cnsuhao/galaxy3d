@@ -31,7 +31,16 @@ namespace Galaxy3D
     {
         enum Enum
         {
+            Cone,
             Box,
+        };
+    };
+
+    struct EmitterShapeConeFrom
+    {
+        enum Enum
+        {
+            Base,
         };
     };
 
@@ -55,6 +64,9 @@ namespace Galaxy3D
         bool enable_emission;
         float emission_rate;
         ParticleEmitterShape::Enum emitter_shape;
+        float emitter_shape_cone_angle;
+        float emitter_shape_cone_radius;
+        EmitterShapeConeFrom::Enum emitter_shape_cone_from;
         Vector3 emitter_shape_box_size;
         bool random_direction;
         ColorGradient color_gradient;

@@ -2,7 +2,8 @@
 
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
-#define DEMO_DUST 1
+#define DEMO_DUST 0
+#define DEMO_BATS 1
 
 using namespace Galaxy3D;
 
@@ -30,7 +31,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-#if DEMO_DUST
+#if DEMO_DUST || DEMO_BATS
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(60);
@@ -40,7 +41,30 @@ void Launcher::Start()
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
     cam3d->GetTransform()->SetPosition(Vector3(0, 0, -30));
+#endif
 
+#if DEMO_BATS
+    auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
+    ps->duration = 15;
+    ps->start_lifetime = 5;
+    ps->start_speed = 8.8f;
+    ps->start_size = 1;
+    ps->max_particles = 1000;
+    ps->emission_rate = 20;
+    ps->emitter_shape = ParticleEmitterShape::Cone;
+    ps->emitter_shape_cone_angle = 11.07f;
+    ps->emitter_shape_cone_radius = 1;
+    ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+
+    ps->SetTargetCamera(cam3d);
+    auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+    auto psm = Material::Create("Particles/Multiply");
+    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/bats.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    psm->SetMainTexture(pst);
+    psr->SetSharedMaterial(psm);
+#endif
+
+#if DEMO_DUST
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
     ps->GetTransform()->SetScale(Vector3(0.4237148f, 12.70362f, 0.3013902f));
     ps->duration = 32;
@@ -72,7 +96,6 @@ void Launcher::Start()
     auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/dust.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     psm->SetMainTexture(pst);
     psr->SetSharedMaterial(psm);
-
 #endif
 
 #if DEMO_SCENE
