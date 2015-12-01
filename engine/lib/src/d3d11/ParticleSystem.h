@@ -7,6 +7,7 @@
 #include "Mathf.h"
 #include "GraphicsDevice.h"
 #include "Camera.h"
+#include "AnimationCurve.h"
 #include <list>
 
 namespace Galaxy3D
@@ -15,12 +16,12 @@ namespace Galaxy3D
     {
         Vector3 axis_of_rotation;
         float rotation;
-        float angular_velocity;
         Color color;
         float start_lifetime;
         float lifetime;
         Vector3 position;
         Vector3 velocity;
+        float start_size;
         float size;
     };
 
@@ -37,8 +38,6 @@ namespace Galaxy3D
     public:
         float duration;
         bool loop;
-        float emission_rate;
-        bool enable_emission;
         float gravity_modifier;
         int max_particles;
         float playback_speed;
@@ -50,8 +49,12 @@ namespace Galaxy3D
         float start_size;
         float start_speed;
         float time;
+        bool enable_emission;
+        float emission_rate;
         ParticleEmitterShape::Enum emitter_shape;
         Vector3 emitter_shape_box_size;
+        AnimationCurve size_curve;
+        float angular_velocity;
 
         ParticleSystem():
             start_delay(0),
@@ -71,6 +74,7 @@ namespace Galaxy3D
             time(0),
             emitter_shape(ParticleEmitterShape::Box),
             emitter_shape_box_size(5, 5, 5),
+            angular_velocity(0),
             m_time_emit(-1),
             m_vertex_buffer(NULL),
             m_index_buffer(NULL)
