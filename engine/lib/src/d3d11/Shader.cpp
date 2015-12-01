@@ -594,7 +594,7 @@ namespace Galaxy3D
 
 	void Shader::CreateInputLayout(void *buffer, int size, const std::string &src, VertexShader *shader, const std::string &shader_name)
 	{
-		bool ui = GTString(shader_name).StartsWith("UI");
+		bool ui = GTString(shader_name).StartsWith("UI") || GTString(shader_name).StartsWith("Particles");
 		bool skinned = GTString(shader_name).StartsWith("SkinnedMesh");
 		
 		std::vector<GTString> semantics = find_semantics(src);

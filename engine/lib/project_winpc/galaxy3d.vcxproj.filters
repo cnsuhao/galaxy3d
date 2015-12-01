@@ -383,5 +383,8 @@
     <ClInclude Include="..\src\d3d11\ParticleSystemRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ColorGradient.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

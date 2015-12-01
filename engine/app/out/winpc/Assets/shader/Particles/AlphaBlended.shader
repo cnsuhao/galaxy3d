@@ -29,16 +29,15 @@ Particles/AlphaBlended
 		struct VS_INPUT
 		{
 			float4 Position : POSITION;
-            float3 Normal : NORMAL;
-            float4 Tangent : TANGENT;
-			float2 Texcoord0 : TEXCOORD0;
-            float2 Texcoord1 : TEXCOORD1;
+			float4 Color : COLOR;
+            float2 Texcoord0 : TEXCOORD0;
 		};
 
 		struct PS_INPUT
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
+            float4 v_color : COLOR;
 		};
 
 		PS_INPUT main( VS_INPUT input )
@@ -47,6 +46,7 @@ Particles/AlphaBlended
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
+            output.v_color = input.Color;
 
 			return output;
 		}
@@ -64,13 +64,14 @@ Particles/AlphaBlended
 
 		struct PS_INPUT
 		{
-			float4 v_pos : SV_POSITION;
-			float2 v_uv : TEXCOORD0;
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+            float4 v_color : COLOR;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _TintColor * 2;
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color * _TintColor * 2;
 			return c;
 		}
 	}
