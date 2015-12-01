@@ -39,15 +39,26 @@ void Launcher::Start()
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -10));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -30));
 
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
-    ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
+    ps->GetTransform()->SetScale(Vector3(0.4237148f, 12.70362f, 0.3013902f));
+    ps->duration = 32;
+    ps->start_lifetime = 12;
+    ps->start_speed = 0.2f;
+    ps->start_size = 32;
+    ps->emitter_shape_box_size = Vector3(25, 1, 39.9f);
+    ps->size_curve = AnimationCurve();
+    ps->size_curve.keys.push_back(Keyframe(0, 0.5f, 0.5f, 0.5f));
+    ps->size_curve.keys.push_back(Keyframe(1, 0.5f, 0.5f, 0.5f));
+    ps->angular_velocity = 15;
+    ps->max_particles = 1000;
+
     ps->SetTargetCamera(cam3d);
     auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
-    auto psm = Material::Create("Particles/Additive");
+    auto psm = Material::Create("Particles/AlphaBlended");
     psm->SetColor("_TintColor", Color(1, 1, 1, 1) * 0.5f);
-    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/particle.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/dust.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     psm->SetMainTexture(pst);
     psr->SetSharedMaterial(psm);
 

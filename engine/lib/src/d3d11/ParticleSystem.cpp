@@ -56,7 +56,7 @@ namespace Galaxy3D
 
                 for(int k=0; k<4; k++)
                 {
-                    Vector3 pos = Quaternion::AngleAxis(i->rotation, i->axis_of_rotation) * p[j*4+k].POSITION;
+                    Vector3 pos = Quaternion::AngleAxis(-i->rotation, i->axis_of_rotation) * p[j*4+k].POSITION;
                     if(m_target_camera)
                     {
                         Quaternion rot = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
@@ -175,8 +175,9 @@ namespace Galaxy3D
                             float x = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.x;
                             float y = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.y;
                             float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
+                            Vector3 scale = GetTransform()->GetScale();
 
-                            Emit(Vector3(x, y, z), Vector3(0, 0, 1) * start_speed, start_size, start_lifetime, start_color);
+                            Emit(Vector3(x * scale.x, y * scale.y, z * scale.z), Vector3(0, 0, 1) * start_speed, start_size, start_lifetime, start_color);
                         }
 
                         m_time_emit = t;
@@ -191,13 +192,13 @@ namespace Galaxy3D
     void ParticleSystem::Emit(const Vector3 &position, const Vector3 &velocity, float size, float lifetime, const Color &color)
     {
         Particle p;
-        p.angular_velocity = 0;
         p.axis_of_rotation = Vector3(0, 0, 1);
         p.color = color;
         p.start_lifetime = lifetime;
         p.lifetime = lifetime;
         p.position = position;
         p.rotation = start_rotation;
+        p.start_size = size;
         p.size = size;
         p.velocity = velocity;
 
@@ -211,8 +212,13 @@ namespace Galaxy3D
         for(auto i=m_particles.begin(); i!=m_particles.end(); )
         {
             i->position += i->velocity * delta_time;
-            i->rotation += i->angular_velocity * delta_time;
+            i->rotation += angular_velocity * delta_time;
             i->lifetime -= delta_time;
+
+            if(!size_curve.keys.empty())
+            {
+                i->size = i->start_size * size_curve.Evaluate((i->start_lifetime - i->lifetime) / i->start_lifetime);
+            }
 
             if(i->lifetime < 0)
             {
