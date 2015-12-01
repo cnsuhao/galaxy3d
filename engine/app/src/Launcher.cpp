@@ -47,7 +47,7 @@ void Launcher::Start()
     auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
     auto psm = Material::Create("Particles/Additive");
     psm->SetColor("_TintColor", Color(1, 1, 1, 1) * 0.5f);
-    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/arthas.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/particle.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     psm->SetMainTexture(pst);
     psr->SetSharedMaterial(psm);
 
