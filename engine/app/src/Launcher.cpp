@@ -51,7 +51,9 @@ void Launcher::Start()
     ps->start_color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.3f, 25 / 255.0f));
     ps->start_color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
     ps->start_color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
+    ps->emitter_shape = ParticleEmitterShape::Box;
     ps->emitter_shape_box_size = Vector3(25, 1, 39.9f);
+    ps->random_direction = true;
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.471f, 1));
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));

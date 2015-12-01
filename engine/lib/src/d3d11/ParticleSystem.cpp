@@ -182,6 +182,27 @@ namespace Galaxy3D
                             float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
                             Vector3 scale = GetTransform()->GetScale();
 
+                            Vector3 position = Vector3(x * scale.x, y * scale.y, z * scale.z);
+
+                            Vector3 velocity;
+                            if(random_direction)
+                            {
+                                float dx, dy, dz;
+                                do
+                                {
+                                    dx = rand() / (float) RAND_MAX - 0.5f;
+                                    dy = rand() / (float) RAND_MAX - 0.5f;
+                                    dz = rand() / (float) RAND_MAX - 0.5f;
+                                }
+                                while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
+                            
+                                velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
+                            }
+                            else
+                            {
+                                velocity = Vector3(0, 0, 1) * start_speed;
+                            }
+
                             Color color;
                             if(start_color_gradient.HasKey())
                             {
@@ -192,7 +213,7 @@ namespace Galaxy3D
                                 color = start_color;
                             }
 
-                            Emit(Vector3(x * scale.x, y * scale.y, z * scale.z), Vector3(0, 0, 1) * start_speed, start_size, start_lifetime, color);
+                            Emit(position, velocity, start_size, start_lifetime, color);
                         }
 
                         m_time_emit = t;

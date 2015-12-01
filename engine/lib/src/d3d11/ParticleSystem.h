@@ -56,6 +56,7 @@ namespace Galaxy3D
         float emission_rate;
         ParticleEmitterShape::Enum emitter_shape;
         Vector3 emitter_shape_box_size;
+        bool random_direction;
         ColorGradient color_gradient;
         AnimationCurve size_curve;
         float angular_velocity;
@@ -78,6 +79,7 @@ namespace Galaxy3D
             time(0),
             emitter_shape(ParticleEmitterShape::Box),
             emitter_shape_box_size(5, 5, 5),
+            random_direction(false),
             angular_velocity(0),
             m_time_emit(-1),
             m_vertex_buffer(NULL),
