@@ -45,7 +45,38 @@ void Launcher::Start()
 #endif
 
 #if DEMO_SMOKE
+    auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
+    ps->GetTransform()->SetPosition(Vector3(0, -4, -20));
+    ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
+    ps->duration = 5;
+    ps->start_lifetime = 9.91f;
+    ps->start_speed = 1.32f;
+    ps->start_size = 3.54f;
+    ps->start_color = Color(135, 133, 127, 255) * (1.0f / 255);
+    ps->max_particles = 1000;
+    ps->emission_rate = 20;
+    ps->emitter_shape = ParticleEmitterShape::Box;
+    ps->emitter_shape_box_size = Vector3(2, 2, 1);
+    ps->velocity_type = VelocityType::Constant;
+    ps->velocity = Vector3(0, 0, -0.475f);
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.282f, 10 / 255.0f));
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.706f, 9 / 255.0f));
+    ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+    ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0.003f, Color(1, 1, 1, 1)));
+    ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
+    ps->size_curve = AnimationCurve();
+    ps->size_curve.keys.push_back(Keyframe(0.029f, 0.485f, 0, 0));
+    ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
+    ps->angular_velocity = 45;
 
+    ps->SetTargetCamera(cam3d);
+    auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+    auto psm = Material::Create("Particles/AlphaBlended");
+    psm->SetColor("_TintColor", Color(1, 1, 1, 1) * 0.5f);
+    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/smoke.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    psm->SetMainTexture(pst);
+    psr->SetSharedMaterial(psm);
 #endif
 
 #if DEMO_BATS
@@ -70,7 +101,6 @@ void Launcher::Start()
     ps->force_curve_z.keys.push_back(Keyframe(0.003f, -1.047f, 0, 0));
     ps->force_curve_z.keys.push_back(Keyframe(0.396f, 0.523f, 0, 0));
     ps->force_curve_z.keys.push_back(Keyframe(0.918f, -0.64f, 0, 0));
-
     ps->enable_texture_sheet_animation = true;
     ps->texture_sheet_animation_tile_x = 4;
     ps->texture_sheet_animation_tile_y = 4;

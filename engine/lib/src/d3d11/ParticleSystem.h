@@ -31,6 +31,7 @@ namespace Galaxy3D
     {
         enum Enum
         {
+            Disable,
             Cone,
             Box,
         };
@@ -41,6 +42,16 @@ namespace Galaxy3D
         enum Enum
         {
             Base,
+        };
+    };
+
+    struct VelocityType
+    {
+        enum Enum
+        {
+            Disable,
+            Constant,
+            Curve,
         };
     };
 
@@ -79,6 +90,11 @@ namespace Galaxy3D
         EmitterShapeConeFrom::Enum emitter_shape_cone_from;
         Vector3 emitter_shape_box_size;
         bool emitter_random_direction;
+        VelocityType::Enum velocity_type;
+        Vector3 velocity;
+        AnimationCurve velocity_curve_x;
+        AnimationCurve velocity_curve_y;
+        AnimationCurve velocity_curve_z;
         ForceType::Enum force_type;
         Vector3 force;
         AnimationCurve force_curve_x;
