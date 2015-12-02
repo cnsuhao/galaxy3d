@@ -32,6 +32,7 @@ namespace Galaxy3D
         enum Enum
         {
             Disable,
+            Sphere,
             Cone,
             Box,
         };
@@ -85,6 +86,7 @@ namespace Galaxy3D
         bool enable_emission;
         float emission_rate;
         ParticleEmitterShape::Enum emitter_shape;
+        float emitter_shape_sphere_radius;
         float emitter_shape_cone_angle;
         float emitter_shape_cone_radius;
         EmitterShapeConeFrom::Enum emitter_shape_cone_from;
@@ -157,6 +159,9 @@ namespace Galaxy3D
         std::shared_ptr<Camera> m_target_camera;
 
         void UpdateEmitter();
+        void EmitShapeSphere(Vector3 &position, Vector3 &velocity);
+        void EmitShapeCone(Vector3 &position, Vector3 &velocity);
+        void EmitShapeBox(Vector3 &position, Vector3 &velocity);
         void Emit(const Vector3 &position, const Vector3 &velocity, float size, float lifetime, const Color &color);
         void UpdateParticles();
         void UpdateBuffer();
