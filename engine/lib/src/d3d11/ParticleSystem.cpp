@@ -332,7 +332,22 @@ namespace Galaxy3D
                 i->velocity += Vector3(fx, fy, fz) * delta_time;
             }
 
-            i->position += i->velocity * delta_time;
+            Vector3 v = i->velocity;
+
+            if(velocity_type == VelocityType::Constant)
+            {
+                v += velocity;
+            }
+            else if(velocity_type == VelocityType::Curve)
+            {
+                float vx = velocity_curve_x.Evaluate(t);
+                float vy = velocity_curve_y.Evaluate(t);
+                float vz = velocity_curve_z.Evaluate(t);
+
+                v += Vector3(vx, vy, vz);
+            }
+
+            i->position += v * delta_time;
             i->rotation += angular_velocity * delta_time;
             i->lifetime -= delta_time;
 
