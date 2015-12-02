@@ -99,7 +99,7 @@ namespace Galaxy3D
                     if(m_target_camera)
                     {
                         Quaternion rot = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
-                        pos = rot * pos;
+                        //pos = rot * pos;
                     }
                     p[j*4+k].POSITION = pos + i->position;
                 }
@@ -197,13 +197,120 @@ namespace Galaxy3D
         UpdateBuffer();
     }
 
+    void ParticleSystem::EmitShapeSphere(Vector3 &position, Vector3 &velocity)
+    {
+        float dx, dy, dz;
+        do
+        {
+            dx = rand() / (float) RAND_MAX - 0.5f;
+            dy = rand() / (float) RAND_MAX - 0.5f;
+            dz = rand() / (float) RAND_MAX - 0.5f;
+        }
+        while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
+
+        float radius = (rand() / (float) RAND_MAX) * emitter_shape_sphere_radius;
+        Vector3 dir = Vector3::Normalize(Vector3(dx, dy, dz));
+        position = dir * radius;
+
+        if(emitter_random_direction)
+        {
+            do
+            {
+                dx = rand() / (float) RAND_MAX - 0.5f;
+                dy = rand() / (float) RAND_MAX - 0.5f;
+                dz = rand() / (float) RAND_MAX - 0.5f;
+            }
+            while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
+
+            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
+        }
+        else
+        {
+            velocity = dir * start_speed;
+        }
+    }
+
+    void ParticleSystem::EmitShapeCone(Vector3 &position, Vector3 &velocity)
+    {
+        float y = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
+        float theta = (rand() / (float) RAND_MAX) * 360;
+
+        Vector3 pos(0, y, 0);
+        Quaternion rot = Quaternion::Euler(0, 0, theta);
+        pos = rot * pos;
+
+        position = pos;
+
+        float angle = emitter_shape_cone_angle;
+        angle = Mathf::Max(angle, 1.0f);
+        angle = Mathf::Min(angle, 89.0f);
+
+        float h = emitter_shape_cone_radius / tanf(angle * Mathf::Deg2Rad);
+        Vector3 origin(0, 0, -h);
+
+        if(emitter_random_direction)
+        {
+            float y_dir = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
+            float theta_dir = (rand() / (float) RAND_MAX) * 360;
+            Vector3 pos_dir = Vector3(0, y_dir, 0);
+            Quaternion rot_dir = Quaternion::Euler(0, 0, theta_dir);
+            pos_dir = rot_dir * pos_dir;
+
+            velocity = Vector3::Normalize(pos_dir - origin) * start_speed;
+        }
+        else
+        {
+            velocity = Vector3::Normalize(pos - origin) * start_speed;
+        }
+    }
+
+    void ParticleSystem::EmitShapeBox(Vector3 &position, Vector3 &velocity)
+    {
+        float x = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.x;
+        float y = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.y;
+        float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
+
+        position = Vector3(x, y, z);
+
+        if(emitter_random_direction)
+        {
+            float dx, dy, dz;
+            do
+            {
+                dx = rand() / (float) RAND_MAX - 0.5f;
+                dy = rand() / (float) RAND_MAX - 0.5f;
+                dz = rand() / (float) RAND_MAX - 0.5f;
+            }
+            while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
+
+            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
+        }
+        else
+        {
+            velocity = Vector3(0, 0, 1) * start_speed;
+        }
+    }
+
     void ParticleSystem::UpdateEmitter()
     {
         float t = GTTime::GetTime();
 
+        for(auto i=m_particles.begin(); i!=m_particles.end(); )
+        {
+            if(i->lifetime <= 0)
+            {
+                i = m_particles.erase(i);
+                continue;
+            }
+            else
+            {
+                i++;
+            }
+        }
+
         if((t > start_delay) && ((t - start_delay) * playback_speed < duration || loop))//system ok
         {
-            if((t - m_time_emit) * playback_speed > 1 / emission_rate || m_time_emit < 0)//time ok
+            if((((t - m_time_emit) * playback_speed) > (1 / emission_rate)) || (m_time_emit < 0))//time ok
             {
                 if(enable_emission)//emission ok
                 {
@@ -214,64 +321,17 @@ namespace Galaxy3D
                         Vector3 velocity;
                         Color color;
 
-                        if(emitter_shape == ParticleEmitterShape::Box)
+                        switch(emitter_shape)
                         {
-                            float x = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.x;
-                            float y = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.y;
-                            float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
-
-                            position = Vector3(x * scale.x, y * scale.y, z * scale.z);
-
-                            if(emitter_random_direction)
-                            {
-                                float dx, dy, dz;
-                                do
-                                {
-                                    dx = rand() / (float) RAND_MAX - 0.5f;
-                                    dy = rand() / (float) RAND_MAX - 0.5f;
-                                    dz = rand() / (float) RAND_MAX - 0.5f;
-                                }
-                                while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
-
-                                velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
-                            }
-                            else
-                            {
-                                velocity = Vector3(0, 0, 1) * start_speed;
-                            }
-                        }
-                        else if(emitter_shape == ParticleEmitterShape::Cone)
-                        {
-                            float y = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
-                            float theta = (rand() / (float) RAND_MAX) * 360;
-
-                            Vector3 pos(0, y, 0);
-                            Quaternion rot = Quaternion::Euler(0, 0, theta);
-                            pos = rot * pos;
-
-                            position = Vector3(pos.x * scale.x, pos.y * scale.y, pos.z * scale.z);
-
-                            float angle = emitter_shape_cone_angle;
-                            angle = Mathf::Max(angle, 1.0f);
-                            angle = Mathf::Min(angle, 89.0f);
-
-                            float h = emitter_shape_cone_radius / tanf(angle * Mathf::Deg2Rad);
-                            Vector3 origin(0, 0, -h);
-
-                            if(emitter_random_direction)
-                            {
-                                float y_dir = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
-                                float theta_dir = (rand() / (float) RAND_MAX) * 360;
-                                Vector3 pos_dir = Vector3(0, y_dir, 0);
-                                Quaternion rot_dir = Quaternion::Euler(0, 0, theta_dir);
-                                pos_dir = rot_dir * pos_dir;
-
-                                velocity = Vector3::Normalize(pos_dir - origin) * start_speed;
-                            }
-                            else
-                            {
-                                velocity = Vector3::Normalize(pos - origin) * start_speed;
-                            }
+                            case ParticleEmitterShape::Sphere:
+                                EmitShapeSphere(position, velocity);
+                                break;
+                            case ParticleEmitterShape::Cone:
+                                EmitShapeCone(position, velocity);
+                                break;
+                            case ParticleEmitterShape::Box:
+                                EmitShapeBox(position, velocity);
+                                break;
                         }
 
                         if(start_color_gradient.HasKey())
@@ -283,6 +343,7 @@ namespace Galaxy3D
                             color = start_color;
                         }
 
+                        position = Vector3(position.x * scale.x, position.y * scale.y, position.z * scale.z);
                         Emit(position, velocity, start_size, start_lifetime, color);
 
                         m_time_emit = t;
@@ -315,7 +376,7 @@ namespace Galaxy3D
     {
         float delta_time = GTTime::GetDeltaTime() * playback_speed;
 
-        for(auto i=m_particles.begin(); i!=m_particles.end(); )
+        for(auto i=m_particles.begin(); i!=m_particles.end(); i++)
         {
             float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
 
@@ -359,16 +420,6 @@ namespace Galaxy3D
             if(!size_curve.keys.empty())
             {
                 i->size = i->start_size * size_curve.Evaluate(t);
-            }
-
-            if(i->lifetime <= 0)
-            {
-                i = m_particles.erase(i);
-                continue;
-            }
-            else
-            {
-                i++;
             }
         }
     }

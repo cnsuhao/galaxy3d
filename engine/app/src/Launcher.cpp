@@ -4,7 +4,8 @@
 #define DEMO_SCENE 0
 #define DEMO_DUST 0
 #define DEMO_BATS 0
-#define DEMO_SMOKE 1
+#define DEMO_SMOKE 0
+#define DEMO_FIRE 1
 
 using namespace Galaxy3D;
 
@@ -32,7 +33,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE
+#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE || DEMO_FIRE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(60);
@@ -41,12 +42,89 @@ void Launcher::Start()
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -30));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
+#endif
+
+#if DEMO_FIRE
+    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
+    //cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, 0, 0));
+    auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Furnace.mesh");
+
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
+    RenderSettings::light_directional_intensity = 1;
+    RenderSettings::light_directional_direction = Vector3(0, -1, -1);
+    /*
+    {
+        auto ps = GameObject::Create("fire")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0, 0.9835533f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0;
+        ps->start_size = 0.7f;
+        ps->start_color = Color(255, 255, 255, 255) * (1.0f / 255);
+        ps->max_particles = 1;
+        ps->emission_rate = 10;
+        ps->emitter_shape = ParticleEmitterShape::Sphere;
+        ps->emitter_shape_sphere_radius = 0.01f;
+        ps->enable_texture_sheet_animation = true;
+        ps->texture_sheet_animation_tile_x = 16;
+        ps->texture_sheet_animation_tile_y = 4;
+        ps->texture_sheet_animation_single_row = false;
+        ps->texture_sheet_animation_frame_curve = AnimationCurve();
+        ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(0, 0, 64, 64));
+        ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(1, 64, 64, 64));
+        ps->texture_sheet_animation_cycles = 4;
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/AlphaBlended");
+        psm->SetColor("_TintColor", Color(255, 175, 152, 128) * (1.0f / 255));
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/fire.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }*/
+    
+    {
+        auto ps = GameObject::Create("smoke")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(scene->GetTransform());
+        //ps->GetTransform()->SetLocalPosition(Vector3(0, -0.8561009f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(0, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0;
+        ps->start_size = 2.56f;
+        ps->max_particles = 1;
+        ps->emission_rate = 3.6f;
+        ps->emitter_shape = ParticleEmitterShape::Cone;
+        ps->emitter_shape_cone_angle = 6.42f;
+        ps->emitter_shape_cone_radius = 0.2f;
+        ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+        /*ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.218f, 25 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.826f, 39 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));*/
+        /*ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 0.03f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
+        ps->angular_velocity = 45;*/
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/Multiply");
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/arthas.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
 #endif
 
 #if DEMO_SMOKE
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
-    ps->GetTransform()->SetPosition(Vector3(0, -4, -20));
+    ps->GetTransform()->SetPosition(Vector3(0, -4, 5));
     ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
     ps->duration = 5;
     ps->start_lifetime = 9.91f;
@@ -81,7 +159,7 @@ void Launcher::Start()
 
 #if DEMO_BATS
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
-    ps->GetTransform()->SetPosition(Vector3(0, 0, -25));
+    ps->GetTransform()->SetPosition(Vector3(0, 0, 0));
     ps->duration = 15;
     ps->start_lifetime = 5;
     ps->start_speed = 8.8f;
@@ -120,6 +198,7 @@ void Launcher::Start()
 
 #if DEMO_DUST
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
+    ps->GetTransform()->SetPosition(Vector3(0, 0, 25));
     ps->GetTransform()->SetScale(Vector3(0.4237148f, 12.70362f, 0.3013902f));
     ps->duration = 32;
     ps->start_lifetime = 12;
