@@ -49,10 +49,44 @@ namespace Galaxy3D
                 v2.COLOR = i->color;
                 v3.COLOR = i->color;
 
-                v.TEXCOORD0 = Vector2(0, 0);
-                v1.TEXCOORD0 = Vector2(0, 1);
-                v2.TEXCOORD0 = Vector2(1, 1);
-                v3.TEXCOORD0 = Vector2(1, 0);
+                if(enable_texture_sheet_animation)
+                {
+                    float cycle_len = i->start_lifetime / texture_sheet_animation_cycles;
+                    float t = fmodf(i->start_lifetime - i->lifetime, cycle_len) / cycle_len;
+                    int frame = (int) texture_sheet_animation_frame_curve.Evaluate(t);
+                    int x, y;
+
+                    if(texture_sheet_animation_single_row)
+                    {
+                        x = frame;
+
+                        if(texture_sheet_animation_random_row)
+                        {
+                            y = (int) ((rand() - 1) / (float) RAND_MAX * texture_sheet_animation_tile_y);
+                        }
+                        else
+                        {
+                            y = Mathf::Min(texture_sheet_animation_row, texture_sheet_animation_tile_y - 1);
+                        }
+                    }
+                    else
+                    {
+                        x = frame % texture_sheet_animation_tile_x;
+                        y = frame / texture_sheet_animation_tile_x;
+                    }
+
+                    v.TEXCOORD0 = Vector2(x / (float) texture_sheet_animation_tile_x, y / (float) texture_sheet_animation_tile_y);
+                    v1.TEXCOORD0 = Vector2(x / (float) texture_sheet_animation_tile_x, (y + 1) / (float) texture_sheet_animation_tile_y);
+                    v2.TEXCOORD0 = Vector2((x + 1) / (float) texture_sheet_animation_tile_x, (y + 1) / (float) texture_sheet_animation_tile_y);
+                    v3.TEXCOORD0 = Vector2((x + 1) / (float) texture_sheet_animation_tile_x, y / (float) texture_sheet_animation_tile_y);
+                }
+                else
+                {
+                    v.TEXCOORD0 = Vector2(0, 0);
+                    v1.TEXCOORD0 = Vector2(0, 1);
+                    v2.TEXCOORD0 = Vector2(1, 1);
+                    v3.TEXCOORD0 = Vector2(1, 0);
+                }
 
                 v.POSITION = Vector3(-i->size * 0.5f, i->size * 0.5f, 0);
                 v1.POSITION = Vector3(-i->size * 0.5f, -i->size * 0.5f, 0);
@@ -188,7 +222,7 @@ namespace Galaxy3D
 
                             position = Vector3(x * scale.x, y * scale.y, z * scale.z);
 
-                            if(random_direction)
+                            if(emitter_random_direction)
                             {
                                 float dx, dy, dz;
                                 do
@@ -224,7 +258,7 @@ namespace Galaxy3D
                             float h = emitter_shape_cone_radius / tanf(angle * Mathf::Deg2Rad);
                             Vector3 origin(0, 0, -h);
 
-                            if(random_direction)
+                            if(emitter_random_direction)
                             {
                                 float y_dir = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
                                 float theta_dir = (rand() / (float) RAND_MAX) * 360;
@@ -283,11 +317,24 @@ namespace Galaxy3D
 
         for(auto i=m_particles.begin(); i!=m_particles.end(); )
         {
+            float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
+
+            if(force_type == ForceType::Constant)
+            {
+                i->velocity += force * delta_time;
+            }
+            else if(force_type == ForceType::Curve)
+            {
+                float fx = force_curve_x.Evaluate(t);
+                float fy = force_curve_y.Evaluate(t);
+                float fz = force_curve_z.Evaluate(t);
+
+                i->velocity += Vector3(fx, fy, fz) * delta_time;
+            }
+
             i->position += i->velocity * delta_time;
             i->rotation += angular_velocity * delta_time;
             i->lifetime -= delta_time;
-
-            float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
 
             if(color_gradient.HasKey())
             {
@@ -299,7 +346,7 @@ namespace Galaxy3D
                 i->size = i->start_size * size_curve.Evaluate(t);
             }
 
-            if(i->lifetime < 0)
+            if(i->lifetime <= 0)
             {
                 i = m_particles.erase(i);
                 continue;

@@ -44,6 +44,16 @@ namespace Galaxy3D
         };
     };
 
+    struct ForceType
+    {
+        enum Enum
+        {
+            Disable,
+            Constant,
+            Curve,
+        };
+    };
+
     class ParticleSystem : public Component
     {
     public:
@@ -68,10 +78,23 @@ namespace Galaxy3D
         float emitter_shape_cone_radius;
         EmitterShapeConeFrom::Enum emitter_shape_cone_from;
         Vector3 emitter_shape_box_size;
-        bool random_direction;
+        bool emitter_random_direction;
+        ForceType::Enum force_type;
+        Vector3 force;
+        AnimationCurve force_curve_x;
+        AnimationCurve force_curve_y;
+        AnimationCurve force_curve_z;
         ColorGradient color_gradient;
         AnimationCurve size_curve;
         float angular_velocity;
+        bool enable_texture_sheet_animation;
+        int texture_sheet_animation_tile_x;
+        int texture_sheet_animation_tile_y;
+        bool texture_sheet_animation_single_row;
+        bool texture_sheet_animation_random_row;
+        int texture_sheet_animation_row;
+        AnimationCurve texture_sheet_animation_frame_curve;
+        int texture_sheet_animation_cycles;
 
         ParticleSystem():
             start_delay(0),
@@ -91,8 +114,10 @@ namespace Galaxy3D
             time(0),
             emitter_shape(ParticleEmitterShape::Box),
             emitter_shape_box_size(5, 5, 5),
-            random_direction(false),
+            emitter_random_direction(false),
+            force_type(ForceType::Disable),
             angular_velocity(0),
+            enable_texture_sheet_animation(false),
             m_time_emit(-1),
             m_vertex_buffer(NULL),
             m_index_buffer(NULL)

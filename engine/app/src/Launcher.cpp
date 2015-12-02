@@ -3,7 +3,8 @@
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DUST 0
-#define DEMO_BATS 1
+#define DEMO_BATS 0
+#define DEMO_SMOKE 1
 
 using namespace Galaxy3D;
 
@@ -31,7 +32,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-#if DEMO_DUST || DEMO_BATS
+#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(60);
@@ -43,8 +44,13 @@ void Launcher::Start()
     cam3d->GetTransform()->SetPosition(Vector3(0, 0, -30));
 #endif
 
+#if DEMO_SMOKE
+
+#endif
+
 #if DEMO_BATS
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
+    ps->GetTransform()->SetPosition(Vector3(0, 0, -25));
     ps->duration = 15;
     ps->start_lifetime = 5;
     ps->start_speed = 8.8f;
@@ -55,6 +61,24 @@ void Launcher::Start()
     ps->emitter_shape_cone_angle = 11.07f;
     ps->emitter_shape_cone_radius = 1;
     ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+    ps->force_type = ForceType::Curve;
+    ps->force_curve_x = AnimationCurve();
+    ps->force_curve_x.keys.push_back(Keyframe(0, 0.38f, 0, 0));
+    ps->force_curve_y = AnimationCurve();
+    ps->force_curve_y.keys.push_back(Keyframe(0.082f, 3.06f, 0, 0));
+    ps->force_curve_z = AnimationCurve();
+    ps->force_curve_z.keys.push_back(Keyframe(0.003f, -1.047f, 0, 0));
+    ps->force_curve_z.keys.push_back(Keyframe(0.396f, 0.523f, 0, 0));
+    ps->force_curve_z.keys.push_back(Keyframe(0.918f, -0.64f, 0, 0));
+
+    ps->enable_texture_sheet_animation = true;
+    ps->texture_sheet_animation_tile_x = 4;
+    ps->texture_sheet_animation_tile_y = 4;
+    ps->texture_sheet_animation_single_row = false;
+    ps->texture_sheet_animation_frame_curve = AnimationCurve();
+    ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(0, 0, 16, 16));
+    ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(1, 16, 16, 16));
+    ps->texture_sheet_animation_cycles = 32;
 
     ps->SetTargetCamera(cam3d);
     auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
@@ -77,7 +101,7 @@ void Launcher::Start()
     ps->start_color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
     ps->emitter_shape = ParticleEmitterShape::Box;
     ps->emitter_shape_box_size = Vector3(25, 1, 39.9f);
-    ps->random_direction = true;
+    ps->emitter_random_direction = true;
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.471f, 1));
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
