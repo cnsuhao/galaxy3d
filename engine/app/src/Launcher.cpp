@@ -46,15 +46,15 @@ void Launcher::Start()
 #endif
 
 #if DEMO_FIRE
-    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
-    //cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, 0, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 3, -5));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, 0, 0));
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Furnace.mesh");
 
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
     RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
     RenderSettings::light_directional_intensity = 1;
     RenderSettings::light_directional_direction = Vector3(0, -1, -1);
-    /*
+    
     {
         auto ps = GameObject::Create("fire")->AddComponent<ParticleSystem>();
         ps->GetTransform()->SetParent(scene->GetTransform());
@@ -85,38 +85,74 @@ void Launcher::Start()
         auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/fire.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
         psm->SetMainTexture(pst);
         psr->SetSharedMaterial(psm);
-    }*/
+    }
     
     {
         auto ps = GameObject::Create("smoke")->AddComponent<ParticleSystem>();
         ps->GetTransform()->SetParent(scene->GetTransform());
-        //ps->GetTransform()->SetLocalPosition(Vector3(0, -0.8561009f, 0));
-        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(0, 0, 0));
+        ps->GetTransform()->SetLocalPosition(Vector3(0, -0.8561009f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
         ps->duration = 5;
         ps->start_lifetime = 5;
-        ps->start_speed = 0;
+        ps->start_speed = 0.85f;
         ps->start_size = 2.56f;
-        ps->max_particles = 1;
+        ps->max_particles = 1000;
         ps->emission_rate = 3.6f;
         ps->emitter_shape = ParticleEmitterShape::Cone;
         ps->emitter_shape_cone_angle = 6.42f;
         ps->emitter_shape_cone_radius = 0.2f;
         ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
-        /*ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
         ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.218f, 25 / 255.0f));
         ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.826f, 39 / 255.0f));
         ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
         ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
-        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));*/
-        /*ps->size_curve = AnimationCurve();
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
+        ps->size_curve = AnimationCurve();
         ps->size_curve.keys.push_back(Keyframe(0, 0.03f, 0, 0));
         ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
-        ps->angular_velocity = 45;*/
+        ps->angular_velocity = 45;
 
         ps->SetTargetCamera(cam3d);
         auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
         auto psm = Material::Create("Particles/Multiply");
-        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/arthas.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/smoke.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
+
+    {
+        auto ps = GameObject::Create("spark")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0, 0.7186908f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
+        ps->duration = 1;
+        ps->start_lifetime_type = ValueType::RandomConstants;
+        ps->start_lifetime_random_contants = Vector2(0.1f, 0.35f);
+        ps->start_speed_type = ValueType::RandomConstants;
+        ps->start_speed_random_contants = Vector2(2, 5);
+        ps->start_size = 0.14f;
+        ps->start_color = Color(255, 192, 56, 255) * (1.0f / 255);
+        ps->max_particles = 1000;
+        ps->emission_rate = 30;
+        ps->emitter_shape = ParticleEmitterShape::Cone;
+        ps->emitter_shape_cone_angle = 25;
+        ps->emitter_shape_cone_radius = 0.43f;
+        ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+        ps->emitter_random_direction = true;
+        ps->velocity_type = ValueType::Constant;
+        ps->velocity = Vector3(-0.66f, -1.11f, 0.17f);
+        ps->force_type = ValueType::Constant;
+        ps->force = Vector3(4, 0.03f, 1.32f);
+        ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 0.197f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.946f, 0.409f, 0, 0));
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/Additive");
+        psm->SetColor("_TintColor", Color(1, 1, 1, 0.5f));
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/spark.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
         psm->SetMainTexture(pst);
         psr->SetSharedMaterial(psm);
     }
@@ -135,7 +171,7 @@ void Launcher::Start()
     ps->emission_rate = 20;
     ps->emitter_shape = ParticleEmitterShape::Box;
     ps->emitter_shape_box_size = Vector3(2, 2, 1);
-    ps->velocity_type = VelocityType::Constant;
+    ps->velocity_type = ValueType::Constant;
     ps->velocity = Vector3(0, 0, -0.475f);
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
     ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.282f, 10 / 255.0f));
@@ -170,7 +206,7 @@ void Launcher::Start()
     ps->emitter_shape_cone_angle = 11.07f;
     ps->emitter_shape_cone_radius = 1;
     ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
-    ps->force_type = ForceType::Curve;
+    ps->force_type = ValueType::Curve;
     ps->force_curve_x = AnimationCurve();
     ps->force_curve_x.keys.push_back(Keyframe(0, 0.38f, 0, 0));
     ps->force_curve_y = AnimationCurve();
