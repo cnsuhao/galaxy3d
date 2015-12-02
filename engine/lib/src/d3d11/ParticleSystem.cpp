@@ -21,7 +21,18 @@ namespace Galaxy3D
 
     int ParticleSystem::GetParticleCountMax() const
     {
-        return Mathf::Min(Mathf::RoundToInt(emission_rate * start_lifetime * 1.1f), max_particles);
+        float lifetime;
+
+        if(start_lifetime_type == ValueType::RandomConstants)
+        {
+            lifetime = Mathf::Max(start_lifetime_random_contants.x, start_lifetime_random_contants.y);
+        }
+        else
+        {
+            lifetime = start_lifetime;
+        }
+
+        return Mathf::Min(Mathf::RoundToInt(emission_rate * lifetime * 1.1f), max_particles);
     }
 
     void ParticleSystem::UpdateBuffer()
@@ -99,7 +110,7 @@ namespace Galaxy3D
                     if(m_target_camera)
                     {
                         Quaternion rot = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
-                        //pos = rot * pos;
+                        pos = rot * pos;
                     }
                     p[j*4+k].POSITION = pos + i->position;
                 }
@@ -197,7 +208,7 @@ namespace Galaxy3D
         UpdateBuffer();
     }
 
-    void ParticleSystem::EmitShapeSphere(Vector3 &position, Vector3 &velocity)
+    void ParticleSystem::EmitShapeSphere(Vector3 &position, Vector3 &velocity, float speed)
     {
         float dx, dy, dz;
         do
@@ -222,15 +233,15 @@ namespace Galaxy3D
             }
             while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
 
-            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
+            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * speed;
         }
         else
         {
-            velocity = dir * start_speed;
+            velocity = dir * speed;
         }
     }
 
-    void ParticleSystem::EmitShapeCone(Vector3 &position, Vector3 &velocity)
+    void ParticleSystem::EmitShapeCone(Vector3 &position, Vector3 &velocity, float speed)
     {
         float y = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
         float theta = (rand() / (float) RAND_MAX) * 360;
@@ -256,15 +267,15 @@ namespace Galaxy3D
             Quaternion rot_dir = Quaternion::Euler(0, 0, theta_dir);
             pos_dir = rot_dir * pos_dir;
 
-            velocity = Vector3::Normalize(pos_dir - origin) * start_speed;
+            velocity = Vector3::Normalize(pos_dir - origin) * speed;
         }
         else
         {
-            velocity = Vector3::Normalize(pos - origin) * start_speed;
+            velocity = Vector3::Normalize(pos - origin) * speed;
         }
     }
 
-    void ParticleSystem::EmitShapeBox(Vector3 &position, Vector3 &velocity)
+    void ParticleSystem::EmitShapeBox(Vector3 &position, Vector3 &velocity, float speed)
     {
         float x = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.x;
         float y = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.y;
@@ -283,11 +294,11 @@ namespace Galaxy3D
             }
             while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
 
-            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * start_speed;
+            velocity = Vector3::Normalize(Vector3(dx, dy, dz)) * speed;
         }
         else
         {
-            velocity = Vector3(0, 0, 1) * start_speed;
+            velocity = Vector3(0, 0, 1) * speed;
         }
     }
 
@@ -320,19 +331,32 @@ namespace Galaxy3D
                         Vector3 position;
                         Vector3 velocity;
                         Color color;
+                        float lifetime;
+                        float speed;
+
+                        if(start_speed_type == ValueType::RandomConstants)
+                        {
+                            speed = rand() / (float) RAND_MAX * (start_speed_random_contants.y - start_speed_random_contants.x) + start_speed_random_contants.x;
+                        }
+                        else
+                        {
+                            speed = start_speed;
+                        }
 
                         switch(emitter_shape)
                         {
                             case ParticleEmitterShape::Sphere:
-                                EmitShapeSphere(position, velocity);
+                                EmitShapeSphere(position, velocity, speed);
                                 break;
                             case ParticleEmitterShape::Cone:
-                                EmitShapeCone(position, velocity);
+                                EmitShapeCone(position, velocity, speed);
                                 break;
                             case ParticleEmitterShape::Box:
-                                EmitShapeBox(position, velocity);
+                                EmitShapeBox(position, velocity, speed);
                                 break;
                         }
+
+                        position = Vector3(position.x * scale.x, position.y * scale.y, position.z * scale.z);
 
                         if(start_color_gradient.HasKey())
                         {
@@ -343,8 +367,16 @@ namespace Galaxy3D
                             color = start_color;
                         }
 
-                        position = Vector3(position.x * scale.x, position.y * scale.y, position.z * scale.z);
-                        Emit(position, velocity, start_size, start_lifetime, color);
+                        if(start_lifetime_type == ValueType::RandomConstants)
+                        {
+                            lifetime = rand() / (float) RAND_MAX * (start_lifetime_random_contants.y - start_lifetime_random_contants.x) + start_lifetime_random_contants.x;
+                        }
+                        else
+                        {
+                            lifetime = start_lifetime;
+                        }
+
+                        Emit(position, velocity, start_size, lifetime, color);
 
                         m_time_emit = t;
                     }
@@ -380,11 +412,11 @@ namespace Galaxy3D
         {
             float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
 
-            if(force_type == ForceType::Constant)
+            if(force_type == ValueType::Constant)
             {
                 i->velocity += force * delta_time;
             }
-            else if(force_type == ForceType::Curve)
+            else if(force_type == ValueType::Curve)
             {
                 float fx = force_curve_x.Evaluate(t);
                 float fy = force_curve_y.Evaluate(t);
@@ -395,11 +427,11 @@ namespace Galaxy3D
 
             Vector3 v = i->velocity;
 
-            if(velocity_type == VelocityType::Constant)
+            if(velocity_type == ValueType::Constant)
             {
                 v += velocity;
             }
-            else if(velocity_type == VelocityType::Curve)
+            else if(velocity_type == ValueType::Curve)
             {
                 float vx = velocity_curve_x.Evaluate(t);
                 float vy = velocity_curve_y.Evaluate(t);
