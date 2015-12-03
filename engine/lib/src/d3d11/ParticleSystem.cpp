@@ -17,6 +17,7 @@ namespace Galaxy3D
     {
         auto psr = GetGameObject()->AddComponent<ParticleSystemRenderer>();
         psr->particle_system = GetGameObject()->GetComponent<ParticleSystem>();
+        m_renderer = psr;
     }
 
     int ParticleSystem::GetParticleCountMax() const
@@ -46,6 +47,8 @@ namespace Galaxy3D
             int buffer_size = sizeof(VertexUI) * 4 * particle_count;
             char *buffer = (char *) malloc(buffer_size);
             VertexUI *p = (VertexUI *) buffer;
+            auto renderer = m_renderer.lock();
+            Quaternion rot_to_cam = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
 
             int j=0;
             for(auto i=m_particles.begin(); i!=m_particles.end(); i++)
@@ -99,19 +102,52 @@ namespace Galaxy3D
                     v3.TEXCOORD0 = Vector2(1, 0);
                 }
 
-                v.POSITION = Vector3(-i->size * 0.5f, i->size * 0.5f, 0);
-                v1.POSITION = Vector3(-i->size * 0.5f, -i->size * 0.5f, 0);
-                v2.POSITION = Vector3(i->size * 0.5f, -i->size * 0.5f, 0);
-                v3.POSITION = Vector3(i->size * 0.5f, i->size * 0.5f, 0);
+                float speed = i->velocity.Magnitude();
+                float w, h;
+                Vector3 velocity_wolrd = GetTransform()->TransformDirection(i->velocity);
+                Vector3 velocity_view = m_target_camera->GetTransform()->InverseTransformDirection(velocity_wolrd);
+                float theta_velocity_y = atan2f(velocity_view.y, velocity_view.x) * Mathf::Rad2Deg - 90;
+                float theta_velocity_x = atan2f(i->velocity.z, i->velocity.y) * Mathf::Rad2Deg - 90;
+                Quaternion rot_velocity = Quaternion::Euler(0, -theta_velocity_y, 0);
 
+                w = i->size;
+                if(renderer->render_mode == ParticleSystemRenderMode::Stretch)
+                {
+                    h = renderer->stretch_speed_scale * speed + renderer->stretch_length_scale * w;
+
+                    v.POSITION = Vector3(-w * 0.5f, 0, h * 0.5f);
+                    v1.POSITION = Vector3(-w * 0.5f, 0, -h * 0.5f);
+                    v2.POSITION = Vector3(w * 0.5f, 0, -h * 0.5f);
+                    v3.POSITION = Vector3(w * 0.5f, 0, h * 0.5f);
+                }
+                else
+                {
+                    h = w;
+
+                    v.POSITION = Vector3(-w * 0.5f, h * 0.5f, 0);
+                    v1.POSITION = Vector3(-w * 0.5f, -h * 0.5f, 0);
+                    v2.POSITION = Vector3(w * 0.5f, -h * 0.5f, 0);
+                    v3.POSITION = Vector3(w * 0.5f, h * 0.5f, 0);
+                }
+
+                auto rot_local = Quaternion::AngleAxis(-i->rotation, i->axis_of_rotation);
                 for(int k=0; k<4; k++)
                 {
-                    Vector3 pos = Quaternion::AngleAxis(-i->rotation, i->axis_of_rotation) * p[j*4+k].POSITION;
+                    Vector3 pos;
                     if(m_target_camera)
                     {
-                        Quaternion rot = Quaternion::FromToRotation(GetTransform()->GetForward(), m_target_camera->GetTransform()->GetForward());
-                        pos = rot * pos;
+                        if(renderer->render_mode == ParticleSystemRenderMode::Stretch)
+                        {
+                            pos = rot_velocity * p[j*4+k].POSITION;
+                            pos = rot_local * pos;
+                        }
+                        else
+                        {
+                            pos = rot_local * p[j*4+k].POSITION;
+                            pos = rot_to_cam * pos;
+                        }
                     }
+
                     p[j*4+k].POSITION = pos + i->position;
                 }
 
@@ -399,6 +435,7 @@ namespace Galaxy3D
         p.rotation = start_rotation;
         p.start_size = size;
         p.size = size;
+        p.start_velocity = velocity;
         p.velocity = velocity;
 
         m_particles.push_back(p);
@@ -414,7 +451,7 @@ namespace Galaxy3D
 
             if(force_type == ValueType::Constant)
             {
-                i->velocity += force * delta_time;
+                i->velocity = i->start_velocity + force * t;
             }
             else if(force_type == ValueType::Curve)
             {
@@ -422,14 +459,12 @@ namespace Galaxy3D
                 float fy = force_curve_y.Evaluate(t);
                 float fz = force_curve_z.Evaluate(t);
 
-                i->velocity += Vector3(fx, fy, fz) * delta_time;
+                i->velocity = i->start_velocity + Vector3(fx, fy, fz) * t;
             }
-
-            Vector3 v = i->velocity;
 
             if(velocity_type == ValueType::Constant)
             {
-                v += velocity;
+                i->velocity += velocity;
             }
             else if(velocity_type == ValueType::Curve)
             {
@@ -437,10 +472,10 @@ namespace Galaxy3D
                 float vy = velocity_curve_y.Evaluate(t);
                 float vz = velocity_curve_z.Evaluate(t);
 
-                v += Vector3(vx, vy, vz);
+                i->velocity += Vector3(vx, vy, vz);
             }
 
-            i->position += v * delta_time;
+            i->position += i->velocity * delta_time;
             i->rotation += angular_velocity * delta_time;
             i->lifetime -= delta_time;
 

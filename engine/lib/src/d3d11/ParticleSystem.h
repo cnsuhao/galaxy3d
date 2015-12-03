@@ -14,6 +14,8 @@
 
 namespace Galaxy3D
 {
+    class ParticleSystemRenderer;
+
     struct Particle
     {
         Vector3 axis_of_rotation;
@@ -23,6 +25,7 @@ namespace Galaxy3D
         float start_lifetime;
         float lifetime;
         Vector3 position;
+        Vector3 start_velocity;
         Vector3 velocity;
         float start_size;
         float size;
@@ -157,6 +160,7 @@ namespace Galaxy3D
         ID3D11Buffer *m_vertex_buffer;
         ID3D11Buffer *m_index_buffer;
         std::shared_ptr<Camera> m_target_camera;
+        std::weak_ptr<ParticleSystemRenderer> m_renderer;
 
         void UpdateEmitter();
         void EmitShapeSphere(Vector3 &position, Vector3 &velocity, float speed);
