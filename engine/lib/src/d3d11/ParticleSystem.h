@@ -162,6 +162,7 @@ namespace Galaxy3D
         std::weak_ptr<ParticleSystemRenderer> m_renderer;
 
         void UpdateEmitter();
+        void EmitShapeNone(Vector3 &position, Vector3 &velocity, float speed);
         void EmitShapeSphere(Vector3 &position, Vector3 &velocity, float speed);
         void EmitShapeCone(Vector3 &position, Vector3 &velocity, float speed);
         void EmitShapeBox(Vector3 &position, Vector3 &velocity, float speed);
