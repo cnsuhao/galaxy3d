@@ -37,6 +37,11 @@ namespace Galaxy3D
             shader_name = shader_name.substr(std::string("Legacy Shaders/").size());
         }
 
+        if(GTString(shader_name).StartsWith("Particles/"))
+        {
+            shader_name = GTString(shader_name).Replace("Particles", "Effect").str;
+        }
+
         if(skin)
         {
             shader_name = "SkinnedMesh/" + shader_name;
