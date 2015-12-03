@@ -13,8 +13,8 @@ namespace Galaxy3D
         auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto camera = Camera::GetCurrent();
 
-        Matrix4x4 mat_world = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
-        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * mat_world;
+        Matrix4x4 local_to_world = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
+        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * local_to_world;
 
         int index_count = ps->GetParticleCount() * 6;
         if(index_count > 0)

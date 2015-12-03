@@ -25,7 +25,6 @@ namespace Galaxy3D
         float start_lifetime;
         float lifetime;
         Vector3 position;
-        Vector3 start_velocity;
         Vector3 velocity;
         float start_size;
         float size;
