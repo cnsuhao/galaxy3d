@@ -5,8 +5,7 @@
 #define DEMO_DUST 0
 #define DEMO_BATS 0
 #define DEMO_SMOKE 0
-#define DEMO_FIRE 0
-#define DEMO_TEST 1
+#define DEMO_FIRE 1
 
 using namespace Galaxy3D;
 
@@ -34,7 +33,7 @@ void Launcher::Start()
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
 
-#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE || DEMO_FIRE || DEMO_TEST
+#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE || DEMO_FIRE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(60);
@@ -44,32 +43,6 @@ void Launcher::Start()
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
     cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
-#endif
-
-#if DEMO_TEST
-    auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
-    ps->GetTransform()->SetPosition(Vector3(0, 0, 25));
-    ps->GetTransform()->SetRotation(Quaternion::Euler(-90, 0, 0));
-    ps->GetTransform()->SetScale(Vector3(0.4237148f, 12.70362f, 0.3013902f));
-    ps->duration = 4;
-    ps->start_lifetime = 4;
-    ps->start_speed = 4;
-    ps->start_size = 8;
-    ps->emitter_shape = ParticleEmitterShape::Cone;
-    ps->emitter_shape_cone_angle = 45;
-    ps->emitter_shape_cone_radius = 0.1f;
-    ps->max_particles = 1;
-
-    ps->SetTargetCamera(cam3d);
-    auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
-    psr->render_mode = ParticleSystemRenderMode::Stretch;
-    psr->stretch_speed_scale = 0;
-    psr->stretch_length_scale = 2;
-    auto psm = Material::Create("Particles/AlphaBlended");
-    psm->SetColor("_TintColor", Color(1, 1, 1, 1) * 0.5f);
-    auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/arthas.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
-    psm->SetMainTexture(pst);
-    psr->SetSharedMaterial(psm);
 #endif
 
 #if DEMO_FIRE
