@@ -246,6 +246,12 @@ namespace Galaxy3D
         UpdateBuffer();
     }
 
+    void ParticleSystem::EmitShapeNone(Vector3 &position, Vector3 &velocity, float speed)
+    {
+        position = Vector3(0, 0, 0);
+        velocity = Vector3(0, 0, 1) * speed;
+    }
+
     void ParticleSystem::EmitShapeSphere(Vector3 &position, Vector3 &velocity, float speed)
     {
         float dx, dy, dz;
@@ -391,6 +397,9 @@ namespace Galaxy3D
                                 break;
                             case ParticleEmitterShape::Box:
                                 EmitShapeBox(position, velocity, speed);
+                                break;
+                            default:
+                                EmitShapeNone(position, velocity, speed);
                                 break;
                         }
 

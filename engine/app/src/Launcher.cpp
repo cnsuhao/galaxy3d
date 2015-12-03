@@ -159,6 +159,39 @@ void Launcher::Start()
         psm->SetMainTexture(pst);
         psr->SetSharedMaterial(psm);
     }
+
+    {
+        auto ps = GameObject::Create("halo")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0.1f, 1.146898f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(90, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0.01f;
+        ps->start_size = 5;
+        ps->max_particles = 1000;
+        ps->emission_rate = 1;
+        ps->emitter_shape = ParticleEmitterShape::Disable;
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.215f, 39 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.765f, 69 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(152, 66, 0, 255) * (1.0f / 255)));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(126, 81, 0, 255) * (1.0f / 255)));
+        ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 1, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.235f, 0.212f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.458f, 0.995f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.744f, 0.46f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/AlphaBlendedPremultiply");
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/particle.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
 #endif
 
 #if DEMO_SMOKE
