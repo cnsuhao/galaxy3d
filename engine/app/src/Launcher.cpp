@@ -14,50 +14,11 @@ std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 #endif
 
-void Launcher::Start()
+void add_fire_particles(std::shared_ptr<GameObject> &fire, std::shared_ptr<Camera> &cam3d)
 {
-	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
-    
-    cam2d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
-    cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
-    cam2d->SetDepth(1);
-    cam2d->SetClearFlags(CameraClearFlags::Nothing);
-
-	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
-	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
-	tr->SetLabel(label);
-	tr->SetSortingOrder(1000, 0);
-	fps = tr;
-	fps->GetTransform()->SetParent(cam2d->GetTransform());
-    fps->GetGameObject()->SetLayer(Layer::UI);
-
-#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE || DEMO_FIRE
-    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam3d->SetOrthographic(false);
-    cam3d->SetFieldOfView(60);
-    cam3d->SetClipPlane(0.3f, 1000.0f);
-    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
-    cam3d->SetDepth(0);
-    cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
-#endif
-
-#if DEMO_FIRE
-    cam3d->GetTransform()->SetPosition(Vector3(0, 3, -5));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, 0, 0));
-    auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Furnace.mesh");
-
-    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
-    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
-    RenderSettings::light_directional_intensity = 1;
-    RenderSettings::light_directional_direction = Vector3(0, -1, -1);
-    
     {
         auto ps = GameObject::Create("fire")->AddComponent<ParticleSystem>();
-        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetParent(fire->GetTransform());
         ps->GetTransform()->SetLocalPosition(Vector3(0, 0.9835533f, 0));
         ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
         ps->duration = 5;
@@ -86,10 +47,10 @@ void Launcher::Start()
         psm->SetMainTexture(pst);
         psr->SetSharedMaterial(psm);
     }
-    
+
     {
         auto ps = GameObject::Create("smoke")->AddComponent<ParticleSystem>();
-        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetParent(fire->GetTransform());
         ps->GetTransform()->SetLocalPosition(Vector3(0, -0.8561009f, 0));
         ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
         ps->duration = 5;
@@ -123,7 +84,7 @@ void Launcher::Start()
 
     {
         auto ps = GameObject::Create("spark")->AddComponent<ParticleSystem>();
-        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetParent(fire->GetTransform());
         ps->GetTransform()->SetLocalPosition(Vector3(0, 0.7186908f, 0));
         ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
         ps->duration = 1;
@@ -162,7 +123,187 @@ void Launcher::Start()
 
     {
         auto ps = GameObject::Create("halo")->AddComponent<ParticleSystem>();
-        ps->GetTransform()->SetParent(scene->GetTransform());
+        ps->GetTransform()->SetParent(fire->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0.1f, 1.146898f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(90, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0.01f;
+        ps->start_size = 5;
+        ps->max_particles = 1000;
+        ps->emission_rate = 1;
+        ps->emitter_shape = ParticleEmitterShape::Disable;
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.215f, 39 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.765f, 69 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(152, 66, 0, 255) * (1.0f / 255)));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(126, 81, 0, 255) * (1.0f / 255)));
+        ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 1, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.235f, 0.212f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.458f, 0.995f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.744f, 0.46f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/AlphaBlendedPremultiply");
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/particle.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
+}
+
+void Launcher::Start()
+{
+	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+    
+    cam2d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
+    cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
+    cam2d->SetDepth(1);
+    cam2d->SetClearFlags(CameraClearFlags::Nothing);
+
+	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
+	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
+	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
+	tr->SetLabel(label);
+	tr->SetSortingOrder(1000, 0);
+	fps = tr;
+	fps->GetTransform()->SetParent(cam2d->GetTransform());
+    fps->GetGameObject()->SetLayer(Layer::UI);
+
+#if DEMO_DUST || DEMO_BATS || DEMO_SMOKE || DEMO_FIRE
+    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetOrthographic(false);
+    cam3d->SetFieldOfView(60);
+    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->SetDepth(0);
+    cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
+    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam3d->GetTransform()->SetPosition(Vector3(0, 0, -5));
+#endif
+
+#if DEMO_FIRE
+    cam3d->GetTransform()->SetPosition(Vector3(-1.751f, 3.565f, -1.541f));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(45, 45, 0));
+    auto fire = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Furnace.mesh");
+
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
+    RenderSettings::light_directional_intensity = 1;
+    RenderSettings::light_directional_direction = Vector3(0, -1, -1);
+    
+    {
+        auto ps = GameObject::Create("fire")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(fire->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0, 0.9835533f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0;
+        ps->start_size = 0.7f;
+        ps->start_color = Color(255, 255, 255, 255) * (1.0f / 255);
+        ps->max_particles = 1;
+        ps->emission_rate = 10;
+        ps->emitter_shape = ParticleEmitterShape::Sphere;
+        ps->emitter_shape_sphere_radius = 0.01f;
+        ps->enable_texture_sheet_animation = true;
+        ps->texture_sheet_animation_tile_x = 16;
+        ps->texture_sheet_animation_tile_y = 4;
+        ps->texture_sheet_animation_single_row = false;
+        ps->texture_sheet_animation_frame_curve = AnimationCurve();
+        ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(0, 0, 64, 64));
+        ps->texture_sheet_animation_frame_curve.keys.push_back(Keyframe(1, 64, 64, 64));
+        ps->texture_sheet_animation_cycles = 4;
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/AlphaBlended");
+        psm->SetColor("_TintColor", Color(255, 175, 152, 128) * (1.0f / 255));
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/fire.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
+    
+    {
+        auto ps = GameObject::Create("smoke")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(fire->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0, -0.8561009f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
+        ps->duration = 5;
+        ps->start_lifetime = 5;
+        ps->start_speed = 0.85f;
+        ps->start_size = 2.56f;
+        ps->max_particles = 1000;
+        ps->emission_rate = 3.6f;
+        ps->emitter_shape = ParticleEmitterShape::Cone;
+        ps->emitter_shape_cone_angle = 6.42f;
+        ps->emitter_shape_cone_radius = 0.2f;
+        ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0, 0));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.218f, 25 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(0.826f, 39 / 255.0f));
+        ps->color_gradient.key_alphas.push_back(ColorGradient::KeyAlpha(1, 0));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(0, Color(1, 1, 1, 1)));
+        ps->color_gradient.key_rgbs.push_back(ColorGradient::KeyRGB(1, Color(1, 1, 1, 1)));
+        ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 0.03f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(1, 1, 0, 0));
+        ps->angular_velocity = 45;
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        auto psm = Material::Create("Particles/Multiply");
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/smoke.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
+
+    {
+        auto ps = GameObject::Create("spark")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(fire->GetTransform());
+        ps->GetTransform()->SetLocalPosition(Vector3(0, 0.7186908f, 0));
+        ps->GetTransform()->SetLocalRotation(Quaternion::Euler(-90, 0, 0));
+        ps->duration = 1;
+        ps->start_lifetime_type = ValueType::RandomConstants;
+        ps->start_lifetime_random_contants = Vector2(0.1f, 0.35f);
+        ps->start_speed_type = ValueType::RandomConstants;
+        ps->start_speed_random_contants = Vector2(2, 5);
+        ps->start_size = 0.14f;
+        ps->start_color = Color(255, 192, 56, 255) * (1.0f / 255);
+        ps->max_particles = 1000;
+        ps->emission_rate = 30;
+        ps->emitter_shape = ParticleEmitterShape::Cone;
+        ps->emitter_shape_cone_angle = 25;
+        ps->emitter_shape_cone_radius = 0.43f;
+        ps->emitter_shape_cone_from = EmitterShapeConeFrom::Base;
+        ps->emitter_random_direction = true;
+        ps->velocity_type = ValueType::Constant;
+        ps->velocity = Vector3(-0.66f, -1.11f, 0.17f);
+        ps->force_type = ValueType::Constant;
+        ps->force = Vector3(4, 0.03f, 1.32f);
+        ps->size_curve = AnimationCurve();
+        ps->size_curve.keys.push_back(Keyframe(0, 0.197f, 0, 0));
+        ps->size_curve.keys.push_back(Keyframe(0.946f, 0.409f, 0, 0));
+
+        ps->SetTargetCamera(cam3d);
+        auto psr = ps->GetGameObject()->GetComponent<ParticleSystemRenderer>();
+        psr->render_mode = ParticleSystemRenderMode::Stretch;
+        psr->stretch_speed_scale = 0;
+        psr->stretch_length_scale = 7.55f;
+        auto psm = Material::Create("Particles/Additive");
+        psm->SetColor("_TintColor", Color(1, 1, 1, 0.5f));
+        auto pst = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/spark.jpg", FilterMode::Bilinear, TextureWrapMode::Clamp);
+        psm->SetMainTexture(pst);
+        psr->SetSharedMaterial(psm);
+    }
+
+    {
+        auto ps = GameObject::Create("halo")->AddComponent<ParticleSystem>();
+        ps->GetTransform()->SetParent(fire->GetTransform());
         ps->GetTransform()->SetLocalPosition(Vector3(0.1f, 1.146898f, 0));
         ps->GetTransform()->SetLocalRotation(Quaternion::Euler(90, 0, 0));
         ps->duration = 5;
@@ -312,8 +453,8 @@ void Launcher::Start()
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(-65.13f, 5.47f, 4.76f));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(15.7f, 129.4f, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(-51.14f, 1.1f, -19.78f));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(15.7f, 148.43f, 0));
 
     auto lightmap_0 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     auto lightmap_1 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
@@ -322,7 +463,16 @@ void Launcher::Start()
     LightmapSettings::lightmaps.push_back(lightmap_1);
 
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
-    scene->SetLayerRecursive(Layer::Default);
+    int cc = scene->GetTransform()->GetChildCount();
+    for(int i=0; i<cc; i++)
+    {
+        auto child = scene->GetTransform()->GetChild(i);
+        if(child->GetName() == "Furnace_A_01")
+        {
+            add_fire_particles(child->GetGameObject(), cam3d);
+            Debug::Log("%s", child->GetPosition().ToString().c_str());
+        }
+    }
     Renderer::BuildOctree(scene);
 #endif
 
