@@ -1,11 +1,14 @@
 #include "ParticleSystemRenderer.h"
+#include "ParticleSystem.h"
 
 namespace Galaxy3D
 {
     void ParticleSystemRenderer::Render(int material_index)
     {
-        auto vertex_buffer = particle_system->GetVertexBuffer();
-        auto index_buffer = particle_system->GetIndexBuffer();
+        auto ps = particle_system.lock();
+
+        auto vertex_buffer = ps->GetVertexBuffer();
+        auto index_buffer = ps->GetIndexBuffer();
 
         auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto camera = Camera::GetCurrent();
@@ -13,7 +16,7 @@ namespace Galaxy3D
         Matrix4x4 mat_world = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
         Matrix4x4 wvp = camera->GetViewProjectionMatrix() * mat_world;
 
-        int index_count = particle_system->GetParticleCount() * 6;
+        int index_count = ps->GetParticleCount() * 6;
         if(index_count > 0)
         {
             auto mat = GetSharedMaterial();
