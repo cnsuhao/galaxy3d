@@ -54,16 +54,15 @@ namespace Galaxy3D
             Matrix4x4 world_to_local = local_to_world.Inverse();
             Vector3 cam_foward_in_system = world_to_local.MultiplyDirection(m_target_camera->GetTransform()->GetForward());
             Vector3 cam_up_in_system = world_to_local.MultiplyDirection(m_target_camera->GetTransform()->GetUp());
-            rot_to_cam = Quaternion::LookRotation(cam_foward_in_system, cam_up_in_system);
 
             if(renderer->render_mode == ParticleSystemRenderMode::Stretch)
             {
                 rot_to_cam_stretch = Quaternion::FromToRotation(Vector3(0, 1, 0) * -1.0f, cam_foward_in_system);
-                //rot_to_cam_stretch = Quaternion::FromToRotation(rot_to_cam_stretch * Vector3(0, 1, 0), cam_up_in_system) * rot_to_cam_stretch;
+                rot_to_cam_stretch = Quaternion::FromToRotation(rot_to_cam_stretch * Vector3(0, 0, 1), cam_up_in_system) * rot_to_cam_stretch;
             }
             else
             {
-                //rot_to_cam = Quaternion::LookRotation(cam_foward_in_system, cam_up_in_system);
+                rot_to_cam = Quaternion::LookRotation(cam_foward_in_system, cam_up_in_system);
             }
 
             int j=0;
@@ -127,7 +126,6 @@ namespace Galaxy3D
                     float speed = i->velocity.Magnitude();
                     Vector3 velocity_wolrd = local_to_world.MultiplyDirection(i->velocity);
                     Vector3 velocity_view = m_target_camera->GetTransform()->InverseTransformDirection(velocity_wolrd);
-                    //velocity_view = rot_to_cam * i->velocity;
                     float theta_velocity_y = atan2f(velocity_view.y, velocity_view.x) * Mathf::Rad2Deg - 90;
                     rot_velocity = Quaternion::Euler(0, -theta_velocity_y, 0);
 
