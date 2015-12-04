@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "GameObject.h"
+#include "GTString.h"
 
 namespace Galaxy3D
 {
@@ -81,6 +82,36 @@ namespace Galaxy3D
 	{
 		return m_children[index].lock();
 	}
+
+    std::shared_ptr<Transform> Transform::Find(const std::string &path) const
+    {
+        std::shared_ptr<Transform> find;
+
+        GTString p = path;
+        auto names = p.Split("/");
+        
+        for(auto &c : m_children)
+        {
+            auto child = c.lock();
+            auto name = names[0].str;
+
+            if(child->GetName() == name)
+            {
+                if(names.size() > 1)
+                {
+                    find = child->Find(path.substr(name.length() + 1));
+                }
+                else
+                {
+                    find = child;
+                }
+
+                break;
+            }
+        }
+
+        return find;
+    }
 
 	void Transform::SetLocalPosition(const Vector3 &pos)
 	{

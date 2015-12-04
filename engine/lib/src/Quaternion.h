@@ -25,6 +25,7 @@ namespace Galaxy3D
 		static Quaternion Euler(const Vector3 &e) {return Euler(e.x, e.y, e.z);}
         static Quaternion Lerp(const Quaternion &from, const Quaternion &to, float t);
         static Quaternion FromToRotation(const Vector3 &from_direction, const Vector3 &to_direction);
+        static Quaternion LookRotation(const Vector3 &forward, const Vector3 &up); 
 
 	public:
 		float x;

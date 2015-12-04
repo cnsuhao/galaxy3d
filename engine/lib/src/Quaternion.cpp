@@ -152,6 +152,13 @@ namespace Galaxy3D
         return Quaternion::Identity();
     }
 
+    Quaternion Quaternion::LookRotation(const Vector3 &forward, const Vector3 &up)
+    {
+        Quaternion rot = Quaternion::FromToRotation(Vector3(0, 0, 1), forward);
+        rot = Quaternion::FromToRotation(rot * Vector3(0, 1, 0), up) * rot;
+        return rot;
+    }
+
     void Quaternion::Normalize()
     {
         float sqr_magnitude = x*x + y*y + z*z + w*w;

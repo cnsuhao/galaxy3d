@@ -19,6 +19,7 @@ namespace Galaxy3D
 		bool IsRoot() const {return m_parent.expired();}
 		int GetChildCount() const {return m_children.size();}
 		std::shared_ptr<Transform> GetChild(int index) const;
+        std::shared_ptr<Transform> Find(const std::string &path) const;
 		void SetLocalPosition(const Vector3 &pos);
 		const Vector3 &GetLocalPosition() const {return m_local_position;}
 		void SetLocalRotation(const Quaternion &rot);
