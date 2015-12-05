@@ -27,7 +27,6 @@ namespace Galaxy3D
 		ID3D11SamplerState *GetSampler() const {return m_sampler;}
 
 	private:
-        static std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_texture_cache;
 		char *m_colors;
 		int m_color_buffer_size;
 		TextureFormat::Enum m_format;

@@ -5,8 +5,6 @@
 
 namespace Galaxy3D
 {
-    std::unordered_map<std::string, std::shared_ptr<Texture2D>> Texture2D::m_texture_cache;
-
 	static const unsigned char JPG_HEAD[] = {0xff, 0xd8, 0xff};
 	static const unsigned char PNG_HEAD[] = {0x89, 0x50, 0x4e, 0x47};
 
@@ -148,10 +146,10 @@ namespace Galaxy3D
 	{
         std::shared_ptr<Texture2D> tex;
 
-        auto find = m_texture_cache.find(file);
-        if(find != m_texture_cache.end())
+        auto find = FindCachedObject(file);
+        if(find)
         {
-            tex = find->second;
+            tex = std::dynamic_pointer_cast<Texture2D, Object>(find);
         }
         else if(GTFile::Exist(file))
         {
@@ -163,7 +161,7 @@ namespace Galaxy3D
                 free(bytes);
 
                 tex->SetName(file);
-                m_texture_cache[file] = tex;
+                CacheObject(file, tex);
             }
         }
 

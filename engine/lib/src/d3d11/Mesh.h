@@ -32,6 +32,7 @@ namespace Galaxy3D
         ID3D11Buffer *m_index_buffer;
 
         static std::shared_ptr<Mesh> ReadMesh(char *&p, Renderer *renderer, const std::string &dir, bool skin);
+        static std::shared_ptr<Material> ReadMaterial(char *&p, const std::string &dir, bool skin);
         Mesh();
     };
 }

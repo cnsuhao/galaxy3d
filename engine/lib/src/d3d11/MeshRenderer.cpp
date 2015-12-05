@@ -1,5 +1,6 @@
 #include "MeshRenderer.h"
 #include "RenderSettings.h"
+#include "LightmapSettings.h"
 
 namespace Galaxy3D
 {
@@ -48,6 +49,12 @@ namespace Galaxy3D
             mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
             mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
             mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+
+            if(m_lightmap_index >= 0)
+            {
+                mat->SetVector("_LightmapST", m_lightmap_tiling_offset);
+                mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index]);
+            }
 
             auto pass_count = shader->GetPassCount();
             for(int j=0; j<pass_count; j++)
