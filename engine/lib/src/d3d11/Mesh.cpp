@@ -26,10 +26,18 @@ namespace Galaxy3D
         return str;
     }
 
-    static std::shared_ptr<Material> read_material(char *&p, const std::string &dir, bool skin)
+    std::shared_ptr<Material> Mesh::ReadMaterial(char *&p, const std::string &dir, bool skin)
     {
-        std::string mat_name = read_string(p);
         std::string mat_guid = read_string(p);
+        char has_data;
+        BUFFER_READ(has_data, p, 1);
+
+        if(!has_data)
+        {
+            return std::dynamic_pointer_cast<Material, Object>(FindCachedObject(mat_guid));
+        }
+
+        std::string mat_name = read_string(p);
         std::string shader_name = read_string(p);
 
         if(GTString(shader_name).StartsWith("Legacy Shaders/"))
@@ -113,6 +121,8 @@ namespace Galaxy3D
                 break;
             }
         }
+
+        CacheObject(mat_guid, mat);
 
         return mat;
     }
@@ -404,13 +414,15 @@ namespace Galaxy3D
 
                     if(lightmap_index < (int) LightmapSettings::lightmaps.size())
                     {
-                        auto mat = renderer->GetSharedMaterial();
+                        auto &mats = renderer->GetSharedMaterials();
 
-                        if(mat)
+                        for(size_t i=0; i<mats.size(); i++)
                         {
-                            mat->SetShader(Shader::Find("Lightmap/" + mat->GetShader()->GetName()));
-                            mat->SetVector("_LightmapST", lightmap_tiling_offset);
-                            mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[lightmap_index]);
+                            auto &mat = mats[i];
+                            if(mat && !GTString(mat->GetShader()->GetName()).StartsWith("Lightmap/"))
+                            {
+                                mat->SetShader(Shader::Find("Lightmap/" + mat->GetShader()->GetName()));
+                            }
                         }
                     }
                 }
@@ -466,7 +478,7 @@ namespace Galaxy3D
         std::vector<std::shared_ptr<Material>> mats(mat_count);
         for(int i=0; i<mat_count; i++)
         {
-            mats[i] = read_material(p, dir, skin);
+            mats[i] = ReadMaterial(p, dir, skin);
         }
 
         renderer->SetSharedMaterials(mats);

@@ -108,6 +108,7 @@ namespace Galaxy3D
 	{
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
+        Object::ClearAllCachedObjects();
 
 		Label::DoneFontLib();
 	}

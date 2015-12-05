@@ -181,8 +181,8 @@ void Launcher::Start()
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(-82.2f, 19.7f, 28.5f));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(26.04001f, 139.1f, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(-21.98f, 10.27f, 44.9f));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(24.58f, 137.26f, 0));
 
     auto lightmap_0 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     auto lightmap_1 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
@@ -191,6 +191,7 @@ void Launcher::Start()
     LightmapSettings::lightmaps.push_back(lightmap_1);
 
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
+
     int cc = scene->GetTransform()->GetChildCount();
     for(int i=0; i<cc; i++)
     {
@@ -207,7 +208,7 @@ void Launcher::Start()
 
     auto dusts = GameObject::Create("FX");
     dusts->GetTransform()->SetParent(scene->GetTransform());
-    dusts->GetTransform()->SetPosition(Vector3(-24.37691f, -43.86118f, -49.42612f));
+    dusts->GetTransform()->SetLocalPosition(Vector3(28.68044f, -44.94969f, -16.97657f));
     add_dust_particles(dusts, cam3d, Vector3(-17.94812f, 41.30858f, 60.79422f));
     add_dust_particles(dusts, cam3d, Vector3(-7.215611f, 46.65371f, 44.56079f));
     add_dust_particles(dusts, cam3d, Vector3(-22.39325f, 39.16286f, 19.75619f));
@@ -247,7 +248,6 @@ void Launcher::Start()
         terrain_texs, 3);
     auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
     renderer->SetTerrain(ter);
-    renderer->SetSharedMaterial(ter->GetSharedMaterial());
     
     auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
