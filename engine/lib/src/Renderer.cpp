@@ -32,7 +32,7 @@ namespace Galaxy3D
 		m_sorting_layer = layer;
 		m_sorting_order = order;
 
-		Sort();
+        Sort();
 	}
 
 	void Renderer::Sort()
@@ -155,7 +155,7 @@ namespace Galaxy3D
 
         AddBatches();
 
-		Sort();
+        Sort();
 	}
 
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
@@ -171,7 +171,7 @@ namespace Galaxy3D
             AddBatches();
 		}
 
-		Sort();
+        Sort();
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const
@@ -217,6 +217,8 @@ namespace Galaxy3D
 
     void Renderer::ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node)
     {
+        auto camera = Camera::GetCurrent();
+
         auto contains = frustum.ContainsBounds(node->center, node->extents);
         if(contains == ContainsResult::Out)
         {
@@ -228,15 +230,26 @@ namespace Galaxy3D
             for(size_t i=0; i<node->renderers.size(); i++)
             {
                 auto &renderer = node->renderers[i].lock();
-                auto bounds = renderer->GetBounds();
-                contains = frustum.ContainsBounds(bounds.center, bounds.extents);
-                if(contains == ContainsResult::Out)
+                auto obj = renderer->GetGameObject();
+
+                if(	obj->IsActiveInHierarchy() &&
+                    renderer->IsEnable() &&
+                    ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
                 {
-                    renderer->SetVisible(false);
+                    auto bounds = renderer->GetBounds();
+                    contains = frustum.ContainsBounds(bounds.center, bounds.extents);
+                    if(contains == ContainsResult::Out)
+                    {
+                        renderer->SetVisible(false);
+                    }
+                    else
+                    {
+                        renderer->SetVisible(true);
+                    }
                 }
                 else
                 {
-                    renderer->SetVisible(true);
+                    renderer->SetVisible(false);
                 }
             }
 
@@ -254,6 +267,9 @@ namespace Galaxy3D
 
 	void Renderer::RenderAll()
 	{
+        // sort all batches every frame
+        //Sort();
+
 		auto camera = Camera::GetCurrent();
 
         if(m_octree)
@@ -266,10 +282,11 @@ namespace Galaxy3D
         {
             auto obj = i.renderer->GetGameObject();
 
-            if(	obj->IsActiveInHierarchy() &&
-                i.renderer->IsEnable() &&
-                i.renderer->IsVisible() &&
-                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+            // if obj is inactive, 
+            // or renderer is disabled,
+            // or obj culling by layer,
+            // it will be invisible.
+            if(i.renderer->IsVisible())
             {
                 i.renderer->Render(i.material_index);
             }
