@@ -31,8 +31,6 @@ namespace Galaxy3D
 	{
 		m_sorting_layer = layer;
 		m_sorting_order = order;
-
-        Sort();
 	}
 
 	void Renderer::Sort()
@@ -154,8 +152,6 @@ namespace Galaxy3D
 		m_shared_materials = materials;
 
         AddBatches();
-
-        Sort();
 	}
 
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
@@ -170,8 +166,6 @@ namespace Galaxy3D
 
             AddBatches();
 		}
-
-        Sort();
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const
@@ -268,7 +262,7 @@ namespace Galaxy3D
 	void Renderer::RenderAll()
 	{
         // sort all batches every frame
-        //Sort();
+        Sort();
 
 		auto camera = Camera::GetCurrent();
 
@@ -282,11 +276,10 @@ namespace Galaxy3D
         {
             auto obj = i.renderer->GetGameObject();
 
-            // if obj is inactive, 
-            // or renderer is disabled,
-            // or obj culling by layer,
-            // it will be invisible.
-            if(i.renderer->IsVisible())
+            if( i.renderer->IsVisible() &&
+                obj->IsActiveInHierarchy() &&
+                i.renderer->IsEnable() &&
+                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
             {
                 i.renderer->Render(i.material_index);
             }
