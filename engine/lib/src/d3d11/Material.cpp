@@ -45,7 +45,7 @@ namespace Galaxy3D
 	{
 		m_render_queue = queue;
 
-		Renderer::SortAllBatches();
+        Renderer::SortAllBatches();
 	}
 
 	void Material::SetVector(const std::string &name, const Vector4 &vector)

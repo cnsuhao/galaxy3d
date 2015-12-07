@@ -27,7 +27,7 @@ namespace Galaxy3D
 	class Renderer : public Component
 	{
 	public:
-        static void SortAllBatches();
+		static void SortAllBatches();
 		static void RenderAll();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
         virtual ~Renderer();
