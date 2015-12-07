@@ -27,7 +27,7 @@ namespace Galaxy3D
 	class Renderer : public Component
 	{
 	public:
-		static void Sort();
+        static void SortAllBatches();
 		static void RenderAll();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
         virtual ~Renderer();
@@ -65,6 +65,7 @@ namespace Galaxy3D
         static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
+        static void SortTransparentBatches();
 		static bool Less(const Renderer *c1, const Renderer *c2);
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);

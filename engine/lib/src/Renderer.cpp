@@ -4,6 +4,8 @@
 #include "LayerMask.h"
 #include "Octree.h"
 #include "FrustumBounds.h"
+#include "GTString.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -16,8 +18,8 @@ namespace Galaxy3D
 		m_visible(true),
 		m_lightmap_index(-1),
 		m_lightmap_tiling_offset(),
-		m_sorting_layer(-1),
-		m_sorting_order(-1),
+		m_sorting_layer(0),
+		m_sorting_order(0),
         m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1) * Mathf::MaxFloatValue)
 	{
 	}
@@ -31,12 +33,19 @@ namespace Galaxy3D
 	{
 		m_sorting_layer = layer;
 		m_sorting_order = order;
+
+        SortAllBatches();
 	}
 
-	void Renderer::Sort()
+	void Renderer::SortAllBatches()
 	{
         m_batches.sort(LessBatch);
 	}
+
+    void Renderer::SortTransparentBatches()
+    {
+
+    }
 
 	bool Renderer::Less(const Renderer *c1, const Renderer *c2)
 	{
@@ -62,16 +71,13 @@ namespace Galaxy3D
 
 		if(q1 == q2)
 		{
-			if(c1->m_sorting_layer >= 0 && c2->m_sorting_layer >= 0)
+			if(c1->m_sorting_layer == c2->m_sorting_layer)
 			{
-				if(c1->m_sorting_layer == c2->m_sorting_layer)
-				{
-					return c1->m_sorting_order < c2->m_sorting_order;
-				}
-				else
-				{
-					return c1->m_sorting_layer < c2->m_sorting_layer;
-				}
+				return c1->m_sorting_order < c2->m_sorting_order;
+			}
+			else
+			{
+				return c1->m_sorting_layer < c2->m_sorting_layer;
 			}
 		}
 		
@@ -80,13 +86,10 @@ namespace Galaxy3D
 
     bool Renderer::LessBatch(const RenderBatch &b1, const RenderBatch &b2)
     {
+        int compare;
+
         auto &m1 = b1.renderer->GetSharedMaterials()[b1.material_index];
         auto &m2 = b2.renderer->GetSharedMaterials()[b2.material_index];
-
-        if(!m1 || !m2)
-        {
-            return false;
-        }
 
         int q1 = m1->GetRenderQueue();
         if(q1 < 0)
@@ -100,22 +103,26 @@ namespace Galaxy3D
             q2 = m2->GetShader()->GetRenderQueue();
         }
 
-        if(q1 == q2)
+        compare = q1 - q2;
+
+        if(compare == 0)
         {
-            if(b1.renderer->m_sorting_layer >= 0 && b2.renderer->m_sorting_layer >= 0)
+            if(b1.renderer->m_sorting_layer == b2.renderer->m_sorting_layer)
             {
-                if(b1.renderer->m_sorting_layer == b2.renderer->m_sorting_layer)
-                {
-                    return b1.renderer->m_sorting_order < b2.renderer->m_sorting_order;
-                }
-                else
-                {
-                    return b1.renderer->m_sorting_layer < b2.renderer->m_sorting_layer;
-                }
+                compare = b1.renderer->m_sorting_order - b2.renderer->m_sorting_order;
+            }
+            else
+            {
+                compare = b1.renderer->m_sorting_layer - b2.renderer->m_sorting_layer;
             }
         }
 
-        return q1 < q2;
+        if(compare == 0)
+        {
+            compare = m1->GetGuid().compare(m2->GetGuid());
+        }
+
+        return compare < 0;
     }
 
     void Renderer::AddBatches()
@@ -152,6 +159,8 @@ namespace Galaxy3D
 		m_shared_materials = materials;
 
         AddBatches();
+
+        SortAllBatches();
 	}
 
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
@@ -166,6 +175,8 @@ namespace Galaxy3D
 
             AddBatches();
 		}
+
+        SortAllBatches();
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const
@@ -261,8 +272,8 @@ namespace Galaxy3D
 
 	void Renderer::RenderAll()
 	{
-        // sort all batches every frame
-        Sort();
+        // sort all Transparent batches every frame
+        SortTransparentBatches();
 
 		auto camera = Camera::GetCurrent();
 

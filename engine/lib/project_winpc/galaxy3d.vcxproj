@@ -40,6 +40,7 @@
     <ClCompile Include="..\src\GTString.cpp" />
     <ClCompile Include="..\src\GTStringUTF32.cpp" />
     <ClCompile Include="..\src\GTTime.cpp" />
+    <ClCompile Include="..\src\Guid.cpp" />
     <ClCompile Include="..\src\Image.cpp" />
     <ClCompile Include="..\src\Input.cpp" />
     <ClCompile Include="..\src\Label.cpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="..\src\GTString.h" />
     <ClInclude Include="..\src\GTStringUTF32.h" />
     <ClInclude Include="..\src\GTTime.h" />
+    <ClInclude Include="..\src\Guid.h" />
     <ClInclude Include="..\src\Image.h" />
     <ClInclude Include="..\src\Input.h" />
     <ClInclude Include="..\src\Label.h" />

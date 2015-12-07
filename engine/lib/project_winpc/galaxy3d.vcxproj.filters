@@ -162,6 +162,9 @@
     <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Guid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -384,6 +387,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ColorGradient.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Guid.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
