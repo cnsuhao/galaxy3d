@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Texture2D.h"
 #include "Renderer.h"
+#include "Guid.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
 static const std::string MAIN_COLOR_NAME = "_MainColor";
@@ -23,6 +24,7 @@ namespace Galaxy3D
 	{
 		std::shared_ptr<Material> mat(new Material());
 		mat->SetShader(shader);
+        mat->SetGuid(Guid::NewGuid());
 
 		return mat;
 	}
@@ -42,7 +44,8 @@ namespace Galaxy3D
 	void Material::SetRenderQueue(int queue)
 	{
 		m_render_queue = queue;
-		Renderer::Sort();
+
+		Renderer::SortAllBatches();
 	}
 
 	void Material::SetVector(const std::string &name, const Vector4 &vector)

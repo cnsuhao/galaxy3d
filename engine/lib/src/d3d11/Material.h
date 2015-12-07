@@ -36,8 +36,11 @@ namespace Galaxy3D
 		void Copy(const Material &mat);
 		void ReadyPass(int pass);
 		void ApplyPass(int pass);
+        void SetGuid(const std::string &guid) {m_guid = guid;}
+        std::string GetGuid() const {return m_guid;}
 
 	private:
+        std::string m_guid;
 		std::shared_ptr<Shader> m_shader;
 		std::unordered_map<std::string, Color> m_colors;
 		std::unordered_map<std::string, Matrix4x4> m_matrices;
