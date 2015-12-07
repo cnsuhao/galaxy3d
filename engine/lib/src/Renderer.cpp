@@ -4,8 +4,6 @@
 #include "LayerMask.h"
 #include "Octree.h"
 #include "FrustumBounds.h"
-#include "GTString.h"
-#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -34,7 +32,7 @@ namespace Galaxy3D
 		m_sorting_layer = layer;
 		m_sorting_order = order;
 
-        SortAllBatches();
+        Renderer::SortAllBatches();
 	}
 
 	void Renderer::SortAllBatches()
@@ -160,7 +158,7 @@ namespace Galaxy3D
 
         AddBatches();
 
-        SortAllBatches();
+        Renderer::SortAllBatches();
 	}
 
 	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
@@ -176,7 +174,7 @@ namespace Galaxy3D
             AddBatches();
 		}
 
-        SortAllBatches();
+        Renderer::SortAllBatches();
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const
@@ -272,7 +270,7 @@ namespace Galaxy3D
 
 	void Renderer::RenderAll()
 	{
-        // sort all Transparent batches every frame
+        // sort all transparent batches every frame
         SortTransparentBatches();
 
 		auto camera = Camera::GetCurrent();
