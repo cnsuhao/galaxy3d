@@ -346,6 +346,8 @@ namespace Galaxy3D
             }
 
             free(bytes);
+
+            Renderer::SortAllBatches();
         }
 
         return obj;
@@ -430,6 +432,8 @@ namespace Galaxy3D
             }
 
             free(bytes);
+
+            Renderer::SortAllBatches();
         }
 
         return obj;
@@ -482,7 +486,7 @@ namespace Galaxy3D
             mats[i] = ReadMaterial(p, dir, skin);
         }
 
-        renderer->SetSharedMaterials(mats);
+        renderer->SetSharedMaterials(mats, false);
 
         return mesh;
     }

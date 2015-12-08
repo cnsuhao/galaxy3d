@@ -4,9 +4,11 @@
 #include "LayerMask.h"
 #include "Octree.h"
 #include "FrustumBounds.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
+    static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
     std::shared_ptr<Octree> Renderer::m_octree;
 
@@ -42,45 +44,25 @@ namespace Galaxy3D
 
     void Renderer::SortTransparentBatches()
     {
+        // find first transparent renderer
+        auto i = m_batches.begin();
+        for(; i != m_batches.end(); i++)
+        {
+            if(i->renderer->GetSharedMaterials()[i->material_index]->GetRenderQueue() > TRANSPARENT_ORDER_MIN)
+            {
+                break;
+            }
+        }
 
+        // splice to temp list for sorting by distance
+        std::list<RenderBatch> transparents;
+        transparents.splice(transparents.begin(), m_batches, i, m_batches.end());
+
+        transparents.sort(LessBatch);
+
+        // splice back
+        m_batches.splice(m_batches.end(), transparents);
     }
-
-	bool Renderer::Less(const Renderer *c1, const Renderer *c2)
-	{
-		auto &m1 = c1->GetSharedMaterial();
-		auto &m2 = c2->GetSharedMaterial();
-
-		if(!m1 || !m2)
-		{
-			return false;
-		}
-
-		int q1 = m1->GetRenderQueue();
-		if(q1 < 0)
-		{
-			q1 = m1->GetShader()->GetRenderQueue();
-		}
-
-		int q2 = m2->GetRenderQueue();
-		if(q2 < 0)
-		{
-			q2 = m2->GetShader()->GetRenderQueue();
-		}
-
-		if(q1 == q2)
-		{
-			if(c1->m_sorting_layer == c2->m_sorting_layer)
-			{
-				return c1->m_sorting_order < c2->m_sorting_order;
-			}
-			else
-			{
-				return c1->m_sorting_layer < c2->m_sorting_layer;
-			}
-		}
-		
-		return q1 < q2;
-	}
 
     bool Renderer::LessBatch(const RenderBatch &b1, const RenderBatch &b2)
     {
@@ -90,16 +72,7 @@ namespace Galaxy3D
         auto &m2 = b2.renderer->GetSharedMaterials()[b2.material_index];
 
         int q1 = m1->GetRenderQueue();
-        if(q1 < 0)
-        {
-            q1 = m1->GetShader()->GetRenderQueue();
-        }
-
         int q2 = m2->GetRenderQueue();
-        if(q2 < 0)
-        {
-            q2 = m2->GetShader()->GetRenderQueue();
-        }
 
         compare = q1 - q2;
 
@@ -117,7 +90,29 @@ namespace Galaxy3D
 
         if(compare == 0)
         {
-            compare = m1->GetGuid().compare(m2->GetGuid());
+            if(q1 > TRANSPARENT_ORDER_MIN)
+            {
+                // order by distance
+                auto cam = Camera::GetCurrent();
+                if(cam)
+                {
+                    float dis1 = (cam->GetTransform()->GetPosition() - b1.renderer->GetTransform()->GetPosition()).SqrMagnitude();
+                    float dis2 = (cam->GetTransform()->GetPosition() - b2.renderer->GetTransform()->GetPosition()).SqrMagnitude();
+                    
+                    if(dis1 < dis2)
+                    {
+                        compare = -1;
+                    }
+                    else if(dis1 > dis2)
+                    {
+                        compare = 1;
+                    }
+                }
+            }
+            else
+            {
+                compare = m1->GetGuid().compare(m2->GetGuid());
+            }
         }
 
         return compare < 0;
@@ -150,7 +145,7 @@ namespace Galaxy3D
         }
     }
 
-	void Renderer::SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials)
+	void Renderer::SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials, bool sort_renders)
 	{
         RemoveBatches();
 
@@ -158,10 +153,13 @@ namespace Galaxy3D
 
         AddBatches();
 
-        Renderer::SortAllBatches();
+        if(sort_renders)
+        {
+            Renderer::SortAllBatches();
+        }
 	}
 
-	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material)
+	void Renderer::SetSharedMaterial(const std::shared_ptr<Material> &material, bool sort_renders)
 	{
         RemoveBatches();
 
@@ -174,7 +172,10 @@ namespace Galaxy3D
             AddBatches();
 		}
 
-        Renderer::SortAllBatches();
+        if(sort_renders)
+        {
+            Renderer::SortAllBatches();
+        }
 	}
 
 	std::shared_ptr<Material> Renderer::GetSharedMaterial() const

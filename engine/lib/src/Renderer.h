@@ -34,9 +34,9 @@ namespace Galaxy3D
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
 		void SetSortingOrder(int layer, int order);
-		void SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials);
+		void SetSharedMaterials(const std::vector<std::shared_ptr<Material>> &materials, bool sort_renders = true);
 		const std::vector<std::shared_ptr<Material>> &GetSharedMaterials() const {return m_shared_materials;}
-		void SetSharedMaterial(const std::shared_ptr<Material> &material);
+		void SetSharedMaterial(const std::shared_ptr<Material> &material, bool sort_renders = true);
 		std::shared_ptr<Material> GetSharedMaterial() const;
 		std::vector<std::shared_ptr<Material>> GetMaterials() const;
 		std::shared_ptr<Material> GetMaterial() const;
@@ -66,7 +66,6 @@ namespace Galaxy3D
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
         static void SortTransparentBatches();
-		static bool Less(const Renderer *c1, const Renderer *c2);
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
         void AddBatches();

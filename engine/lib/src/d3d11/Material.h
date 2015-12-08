@@ -20,7 +20,7 @@ namespace Galaxy3D
 		void SetShader(const std::shared_ptr<Shader> &shader);
 		const std::shared_ptr<Shader> &GetShader() {return m_shader;}
 		void SetRenderQueue(int queue);
-		int GetRenderQueue() const {return m_render_queue;}
+		int GetRenderQueue() const;
 		void SetMainTextureOffset(const Vector2 &offset) {m_main_texture_offset = offset;}
 		void SetMainTextureScale(const Vector2 &scale) {m_main_texture_scale = scale;}
 		void SetVector(const std::string &name, const Vector4 &vector);
