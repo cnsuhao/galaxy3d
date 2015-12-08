@@ -112,6 +112,11 @@ namespace Galaxy3D
             else
             {
                 compare = m1->GetGuid().compare(m2->GetGuid());
+
+                if(compare == 0)
+                {
+                    compare = b1.renderer->m_lightmap_index - b2.renderer->m_lightmap_index;
+                }
             }
         }
 
