@@ -513,14 +513,12 @@ namespace Galaxy3D
                 return NULL;
             }
 
-            bool dynamic = false;
-
             auto device = GraphicsDevice::GetInstance()->GetDevice();
 
             D3D11_BUFFER_DESC bd;
             ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-            bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
             bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
             bd.ByteWidth = buffer_size;
 

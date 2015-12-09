@@ -2,6 +2,7 @@
 #include "GTTime.h"
 #include "Label.h"
 #include "Input.h"
+#include "Renderer.h"
 
 namespace Galaxy3D
 {
@@ -99,17 +100,17 @@ namespace Galaxy3D
 
 	void World::Init()
 	{
-		Label::InitFontLib();
-
         srand((unsigned int) GTTime::GetTimeMS());
+		Label::InitFontLib();
+        Renderer::Init();
 	}
 
 	void World::Done()
 	{
+        Renderer::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
         Object::ClearAllCachedObjects();
-
 		Label::DoneFontLib();
 	}
 }

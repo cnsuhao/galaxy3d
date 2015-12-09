@@ -10,6 +10,7 @@
 #include "Bounds.h"
 #include "GTTime.h"
 #include "FrustumBounds.h"
+#include "GraphicsDevice.h"
 #include <list>
 
 namespace Galaxy3D
@@ -30,6 +31,8 @@ namespace Galaxy3D
 		static void SortAllBatches();
 		static void RenderAll();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
+        static void Init();
+        static void Done();
         virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
@@ -63,6 +66,8 @@ namespace Galaxy3D
 	private:
         static std::list<RenderBatch> m_batches;
         static std::shared_ptr<Octree> m_octree;
+        static ID3D11Buffer *m_batching_vertex_buffer;
+        static ID3D11Buffer *m_batching_index_buffer;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
         static void SortTransparentBatches();

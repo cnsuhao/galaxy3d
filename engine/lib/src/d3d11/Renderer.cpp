@@ -11,6 +11,8 @@ namespace Galaxy3D
     static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
     std::shared_ptr<Octree> Renderer::m_octree;
+    ID3D11Buffer *Renderer::m_batching_vertex_buffer = NULL;
+    ID3D11Buffer *Renderer::m_batching_index_buffer = NULL;
 
 	Renderer::Renderer():
 		m_cast_shadow(false),
@@ -312,5 +314,35 @@ namespace Galaxy3D
     void Renderer::BuildOctree(const std::shared_ptr<GameObject> &obj)
     {
         m_octree = std::shared_ptr<Octree>(new Octree(obj));
+    }
+
+    void Renderer::Init()
+    {
+        int triangle_count = 10000;
+
+        auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DYNAMIC;
+        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.ByteWidth = sizeof(VertexMesh) * 65535;
+
+        HRESULT hr = device->CreateBuffer(&bd, 0, &m_batching_vertex_buffer);
+
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DYNAMIC;
+        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bd.ByteWidth = sizeof(unsigned short) * 3 * triangle_count;
+
+        hr = device->CreateBuffer(&bd, 0, &m_batching_index_buffer);
+    }
+
+    void Renderer::Done()
+    {
+        SAFE_RELEASE(m_batching_vertex_buffer);
+        SAFE_RELEASE(m_batching_index_buffer);
     }
 }
