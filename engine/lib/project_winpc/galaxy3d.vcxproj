@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\d3d11\MeshRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\ParticleSystem.cpp" />
     <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp" />
+    <ClCompile Include="..\src\d3d11\Renderer.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
     <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp" />
@@ -53,7 +54,6 @@
     <ClCompile Include="..\src\Quaternion.cpp" />
     <ClCompile Include="..\src\Ray.cpp" />
     <ClCompile Include="..\src\Rect.cpp" />
-    <ClCompile Include="..\src\Renderer.cpp" />
     <ClCompile Include="..\src\RenderSettings.cpp" />
     <ClCompile Include="..\src\Screen.cpp" />
     <ClCompile Include="..\src\Sprite.cpp" />
@@ -84,6 +84,7 @@
     <ClInclude Include="..\src\d3d11\ParticleSystem.h" />
     <ClInclude Include="..\src\d3d11\ParticleSystemRenderer.h" />
     <ClInclude Include="..\src\d3d11\PixelShader.h" />
+    <ClInclude Include="..\src\d3d11\Renderer.h" />
     <ClInclude Include="..\src\d3d11\RenderStates.h" />
     <ClInclude Include="..\src\d3d11\Shader.h" />
     <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h" />
@@ -121,7 +122,6 @@
     <ClInclude Include="..\src\Quaternion.h" />
     <ClInclude Include="..\src\Ray.h" />
     <ClInclude Include="..\src\Rect.h" />
-    <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\RenderSettings.h" />
     <ClInclude Include="..\src\Screen.h" />
     <ClInclude Include="..\src\ShaderNode.h" />

@@ -84,9 +84,6 @@
     <ClCompile Include="..\src\Quaternion.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\d3d11\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -163,6 +160,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Guid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -264,9 +264,6 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Quaternion.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Renderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\d3d11\Shader.h">
@@ -390,6 +387,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Guid.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Renderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
