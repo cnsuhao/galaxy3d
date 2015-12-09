@@ -80,4 +80,90 @@ namespace Galaxy3D
 
         GraphicsDevice::GetInstance()->ClearShaderResources();
     }
+
+    void MeshRenderer::RenderStaticBatch(const RenderBatch *batch, const RenderBatch *last_batch)
+    {
+        auto mat = batch->renderer->GetSharedMaterials()[batch->material_index];
+        auto shader = mat->GetShader();
+        auto pass = shader->GetPass(0);
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto camera = Camera::GetCurrent();
+        Matrix4x4 wvp = camera->GetViewProjectionMatrix();
+
+        bool set_buffer = false;
+        bool set_material = false;
+        bool set_lightmap = false;
+
+        if(last_batch == NULL)
+        {
+            set_buffer = true;
+            set_material = true;
+            set_lightmap = true;
+        }
+        else
+        {
+            bool last_is_static = last_batch->renderer->GetGameObject()->IsStatic();
+            bool last_is_mesh = dynamic_cast<MeshRenderer *>(last_batch->renderer) != NULL;
+            bool last_is_single_pass = last_batch->IsSinglePass();
+
+            if(!(last_is_static && last_is_mesh) || !last_is_single_pass)
+            {
+                set_buffer = true;
+                set_material = true;
+                set_lightmap = true;
+            }
+            else
+            {
+                auto last_mat = last_batch->renderer->GetSharedMaterials()[last_batch->material_index];
+
+                if(last_mat->GetGuid() != mat->GetGuid())
+                {
+                    set_material = true;
+                    set_lightmap = true;
+                }
+                else
+                {
+                    if(last_batch->renderer->GetLightmapIndex() != batch->renderer->GetLightmapIndex())
+                    {
+                        set_lightmap = true;
+                    }
+                }
+            }
+        }
+
+        if(set_buffer)
+        {
+            UINT stride = pass->vs->vertex_stride;
+            UINT offset = 0;
+            context->IASetInputLayout(pass->vs->input_layout);
+            context->IASetVertexBuffers(0, 1, &m_static_batching_vertex_buffer, &stride, &offset);
+            context->IASetIndexBuffer(m_static_batching_index_buffer, DXGI_FORMAT_R32_UINT, 0);
+        }
+
+        if(set_material)
+        {
+            mat->SetMatrix("WorldViewProjection", wvp);
+            mat->SetMatrix("World", Matrix4x4::Identity());
+            mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
+            mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
+            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
+            mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+        }
+
+        if(set_lightmap)
+        {
+            mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index]);
+        }
+
+        if(m_lightmap_index >= 0)
+        {
+            mat->SetVector("_LightmapST", m_lightmap_tiling_offset);
+        }
+
+        mat->ReadyPass(0);
+        pass->rs->Apply();
+        mat->ApplyPass(0);
+
+        DrawIndexed(batch->static_batching_index_count, batch->static_batching_index_offset);
+    }
 }

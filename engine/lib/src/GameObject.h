@@ -28,7 +28,9 @@ namespace Galaxy3D
 		void SetActive(bool active);
 		int GetLayer() const {return m_layer;}
 		void SetLayer(int layer) {m_layer = layer;}
-        void SetLayerRecursive(int layer);
+        void SetLayerRecursively(int layer);
+        bool IsStatic() const {return m_static;}
+        void SetStaticRecursively();
 
 	private:
 		std::list<std::shared_ptr<Component>> m_components;
@@ -38,6 +40,7 @@ namespace Galaxy3D
 		int m_layer;
 		bool m_deleted;
 		std::weak_ptr<Transform> m_transform;
+        bool m_static;
 
 		GameObject(const std::string &name);
 		void Delete();

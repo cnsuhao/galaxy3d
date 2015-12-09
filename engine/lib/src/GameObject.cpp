@@ -30,7 +30,8 @@ namespace Galaxy3D
 		m_active_in_hierarchy(true),
 		m_active_self(true),
 		m_layer(Layer::Default),
-		m_deleted(false)
+		m_deleted(false),
+        m_static(false)
 	{
 		SetName(name);
 	}
@@ -183,7 +184,7 @@ namespace Galaxy3D
 		}
 	}
 
-    void GameObject::SetLayerRecursive(int layer)
+    void GameObject::SetLayerRecursively(int layer)
     {
         SetLayer(layer);
 
@@ -192,7 +193,20 @@ namespace Galaxy3D
         for(int i=0; i<child_count; i++)
         {
             auto child = transform->GetChild(i);
-            child->GetGameObject()->SetLayerRecursive(layer);
+            child->GetGameObject()->SetLayerRecursively(layer);
+        }
+    }
+
+    void GameObject::SetStaticRecursively()
+    {
+        m_static = true;
+
+        auto transform = m_transform.lock();
+        int child_count = transform->GetChildCount();
+        for(int i=0; i<child_count; i++)
+        {
+            auto child = transform->GetChild(i);
+            child->GetGameObject()->SetStaticRecursively();
         }
     }
 

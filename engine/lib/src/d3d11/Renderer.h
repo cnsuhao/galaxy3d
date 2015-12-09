@@ -23,6 +23,16 @@ namespace Galaxy3D
     {
         Renderer *renderer;
         int material_index;
+        int static_batching_index_offset;
+        int static_batching_index_count;
+
+        RenderBatch():
+            renderer(NULL),
+            material_index(-1),
+            static_batching_index_offset(-1),
+            static_batching_index_count(0)
+        {}
+        bool IsSinglePass() const;
     };
 
 	class Renderer : public Component
@@ -33,6 +43,7 @@ namespace Galaxy3D
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
         static void Init();
         static void Done();
+        static void BuildStaticBatches();
         virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
@@ -44,11 +55,14 @@ namespace Galaxy3D
 		std::vector<std::shared_ptr<Material>> GetMaterials() const;
 		std::shared_ptr<Material> GetMaterial() const;
         void SetLightmapIndex(int lightmap_index) {m_lightmap_index = lightmap_index;}
+        int GetLightmapIndex() const {return m_lightmap_index;}
         void SetLightmapTilingOffset(Vector4 lightmap_tiling_offset) {m_lightmap_tiling_offset = lightmap_tiling_offset;}
         void SetBounds(const Bounds &bounds) {m_bounds = bounds;}
         Bounds GetBounds() const {return m_bounds;}
 
 	protected:
+        static ID3D11Buffer *m_static_batching_vertex_buffer;
+        static ID3D11Buffer *m_static_batching_index_buffer;
 		bool m_cast_shadow;
 		bool m_receive_shadow;
 		bool m_visible;
@@ -66,8 +80,6 @@ namespace Galaxy3D
 	private:
         static std::list<RenderBatch> m_batches;
         static std::shared_ptr<Octree> m_octree;
-        static ID3D11Buffer *m_batching_vertex_buffer;
-        static ID3D11Buffer *m_batching_index_buffer;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
         static void SortTransparentBatches();

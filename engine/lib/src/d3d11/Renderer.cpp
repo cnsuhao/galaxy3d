@@ -5,14 +5,20 @@
 #include "Octree.h"
 #include "FrustumBounds.h"
 #include "Debug.h"
+#include "MeshRenderer.h"
 
 namespace Galaxy3D
 {
     static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
     std::shared_ptr<Octree> Renderer::m_octree;
-    ID3D11Buffer *Renderer::m_batching_vertex_buffer = NULL;
-    ID3D11Buffer *Renderer::m_batching_index_buffer = NULL;
+    ID3D11Buffer *Renderer::m_static_batching_vertex_buffer = NULL;
+    ID3D11Buffer *Renderer::m_static_batching_index_buffer = NULL;
+
+    bool RenderBatch::IsSinglePass() const
+    {
+        return renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
+    }
 
 	Renderer::Renderer():
 		m_cast_shadow(false),
@@ -289,6 +295,7 @@ namespace Galaxy3D
             ViewFrustumCulling(frustum, m_octree->GetRootNode());
         }
 
+        RenderBatch *last_batch = NULL;
         for(auto &i : m_batches)
         {
             auto obj = i.renderer->GetGameObject();
@@ -298,7 +305,22 @@ namespace Galaxy3D
                 i.renderer->IsEnable() &&
                 ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
             {
-                i.renderer->Render(i.material_index);
+                auto mesh_renderer = dynamic_cast<MeshRenderer *>(i.renderer);
+
+                if( mesh_renderer != NULL &&
+                    obj->IsStatic() &&
+                    i.IsSinglePass() &&
+                    m_static_batching_vertex_buffer != NULL &&
+                    m_static_batching_index_buffer != NULL)
+                {
+                    mesh_renderer->RenderStaticBatch(&i, last_batch);
+                }
+                else
+                {
+                    i.renderer->Render(i.material_index);
+                }
+
+                last_batch = &i;
             }
         }
 	}
@@ -318,31 +340,89 @@ namespace Galaxy3D
 
     void Renderer::Init()
     {
-        int triangle_count = 10000;
+    }
+
+    void Renderer::Done()
+    {
+        SAFE_RELEASE(m_static_batching_vertex_buffer);
+        SAFE_RELEASE(m_static_batching_index_buffer);
+    }
+
+    void Renderer::BuildStaticBatches()
+    {
+        auto vertices = new std::vector<VertexMesh>();
+        auto indices = new std::vector<unsigned int>();
+
+        for(auto &i : m_batches)
+        {
+            auto obj = i.renderer->GetGameObject();
+            auto mesh_renderer = dynamic_cast<MeshRenderer *>(i.renderer);
+
+            if(mesh_renderer != NULL && obj->IsStatic() && i.IsSinglePass())
+            {
+                auto mesh = mesh_renderer->GetMesh();
+                auto &vs = mesh->GetVertices();
+                auto &is = mesh->GetIndices();
+                auto &mat = obj->GetTransform()->GetLocalToWorldMatrix();
+
+                int vertices_size_old = vertices->size();
+                size_t vertex_count = vs.size();
+                for(size_t j=0; j<vertex_count; j++)
+                {
+                    VertexMesh &v_model = vs[j];
+                    VertexMesh v;
+                    v.POSITION = mat.MultiplyPoint3x4(v_model.POSITION);
+                    v.NORMAL = mat.MultiplyPoint3x4(v_model.NORMAL);
+                    v.TANGENT = mat * v_model.TANGENT;
+                    v.TEXCOORD0 = v_model.TEXCOORD0;
+                    v.TEXCOORD1 = v_model.TEXCOORD1;
+
+                    vertices->push_back(v);
+                }
+
+                int indices_size_old = indices->size();
+                auto &is_submesh = is[i.material_index];
+                size_t index_count = is_submesh.size();
+                for(size_t j=0; j<index_count; j++)
+                {
+                    unsigned int index = vertices_size_old + is_submesh[j];
+
+                    indices->push_back(index);
+                }
+
+                i.static_batching_index_offset = indices_size_old;
+                i.static_batching_index_count = index_count;
+            }
+        }
+
+        SAFE_RELEASE(m_static_batching_vertex_buffer);
+        SAFE_RELEASE(m_static_batching_index_buffer);
 
         auto device = GraphicsDevice::GetInstance()->GetDevice();
 
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
-        bd.Usage = D3D11_USAGE_DYNAMIC;
-        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bd.Usage = D3D11_USAGE_IMMUTABLE;
+        bd.CPUAccessFlags = 0;
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        bd.ByteWidth = sizeof(VertexMesh) * 65535;
+        bd.ByteWidth = sizeof(VertexMesh) * vertices->size();
 
-        HRESULT hr = device->CreateBuffer(&bd, 0, &m_batching_vertex_buffer);
+        D3D11_SUBRESOURCE_DATA data;
+        ZeroMemory(&data, sizeof(data));
+        data.pSysMem = &(*vertices)[0];
+        HRESULT hr = device->CreateBuffer(&bd, &data, &m_static_batching_vertex_buffer);
 
         ZeroMemory(&bd, sizeof(bd));
-        bd.Usage = D3D11_USAGE_DYNAMIC;
-        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bd.Usage = D3D11_USAGE_IMMUTABLE;
+        bd.CPUAccessFlags = 0;
         bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        bd.ByteWidth = sizeof(unsigned short) * 3 * triangle_count;
+        bd.ByteWidth = sizeof(unsigned int) * indices->size();
 
-        hr = device->CreateBuffer(&bd, 0, &m_batching_index_buffer);
-    }
+        ZeroMemory(&data, sizeof(data));
+        data.pSysMem = &(*indices)[0];
+        hr = device->CreateBuffer(&bd, &data, &m_static_batching_index_buffer);
 
-    void Renderer::Done()
-    {
-        SAFE_RELEASE(m_batching_vertex_buffer);
-        SAFE_RELEASE(m_batching_index_buffer);
+        delete vertices;
+        delete indices;
     }
 }
