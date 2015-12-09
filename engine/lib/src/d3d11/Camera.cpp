@@ -109,7 +109,7 @@ namespace Galaxy3D
 			GTTime::m_time_record = now;
 			GTTime::m_frame_record = frame;
 
-			//Debug::Log("fps:%d render:%.3f update:%.3f dc:%d", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000, GTTime::m_draw_call);
+			//Debug::Log("fps:%03d render:%.3f update:%.3f dc:%d", GTTime::m_fps, GTTime::m_render_time * 1000, GTTime::m_update_time * 1000, GTTime::m_draw_call);
 		}
 
 		GTTime::m_frame_count++;
