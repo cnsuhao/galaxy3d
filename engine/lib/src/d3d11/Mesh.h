@@ -17,7 +17,9 @@ namespace Galaxy3D
         static std::shared_ptr<GameObject> LoadSkinnedMesh(const std::string &file);
         ~Mesh();
         void SetVertices(const std::vector<VertexMesh> &vertices) {m_vertices = vertices;}
+        std::vector<VertexMesh> &GetVertices() {return m_vertices;}
         void SetIndices(const std::vector<std::vector<unsigned short>> indices) {m_sub_indices = indices;}
+        std::vector<std::vector<unsigned short>> &GetIndices() {return m_sub_indices;}
         ID3D11Buffer *GetVertexBuffer();
         ID3D11Buffer *GetIndexBuffer();
         int GetIndexCount(int submesh) {return m_sub_indices[submesh].size();}
