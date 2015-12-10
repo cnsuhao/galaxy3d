@@ -383,12 +383,10 @@ namespace Galaxy3D
                 for(size_t j=0; j<vertex_count; j++)
                 {
                     VertexMesh &v_model = vs[j];
-                    VertexMesh v;
+                    VertexMesh v = v_model;
                     v.POSITION = mat.MultiplyPoint3x4(v_model.POSITION);
                     v.NORMAL = mat.MultiplyPoint3x4(v_model.NORMAL);
                     v.TANGENT = mat * v_model.TANGENT;
-                    v.TEXCOORD0 = v_model.TEXCOORD0;
-                    v.TEXCOORD1 = v_model.TEXCOORD1;
 
                     vertices->push_back(v);
                 }
