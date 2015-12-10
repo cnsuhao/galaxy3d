@@ -216,7 +216,7 @@ namespace Galaxy3D
 		for(auto &i : m_matrix_arrays)
 		{
 			int size = i.second.size();
-			if(size > 48)
+			if(size > 54)
 			{
 				Debug::Log("matrix array size is too big:%d", size);
 			}
@@ -229,7 +229,7 @@ namespace Galaxy3D
         for(auto &i : m_vector_arrays)
         {
             int size = i.second.size();
-            if(size > 108)
+            if(size > 216)
             {
                 Debug::Log("vector array size is too big:%d", size);
             }
