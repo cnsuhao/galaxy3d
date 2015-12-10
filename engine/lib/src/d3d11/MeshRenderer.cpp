@@ -102,11 +102,7 @@ namespace Galaxy3D
         }
         else
         {
-            bool last_is_static = last_batch->renderer->GetGameObject()->IsStatic();
-            bool last_is_mesh = dynamic_cast<MeshRenderer *>(last_batch->renderer) != NULL;
-            bool last_is_single_pass = last_batch->IsSinglePass();
-
-            if(!(last_is_static && last_is_mesh) || !last_is_single_pass)
+            if(!last_batch->IsStaticSinglePassMeshRenderer())
             {
                 set_buffer = true;
                 set_material = true;
@@ -152,17 +148,20 @@ namespace Galaxy3D
 
         if(set_lightmap)
         {
-            mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index]);
+            mat->SetTextureDirectlyPS("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index], 0);
         }
 
         if(m_lightmap_index >= 0)
         {
-            mat->SetVector("_LightmapST", m_lightmap_tiling_offset);
+            mat->SetVectorDirectlyVS("_LightmapST", m_lightmap_tiling_offset, 0);
         }
 
-        mat->ReadyPass(0);
-        pass->rs->Apply();
-        mat->ApplyPass(0);
+        if(set_material)
+        {
+            mat->ReadyPass(0);
+            pass->rs->Apply();
+            mat->ApplyPass(0);
+        }
 
         DrawIndexed(batch->static_batching_index_count, batch->static_batching_index_offset);
     }

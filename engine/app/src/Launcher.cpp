@@ -217,7 +217,7 @@ void Launcher::Start()
     Renderer::BuildOctree(scene);
 
     scene->SetStaticRecursively();
-    Renderer::BuildStaticBatches();
+    //Renderer::BuildStaticBatches();
 #endif
 
 #if DEMO_TERRAIN

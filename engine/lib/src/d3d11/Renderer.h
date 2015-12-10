@@ -32,7 +32,7 @@ namespace Galaxy3D
             static_batching_index_offset(-1),
             static_batching_index_count(0)
         {}
-        bool IsSinglePass() const;
+        bool IsStaticSinglePassMeshRenderer() const;
     };
 
 	class Renderer : public Component

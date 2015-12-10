@@ -15,9 +15,17 @@ namespace Galaxy3D
     ID3D11Buffer *Renderer::m_static_batching_vertex_buffer = NULL;
     ID3D11Buffer *Renderer::m_static_batching_index_buffer = NULL;
 
-    bool RenderBatch::IsSinglePass() const
+    bool RenderBatch::IsStaticSinglePassMeshRenderer() const
     {
-        return renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
+        bool single_pass = renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
+        auto obj = renderer->GetGameObject();
+        auto mesh_renderer = dynamic_cast<MeshRenderer *>(renderer);
+        if(mesh_renderer != NULL && obj->IsStatic() && single_pass)
+        {
+            return true;
+        }
+
+        return false;
     }
 
 	Renderer::Renderer():
@@ -124,6 +132,14 @@ namespace Galaxy3D
                 if(compare == 0)
                 {
                     compare = b1.renderer->m_lightmap_index - b2.renderer->m_lightmap_index;
+                }
+
+                if(compare == 0)
+                {
+                    int is_static_single_pass_mesh_renderer_1 = b1.IsStaticSinglePassMeshRenderer() ? 1 : 0;
+                    int is_static_single_pass_mesh_renderer_2 = b2.IsStaticSinglePassMeshRenderer() ? 1 : 0;
+
+                    compare = is_static_single_pass_mesh_renderer_1 - is_static_single_pass_mesh_renderer_2;
                 }
             }
         }
@@ -307,9 +323,7 @@ namespace Galaxy3D
             {
                 auto mesh_renderer = dynamic_cast<MeshRenderer *>(i.renderer);
 
-                if( mesh_renderer != NULL &&
-                    obj->IsStatic() &&
-                    i.IsSinglePass() &&
+                if( i.IsStaticSinglePassMeshRenderer() &&
                     m_static_batching_vertex_buffer != NULL &&
                     m_static_batching_index_buffer != NULL)
                 {
@@ -355,15 +369,14 @@ namespace Galaxy3D
 
         for(auto &i : m_batches)
         {
-            auto obj = i.renderer->GetGameObject();
             auto mesh_renderer = dynamic_cast<MeshRenderer *>(i.renderer);
 
-            if(mesh_renderer != NULL && obj->IsStatic() && i.IsSinglePass())
+            if(i.IsStaticSinglePassMeshRenderer())
             {
                 auto mesh = mesh_renderer->GetMesh();
                 auto &vs = mesh->GetVertices();
                 auto &is = mesh->GetIndices();
-                auto &mat = obj->GetTransform()->GetLocalToWorldMatrix();
+                auto &mat = i.renderer->GetTransform()->GetLocalToWorldMatrix();
 
                 int vertices_size_old = vertices->size();
                 size_t vertex_count = vs.size();
@@ -398,29 +411,34 @@ namespace Galaxy3D
         SAFE_RELEASE(m_static_batching_vertex_buffer);
         SAFE_RELEASE(m_static_batching_index_buffer);
 
-        auto device = GraphicsDevice::GetInstance()->GetDevice();
+        if(!vertices->empty() && !indices->empty())
+        {
+            auto device = GraphicsDevice::GetInstance()->GetDevice();
 
-        D3D11_BUFFER_DESC bd;
-        ZeroMemory(&bd, sizeof(bd));
-        bd.Usage = D3D11_USAGE_IMMUTABLE;
-        bd.CPUAccessFlags = 0;
-        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        bd.ByteWidth = sizeof(VertexMesh) * vertices->size();
+            D3D11_BUFFER_DESC bd;
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
+            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            bd.ByteWidth = sizeof(VertexMesh) * vertices->size();
 
-        D3D11_SUBRESOURCE_DATA data;
-        ZeroMemory(&data, sizeof(data));
-        data.pSysMem = &(*vertices)[0];
-        HRESULT hr = device->CreateBuffer(&bd, &data, &m_static_batching_vertex_buffer);
+            D3D11_SUBRESOURCE_DATA data;
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = &(*vertices)[0];
+            HRESULT hr = device->CreateBuffer(&bd, &data, &m_static_batching_vertex_buffer);
 
-        ZeroMemory(&bd, sizeof(bd));
-        bd.Usage = D3D11_USAGE_IMMUTABLE;
-        bd.CPUAccessFlags = 0;
-        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        bd.ByteWidth = sizeof(unsigned int) * indices->size();
+            ZeroMemory(&bd, sizeof(bd));
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
+            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+            bd.ByteWidth = sizeof(unsigned int) * indices->size();
 
-        ZeroMemory(&data, sizeof(data));
-        data.pSysMem = &(*indices)[0];
-        hr = device->CreateBuffer(&bd, &data, &m_static_batching_index_buffer);
+            ZeroMemory(&data, sizeof(data));
+            data.pSysMem = &(*indices)[0];
+            hr = device->CreateBuffer(&bd, &data, &m_static_batching_index_buffer);
+        }
+
+        Debug::Log("%d %d", vertices->size(), indices->size() / 3);
 
         delete vertices;
         delete indices;
