@@ -140,6 +140,46 @@ namespace Galaxy3D
 		}
 	}
 
+    void Material::SetVectorDirectlyVS(const std::string &name, const Vector4 &vector, int pass)
+    {
+        SetVector(name, vector);
+
+        auto shader_pass = m_shader->GetPass(pass);
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+        auto find = shader_pass->vs->cbuffers.find(name);
+        if(find != shader_pass->vs->cbuffers.end())
+        {
+            context->UpdateSubresource(find->second.buffer, 0, NULL, &vector, sizeof(Vector4), 0);
+        }
+    }
+
+    void Material::SetTextureDirectlyPS(const std::string &name, const std::shared_ptr<Texture> &texture, int pass)
+    {
+        SetTexture(name, texture);
+
+        auto shader_pass = m_shader->GetPass(pass);
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+        auto find = shader_pass->ps->textures.find(name);
+        if(find != shader_pass->ps->textures.end())
+        {
+            Texture2D *tex = dynamic_cast<Texture2D *>(texture.get());
+            if(tex != 0)
+            {
+                find->second.texture = tex->GetTexture();
+                context->PSSetShaderResources(find->second.slot, 1, &find->second.texture);
+
+                auto find_sampler = shader_pass->ps->samplers.find(name + "_Sampler");
+                if(find_sampler != shader_pass->ps->samplers.end())
+                {
+                    find_sampler->second.sampler = tex->GetSampler();
+                    context->PSSetSamplers(find_sampler->second.slot, 1, &find_sampler->second.sampler);
+                }
+            }
+        }
+    }
+
 	void Material::ReadyPass(int pass)
 	{
 		auto shader_pass = m_shader->GetPass(pass);

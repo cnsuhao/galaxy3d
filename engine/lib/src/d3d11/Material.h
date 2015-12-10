@@ -24,12 +24,14 @@ namespace Galaxy3D
 		void SetMainTextureOffset(const Vector2 &offset) {m_main_texture_offset = offset;}
 		void SetMainTextureScale(const Vector2 &scale) {m_main_texture_scale = scale;}
 		void SetVector(const std::string &name, const Vector4 &vector);
+        void SetVectorDirectlyVS(const std::string &name, const Vector4 &vector, int pass);
         void SetVectorArray(const std::string &name, const std::vector<Vector4> &vectors);
 		void SetColor(const std::string &name, const Color &color);
         void SetMainColor(const Color &color);
 		void SetMatrix(const std::string &name, const Matrix4x4 &matrix);
 		void SetMatrixArray(const std::string &name, const std::vector<Matrix4x4> &matrices);
 		void SetTexture(const std::string &name, const std::shared_ptr<Texture> &texture);
+        void SetTextureDirectlyPS(const std::string &name, const std::shared_ptr<Texture> &texture, int pass);
 		void SetMainTexture(const std::shared_ptr<Texture> &texture);
 		std::shared_ptr<Texture> GetMainTexture();
 		std::shared_ptr<Texture> GetTexture(const std::string &name);
