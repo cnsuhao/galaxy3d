@@ -35,7 +35,7 @@ SkinnedMesh/Diffuse
 
         cbuffer cbuffer2 : register(b2)
         {
-            float4 Bones[108];
+            float4 Bones[216];
         };
 
         cbuffer cbuffer3 : register(b3)
