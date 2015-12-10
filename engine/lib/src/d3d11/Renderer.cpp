@@ -11,6 +11,7 @@ namespace Galaxy3D
 {
     static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
+    std::list<RenderBatch> Renderer::m_batches_for_render;
     std::shared_ptr<Octree> Renderer::m_octree;
     ID3D11Buffer *Renderer::m_static_batching_vertex_buffer = NULL;
     ID3D11Buffer *Renderer::m_static_batching_index_buffer = NULL;
@@ -57,8 +58,8 @@ namespace Galaxy3D
     void Renderer::SortTransparentBatches()
     {
         // find first transparent renderer
-        auto i = m_batches.begin();
-        for(; i != m_batches.end(); i++)
+        auto i = m_batches_for_render.begin();
+        for(; i != m_batches_for_render.end(); i++)
         {
             if(i->renderer->GetSharedMaterials()[i->material_index]->GetRenderQueue() > TRANSPARENT_ORDER_MIN)
             {
@@ -68,12 +69,12 @@ namespace Galaxy3D
 
         // splice to temp list for sorting by distance
         std::list<RenderBatch> transparents;
-        transparents.splice(transparents.begin(), m_batches, i, m_batches.end());
+        transparents.splice(transparents.begin(), m_batches_for_render, i, m_batches_for_render.end());
 
         transparents.sort(LessBatch);
 
         // splice back
-        m_batches.splice(m_batches.end(), transparents);
+        m_batches_for_render.splice(m_batches_for_render.end(), transparents);
     }
 
     bool Renderer::LessBatch(const RenderBatch &b1, const RenderBatch &b2)
@@ -294,12 +295,17 @@ namespace Galaxy3D
         }
     }
 
+    void Renderer::UpdateForRender()
+    {
+        m_batches_for_render = m_batches;
+    }
+
 	void Renderer::RenderAll()
 	{
         // sort all transparent batches every frame
         SortTransparentBatches();
-
-		auto camera = Camera::GetCurrent();
+        
+        auto camera = Camera::GetCurrent();
 
         if(m_octree)
         {
@@ -309,7 +315,7 @@ namespace Galaxy3D
 
         RenderBatch *last_batch = NULL;
         std::list<RenderBatch *> dynamic_batches;
-        for(auto i=m_batches.begin(); i!=m_batches.end(); i++)
+        for(auto i=m_batches_for_render.begin(); i!=m_batches_for_render.end(); i++)
         {
             auto obj = i->renderer->GetGameObject();
 
