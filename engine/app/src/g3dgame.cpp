@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Launcher.h"
 #include "Debug.h"
+#include "Thread.h"
 
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")
@@ -31,8 +32,27 @@ HWND g_hwnd;
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+int g_frame = 0;
+HANDLE g_event_update_done;
+HANDLE g_event_render_done;
+
+void thread(void *param)
+{
+    while(true)
+    {
+        WaitForSingleObject(g_event_update_done, INFINITE);
+
+        Camera::RenderAll();
+
+        SetEvent(g_event_render_done);
+    }
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    g_event_update_done = CreateEvent(NULL, false, false, NULL);
+    g_event_render_done = CreateEvent(NULL, false, true, NULL);
+
 	AllocConsole();
 	SetConsoleTitle("Galaxy3D Console");
 	FILE* fstdout = 0;
@@ -46,6 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	World::Init();
 
 	GameObject::Create("launcher")->AddComponent<Launcher>();
+    Thread::Create(thread, 0);
 
 	// Main message loop
 	MSG msg = {0};
@@ -58,10 +79,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else
 		{
-			Sleep(1);
+            WaitForSingleObject(g_event_render_done, INFINITE);
 
-			World::Update();
-			Camera::RenderAll();
+            World::Update();
+
+            SetEvent(g_event_update_done);
 		}
 	}
 
