@@ -436,8 +436,6 @@ namespace Galaxy3D
             hr = device->CreateBuffer(&bd, &data, &m_static_batching_index_buffer);
         }
 
-        Debug::Log("%d %d", vertices->size(), indices->size() / 3);
-
         delete vertices;
         delete indices;
     }
