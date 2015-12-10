@@ -8,6 +8,7 @@
 #include "Animation.h"
 #include "LightmapSettings.h"
 #include "GTString.h"
+#include "Guid.h"
 #include "Debug.h"
 #include <unordered_map>
 
@@ -143,6 +144,7 @@ namespace Galaxy3D
     std::shared_ptr<Mesh> Mesh::Create()
     {
         std::shared_ptr<Mesh> mesh(new Mesh());
+        mesh->SetGuid(Guid::NewGuid());
         return mesh;
     }
 
@@ -441,41 +443,57 @@ namespace Galaxy3D
 
     std::shared_ptr<Mesh> Mesh::ReadMesh(char *&p, Renderer *renderer, const std::string &dir, bool skin)
     {
-        auto mesh = Mesh::Create();
+        std::shared_ptr<Mesh> mesh;
 
-        int vertex_count;
-        BUFFER_READ(vertex_count, p, 4);
+        std::string mesh_guid = read_string(p);
+        char has_data;
+        BUFFER_READ(has_data, p, 1);
 
-        if(skin)
+        if(!has_data)
         {
-            mesh->m_vertices_skinned.resize(vertex_count);
-            BUFFER_READ(mesh->m_vertices_skinned[0], p, vertex_count * sizeof(VertexSkinned));
+            mesh = std::dynamic_pointer_cast<Mesh, Object>(FindCachedObject(mesh_guid));
         }
         else
         {
-            mesh->m_vertices.resize(vertex_count);
-            BUFFER_READ(mesh->m_vertices[0], p, vertex_count * sizeof(VertexMesh));
-        }
+            mesh = Mesh::Create();
+            mesh->SetGuid(mesh_guid);
 
-        int sub_count;
-        BUFFER_READ(sub_count, p, 4);
+            int vertex_count;
+            BUFFER_READ(vertex_count, p, 4);
 
-        mesh->m_sub_indices.resize(sub_count);
-        for(int i=0; i<sub_count; i++)
-        {
-            int index_count;
-            BUFFER_READ(index_count, p, 4);
+            if(skin)
+            {
+                mesh->m_vertices_skinned.resize(vertex_count);
+                BUFFER_READ(mesh->m_vertices_skinned[0], p, vertex_count * sizeof(VertexSkinned));
+            }
+            else
+            {
+                mesh->m_vertices.resize(vertex_count);
+                BUFFER_READ(mesh->m_vertices[0], p, vertex_count * sizeof(VertexMesh));
+            }
 
-            mesh->m_sub_indices[i].resize(index_count);
-            BUFFER_READ(mesh->m_sub_indices[i][0], p, index_count * 2);
-        }
+            int sub_count;
+            BUFFER_READ(sub_count, p, 4);
 
-        if(skin)
-        {
-            int pose_count;
-            BUFFER_READ(pose_count, p, 4);
-            mesh->m_bind_poses.resize(pose_count);
-            BUFFER_READ(mesh->m_bind_poses[0], p, pose_count * sizeof(Matrix4x4));
+            mesh->m_sub_indices.resize(sub_count);
+            for(int i=0; i<sub_count; i++)
+            {
+                int index_count;
+                BUFFER_READ(index_count, p, 4);
+
+                mesh->m_sub_indices[i].resize(index_count);
+                BUFFER_READ(mesh->m_sub_indices[i][0], p, index_count * 2);
+            }
+
+            if(skin)
+            {
+                int pose_count;
+                BUFFER_READ(pose_count, p, 4);
+                mesh->m_bind_poses.resize(pose_count);
+                BUFFER_READ(mesh->m_bind_poses[0], p, pose_count * sizeof(Matrix4x4));
+            }
+
+            CacheObject(mesh_guid, mesh);
         }
 
         int mat_count;

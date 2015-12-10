@@ -24,8 +24,10 @@ namespace Galaxy3D
         ID3D11Buffer *GetIndexBuffer();
         int GetIndexCount(int submesh) {return m_sub_indices[submesh].size();}
         const std::vector<Matrix4x4> &GetBindPoses() const {return m_bind_poses;}
+        void SetGuid(const std::string &guid) {m_guid = guid;}
 
     private:
+        std::string m_guid;
         std::vector<VertexMesh> m_vertices;
         std::vector<VertexSkinned> m_vertices_skinned;
         std::vector<std::vector<unsigned short>> m_sub_indices;
