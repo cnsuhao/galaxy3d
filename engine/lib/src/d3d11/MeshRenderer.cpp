@@ -126,7 +126,7 @@ namespace Galaxy3D
                 }
             }
         }
-
+        
         if(set_buffer)
         {
             UINT stride = pass->vs->vertex_stride;

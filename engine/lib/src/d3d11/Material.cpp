@@ -154,6 +154,20 @@ namespace Galaxy3D
         }
     }
 
+    void Material::SetMatrixDirectlyVS(const std::string &name, const Matrix4x4 &matrix, int pass)
+    {
+        SetMatrix(name, matrix);
+
+        auto shader_pass = m_shader->GetPass(pass);
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+        auto find = shader_pass->vs->cbuffers.find(name);
+        if(find != shader_pass->vs->cbuffers.end())
+        {
+            context->UpdateSubresource(find->second.buffer, 0, NULL, &matrix, sizeof(Matrix4x4), 0);
+        }
+    }
+
     void Material::SetTextureDirectlyPS(const std::string &name, const std::shared_ptr<Texture> &texture, int pass)
     {
         SetTexture(name, texture);

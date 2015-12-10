@@ -29,6 +29,7 @@ namespace Galaxy3D
 		void SetColor(const std::string &name, const Color &color);
         void SetMainColor(const Color &color);
 		void SetMatrix(const std::string &name, const Matrix4x4 &matrix);
+        void SetMatrixDirectlyVS(const std::string &name, const Matrix4x4 &matrix, int pass);
 		void SetMatrixArray(const std::string &name, const std::vector<Matrix4x4> &matrices);
 		void SetTexture(const std::string &name, const std::shared_ptr<Texture> &texture);
         void SetTextureDirectlyPS(const std::string &name, const std::shared_ptr<Texture> &texture, int pass);
