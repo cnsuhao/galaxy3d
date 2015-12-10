@@ -57,6 +57,7 @@
     <ClCompile Include="..\src\RenderSettings.cpp" />
     <ClCompile Include="..\src\Screen.cpp" />
     <ClCompile Include="..\src\Sprite.cpp" />
+    <ClCompile Include="..\src\Thread.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
     <ClCompile Include="..\src\Tweenner.cpp" />
     <ClCompile Include="..\src\TweenPosition.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="..\src\Texture.h" />
     <ClInclude Include="..\src\TextureFormat.h" />
     <ClInclude Include="..\src\TextureWrapMode.h" />
+    <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\Transform.h" />
     <ClInclude Include="..\src\Tweenner.h" />
     <ClInclude Include="..\src\TweenPosition.h" />
