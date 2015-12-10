@@ -17,15 +17,11 @@ namespace Galaxy3D
 
     bool RenderBatch::IsStaticSinglePassMeshRenderer() const
     {
-        bool single_pass = renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
         auto obj = renderer->GetGameObject();
         auto mesh_renderer = dynamic_cast<MeshRenderer *>(renderer);
-        if(mesh_renderer != NULL && obj->IsStatic() && single_pass)
-        {
-            return true;
-        }
+        bool single_pass = renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
 
-        return false;
+        return obj->IsStatic() && mesh_renderer != NULL && single_pass;
     }
 
 	Renderer::Renderer():
@@ -312,29 +308,30 @@ namespace Galaxy3D
         }
 
         RenderBatch *last_batch = NULL;
-        for(auto &i : m_batches)
+        std::list<RenderBatch *> dynamic_batches;
+        for(auto i=m_batches.begin(); i!=m_batches.end(); i++)
         {
-            auto obj = i.renderer->GetGameObject();
+            auto obj = i->renderer->GetGameObject();
 
-            if( i.renderer->IsVisible() &&
+            if( i->renderer->IsVisible() &&
                 obj->IsActiveInHierarchy() &&
-                i.renderer->IsEnable() &&
+                i->renderer->IsEnable() &&
                 ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
             {
-                auto mesh_renderer = dynamic_cast<MeshRenderer *>(i.renderer);
+                auto mesh_renderer = dynamic_cast<MeshRenderer *>(i->renderer);
 
-                if( i.IsStaticSinglePassMeshRenderer() &&
+                if( i->IsStaticSinglePassMeshRenderer() &&
                     m_static_batching_vertex_buffer != NULL &&
                     m_static_batching_index_buffer != NULL)
                 {
-                    mesh_renderer->RenderStaticBatch(&i, last_batch);
+                    mesh_renderer->RenderStaticBatch(&(*i), last_batch);
                 }
                 else
                 {
-                    i.renderer->Render(i.material_index);
+                    i->renderer->Render(i->material_index);
                 }
 
-                last_batch = &i;
+                last_batch = &(*i);
             }
         }
 	}
