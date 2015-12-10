@@ -36,15 +36,21 @@ int g_frame = 0;
 HANDLE g_event_update_done;
 HANDLE g_event_render_done;
 
-void thread(void *param)
+static void thread_render(void *param)
 {
+    HANDLE events[2] = {g_event_update_done, g_event_render_done};
+
+    int frame = -1;
     while(true)
     {
+        if(frame >= 0)
+        {
+            Camera::RenderAll();
+            SetEvent(g_event_render_done);
+        }
+
+        frame++;
         WaitForSingleObject(g_event_update_done, INFINITE);
-
-        Camera::RenderAll();
-
-        SetEvent(g_event_render_done);
     }
 }
 
@@ -66,7 +72,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	World::Init();
 
 	GameObject::Create("launcher")->AddComponent<Launcher>();
-    Thread::Create(thread, 0);
+    Thread::Create(thread_render, 0);
+    HANDLE events[2] = {g_event_update_done, g_event_render_done};
+    int frame = 0;
 
 	// Main message loop
 	MSG msg = {0};
@@ -79,11 +87,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else
 		{
-            WaitForSingleObject(g_event_render_done, INFINITE);
-
             World::Update();
+            Renderer::UpdateForRender();
 
             SetEvent(g_event_update_done);
+            WaitForSingleObject(g_event_render_done, INFINITE);
 		}
 	}
 

@@ -5,12 +5,6 @@ namespace Galaxy3D
 {
     typedef void (*ThreadFunc)(void *param);
 
-    struct ThreadParam
-    {
-        ThreadFunc func;
-        void *param;
-    };
-
     class Thread
     {
     public:
