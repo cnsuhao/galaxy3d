@@ -53,6 +53,8 @@ namespace Galaxy3D
 
 	void Label::DoneFontLib()
 	{
+        g_font_texture.reset();
+
 		for(auto i : g_fonts)
 		{
 			FT_Done_Face((FT_Face) i.second);

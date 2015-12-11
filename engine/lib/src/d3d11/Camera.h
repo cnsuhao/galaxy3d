@@ -18,6 +18,7 @@ namespace Galaxy3D
 	public:
 		static void RenderAll();
 		static std::shared_ptr<Camera> GetCurrent() {return m_current;}
+        static void Done();
 		Camera();
 		virtual ~Camera();
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
@@ -46,6 +47,8 @@ namespace Galaxy3D
 		static std::list<Camera *> m_cameras;
 		static std::shared_ptr<Camera> m_current;
         static std::shared_ptr<RenderTexture> m_hdr_render_target;
+        static std::shared_ptr<RenderTexture> m_image_effect_buffer;
+        static std::shared_ptr<RenderTexture> m_image_effect_buffer_back;
 		CameraClearFlags::Enum m_clear_flags;
 		Color m_clear_color;
 		int m_depth;
@@ -64,8 +67,10 @@ namespace Galaxy3D
 
 		static bool Camera::Less(const Camera *c1, const Camera *c2);
 		static void UpdateTime();
+        static void CreateHDRTargetIfNeeded(int w, int h);
+        static void CreateImageEffectBufferIfNeeded(int w, int h);
 		void Render() const;
-		void SetViewport() const;
+		void SetViewport(int w, int h) const;
         ID3D11RenderTargetView *GetRenderTargetColorBuffer() const;
         ID3D11DepthStencilView *GetRenderTargetDepthBuffer() const;
         void GetRenderTargetSize(int *w, int *h) const;

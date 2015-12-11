@@ -20,6 +20,7 @@ namespace Galaxy3D
 		virtual ~GameObject();
 		template<class T> std::shared_ptr<T> AddComponent();
 		template<class T> std::shared_ptr<T> GetComponent() const;
+        template<class T> std::vector<std::shared_ptr<T>> GetComponents() const;
         template<class T> std::vector<std::shared_ptr<T>> GetComponentsInChildren() const;
         std::shared_ptr<Component> GetComponentPtr(const Component *com) const;
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
@@ -86,6 +87,31 @@ namespace Galaxy3D
 
 		return std::shared_ptr<T>();
 	}
+
+    template<class T> std::vector<std::shared_ptr<T>> GameObject::GetComponents() const
+    {
+        std::vector<std::shared_ptr<T>> coms;
+
+        for(auto i : m_components)
+        {
+            auto t = std::dynamic_pointer_cast<T>(i);
+            if(t && !t->m_deleted)
+            {
+                coms.push_back(t);
+            }
+        }
+
+        for(auto i : m_components_new)
+        {
+            auto t = std::dynamic_pointer_cast<T>(i);
+            if(t && !t->m_deleted)
+            {
+                coms.push_back(t);
+            }
+        }
+
+        return coms;
+    }
 
     template<class T> std::vector<std::shared_ptr<T>> GameObject::GetComponentsInChildren() const
     {
