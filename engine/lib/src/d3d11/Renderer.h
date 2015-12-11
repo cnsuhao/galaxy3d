@@ -44,7 +44,6 @@ namespace Galaxy3D
         static void Init();
         static void Done();
         static void BuildStaticBatches();
-        static void UpdateForRender();
         virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
@@ -80,7 +79,6 @@ namespace Galaxy3D
 
 	private:
         static std::list<RenderBatch> m_batches;
-        static std::list<RenderBatch> m_batches_for_render;
         static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
