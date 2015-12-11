@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "Matrix4x4.h"
 #include "Rect.h"
+#include "GraphicsDevice.h"
 #include <list>
 
 namespace Galaxy3D
@@ -36,6 +37,7 @@ namespace Galaxy3D
         Vector3 WorldToViewportPoint(const Vector3 &position);
         Ray ScreenPointToRay(const Vector3 &position);
         void EnableHDR(bool enable) {m_hdr = enable;}
+        void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_target) {m_render_target = render_target;}
 
 	protected:
 		virtual void Start();
@@ -55,6 +57,7 @@ namespace Galaxy3D
 		float m_far_clip_plane;
 		Rect m_rect;
         bool m_hdr;
+        std::shared_ptr<RenderTexture> m_render_target;
 		Matrix4x4 m_view_matrix;
 		Matrix4x4 m_projection_matrix;
 		Matrix4x4 m_view_projection_matrix;
@@ -63,6 +66,9 @@ namespace Galaxy3D
 		static void UpdateTime();
 		void Render() const;
 		void SetViewport() const;
+        ID3D11RenderTargetView *GetRenderTargetColorBuffer() const;
+        ID3D11DepthStencilView *GetRenderTargetDepthBuffer() const;
+        void GetRenderTargetSize(int *w, int *h) const;
 	};
 }
 

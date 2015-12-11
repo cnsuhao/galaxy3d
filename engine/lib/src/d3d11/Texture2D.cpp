@@ -1,5 +1,4 @@
 #include "Texture2D.h"
-#include "GraphicsDevice.h"
 #include "Image.h"
 #include "GTFile.h"
 
@@ -55,6 +54,7 @@ namespace Galaxy3D
 		DXGI_FORMAT_UNKNOWN,
 		DXGI_FORMAT_UNKNOWN,
 	};
+    const DXGI_FORMAT *Texture::TEXTURE_FORMATS = Galaxy3D::TEXTURE_FORMATS;
 
 	static const D3D11_FILTER FILTER_MODES[3] =
 	{
@@ -62,12 +62,14 @@ namespace Galaxy3D
         D3D11_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D11_FILTER_ANISOTROPIC,
 	};
+    const D3D11_FILTER *Texture::FILTER_MODES = Galaxy3D::FILTER_MODES;
 
 	static const D3D11_TEXTURE_ADDRESS_MODE ADDRESS_MODES[2] =
 	{
 		D3D11_TEXTURE_ADDRESS_WRAP,
 		D3D11_TEXTURE_ADDRESS_CLAMP,
 	};
+    const D3D11_TEXTURE_ADDRESS_MODE *Texture::ADDRESS_MODES = Galaxy3D::ADDRESS_MODES;
 
 	Texture2D::~Texture2D()
 	{

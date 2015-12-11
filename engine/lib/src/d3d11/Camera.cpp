@@ -1,6 +1,5 @@
 #include "Camera.h"
 #include "GameObject.h"
-#include "GraphicsDevice.h"
 #include "GTTime.h"
 #include "Debug.h"
 #include "Screen.h"
@@ -23,7 +22,8 @@ namespace Galaxy3D
 		m_field_of_view(60),
 		m_near_clip_plane(0.3f),
 		m_far_clip_plane(1000),
-		m_rect(0, 0, 1, 1)
+		m_rect(0, 0, 1, 1),
+        m_hdr(false)
 	{
 		m_cameras.push_back(this);
 		m_cameras.sort(Less);
@@ -81,19 +81,57 @@ namespace Galaxy3D
 	{
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 
-		int width = Screen::GetWidth();
-		int height = Screen::GetHeight();
+        int w, h;
+        GetRenderTargetSize(&w, &h);
 
 		D3D11_VIEWPORT vp;
-		vp.Width = m_rect.width * width;
-		vp.Height = m_rect.height * height;
+		vp.Width = m_rect.width * w;
+		vp.Height = m_rect.height * h;
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
-		vp.TopLeftX = m_rect.left * width;
-		vp.TopLeftY = m_rect.top * height;
+		vp.TopLeftX = m_rect.left * w;
+		vp.TopLeftY = m_rect.top * h;
 
 		context->RSSetViewports(1, &vp);
 	}
+
+    ID3D11RenderTargetView *Camera::GetRenderTargetColorBuffer() const
+    {
+        if(m_render_target)
+        {
+            return m_render_target->GetRenderTargetView();
+        }
+        else
+        {
+            return GraphicsDevice::GetInstance()->GetRenderTargetView();
+        }
+    }
+
+    ID3D11DepthStencilView *Camera::GetRenderTargetDepthBuffer() const
+    {
+        if(m_render_target)
+        {
+            return m_render_target->GetDepthStencilView();
+        }
+        else
+        {
+            return GraphicsDevice::GetInstance()->GetDepthStencilView();
+        }
+    }
+
+    void Camera::GetRenderTargetSize(int *w, int *h) const
+    {
+        if(m_render_target)
+        {
+            *w = m_render_target->GetWidth();
+            *h = m_render_target->GetHeight();
+        }
+        else
+        {
+            *w = Screen::GetWidth();
+            *h = Screen::GetHeight();
+        }
+    }
 
 	void Camera::UpdateTime()
 	{
@@ -142,18 +180,18 @@ namespace Galaxy3D
 	void Camera::Render() const
 	{
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-		auto render_buffer= GraphicsDevice::GetInstance()->GetRenderTargetView();
-		auto depth_buffer = GraphicsDevice::GetInstance()->GetDepthStencilView();
+		auto color_buffer= GetRenderTargetColorBuffer();
+		auto depth_buffer = GetRenderTargetDepthBuffer();
 
-		SetViewport();
+		// set target
+		context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
 
-		//set target
-		context->OMSetRenderTargets(1, &render_buffer, depth_buffer);
+        SetViewport();
 
-		//clear
+		// clear
         if(m_clear_flags == CameraClearFlags::SolidColor)
         {
-            context->ClearRenderTargetView(render_buffer, (const float *) &m_clear_color);
+            context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
             context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
         else if(m_clear_flags == CameraClearFlags::Depth)
@@ -161,7 +199,7 @@ namespace Galaxy3D
             context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
 		
-		//render
+		// render
 		m_current = GetGameObject()->GetComponent<Camera>();
 		Renderer::RenderAll();
 		m_current.reset();

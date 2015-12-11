@@ -4,12 +4,17 @@
 #include "Object.h"
 #include "FilterMode.h"
 #include "TextureWrapMode.h"
+#include "GraphicsDevice.h"
 
 namespace Galaxy3D
 {
 	class Texture : public Object
 	{
 	public:
+        static const DXGI_FORMAT *TEXTURE_FORMATS;
+        static const D3D11_FILTER *FILTER_MODES;
+        static const D3D11_TEXTURE_ADDRESS_MODE *ADDRESS_MODES;
+
 		virtual ~Texture() {}
 		int GetWidth() const {return m_width;}
 		int GetHeight() const {return m_height;}
