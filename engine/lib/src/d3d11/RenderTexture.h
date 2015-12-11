@@ -6,22 +6,12 @@
 
 namespace Galaxy3D
 {
-    struct DepthBuffer
-    {
-        enum Enum
-        {
-            Depth_0,
-            Depth_16,
-            //          Depth_24,
-        };
-    };
-
     struct RenderTextureFormat
     {
         enum Enum
         {
-            ARGB32 = 0,			//Color render texture format, 8 bits per channel
-            Depth = 1,			//A depth render texture format
+            RGBA32 = 0,			//Color render texture format, 8 bits per channel
+            //          Depth = 1,			//A depth render texture format
             //			ARGBHalf = 2,		//Color render texture format, 16 bit floating point per channel
             //			RGB565 = 4,
             //			ARGB4444 = 5,
@@ -40,21 +30,33 @@ namespace Galaxy3D
         };
     };
 
+    struct DepthBuffer
+    {
+        enum Enum
+        {
+            Depth_0,
+            Depth_16,
+            Depth_24,
+        };
+    };
+
     class RenderTexture : public Texture
     {
     public:
         static std::shared_ptr<RenderTexture> CreateRenderTexture(
             int width,
             int height,
-            DepthBuffer::Enum depth,
             RenderTextureFormat::Enum format,
-            FilterMode::Enum filter_mode = FilterMode::Bilinear,
+            DepthBuffer::Enum depth,
+            FilterMode::Enum filter_mode = FilterMode::Point,
             TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
         virtual ~RenderTexture();
+        ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
+        ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
 
     private:
-        DepthBuffer::Enum m_depth;
         RenderTextureFormat::Enum m_format;
+        DepthBuffer::Enum m_depth;
         ID3D11RenderTargetView *m_render_target_view;
         ID3D11DepthStencilView *m_depth_stencil_view;
         ID3D11ShaderResourceView *m_shader_resource_view;
@@ -62,7 +64,7 @@ namespace Galaxy3D
 
         RenderTexture(
             int width, int height,
-            DepthBuffer::Enum depth, RenderTextureFormat::Enum format,
+            RenderTextureFormat::Enum format, DepthBuffer::Enum depth,
             FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode) :
             Texture(width, height, filter_mode, wrap_mode),
             m_depth(depth),

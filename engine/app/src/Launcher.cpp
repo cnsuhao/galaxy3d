@@ -182,13 +182,16 @@ void Launcher::Start()
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->GetTransform()->SetPosition(Vector3(-21.98f, 10.27f, 44.9f));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(24.58f, 137.26f, 0));
+    cam3d->EnableHDR(true);
+    //auto render_texture = RenderTexture::CreateRenderTexture(Screen::GetWidth(), Screen::GetHeight(), RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+    //cam3d->SetRenderTarget(render_texture);
 
     auto lightmap_0 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     auto lightmap_1 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.clear();
     LightmapSettings::lightmaps.push_back(lightmap_0);
     LightmapSettings::lightmaps.push_back(lightmap_1);
-
+    /*
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
     
     int cc = scene->GetTransform()->GetChildCount();
@@ -204,18 +207,18 @@ void Launcher::Start()
             add_lamp_particles(child->GetGameObject(), cam3d);
         }
     }
-
+    */
     auto dusts = GameObject::Create("FX");
-    dusts->GetTransform()->SetParent(scene->GetTransform());
+    //dusts->GetTransform()->SetParent(scene->GetTransform());
     dusts->GetTransform()->SetLocalPosition(Vector3(28.68044f, -44.94969f, -16.97657f));
     add_dust_particles(dusts, cam3d, Vector3(-17.94812f, 41.30858f, 60.79422f));
     add_dust_particles(dusts, cam3d, Vector3(-7.215611f, 46.65371f, 44.56079f));
     add_dust_particles(dusts, cam3d, Vector3(-22.39325f, 39.16286f, 19.75619f));
     add_dust_particles(dusts, cam3d, Vector3(-47.34644f, 43.30156f, 15.99386f));
     
-    Renderer::BuildOctree(scene);
+    //Renderer::BuildOctree(scene);
 
-    scene->SetStaticRecursively();
+    //scene->SetStaticRecursively();
     Renderer::BuildStaticBatches();
 #endif
 

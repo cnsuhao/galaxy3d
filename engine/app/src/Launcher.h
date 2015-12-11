@@ -28,6 +28,7 @@
 #include "TweenRotation.h"
 #include "ParticleSystem.h"
 #include "ParticleSystemRenderer.h"
+#include "RenderTexture.h"
 
 namespace Galaxy3D
 {

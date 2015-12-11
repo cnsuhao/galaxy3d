@@ -102,28 +102,21 @@ namespace Galaxy3D
 		m_immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//depth stencil texture
-		D3D11_TEXTURE2D_DESC descDepth;
-		ZeroMemory(&descDepth, sizeof(descDepth));
-		descDepth.Width = Screen::GetWidth();
-		descDepth.Height = Screen::GetHeight();
-		descDepth.MipLevels = 1;
-		descDepth.ArraySize = 1;
-		descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		descDepth.SampleDesc.Count = 1;
-		descDepth.SampleDesc.Quality = 0;
-		descDepth.Usage = D3D11_USAGE_DEFAULT;
-		descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-		descDepth.CPUAccessFlags = 0;
-		descDepth.MiscFlags = 0;
-		m_d3d_device->CreateTexture2D(&descDepth, NULL, &m_depth_stencil_texture);
-
-		//depth stencil view
-		D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-		ZeroMemory(&descDSV, sizeof(descDSV));
-		descDSV.Format = descDepth.Format;
-		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		descDSV.Texture2D.MipSlice = 0;
-		m_d3d_device->CreateDepthStencilView(m_depth_stencil_texture, &descDSV, &m_depth_stencil_view);
+        D3D11_TEXTURE2D_DESC dtd =
+        {
+            Screen::GetWidth(),//UINT Width;
+            Screen::GetHeight(),//UINT Height;
+            1,//UINT MipLevels;
+            1,//UINT ArraySize;
+            DXGI_FORMAT_D24_UNORM_S8_UINT,//DXGI_FORMAT Format;
+            1, 0,//DXGI_SAMPLE_DESC SampleDesc;
+            D3D11_USAGE_DEFAULT,//D3D11_USAGE Usage;
+            D3D11_BIND_DEPTH_STENCIL,//UINT BindFlags;
+            0,//UINT CPUAccessFlags;
+            0//UINT MiscFlags;
+        };
+		m_d3d_device->CreateTexture2D(&dtd, NULL, &m_depth_stencil_texture);
+		m_d3d_device->CreateDepthStencilView(m_depth_stencil_texture, NULL, &m_depth_stencil_view);
 	}
 
 	void GraphicsDevice::ClearShaderResources()
