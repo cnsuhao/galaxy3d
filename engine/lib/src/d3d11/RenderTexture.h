@@ -11,14 +11,14 @@ namespace Galaxy3D
         enum Enum
         {
             RGBA32 = 0,			//Color render texture format, 8 bits per channel
-            //          Depth = 1,			//A depth render texture format
+            Depth = 1,			//A depth render texture format
             //			ARGBHalf = 2,		//Color render texture format, 16 bit floating point per channel
             //			RGB565 = 4,
             //			ARGB4444 = 5,
             //			ARGB1555 = 6,
             //			Default = 7,
             //			DefaultHDR = 9,
-            ARGBFloat = 11,		//Color render texture format, 32 bit floating point per channel
+            RGBAFloat = 11,		//Color render texture format, 32 bit floating point per channel
             //			RGFloat = 12,
             //			RGHalf = 13,
             //			RFloat = 14,		//Scalar (R) render texture format, 32 bit floating point
@@ -50,6 +50,18 @@ namespace Galaxy3D
             DepthBuffer::Enum depth,
             FilterMode::Enum filter_mode = FilterMode::Point,
             TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
+        RenderTexture(int w, int h, ID3D11RenderTargetView *render_target_view, ID3D11DepthStencilView *depth_stencil_view):
+            Texture(w, h, FilterMode::Point, TextureWrapMode::Clamp),
+            m_format(RenderTextureFormat::RGBA32),
+            m_depth(DepthBuffer::Depth_24),
+            m_render_target_view(render_target_view),
+            m_depth_stencil_view(depth_stencil_view),
+            m_shader_resource_view(NULL),
+            m_sampler_state(NULL)
+        {
+            m_render_target_view->AddRef();
+            m_depth_stencil_view->AddRef();
+        }
         virtual ~RenderTexture();
         ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
         ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
@@ -67,8 +79,8 @@ namespace Galaxy3D
             RenderTextureFormat::Enum format, DepthBuffer::Enum depth,
             FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode) :
             Texture(width, height, filter_mode, wrap_mode),
-            m_depth(depth),
             m_format(format),
+            m_depth(depth),
             m_render_target_view(NULL),
             m_depth_stencil_view(NULL),
             m_shader_resource_view(NULL),

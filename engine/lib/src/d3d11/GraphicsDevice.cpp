@@ -1,5 +1,6 @@
 #include "GraphicsDevice.h"
 #include "Screen.h"
+#include "RenderTexture.h"
 
 namespace Galaxy3D
 {
@@ -117,6 +118,9 @@ namespace Galaxy3D
         };
 		m_d3d_device->CreateTexture2D(&dtd, NULL, &m_depth_stencil_texture);
 		m_d3d_device->CreateDepthStencilView(m_depth_stencil_texture, NULL, &m_depth_stencil_view);
+
+        m_screen_buffer = std::shared_ptr<RenderTexture>(
+            new RenderTexture(Screen::GetWidth(), Screen::GetHeight(), m_render_target_view, m_depth_stencil_view));
 	}
 
 	void GraphicsDevice::ClearShaderResources()

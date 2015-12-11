@@ -182,7 +182,8 @@ void Launcher::Start()
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->GetTransform()->SetPosition(Vector3(-21.98f, 10.27f, 44.9f));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(24.58f, 137.26f, 0));
-    cam3d->EnableHDR(true);
+    //cam3d->GetGameObject()->AddComponent<ImageEffect>();
+    //cam3d->EnableHDR(true);
     //auto render_texture = RenderTexture::CreateRenderTexture(Screen::GetWidth(), Screen::GetHeight(), RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
     //cam3d->SetRenderTarget(render_texture);
 

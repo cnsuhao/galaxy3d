@@ -5,12 +5,15 @@
 #include "Screen.h"
 #include "Renderer.h"
 #include "RenderTexture.h"
+#include "ImageEffect.h"
 
 namespace Galaxy3D
 {
 	std::list<Camera *> Camera::m_cameras;
 	std::shared_ptr<Camera> Camera::m_current;
     std::shared_ptr<RenderTexture> Camera::m_hdr_render_target;
+    std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer;
+    std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer_back;
 
 	Camera::Camera():
 		m_clear_flags(CameraClearFlags::SolidColor),
@@ -77,12 +80,9 @@ namespace Galaxy3D
 		m_view_projection_matrix = m_projection_matrix * m_view_matrix;
 	}
 
-	void Camera::SetViewport() const
+	void Camera::SetViewport(int w, int h) const
 	{
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-        int w, h;
-        GetRenderTargetSize(&w, &h);
 
 		D3D11_VIEWPORT vp;
 		vp.Width = m_rect.width * w;
@@ -103,7 +103,7 @@ namespace Galaxy3D
         }
         else
         {
-            return GraphicsDevice::GetInstance()->GetRenderTargetView();
+            return GraphicsDevice::GetInstance()->GetScreenBuffer()->GetRenderTargetView();
         }
     }
 
@@ -115,7 +115,7 @@ namespace Galaxy3D
         }
         else
         {
-            return GraphicsDevice::GetInstance()->GetDepthStencilView();
+            return GraphicsDevice::GetInstance()->GetScreenBuffer()->GetDepthStencilView();
         }
     }
 
@@ -167,6 +167,28 @@ namespace Galaxy3D
             if(obj->IsActiveInHierarchy() && i->IsEnable())
             {
                 i->Render();
+
+                auto effects = obj->GetComponents<ImageEffect>();
+                for(size_t j=0; j<effects.size(); j++)
+                {
+                    if(i->m_hdr)
+                    {
+
+                    }
+                    else
+                    {
+                        if(j == effects.size() - 1)
+                        {
+                            effects[j]->OnRenderImage(m_image_effect_buffer, GraphicsDevice::GetInstance()->GetScreenBuffer());
+                        }
+                        else
+                        {
+                            effects[j]->OnRenderImage(m_image_effect_buffer, m_image_effect_buffer_back);
+                        }
+
+                        std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+                    }
+                }
             }
         }
 
@@ -179,14 +201,36 @@ namespace Galaxy3D
 
 	void Camera::Render() const
 	{
+        int width, height;
+        GetRenderTargetSize(&width, &height);
+
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 		auto color_buffer= GetRenderTargetColorBuffer();
 		auto depth_buffer = GetRenderTargetDepthBuffer();
+        auto effects = GetGameObject()->GetComponents<ImageEffect>();
+
+        if(m_hdr)
+        {
+            CreateHDRTargetIfNeeded(width, height);
+
+            color_buffer = m_hdr_render_target->GetRenderTargetView();
+            depth_buffer = m_hdr_render_target->GetDepthStencilView();
+        }
+        else
+        {
+            if(!effects.empty())
+            {
+                CreateImageEffectBufferIfNeeded(width, height);
+
+                color_buffer = m_image_effect_buffer->GetRenderTargetView();
+                depth_buffer = m_image_effect_buffer->GetDepthStencilView();
+            }
+        }
 
 		// set target
 		context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
 
-        SetViewport();
+        SetViewport(width, height);
 
 		// clear
         if(m_clear_flags == CameraClearFlags::SolidColor)
@@ -204,6 +248,34 @@ namespace Galaxy3D
 		Renderer::RenderAll();
 		m_current.reset();
 	}
+
+    void Camera::Done()
+    {
+        m_hdr_render_target.reset();
+        m_image_effect_buffer.reset();
+        m_image_effect_buffer_back.reset();
+    }
+
+    void Camera::CreateHDRTargetIfNeeded(int w, int h)
+    {
+        if(!m_hdr_render_target)
+        {
+            m_hdr_render_target = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
+        }
+    }
+
+    void Camera::CreateImageEffectBufferIfNeeded(int w, int h)
+    {
+        if(!m_image_effect_buffer)
+        {
+            m_image_effect_buffer = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+        }
+
+        if(!m_image_effect_buffer_back)
+        {
+            m_image_effect_buffer_back = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+        }
+    }
 
     Vector3 Camera::ScreenToViewportPoint(const Vector3 &position)
     {

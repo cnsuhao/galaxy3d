@@ -368,6 +368,8 @@ namespace Galaxy3D
     {
         SAFE_RELEASE(m_static_batching_vertex_buffer);
         SAFE_RELEASE(m_static_batching_index_buffer);
+
+        m_octree.reset();
     }
 
     void Renderer::BuildStaticBatches()
