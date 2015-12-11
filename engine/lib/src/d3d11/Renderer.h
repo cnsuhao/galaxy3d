@@ -79,10 +79,11 @@ namespace Galaxy3D
 
 	private:
         static std::list<RenderBatch> m_batches;
+        static std::list<RenderBatch> m_batches_renderable;
         static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
-        static void SortTransparentBatches();
+        static void SortTransparentBatches(std::list<RenderBatch> &batches);
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
         void AddBatches();

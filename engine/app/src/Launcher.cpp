@@ -191,7 +191,7 @@ void Launcher::Start()
     LightmapSettings::lightmaps.push_back(lightmap_1);
 
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/scene/Module_01.mesh");
-
+    
     int cc = scene->GetTransform()->GetChildCount();
     for(int i=0; i<cc; i++)
     {
