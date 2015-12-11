@@ -70,8 +70,7 @@ namespace Galaxy3D
 		Vector4 m_lightmap_tiling_offset;
 		int m_sorting_layer;
 		int m_sorting_order;
-        // aabb in world space
-        Bounds m_bounds;
+        Bounds m_bounds;// aabb in world space
 
 		Renderer();
         void DrawIndexed(int count, int offset);

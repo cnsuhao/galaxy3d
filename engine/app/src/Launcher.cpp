@@ -23,7 +23,9 @@ void Launcher::Start()
 	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
     
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam2d->SetOrthographic(true);
     cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
+    cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
@@ -174,13 +176,10 @@ void Launcher::Start()
 
 #if DEMO_SCENE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam3d->SetOrthographic(false);
     cam3d->SetFieldOfView(45);
-    cam3d->SetClipPlane(0.3f, 1000.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
     cam3d->GetTransform()->SetPosition(Vector3(-21.98f, 10.27f, 44.9f));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(24.58f, 137.26f, 0));
 

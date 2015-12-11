@@ -26,6 +26,7 @@
     <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\Renderer.cpp" />
     <ClCompile Include="..\src\d3d11\RenderStates.cpp" />
+    <ClCompile Include="..\src\d3d11\RenderTexture.cpp" />
     <ClCompile Include="..\src\d3d11\Shader.cpp" />
     <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp" />
     <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp" />
@@ -87,6 +88,7 @@
     <ClInclude Include="..\src\d3d11\PixelShader.h" />
     <ClInclude Include="..\src\d3d11\Renderer.h" />
     <ClInclude Include="..\src\d3d11\RenderStates.h" />
+    <ClInclude Include="..\src\d3d11\RenderTexture.h" />
     <ClInclude Include="..\src\d3d11\Shader.h" />
     <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h" />
     <ClInclude Include="..\src\d3d11\ShaderPass.h" />

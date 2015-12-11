@@ -5,22 +5,24 @@
 #include "Debug.h"
 #include "Screen.h"
 #include "Renderer.h"
+#include "RenderTexture.h"
 
 namespace Galaxy3D
 {
 	std::list<Camera *> Camera::m_cameras;
 	std::shared_ptr<Camera> Camera::m_current;
+    std::shared_ptr<RenderTexture> Camera::m_hdr_render_target;
 
 	Camera::Camera():
 		m_clear_flags(CameraClearFlags::SolidColor),
 		m_clear_color(0, 0, 1, 1),
 		m_depth(0),
 		m_culling_mask(-1),
-		m_orthographic(true),
+		m_orthographic(false),
 		m_orthographic_size(1),
 		m_field_of_view(60),
-		m_near_clip_plane(-1),//0.3f
-		m_far_clip_plane(1),//1000
+		m_near_clip_plane(0.3f),
+		m_far_clip_plane(1000),
 		m_rect(0, 0, 1, 1)
 	{
 		m_cameras.push_back(this);

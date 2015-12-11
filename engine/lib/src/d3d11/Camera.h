@@ -10,6 +10,8 @@
 
 namespace Galaxy3D
 {
+    class RenderTexture;
+
 	class Camera : public Component
 	{
 	public:
@@ -33,6 +35,7 @@ namespace Galaxy3D
         Vector3 ViewportToWorldPoint(const Vector3 &position);
         Vector3 WorldToViewportPoint(const Vector3 &position);
         Ray ScreenPointToRay(const Vector3 &position);
+        void EnableHDR(bool enable) {m_hdr = enable;}
 
 	protected:
 		virtual void Start();
@@ -40,6 +43,7 @@ namespace Galaxy3D
 	private:
 		static std::list<Camera *> m_cameras;
 		static std::shared_ptr<Camera> m_current;
+        static std::shared_ptr<RenderTexture> m_hdr_render_target;
 		CameraClearFlags::Enum m_clear_flags;
 		Color m_clear_color;
 		int m_depth;
@@ -50,6 +54,7 @@ namespace Galaxy3D
 		float m_near_clip_plane;
 		float m_far_clip_plane;
 		Rect m_rect;
+        bool m_hdr;
 		Matrix4x4 m_view_matrix;
 		Matrix4x4 m_projection_matrix;
 		Matrix4x4 m_view_projection_matrix;
