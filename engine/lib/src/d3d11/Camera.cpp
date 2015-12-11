@@ -121,14 +121,14 @@ namespace Galaxy3D
 
         GTTime::m_draw_call = 0;
 
-		for(auto i : m_cameras)
-		{
-			auto obj = i->GetGameObject();
-			if(obj->IsActiveInHierarchy() && i->IsEnable())
-			{
-				i->Render();
-			}
-		}
+        for(auto i : m_cameras)
+        {
+            auto obj = i->GetGameObject();
+            if(obj->IsActiveInHierarchy() && i->IsEnable())
+            {
+                i->Render();
+            }
+        }
 
 		GraphicsDevice::GetInstance()->GetSwapChain()->Present(0, 0);
 
