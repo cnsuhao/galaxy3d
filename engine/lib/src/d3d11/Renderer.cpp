@@ -11,6 +11,7 @@ namespace Galaxy3D
 {
     static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
+    std::list<RenderBatch> Renderer::m_batches_renderable;
     std::shared_ptr<Octree> Renderer::m_octree;
     ID3D11Buffer *Renderer::m_static_batching_vertex_buffer = NULL;
     ID3D11Buffer *Renderer::m_static_batching_index_buffer = NULL;
@@ -54,11 +55,11 @@ namespace Galaxy3D
         m_batches.sort(LessBatch);
 	}
 
-    void Renderer::SortTransparentBatches()
+    void Renderer::SortTransparentBatches(std::list<RenderBatch> &batches)
     {
         // find first transparent renderer
-        auto i = m_batches.begin();
-        for(; i != m_batches.end(); i++)
+        auto i = batches.begin();
+        for(; i != batches.end(); i++)
         {
             if(i->renderer->GetSharedMaterials()[i->material_index]->GetRenderQueue() > TRANSPARENT_ORDER_MIN)
             {
@@ -68,12 +69,12 @@ namespace Galaxy3D
 
         // splice to temp list for sorting by distance
         std::list<RenderBatch> transparents;
-        transparents.splice(transparents.begin(), m_batches, i, m_batches.end());
+        transparents.splice(transparents.begin(), batches, i, batches.end());
 
         transparents.sort(LessBatch);
 
         // splice back
-        m_batches.splice(m_batches.end(), transparents);
+        batches.splice(batches.end(), transparents);
     }
 
     bool Renderer::LessBatch(const RenderBatch &b1, const RenderBatch &b2)
@@ -296,10 +297,23 @@ namespace Galaxy3D
 
 	void Renderer::RenderAll()
 	{
-        // sort all transparent batches every frame
-        SortTransparentBatches();
-        
         auto camera = Camera::GetCurrent();
+
+        m_batches_renderable.clear();
+        for(auto i=m_batches.begin(); i!=m_batches.end(); i++)
+        {
+            auto obj = i->renderer->GetGameObject();
+
+            if( obj->IsActiveInHierarchy() &&
+                i->renderer->IsEnable() &&
+                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+            {
+                m_batches_renderable.push_back(*i);
+            }
+        }
+
+        // sort all transparent batches every frame
+        SortTransparentBatches(m_batches_renderable);
 
         if(m_octree)
         {
@@ -309,14 +323,11 @@ namespace Galaxy3D
 
         RenderBatch *last_batch = NULL;
         std::list<RenderBatch *> dynamic_batches;
-        for(auto i=m_batches.begin(); i!=m_batches.end(); i++)
+        for(auto i=m_batches_renderable.begin(); i!=m_batches_renderable.end(); i++)
         {
             auto obj = i->renderer->GetGameObject();
 
-            if( i->renderer->IsVisible() &&
-                obj->IsActiveInHierarchy() &&
-                i->renderer->IsEnable() &&
-                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+            if(i->renderer->IsVisible())
             {
                 auto mesh_renderer = dynamic_cast<MeshRenderer *>(i->renderer);
 
