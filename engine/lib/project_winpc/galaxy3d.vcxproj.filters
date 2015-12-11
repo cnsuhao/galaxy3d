@@ -168,6 +168,9 @@
     <ClCompile Include="..\src\Thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\d3d11\RenderTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -396,6 +399,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Thread.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\RenderTexture.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
