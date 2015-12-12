@@ -7,8 +7,7 @@
 
 namespace Galaxy3D
 {
-    class Material;
-    class RenderTexture;
+    class Camera;
 
     class ImageEffect : public Component
     {
@@ -17,6 +16,9 @@ namespace Galaxy3D
 
     protected:
         std::shared_ptr<Material> m_material;
+
+        void SetZBufferParams(const std::shared_ptr<Camera> &cam);
+        void SetMainTexTexelSize(const std::shared_ptr<Texture> &tex);
     };
 }
 

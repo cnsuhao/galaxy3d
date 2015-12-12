@@ -19,7 +19,7 @@ namespace Galaxy3D
             //			Default = 7,
             //			DefaultHDR = 9,
             RGBAFloat = 11,		//Color render texture format, 32 bit floating point per channel
-            //			RGFloat = 12,
+            RGFloat = 12,
             //			RGHalf = 13,
             //			RFloat = 14,		//Scalar (R) render texture format, 32 bit floating point
             //			RHalf = 15,
@@ -43,17 +43,24 @@ namespace Galaxy3D
     class RenderTexture : public Texture
     {
     public:
-        static std::shared_ptr<RenderTexture> CreateRenderTexture(
+        static std::shared_ptr<RenderTexture> Create(
             int width,
             int height,
             RenderTextureFormat::Enum format,
             DepthBuffer::Enum depth,
             FilterMode::Enum filter_mode = FilterMode::Point,
             TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp);
+        static std::shared_ptr<RenderTexture> GetTemporary(
+            int width,
+            int height,
+            RenderTextureFormat::Enum format,
+            DepthBuffer::Enum depth);
+        static void ReleaseTemporary(const std::shared_ptr<RenderTexture> &temp);
         RenderTexture(int w, int h, ID3D11RenderTargetView *render_target_view, ID3D11DepthStencilView *depth_stencil_view):
             Texture(w, h, FilterMode::Point, TextureWrapMode::Clamp),
             m_format(RenderTextureFormat::RGBA32),
             m_depth(DepthBuffer::Depth_24),
+            m_keep_color(false),
             m_render_target_view(render_target_view),
             m_depth_stencil_view(depth_stencil_view),
             m_shader_resource_view(NULL),
@@ -63,14 +70,21 @@ namespace Galaxy3D
             m_depth_stencil_view->AddRef();
         }
         virtual ~RenderTexture();
+        RenderTextureFormat::Enum GetFormat() const {return m_format;}
+        DepthBuffer::Enum GetDepth() const {return m_depth;}
         ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
         ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
         ID3D11ShaderResourceView *GetShaderResourceView() const {return m_shader_resource_view;}
         ID3D11SamplerState *GetSamplerState() const {return m_sampler_state;}
+        void MarkKeepColor() {m_keep_color = true;}
+        bool IsKeepColor() const {return m_keep_color;}
 
     private:
+        static std::list<std::shared_ptr<RenderTexture>> m_textures_idle;
+        static std::list<std::shared_ptr<RenderTexture>> m_textures_using;
         RenderTextureFormat::Enum m_format;
         DepthBuffer::Enum m_depth;
+        bool m_keep_color;
         ID3D11RenderTargetView *m_render_target_view;
         ID3D11DepthStencilView *m_depth_stencil_view;
         ID3D11ShaderResourceView *m_shader_resource_view;
@@ -83,6 +97,7 @@ namespace Galaxy3D
             Texture(width, height, filter_mode, wrap_mode),
             m_format(format),
             m_depth(depth),
+            m_keep_color(false),
             m_render_target_view(NULL),
             m_depth_stencil_view(NULL),
             m_shader_resource_view(NULL),

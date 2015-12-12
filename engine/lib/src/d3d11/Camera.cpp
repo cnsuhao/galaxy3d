@@ -250,8 +250,15 @@ namespace Galaxy3D
 
         if(m_clear_flags == CameraClearFlags::SolidColor)
         {
-            context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
-            context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+            if(!render_texture->IsKeepColor())
+            {
+                context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
+            }
+
+            if(depth_buffer != 0)
+            {
+                context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+            }
         }
         else if(m_clear_flags == CameraClearFlags::Depth)
         {
@@ -270,7 +277,7 @@ namespace Galaxy3D
     {
         if(!m_hdr_render_target)
         {
-            m_hdr_render_target = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
+            m_hdr_render_target = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
         }
     }
 
@@ -278,12 +285,12 @@ namespace Galaxy3D
     {
         if(!m_image_effect_buffer)
         {
-            m_image_effect_buffer = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+            m_image_effect_buffer = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
         }
 
         if(!m_image_effect_buffer_back)
         {
-            m_image_effect_buffer_back = RenderTexture::CreateRenderTexture(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+            m_image_effect_buffer_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
         }
     }
 
