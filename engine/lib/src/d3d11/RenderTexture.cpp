@@ -2,7 +2,57 @@
 
 namespace Galaxy3D
 {
-    std::shared_ptr<RenderTexture> RenderTexture::CreateRenderTexture(
+    std::list<std::shared_ptr<RenderTexture>> RenderTexture::m_textures_idle;
+    std::list<std::shared_ptr<RenderTexture>> RenderTexture::m_textures_using;
+
+    std::shared_ptr<RenderTexture> RenderTexture::GetTemporary(
+        int width,
+        int height,
+        RenderTextureFormat::Enum format,
+        DepthBuffer::Enum depth)
+    {
+        std::shared_ptr<RenderTexture> texture;
+
+        for(auto i=m_textures_idle.begin(); i!=m_textures_idle.end(); i++)
+        {
+            auto t = *i;
+            if(	t->GetWidth() == width &&
+                t->GetHeight() == height &&
+                t->GetFormat() == format &&
+                t->GetDepth() == depth)
+            {
+                texture = t;
+
+                m_textures_idle.erase(i);
+                m_textures_using.push_front(texture);
+                break;
+            }
+        }
+
+        if(!texture)
+        {
+            texture = Create(width, height, format, depth, FilterMode::Bilinear);
+
+            m_textures_using.push_front(texture);
+        }
+
+        return texture;
+    }
+
+    void RenderTexture::ReleaseTemporary(const std::shared_ptr<RenderTexture> &temp)
+    {
+        for(auto i=m_textures_using.begin(); i!=m_textures_using.end(); i++)
+        {
+            if((*i) == temp)
+            {
+                m_textures_using.erase(i);
+                m_textures_idle.push_front(temp);
+                break;
+            }
+        }
+    }
+
+    std::shared_ptr<RenderTexture> RenderTexture::Create(
         int width,
         int height,
         RenderTextureFormat::Enum format,
@@ -28,7 +78,9 @@ namespace Galaxy3D
     {
         auto device = GraphicsDevice::GetInstance()->GetDevice();
 
-        if(m_format == RenderTextureFormat::RGBA32 || m_format == RenderTextureFormat::RGBAFloat)
+        if( m_format == RenderTextureFormat::RGBA32 ||
+            m_format == RenderTextureFormat::RGBAFloat ||
+            m_format == RenderTextureFormat::RGFloat)
         {
             DXGI_FORMAT fmt;
             if(m_format == RenderTextureFormat::RGBA32)
@@ -38,6 +90,10 @@ namespace Galaxy3D
             else if(m_format == RenderTextureFormat::RGBAFloat)
             {
                 fmt = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            }
+            else if(m_format == RenderTextureFormat::RGFloat)
+            {
+                fmt = DXGI_FORMAT_R32G32_FLOAT;
             }
 
             D3D11_TEXTURE2D_DESC dtd =

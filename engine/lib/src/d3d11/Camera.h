@@ -30,7 +30,9 @@ namespace Galaxy3D
 		void SetOrthographicSize(float ortho_size) {m_orthographic_size = ortho_size;}
 		void SetFieldOfView(float fov) {m_field_of_view = fov;}
 		void SetClipPlane(float near_clip, float far_clip) {m_near_clip_plane = near_clip; m_far_clip_plane = far_clip;}
-		void SetRect(const Rect &rect) {m_rect = rect;}
+        float GetClipNear() const {return m_near_clip_plane;}
+        float GetClipFar() const {return m_far_clip_plane;}
+        void SetRect(const Rect &rect) {m_rect = rect;}
 		void UpdateMatrix();
 		const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
         Vector3 ScreenToViewportPoint(const Vector3 &position);

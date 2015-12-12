@@ -183,11 +183,13 @@ namespace Galaxy3D
             if(tex)
             {
                 find->second.texture = tex->GetTexture();
+                context->PSSetShaderResources(find->second.slot, 1, &find->second.texture);
 
                 auto find_sampler = shader_pass->ps->samplers.find(name + "_Sampler");
                 if(find_sampler != shader_pass->ps->samplers.end())
                 {
                     find_sampler->second.sampler = tex->GetSampler();
+                    context->PSSetSamplers(find_sampler->second.slot, 1, &find_sampler->second.sampler);
                 }
             }
         }

@@ -14,9 +14,9 @@ BlitCopy
 
     RenderStates rs
     {
-        Cull Back
+        Cull Off
         ZWrite Off
-        ZTest Off
+        ZTest Always
         Blend Off
     }
 
