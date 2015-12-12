@@ -1,13 +1,13 @@
-#include "ImageEffectHDR.h"
+#include "ImageEffectToneMapping.h"
 
 namespace Galaxy3D
 {
-    void ImageEffectHDR::Start()
+    void ImageEffectToneMapping::Start()
     {
-        m_material = Material::Create("ImageEffect/HDR");
+        m_material = Material::Create("ImageEffect/ToneMapping");
     }
 
-    void ImageEffectHDR::OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination)
+    void ImageEffectToneMapping::OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination)
     {
         bool new_texture_1 = NewAdaptiveTexture();
 
@@ -55,7 +55,7 @@ namespace Galaxy3D
         }
     }
 
-    bool ImageEffectHDR::NewAdaptiveTexture()
+    bool ImageEffectToneMapping::NewAdaptiveTexture()
     {
         if(m_adaptive_texture_1)
         {

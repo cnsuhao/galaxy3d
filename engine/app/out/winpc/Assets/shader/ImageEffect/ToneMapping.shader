@@ -1,4 +1,4 @@
-ImageEffect/HDR
+ImageEffect/ToneMapping
 {
     Tags
     {

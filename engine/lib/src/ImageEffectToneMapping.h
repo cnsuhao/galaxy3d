@@ -1,5 +1,5 @@
-#ifndef __ImageEffectHDR_h__
-#define __ImageEffectHDR_h__
+#ifndef __ImageEffectToneMapping_h__
+#define __ImageEffectToneMapping_h__
 
 #include "ImageEffect.h"
 
@@ -19,10 +19,10 @@ namespace Galaxy3D
         };
     };
 
-    class ImageEffectHDR : public ImageEffect
+    class ImageEffectToneMapping : public ImageEffect
     {
     public:
-        ImageEffectHDR():
+        ImageEffectToneMapping():
             m_middle_gray(0.4f),
             m_white(2),
             m_adaption_speed(1.5f),

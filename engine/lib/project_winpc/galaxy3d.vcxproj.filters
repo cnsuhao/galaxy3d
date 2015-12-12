@@ -171,10 +171,10 @@
     <ClCompile Include="..\src\d3d11\RenderTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\d3d11\ImageEffect.cpp">
+    <ClCompile Include="..\src\ImageEffectToneMapping.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\d3d11\ImageEffectHDR.cpp">
+    <ClCompile Include="..\src\ImageEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -410,10 +410,10 @@
     <ClInclude Include="..\src\d3d11\RenderTexture.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\ImageEffect.h">
+    <ClInclude Include="..\src\ImageEffectToneMapping.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\ImageEffectHDR.h">
+    <ClInclude Include="..\src\ImageEffect.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
