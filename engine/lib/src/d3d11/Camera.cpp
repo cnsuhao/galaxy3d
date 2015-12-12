@@ -148,7 +148,14 @@ namespace Galaxy3D
 
                     if(j == effects.size() - 1)
                     {
-                        dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                        if(i->m_render_texture)
+                        {
+                            dest = i->m_render_texture;
+                        }
+                        else
+                        {
+                            dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                        }
                     }
                     else
                     {
