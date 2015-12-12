@@ -65,6 +65,8 @@ namespace Galaxy3D
         virtual ~RenderTexture();
         ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
         ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
+        ID3D11ShaderResourceView *GetShaderResourceView() const {return m_shader_resource_view;}
+        ID3D11SamplerState *GetSamplerState() const {return m_sampler_state;}
 
     private:
         RenderTextureFormat::Enum m_format;

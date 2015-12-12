@@ -95,44 +95,6 @@ namespace Galaxy3D
 		context->RSSetViewports(1, &vp);
 	}
 
-    ID3D11RenderTargetView *Camera::GetRenderTargetColorBuffer() const
-    {
-        if(m_render_target)
-        {
-            return m_render_target->GetRenderTargetView();
-        }
-        else
-        {
-            return GraphicsDevice::GetInstance()->GetScreenBuffer()->GetRenderTargetView();
-        }
-    }
-
-    ID3D11DepthStencilView *Camera::GetRenderTargetDepthBuffer() const
-    {
-        if(m_render_target)
-        {
-            return m_render_target->GetDepthStencilView();
-        }
-        else
-        {
-            return GraphicsDevice::GetInstance()->GetScreenBuffer()->GetDepthStencilView();
-        }
-    }
-
-    void Camera::GetRenderTargetSize(int *w, int *h) const
-    {
-        if(m_render_target)
-        {
-            *w = m_render_target->GetWidth();
-            *h = m_render_target->GetHeight();
-        }
-        else
-        {
-            *w = Screen::GetWidth();
-            *h = Screen::GetHeight();
-        }
-    }
-
 	void Camera::UpdateTime()
 	{
 		if(GTTime::m_time_record < 0)
@@ -166,29 +128,38 @@ namespace Galaxy3D
             auto obj = i->GetGameObject();
             if(obj->IsActiveInHierarchy() && i->IsEnable())
             {
+                m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
                 i->Render();
 
                 auto effects = obj->GetComponents<ImageEffect>();
                 for(size_t j=0; j<effects.size(); j++)
                 {
-                    if(i->m_hdr)
-                    {
+                    std::shared_ptr<RenderTexture> source;
+                    std::shared_ptr<RenderTexture> dest;
 
+                    if(i->m_hdr && j == 0)
+                    {
+                        source = m_hdr_render_target;
                     }
                     else
                     {
-                        if(j == effects.size() - 1)
-                        {
-                            effects[j]->OnRenderImage(m_image_effect_buffer, GraphicsDevice::GetInstance()->GetScreenBuffer());
-                        }
-                        else
-                        {
-                            effects[j]->OnRenderImage(m_image_effect_buffer, m_image_effect_buffer_back);
-                        }
-
-                        std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+                        source = m_image_effect_buffer;
                     }
+
+                    if(j == effects.size() - 1)
+                    {
+                        dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                    }
+                    else
+                    {
+                        dest = m_image_effect_buffer_back;
+                    }
+
+                    effects[j]->OnRenderImage(source, dest);
+                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
                 }
+
+                m_current.reset();
             }
         }
 
@@ -199,40 +170,18 @@ namespace Galaxy3D
 		UpdateTime();
 	}
 
-	void Camera::Render() const
-	{
-        int width, height;
-        GetRenderTargetSize(&width, &height);
+    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture) const
+    {
+        int width = render_texture->GetWidth();
+        int height = render_texture->GetHeight();
 
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-		auto color_buffer= GetRenderTargetColorBuffer();
-		auto depth_buffer = GetRenderTargetDepthBuffer();
-        auto effects = GetGameObject()->GetComponents<ImageEffect>();
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto color_buffer = render_texture->GetRenderTargetView();
+        auto depth_buffer = render_texture->GetDepthStencilView();
 
-        if(m_hdr)
-        {
-            CreateHDRTargetIfNeeded(width, height);
-
-            color_buffer = m_hdr_render_target->GetRenderTargetView();
-            depth_buffer = m_hdr_render_target->GetDepthStencilView();
-        }
-        else
-        {
-            if(!effects.empty())
-            {
-                CreateImageEffectBufferIfNeeded(width, height);
-
-                color_buffer = m_image_effect_buffer->GetRenderTargetView();
-                depth_buffer = m_image_effect_buffer->GetDepthStencilView();
-            }
-        }
-
-		// set target
-		context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
-
+        context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
         SetViewport(width, height);
 
-		// clear
         if(m_clear_flags == CameraClearFlags::SolidColor)
         {
             context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
@@ -242,11 +191,46 @@ namespace Galaxy3D
         {
             context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
+    }
+
+	void Camera::Render() const
+	{
+		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto effects = GetGameObject()->GetComponents<ImageEffect>();
+        std::shared_ptr<RenderTexture> render_target;
+        int width, height;
+
+        if(m_render_texture)
+        {
+            render_target = m_render_texture;
+        }
+        else
+        {
+            render_target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+        }
+
+        width = render_target->GetWidth();
+        height = render_target->GetHeight();
+
+        if(m_hdr)
+        {
+            CreateHDRTargetIfNeeded(width, height);
+
+            render_target = m_hdr_render_target;
+        }
+        else
+        {
+            if(!effects.empty())
+            {
+                CreateImageEffectBufferIfNeeded(width, height);
+
+                render_target = m_image_effect_buffer;
+            }
+        }
+
+        SetRenderTarget(render_target);
 		
-		// render
-		m_current = GetGameObject()->GetComponent<Camera>();
 		Renderer::RenderAll();
-		m_current.reset();
 	}
 
     void Camera::Done()

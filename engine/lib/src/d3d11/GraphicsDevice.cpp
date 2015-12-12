@@ -1,6 +1,7 @@
 #include "GraphicsDevice.h"
 #include "Screen.h"
 #include "RenderTexture.h"
+#include "Mesh.h"
 
 namespace Galaxy3D
 {
@@ -128,4 +129,100 @@ namespace Galaxy3D
 		ID3D11ShaderResourceView *empty[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 		m_immediate_context->PSSetShaderResources(0, 8, empty);
 	}
+
+    void GraphicsDevice::CreateBlitMeshIfNeeded()
+    {
+        if(!m_blit_mesh)
+        {
+            m_blit_mesh = Mesh::Create();
+
+            std::vector<VertexMesh> vertices;
+            std::vector<std::vector<unsigned short>> indices(1);
+            indices[0].resize(6);
+
+            VertexMesh v0 = {Vector3(-1, 1, 0), Vector3(), Vector4(), Vector2(0, 0), Vector2()};
+            VertexMesh v1 = {Vector3(-1, -1, 0.1f), Vector3(), Vector4(), Vector2(0, 1), Vector2()};
+            VertexMesh v2 = {Vector3(1, -1, 0.2f), Vector3(), Vector4(), Vector2(1, 1), Vector2()};
+            VertexMesh v3 = {Vector3(1, 1, 0.3f), Vector3(), Vector4(), Vector2(1, 0), Vector2()};
+            vertices.push_back(v0);
+            vertices.push_back(v1);
+            vertices.push_back(v2);
+            vertices.push_back(v3);
+
+            unsigned short index_buffer[] = {0, 2, 1, 0, 3, 2};
+            memcpy(&indices[0][0], index_buffer, sizeof(index_buffer));
+
+            m_blit_mesh->SetVertices(vertices);
+            m_blit_mesh->SetIndices(indices);
+        }
+    }
+
+    void GraphicsDevice::CreateBlitMaterialIfNeeded()
+    {
+        if(!m_blit_mat)
+        {
+            m_blit_mat = Material::Create("BlitCopy");
+        }
+    }
+
+    void GraphicsDevice::Blit(const std::shared_ptr<Texture> &source, const std::shared_ptr<RenderTexture> &destination, const std::shared_ptr<Material> &material, int pass)
+    {
+        CreateBlitMeshIfNeeded();
+
+        std::shared_ptr<Material> mat;
+        if(material)
+        {
+            mat = material;
+        }
+        else
+        {
+            CreateBlitMaterialIfNeeded();
+
+            mat = m_blit_mat;
+        }
+        mat->SetMainTexture(source);
+
+        auto cam = Camera::GetCurrent();
+        cam->SetRenderTarget(destination);
+
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto vertex_buffer = m_blit_mesh->GetVertexBuffer();
+        auto index_buffer = m_blit_mesh->GetIndexBuffer();
+        auto shader = mat->GetShader();
+        
+        int pass_begin;
+        int pass_end;
+        if(pass >= 0)
+        {
+            pass_begin = pass;
+            pass_end = pass;
+        }
+        else
+        {
+            pass_begin = 0;
+            pass_end = shader->GetPassCount() - 1;
+        }
+
+        for(int i = pass_begin; i <= pass_end && i < shader->GetPassCount(); i++)
+        {
+            auto pass = shader->GetPass(i);
+
+            if(i == 0)
+            {
+                context->IASetInputLayout(pass->vs->input_layout);
+                UINT stride = pass->vs->vertex_stride;
+                UINT offset = 0;
+                context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+                context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+            }
+
+            mat->ReadyPass(i);
+            pass->rs->Apply();
+            mat->ApplyPass(i);
+
+            Renderer::DrawIndexed(6, 0);
+        }
+
+        GraphicsDevice::GetInstance()->ClearShaderResources();
+    }
 }

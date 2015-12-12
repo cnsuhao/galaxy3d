@@ -2,6 +2,8 @@
 #define __ImageEffect_h__
 
 #include "Component.h"
+#include "Material.h"
+#include "RenderTexture.h"
 
 namespace Galaxy3D
 {
