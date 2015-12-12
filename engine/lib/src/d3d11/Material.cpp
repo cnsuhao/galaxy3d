@@ -3,6 +3,7 @@
 #include "Texture2D.h"
 #include "Renderer.h"
 #include "Guid.h"
+#include "RenderTexture.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
 static const std::string MAIN_COLOR_NAME = "_MainColor";
@@ -178,17 +179,15 @@ namespace Galaxy3D
         auto find = shader_pass->ps->textures.find(name);
         if(find != shader_pass->ps->textures.end())
         {
-            Texture2D *tex = dynamic_cast<Texture2D *>(texture.get());
-            if(tex != 0)
+            auto tex = std::dynamic_pointer_cast<Texture2D>(texture);
+            if(tex)
             {
                 find->second.texture = tex->GetTexture();
-                context->PSSetShaderResources(find->second.slot, 1, &find->second.texture);
 
                 auto find_sampler = shader_pass->ps->samplers.find(name + "_Sampler");
                 if(find_sampler != shader_pass->ps->samplers.end())
                 {
                     find_sampler->second.sampler = tex->GetSampler();
-                    context->PSSetSamplers(find_sampler->second.slot, 1, &find_sampler->second.sampler);
                 }
             }
         }
@@ -244,8 +243,8 @@ namespace Galaxy3D
 			auto find = shader_pass->ps->textures.find(i.first);
 			if(find != shader_pass->ps->textures.end())
 			{
-				Texture2D *tex = dynamic_cast<Texture2D *>(i.second.get());
-				if(tex != 0)
+                auto tex = std::dynamic_pointer_cast<Texture2D>(i.second);
+				if(tex)
 				{
 					find->second.texture = tex->GetTexture();
 
@@ -255,6 +254,18 @@ namespace Galaxy3D
 						find_sampler->second.sampler = tex->GetSampler();
 					}
 				}
+
+                auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
+                if(render_texture)
+                {
+                    find->second.texture = render_texture->GetShaderResourceView();
+
+                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+                    if(find_sampler != shader_pass->ps->samplers.end())
+                    {
+                        find_sampler->second.sampler = render_texture->GetSamplerState();
+                    }
+                }
 			}
 		}
 	}

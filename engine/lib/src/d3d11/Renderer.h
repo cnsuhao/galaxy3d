@@ -44,6 +44,7 @@ namespace Galaxy3D
         static void Init();
         static void Done();
         static void BuildStaticBatches();
+        static void DrawIndexed(int count, int offset);
         virtual ~Renderer();
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
@@ -73,7 +74,6 @@ namespace Galaxy3D
         Bounds m_bounds;// aabb in world space
 
 		Renderer();
-        void DrawIndexed(int count, int offset);
 		virtual void Render(int material_index) = 0;
 
 	private:
