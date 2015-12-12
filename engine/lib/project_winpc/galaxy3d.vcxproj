@@ -20,6 +20,7 @@
     <ClCompile Include="..\src\d3d11\Camera.cpp" />
     <ClCompile Include="..\src\d3d11\GraphicsDevice.cpp" />
     <ClCompile Include="..\src\d3d11\ImageEffect.cpp" />
+    <ClCompile Include="..\src\d3d11\ImageEffectHDR.cpp" />
     <ClCompile Include="..\src\d3d11\Material.cpp" />
     <ClCompile Include="..\src\d3d11\Mesh.cpp" />
     <ClCompile Include="..\src\d3d11\MeshRenderer.cpp" />
@@ -82,6 +83,7 @@
     <ClInclude Include="..\src\d3d11\Camera.h" />
     <ClInclude Include="..\src\d3d11\GraphicsDevice.h" />
     <ClInclude Include="..\src\d3d11\ImageEffect.h" />
+    <ClInclude Include="..\src\d3d11\ImageEffectHDR.h" />
     <ClInclude Include="..\src\d3d11\Material.h" />
     <ClInclude Include="..\src\d3d11\Mesh.h" />
     <ClInclude Include="..\src\d3d11\MeshRenderer.h" />
