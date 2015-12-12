@@ -193,7 +193,7 @@ namespace Galaxy3D
 		UpdateTime();
 	}
 
-	void Camera::Render() const
+	void Camera::Render()
 	{
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto effects = GetGameObject()->GetComponents<ImageEffect>();
@@ -236,7 +236,7 @@ namespace Galaxy3D
 		Renderer::RenderAll();
 	}
 
-    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture) const
+    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture)
     {
         int width = render_texture->GetWidth();
         int height = render_texture->GetHeight();
@@ -248,12 +248,25 @@ namespace Galaxy3D
         context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
         SetViewport(width, height);
 
+        m_render_target_binding = render_texture;
+
+        Clear();
+    }
+
+    void Camera::Clear()
+    {
+        if(m_render_target_binding->IsKeepBuffer())
+        {
+            return;
+        }
+
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto color_buffer = m_render_target_binding->GetRenderTargetView();
+        auto depth_buffer = m_render_target_binding->GetDepthStencilView();
+
         if(m_clear_flags == CameraClearFlags::SolidColor)
         {
-            if(!render_texture->IsKeepColor())
-            {
-                context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
-            }
+            context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
 
             if(depth_buffer != 0)
             {
@@ -262,7 +275,10 @@ namespace Galaxy3D
         }
         else if(m_clear_flags == CameraClearFlags::Depth)
         {
-            context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+            if(depth_buffer != 0)
+            {
+                context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+            }
         }
     }
 

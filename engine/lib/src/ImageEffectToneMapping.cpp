@@ -68,7 +68,7 @@ namespace Galaxy3D
             RenderTextureFormat::RGFloat,
             DepthBuffer::Depth_0,
             FilterMode::Bilinear);
-        m_adaptive_texture_1->MarkKeepColor();
+        m_adaptive_texture_1->MarkKeepBuffer();
         return true;
     }
 }

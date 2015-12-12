@@ -41,7 +41,7 @@ namespace Galaxy3D
         Ray ScreenPointToRay(const Vector3 &position);
         void EnableHDR(bool enable) {m_hdr = enable;}
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
-        void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture) const;
+        void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
 
 	protected:
 		virtual void Start();
@@ -64,6 +64,7 @@ namespace Galaxy3D
 		Rect m_rect;
         bool m_hdr;
         std::shared_ptr<RenderTexture> m_render_texture;
+        std::shared_ptr<RenderTexture> m_render_target_binding;
 		Matrix4x4 m_view_matrix;
 		Matrix4x4 m_projection_matrix;
 		Matrix4x4 m_view_projection_matrix;
@@ -72,8 +73,9 @@ namespace Galaxy3D
 		static void UpdateTime();
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);
-		void Render() const;
+		void Render();
 		void SetViewport(int w, int h) const;
+        void Clear();
 	};
 }
 
