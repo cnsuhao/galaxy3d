@@ -29,7 +29,7 @@
 #include "ParticleSystem.h"
 #include "ParticleSystemRenderer.h"
 #include "RenderTexture.h"
-#include "ImageEffect.h"
+#include "ImageEffectHDR.h"
 
 namespace Galaxy3D
 {
