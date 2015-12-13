@@ -29,6 +29,7 @@ namespace Galaxy3D
 		void SetOrthographic(bool ortho) {m_orthographic = ortho;}
 		void SetOrthographicSize(float ortho_size) {m_orthographic_size = ortho_size;}
 		void SetFieldOfView(float fov) {m_field_of_view = fov;}
+        float GetFieldOfView() const {return m_field_of_view;}
 		void SetClipPlane(float near_clip, float far_clip) {m_near_clip_plane = near_clip; m_far_clip_plane = far_clip;}
         float GetClipNear() const {return m_near_clip_plane;}
         float GetClipFar() const {return m_far_clip_plane;}
@@ -42,6 +43,7 @@ namespace Galaxy3D
         void EnableHDR(bool enable) {m_hdr = enable;}
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
         void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
+        std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
 
 	protected:
 		virtual void Start();

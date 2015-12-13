@@ -29,8 +29,9 @@
 #include "ParticleSystem.h"
 #include "ParticleSystemRenderer.h"
 #include "RenderTexture.h"
-#include "ImageEffectToneMapping.h"
 #include "ImageEffectBloom.h"
+#include "ImageEffectToneMapping.h"
+#include "ImageEffectGlobalFog.h"
 
 namespace Galaxy3D
 {
