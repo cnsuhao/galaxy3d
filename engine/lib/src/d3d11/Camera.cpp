@@ -6,12 +6,14 @@
 #include "Renderer.h"
 #include "RenderTexture.h"
 #include "ImageEffect.h"
+#include "ImageEffectToneMapping.h"
 
 namespace Galaxy3D
 {
 	std::list<Camera *> Camera::m_cameras;
 	std::shared_ptr<Camera> Camera::m_current;
     std::shared_ptr<RenderTexture> Camera::m_hdr_render_target;
+    std::shared_ptr<RenderTexture> Camera::m_hdr_render_target_back;
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer;
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer_back;
 
@@ -131,13 +133,14 @@ namespace Galaxy3D
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
                 i->Render();
 
+                bool hdr = i->m_hdr;
                 auto effects = obj->GetComponents<ImageEffect>();
                 for(size_t j=0; j<effects.size(); j++)
                 {
                     std::shared_ptr<RenderTexture> source;
                     std::shared_ptr<RenderTexture> dest;
 
-                    if(i->m_hdr && j == 0)
+                    if(hdr)
                     {
                         source = m_hdr_render_target;
                     }
@@ -159,11 +162,25 @@ namespace Galaxy3D
                     }
                     else
                     {
-                        dest = m_image_effect_buffer_back;
+                        auto tone_mapping = std::dynamic_pointer_cast<ImageEffectToneMapping>(effects[j]);
+                        if(tone_mapping)
+                        {
+                            hdr = false;
+                        }
+
+                        if(hdr)
+                        {
+                            dest = m_hdr_render_target_back;
+                        }
+                        else
+                        {
+                            dest = m_image_effect_buffer_back;
+                        }
                     }
 
                     effects[j]->OnRenderImage(source, dest);
                     std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+                    std::swap(m_hdr_render_target, m_hdr_render_target_back);
                 }
 
                 // have hdr but no image effect, blit hdr buffer to target directly
@@ -294,6 +311,11 @@ namespace Galaxy3D
         if(!m_hdr_render_target)
         {
             m_hdr_render_target = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
+        }
+
+        if(!m_hdr_render_target_back)
+        {
+            m_hdr_render_target_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
         }
     }
 
