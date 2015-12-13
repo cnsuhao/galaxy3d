@@ -23,7 +23,7 @@ namespace Galaxy3D
     {
     public:
         ImageEffectToneMapping():
-            m_middle_gray(0.4f),
+            m_middle_gray(0.3f),
             m_white(2),
             m_adaption_speed(1.5f),
             m_adaptive_texture_size(AdaptiveTextureSize::Square256)
