@@ -61,9 +61,11 @@ namespace Galaxy3D
             m_format(RenderTextureFormat::RGBA32),
             m_depth(DepthBuffer::Depth_24),
             m_keep_buffer(false),
+            m_is_depth_shader_resource_view(false),
             m_render_target_view(render_target_view),
             m_depth_stencil_view(depth_stencil_view),
-            m_shader_resource_view(NULL),
+            m_shader_resource_view_color(NULL),
+            m_shader_resource_view_depth(NULL),
             m_sampler_state(NULL)
         {
             m_render_target_view->AddRef();
@@ -74,10 +76,11 @@ namespace Galaxy3D
         DepthBuffer::Enum GetDepth() const {return m_depth;}
         ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
         ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
-        ID3D11ShaderResourceView *GetShaderResourceView() const {return m_shader_resource_view;}
+        ID3D11ShaderResourceView *GetShaderResourceView() const;
         ID3D11SamplerState *GetSamplerState() const {return m_sampler_state;}
         void MarkKeepBuffer() {m_keep_buffer = true;}
         bool IsKeepBuffer() const {return m_keep_buffer;}
+        void SetDepthShaderResourceView(bool is_depth) {m_is_depth_shader_resource_view = is_depth;}
 
     private:
         static std::list<std::shared_ptr<RenderTexture>> m_textures_idle;
@@ -85,9 +88,11 @@ namespace Galaxy3D
         RenderTextureFormat::Enum m_format;
         DepthBuffer::Enum m_depth;
         bool m_keep_buffer;
+        bool m_is_depth_shader_resource_view;
         ID3D11RenderTargetView *m_render_target_view;
         ID3D11DepthStencilView *m_depth_stencil_view;
-        ID3D11ShaderResourceView *m_shader_resource_view;
+        ID3D11ShaderResourceView *m_shader_resource_view_color;
+        ID3D11ShaderResourceView *m_shader_resource_view_depth;
         ID3D11SamplerState *m_sampler_state;
 
         RenderTexture(
@@ -98,9 +103,11 @@ namespace Galaxy3D
             m_format(format),
             m_depth(depth),
             m_keep_buffer(false),
+            m_is_depth_shader_resource_view(false),
             m_render_target_view(NULL),
             m_depth_stencil_view(NULL),
-            m_shader_resource_view(NULL),
+            m_shader_resource_view_color(NULL),
+            m_shader_resource_view_depth(NULL),
             m_sampler_state(NULL)
         {}
         void Create();

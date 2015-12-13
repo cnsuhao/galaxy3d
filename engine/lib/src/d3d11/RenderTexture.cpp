@@ -70,7 +70,8 @@ namespace Galaxy3D
     {
         SAFE_RELEASE(m_render_target_view);
         SAFE_RELEASE(m_depth_stencil_view);
-        SAFE_RELEASE(m_shader_resource_view);
+        SAFE_RELEASE(m_shader_resource_view_color);
+        SAFE_RELEASE(m_shader_resource_view_depth);
         SAFE_RELEASE(m_sampler_state);
     }
 
@@ -96,7 +97,7 @@ namespace Galaxy3D
                 fmt = DXGI_FORMAT_R32G32_FLOAT;
             }
 
-            D3D11_TEXTURE2D_DESC dtd =
+            D3D11_TEXTURE2D_DESC td =
             {
                 m_width,//UINT Width;
                 m_height,//UINT Height;
@@ -111,9 +112,9 @@ namespace Galaxy3D
             };
 
             ID3D11Texture2D *texture = 0;
-            device->CreateTexture2D(&dtd, NULL, &texture);
+            device->CreateTexture2D(&td, NULL, &texture);
             device->CreateRenderTargetView(texture, NULL, &m_render_target_view);
-            device->CreateShaderResourceView(texture, NULL, &m_shader_resource_view);
+            device->CreateShaderResourceView(texture, NULL, &m_shader_resource_view_color);
             texture->Release();
         }
 
@@ -126,10 +127,10 @@ namespace Galaxy3D
             }
             else if(m_depth == DepthBuffer::Depth_24)
             {
-                fmt = DXGI_FORMAT_D24_UNORM_S8_UINT;
+                fmt = DXGI_FORMAT_R24G8_TYPELESS;
             }
 
-            D3D11_TEXTURE2D_DESC dtd_depth =
+            D3D11_TEXTURE2D_DESC td =
             {
                 m_width,//UINT Width;
                 m_height,//UINT Height;
@@ -138,28 +139,46 @@ namespace Galaxy3D
                 fmt,//DXGI_FORMAT Format;
                 1, 0,//DXGI_SAMPLE_DESC SampleDesc;
                 D3D11_USAGE_DEFAULT,//D3D11_USAGE Usage;
-                D3D11_BIND_DEPTH_STENCIL,//UINT BindFlags;
+                D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE,//UINT BindFlags;
                 0,//UINT CPUAccessFlags;
                 0//UINT MiscFlags;    
             };
 
             ID3D11Texture2D *depth_texture = 0;
-            device->CreateTexture2D(&dtd_depth, NULL, &depth_texture);
-            device->CreateDepthStencilView(depth_texture, NULL, &m_depth_stencil_view);
+            device->CreateTexture2D(&td, NULL, &depth_texture);
+
+            D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+            ZeroMemory(&dsvd, sizeof(dsvd));
+            dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+            dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            device->CreateDepthStencilView(depth_texture, &dsvd, &m_depth_stencil_view);
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
+            ZeroMemory(&srvd, sizeof(srvd));
+            srvd.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+            srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            srvd.Texture2D.MipLevels = 1;
+            device->CreateShaderResourceView(depth_texture, &srvd, &m_shader_resource_view_depth);
+
             depth_texture->Release();
         }
 
         // create sampler states
-        D3D11_SAMPLER_DESC dsd;
-        ZeroMemory(&dsd, sizeof(dsd));
-        dsd.Filter = Texture::FILTER_MODES[m_filter_mode];
-        dsd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
-        dsd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
-        dsd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
-        dsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-        dsd.MinLOD = 0;
-        dsd.MaxLOD = D3D11_FLOAT32_MAX;
+        D3D11_SAMPLER_DESC sd;
+        ZeroMemory(&sd, sizeof(sd));
+        sd.Filter = Texture::FILTER_MODES[m_filter_mode];
+        sd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
+        sd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
+        sd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
+        sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sd.MinLOD = 0;
+        sd.MaxLOD = D3D11_FLOAT32_MAX;
 
-        device->CreateSamplerState(&dsd, &m_sampler_state);
+        device->CreateSamplerState(&sd, &m_sampler_state);
+    }
+
+    ID3D11ShaderResourceView *RenderTexture::GetShaderResourceView() const
+    {
+        return m_is_depth_shader_resource_view ? m_shader_resource_view_depth : m_shader_resource_view_color;
     }
 }
