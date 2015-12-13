@@ -133,6 +133,8 @@ namespace Galaxy3D
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
                 i->Render();
 
+                std::shared_ptr<RenderTexture> hdr_render_target_front = m_hdr_render_target;
+                std::shared_ptr<RenderTexture> image_effect_buffer_front = m_image_effect_buffer;
                 bool hdr = i->m_hdr;
                 auto effects = obj->GetComponents<ImageEffect>();
                 for(size_t j=0; j<effects.size(); j++)
@@ -179,8 +181,9 @@ namespace Galaxy3D
                     }
 
                     effects[j]->OnRenderImage(source, dest);
-                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+                    
                     std::swap(m_hdr_render_target, m_hdr_render_target_back);
+                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
                 }
 
                 // have hdr but no image effect, blit hdr buffer to target directly
@@ -197,6 +200,16 @@ namespace Galaxy3D
                     }
 
                     GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, dest, std::shared_ptr<Material>(), 0);
+                }
+
+                // restore front buffer to front
+                if(hdr_render_target_front != m_hdr_render_target)
+                {
+                    std::swap(m_hdr_render_target, m_hdr_render_target_back);
+                }
+                if(image_effect_buffer_front != m_image_effect_buffer)
+                {
+                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
                 }
 
                 m_current.reset();
@@ -315,7 +328,7 @@ namespace Galaxy3D
 
         if(!m_hdr_render_target_back)
         {
-            m_hdr_render_target_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
+            m_hdr_render_target_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_0);
         }
     }
 
@@ -328,7 +341,7 @@ namespace Galaxy3D
 
         if(!m_image_effect_buffer_back)
         {
-            m_image_effect_buffer_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_24);
+            m_image_effect_buffer_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0);
         }
     }
 
