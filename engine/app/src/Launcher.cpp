@@ -185,6 +185,7 @@ void Launcher::Start()
     cam3d->EnableHDR(true);
     cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
     cam3d->GetGameObject()->AddComponent<ImageEffectToneMapping>();
+    cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
 
     auto lightmap_0 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     auto lightmap_1 = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/scene/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
