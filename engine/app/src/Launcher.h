@@ -30,6 +30,7 @@
 #include "ParticleSystemRenderer.h"
 #include "RenderTexture.h"
 #include "ImageEffectToneMapping.h"
+#include "ImageEffectBloom.h"
 
 namespace Galaxy3D
 {

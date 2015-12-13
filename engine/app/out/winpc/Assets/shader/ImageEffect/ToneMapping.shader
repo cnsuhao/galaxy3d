@@ -5,28 +5,28 @@ ImageEffect/ToneMapping
         Queue Geometry
     }
 
-    Pass
+    Pass 0
     {
         VS vs
         PS ps_log
         RenderStates rs
     }
 
-    Pass
+    Pass 1
     {
         VS vs
         PS ps_exp
         RenderStates rs
     }
 
-    Pass
+    Pass 2
     {
         VS vs
         PS ps_exp
         RenderStates rs_blend
     }
 
-    Pass
+    Pass 3
     {
         VS vs
         PS ps_adaptive

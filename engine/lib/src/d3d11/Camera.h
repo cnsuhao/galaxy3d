@@ -50,6 +50,7 @@ namespace Galaxy3D
 		static std::list<Camera *> m_cameras;
 		static std::shared_ptr<Camera> m_current;
         static std::shared_ptr<RenderTexture> m_hdr_render_target;
+        static std::shared_ptr<RenderTexture> m_hdr_render_target_back;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer_back;
 		CameraClearFlags::Enum m_clear_flags;

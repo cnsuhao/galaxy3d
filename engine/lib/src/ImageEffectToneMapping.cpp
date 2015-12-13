@@ -9,11 +9,13 @@ namespace Galaxy3D
 
     void ImageEffectToneMapping::OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination)
     {
+        std::shared_ptr<Material> mat_empty;
+
         bool new_texture_1 = NewAdaptiveTexture();
 
         auto adaptive_texture = RenderTexture::GetTemporary(m_adaptive_texture_size, m_adaptive_texture_size, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_0);
         // down sample
-        GraphicsDevice::GetInstance()->Blit(source, adaptive_texture, std::shared_ptr<Material>(), 0);
+        GraphicsDevice::GetInstance()->Blit(source, adaptive_texture, mat_empty, 0);
         
         int lum_tex_count = (int) log2f((float) m_adaptive_texture_size);
         int div = 2;
@@ -32,7 +34,7 @@ namespace Galaxy3D
 
         for(int i=0; i<lum_tex_count-1; i++)
         {
-            GraphicsDevice::GetInstance()->Blit(rts[i], rts[i + 1], std::shared_ptr<Material>(), 0);
+            GraphicsDevice::GetInstance()->Blit(rts[i], rts[i + 1], mat_empty, 0);
         }
         auto lumRt = rts[lum_tex_count - 1];
         
@@ -46,6 +48,7 @@ namespace Galaxy3D
         m_material->SetVector("_HdrParams", Vector4(m_middle_gray, m_middle_gray, m_middle_gray, m_white * m_white));
         m_material->SetTexture("_SmallTex", m_adaptive_texture_1);
 
+        // final
         GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 3);
 
         RenderTexture::ReleaseTemporary(adaptive_texture);
