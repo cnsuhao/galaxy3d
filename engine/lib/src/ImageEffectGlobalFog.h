@@ -34,6 +34,18 @@ namespace Galaxy3D
         {}
         virtual void Start();
         virtual void OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination);
+        void EnableDistance(bool enable) {m_distance_fog_enable = enable;}
+        void UseRadialDistance(bool use) {m_use_radial_distance = use;}
+        void SetStartDistance(float start) {m_start_distance = start;}
+        void EnableHeight(bool enable) {m_height_fog_enable = enable;}
+        void SetHeight(float height) {m_height = height;}
+        void SetHeightDensity(float density) {m_height_density = density;}
+        void ExcludeFarPixels(bool exclude) {m_exclude_far_pixels = exclude;}
+        void SetFogMode(FogMode::Enum mode) {m_fog_mode = mode;}
+        void SetLinearStart(float start) {m_linear_start = start;}
+        void SetLinearEnd(float end) {m_linear_end = end;}
+        void SetFogDensity(float density) {m_fog_density = density;}
+        void SetFogColor(Color color) {m_fog_color = color;}
 
     private:
         bool m_distance_fog_enable;
