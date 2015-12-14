@@ -16,6 +16,10 @@ namespace Galaxy3D
         {}
         virtual void Start();
         virtual void OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination);
+        void SetThreshold(float threshold) {m_threshold = threshold;}
+        void SetBlurIterations(int iterations) {m_blur_iterations = iterations;}
+        void SetBlurSpread(float spread) {m_blur_spread = spread;}
+        void SetIntensity(float intensity) {m_intensity = intensity;}
 
     private:
         float m_threshold;
