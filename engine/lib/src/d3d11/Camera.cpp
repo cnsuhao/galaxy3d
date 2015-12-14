@@ -119,6 +119,107 @@ namespace Galaxy3D
 		GTTime::m_frame_count++;
 	}
 
+    void Camera::ImageEffectsOpaque()
+    {
+
+    }
+
+    void Camera::ImageEffects()
+    {
+        std::shared_ptr<RenderTexture> hdr_render_target_front = m_hdr_render_target;
+        std::shared_ptr<RenderTexture> image_effect_buffer_front = m_image_effect_buffer;
+        bool hdr = m_hdr;
+        auto effects = GetGameObject()->GetComponents<ImageEffect>();
+        
+        // remove disabled or opaque effects
+        for(size_t i=0; i<effects.size(); )
+        {
+            if(!effects[i]->IsEnable() || effects[i]->IsOpaque())
+            {
+                effects.erase(effects.begin() + i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        for(size_t i=0; i<effects.size(); i++)
+        {
+            std::shared_ptr<RenderTexture> source;
+            std::shared_ptr<RenderTexture> dest;
+
+            if(hdr)
+            {
+                source = m_hdr_render_target;
+            }
+            else
+            {
+                source = m_image_effect_buffer;
+            }
+
+            if(i == effects.size() - 1)
+            {
+                if(m_render_texture)
+                {
+                    dest = m_render_texture;
+                }
+                else
+                {
+                    dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                }
+            }
+            else
+            {
+                auto tone_mapping = std::dynamic_pointer_cast<ImageEffectToneMapping>(effects[i]);
+                if(tone_mapping)
+                {
+                    hdr = false;
+                }
+
+                if(hdr)
+                {
+                    dest = m_hdr_render_target_back;
+                }
+                else
+                {
+                    dest = m_image_effect_buffer_back;
+                }
+            }
+
+            effects[i]->OnRenderImage(source, dest);
+
+            std::swap(m_hdr_render_target, m_hdr_render_target_back);
+            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+        }
+
+        // have hdr but no image effect, blit hdr buffer to target directly
+        if(effects.empty() && m_hdr)
+        {
+            std::shared_ptr<RenderTexture> dest;
+            if(m_render_texture)
+            {
+                dest = m_render_texture;
+            }
+            else
+            {
+                dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            }
+
+            GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, dest, std::shared_ptr<Material>(), 0);
+        }
+
+        // restore front buffer to front
+        if(hdr_render_target_front != m_hdr_render_target)
+        {
+            std::swap(m_hdr_render_target, m_hdr_render_target_back);
+        }
+        if(image_effect_buffer_front != m_image_effect_buffer)
+        {
+            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+        }
+    }
+
 	void Camera::RenderAll()
 	{
 		float time = GTTime::GetRealTimeSinceStartup();
@@ -131,86 +232,8 @@ namespace Galaxy3D
             if(obj->IsActiveInHierarchy() && i->IsEnable())
             {
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
+                
                 i->Render();
-
-                std::shared_ptr<RenderTexture> hdr_render_target_front = m_hdr_render_target;
-                std::shared_ptr<RenderTexture> image_effect_buffer_front = m_image_effect_buffer;
-                bool hdr = i->m_hdr;
-                auto effects = obj->GetComponents<ImageEffect>();
-                for(size_t j=0; j<effects.size(); j++)
-                {
-                    std::shared_ptr<RenderTexture> source;
-                    std::shared_ptr<RenderTexture> dest;
-
-                    if(hdr)
-                    {
-                        source = m_hdr_render_target;
-                    }
-                    else
-                    {
-                        source = m_image_effect_buffer;
-                    }
-
-                    if(j == effects.size() - 1)
-                    {
-                        if(i->m_render_texture)
-                        {
-                            dest = i->m_render_texture;
-                        }
-                        else
-                        {
-                            dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
-                        }
-                    }
-                    else
-                    {
-                        auto tone_mapping = std::dynamic_pointer_cast<ImageEffectToneMapping>(effects[j]);
-                        if(tone_mapping)
-                        {
-                            hdr = false;
-                        }
-
-                        if(hdr)
-                        {
-                            dest = m_hdr_render_target_back;
-                        }
-                        else
-                        {
-                            dest = m_image_effect_buffer_back;
-                        }
-                    }
-
-                    effects[j]->OnRenderImage(source, dest);
-                    
-                    std::swap(m_hdr_render_target, m_hdr_render_target_back);
-                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
-                }
-
-                // have hdr but no image effect, blit hdr buffer to target directly
-                if(effects.empty() && i->m_hdr)
-                {
-                    std::shared_ptr<RenderTexture> dest;
-                    if(i->m_render_texture)
-                    {
-                        dest = i->m_render_texture;
-                    }
-                    else
-                    {
-                        dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
-                    }
-
-                    GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, dest, std::shared_ptr<Material>(), 0);
-                }
-
-                // restore front buffer to front
-                if(hdr_render_target_front != m_hdr_render_target)
-                {
-                    std::swap(m_hdr_render_target, m_hdr_render_target_back);
-                }
-                if(image_effect_buffer_front != m_image_effect_buffer)
-                {
-                    std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
-                }
 
                 m_current.reset();
             }
@@ -263,7 +286,11 @@ namespace Galaxy3D
 
         SetRenderTarget(render_target);
 		
-		Renderer::RenderAll();
+        Renderer::Prepare();
+        Renderer::RenderOpaqueGeometry();
+        ImageEffectsOpaque();
+        Renderer::RenderTransparentGeometry();
+        ImageEffects();
 	}
 
     void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture)

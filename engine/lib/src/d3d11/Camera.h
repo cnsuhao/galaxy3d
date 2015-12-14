@@ -80,6 +80,8 @@ namespace Galaxy3D
 		void Render();
 		void SetViewport(int w, int h) const;
         void Clear();
+        void ImageEffects();
+        void ImageEffectsOpaque();
 	};
 }
 
