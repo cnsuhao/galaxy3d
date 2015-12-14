@@ -39,7 +39,9 @@ namespace Galaxy3D
 	{
 	public:
 		static void SortAllBatches();
-		static void RenderAll();
+        static void Prepare();
+		static void RenderOpaqueGeometry();
+        static void RenderTransparentGeometry();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
         static void Init();
         static void Done();
@@ -78,13 +80,14 @@ namespace Galaxy3D
 
 	private:
         static std::list<RenderBatch> m_batches;
-        static std::list<RenderBatch> m_batches_renderable;
+        static std::list<RenderBatch> m_batches_renderable_opaque;
+        static std::list<RenderBatch> m_batches_renderable_transparent;
         static std::shared_ptr<Octree> m_octree;
 		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
-        static void SortTransparentBatches(std::list<RenderBatch> &batches);
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
+        static void RenderBatches(const std::list<RenderBatch> &batches);
         void AddBatches();
         void RemoveBatches();
 	};
