@@ -22,6 +22,11 @@ ImageEffect/GlobalFog
 
     HLVS vs
     {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix _FrustumCornersWS;
+        };
+
         struct VS_INPUT
         {
             float4 Position : POSITION;
@@ -35,6 +40,7 @@ ImageEffect/GlobalFog
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
+            float4 v_interpolated_ray : TEXCOORD1;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -44,6 +50,10 @@ ImageEffect/GlobalFog
             output.v_pos = input.Position;
             output.v_uv = input.Texcoord0;
 
+            float index = input.Position.z * 10;
+            output.v_interpolated_ray = _FrustumCornersWS[(int) index];
+            output.v_interpolated_ray.w = index;
+
             return output;
         }
     }
@@ -52,23 +62,143 @@ ImageEffect/GlobalFog
     {
         cbuffer cbuffer0 : register(b0)
         {
-            float4 _HdrParams;
+            float4 _ZBufferParams;
+        };
+
+        cbuffer cbuffer1 : register(b1)
+        {
+            float4 _ProjectionParams;
+        };
+
+        cbuffer cbuffer2 : register(b2)
+        {
+            float4 _SceneFogColor;
+        };
+
+        cbuffer cbuffer3 : register(b3)
+        {
+            float4 _SceneFogMode;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
+            float4 _CameraWS;
+        };
+
+        cbuffer cbuffer5 : register(b5)
+        {
+            float4 _HeightParams;
+        };
+
+        cbuffer cbuffer6 : register(b6)
+        {
+            float4 _SceneFogParams;
+        };
+
+        cbuffer cbuffer7 : register(b7)
+        {
+            float4 _DistanceParams;
         };
 
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
+        Texture2D _CameraDepthTexture : register(t1);
+        SamplerState _CameraDepthTexture_Sampler : register(s1);
 
         struct PS_INPUT
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
+            float4 v_interpolated_ray : TEXCOORD1;
         };
+
+        float linear_depth_01(float z)
+        {
+            return 1.0 / (_ZBufferParams.x * z + _ZBufferParams.y);
+        }
+
+        // Distance-based fog
+        float ComputeDistance(float3 camDir, float zdepth)
+        {
+            float dist; 
+            if ((int) _SceneFogMode.y == 1)
+                dist = length(camDir);
+            else
+                dist = zdepth * _ProjectionParams.z;
+            // Built-in fog starts at near plane, so match that by
+            // subtracting the near value. Not a perfect approximation
+            // if near plane is very large, but good enough.
+            dist -= _ProjectionParams.y;
+            return dist;
+        }
+
+        float ComputeHalfSpace(float3 wsDir)
+        {
+            float3 wpos = _CameraWS.xyz + wsDir;
+            float FH = _HeightParams.x;
+            float3 C = _CameraWS.xyz;
+            float3 V = wsDir;
+            float3 P = wpos;
+            float3 aV = _HeightParams.w * V;
+            float FdotC = _HeightParams.y;
+            float k = _HeightParams.z;
+            float FdotP = P.y-FH;
+            float FdotV = wsDir.y;
+            float c1 = k * (FdotP + FdotC);
+            float c2 = (1-2*k) * FdotP;
+            float g = min(c2, 0.0);
+            g = -length(aV) * (c1 - g * g / abs(FdotV+1.0e-5f));
+            return g;
+        }
+
+        float ComputeFogFactor(float coord)
+        {
+            float fogFac = 0.0;
+            if ((int) _SceneFogMode.x == 1) // linear
+            {
+                // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
+                fogFac = coord * _SceneFogParams.z + _SceneFogParams.w;
+            }
+            if ((int) _SceneFogMode.x == 2) // exp
+            {
+                // factor = exp(-density*z)
+                fogFac = _SceneFogParams.y * coord; fogFac = exp2(-fogFac);
+            }
+            if ((int) _SceneFogMode.x == 3) // exp2
+            {
+                // factor = exp(-(density*z)^2)
+                fogFac = _SceneFogParams.x * coord; fogFac = exp2(-fogFac*fogFac);
+            }
+            return saturate(fogFac);
+        }
 
         float4 main(PS_INPUT input) : SV_Target
         {
-            float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
+            float4 sceneColor = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
 
-            return color;
+            // Reconstruct world space position & direction
+            // towards this screen pixel.
+            float rawDepth = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, input.v_uv).r;
+            float dpth = linear_depth_01(rawDepth);
+            float4 wsDir = dpth * input.v_interpolated_ray;
+
+            // Compute fog distance
+            bool distance = (int) _SceneFogMode.z == 1;
+            bool height = (int) _SceneFogMode.w == 1;
+            float g = _DistanceParams.x;
+            if(distance)
+                g += ComputeDistance(wsDir.xyz, dpth);
+            if(height)
+                g += ComputeHalfSpace(wsDir.xyz);
+
+            // Compute fog amount
+            half fogFac = ComputeFogFactor(max(0.0,g));
+            // Do not fog skybox
+            if (rawDepth == _DistanceParams.y)
+                fogFac = 1.0;
+            //return fogFac; // for debugging
+
+            return lerp(_SceneFogColor, sceneColor, fogFac);
         }
     }
 

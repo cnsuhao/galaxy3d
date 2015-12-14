@@ -25,11 +25,12 @@ namespace Galaxy3D
             m_height_fog_enable(true),
             m_height(1.0f),
             m_height_density(2.0f),
-            m_exclude_far_pixels(true),
+            m_exclude_far_pixels(false),
             m_fog_mode(FogMode::Linear),
             m_linear_start(0),
             m_linear_end(300),
-            m_fog_density(0.01f)
+            m_fog_density(0.01f),
+            m_fog_color(0.6f, 0.6f, 0.6f, 1)
         {}
         virtual void Start();
         virtual void OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination);
@@ -46,6 +47,7 @@ namespace Galaxy3D
         float m_linear_start;
         float m_linear_end;
         float m_fog_density;
+        Color m_fog_color;
     };
 }
 

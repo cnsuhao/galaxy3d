@@ -7,11 +7,18 @@ namespace Galaxy3D
     void ImageEffectGlobalFog::Start()
     {
         m_material = Material::Create("ImageEffect/GlobalFog");
+        SetOpaque(true);
     }
 
     void ImageEffectGlobalFog::OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination)
     {
+        if(!m_distance_fog_enable && !m_height_fog_enable)
+        {
+            GraphicsDevice::GetInstance()->Blit(source, destination, std::shared_ptr<Material>(), 0);
+        }
+
         auto cam = GetGameObject()->GetComponent<Camera>();
+        auto depth_texture = cam->GetDepthTexture();
         auto camtr = cam->GetTransform();
         float camNear = cam->GetClipNear();
         float camFar = cam->GetClipFar();
@@ -69,7 +76,13 @@ namespace Galaxy3D
                 m_use_radial_distance ? 1.0f : 0.0f,
                 m_distance_fog_enable ? 1.0f : 0.0f,
                 m_height_fog_enable ? 1.0f : 0.0f));
+        m_material->SetColor("_SceneFogColor", m_fog_color);
 
+        SetZBufferParams(cam);
+        SetProjectionParams(cam);
+        depth_texture->SetDepthShaderResourceView(true);
+        m_material->SetTexture("_CameraDepthTexture", depth_texture);
         GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 0);
+        depth_texture->SetDepthShaderResourceView(false);
     }
 }

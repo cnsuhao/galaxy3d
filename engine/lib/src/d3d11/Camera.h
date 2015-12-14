@@ -44,6 +44,7 @@ namespace Galaxy3D
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
         void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
         std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
+        std::shared_ptr<RenderTexture> GetDepthTexture() const;
 
 	protected:
 		virtual void Start();

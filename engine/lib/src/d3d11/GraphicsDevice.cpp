@@ -141,15 +141,16 @@ namespace Galaxy3D
             indices[0].resize(6);
 
             VertexMesh v0 = {Vector3(-1, 1, 0), Vector3(), Vector4(), Vector2(0, 0), Vector2()};
-            VertexMesh v1 = {Vector3(-1, -1, 0.1f), Vector3(), Vector4(), Vector2(0, 1), Vector2()};
+            VertexMesh v1 = {Vector3(1, 1, 0.3f), Vector3(), Vector4(), Vector2(1, 0), Vector2()};
             VertexMesh v2 = {Vector3(1, -1, 0.2f), Vector3(), Vector4(), Vector2(1, 1), Vector2()};
-            VertexMesh v3 = {Vector3(1, 1, 0.3f), Vector3(), Vector4(), Vector2(1, 0), Vector2()};
+            VertexMesh v3 = {Vector3(-1, -1, 0.1f), Vector3(), Vector4(), Vector2(0, 1), Vector2()};
+
             vertices.push_back(v0);
             vertices.push_back(v1);
             vertices.push_back(v2);
             vertices.push_back(v3);
 
-            unsigned short index_buffer[] = {0, 2, 1, 0, 3, 2};
+            unsigned short index_buffer[] = {0, 1, 2, 0, 2, 3};
             memcpy(&indices[0][0], index_buffer, sizeof(index_buffer));
 
             m_blit_mesh->SetVertices(vertices);

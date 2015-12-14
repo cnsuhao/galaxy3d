@@ -315,8 +315,52 @@ namespace Galaxy3D
     void Camera::Done()
     {
         m_hdr_render_target.reset();
+        m_hdr_render_target_back.reset();
         m_image_effect_buffer.reset();
         m_image_effect_buffer_back.reset();
+    }
+
+    std::shared_ptr<RenderTexture> Camera::GetDepthTexture() const
+    {
+        auto effects = GetGameObject()->GetComponents<ImageEffect>();
+        std::shared_ptr<RenderTexture> depth_texture;
+
+        if(m_render_texture)
+        {
+            depth_texture = m_render_texture;
+        }
+        else
+        {
+            depth_texture = GraphicsDevice::GetInstance()->GetScreenBuffer();
+        }
+        
+        if(m_hdr)
+        {
+            if(m_hdr_render_target->GetDepthStencilView() != NULL)
+            {
+                depth_texture = m_hdr_render_target;
+            }
+            else
+            {
+                depth_texture = m_hdr_render_target_back;
+            }
+        }
+        else
+        {
+            if(!effects.empty())
+            {
+                if(m_image_effect_buffer->GetDepthStencilView() != NULL)
+                {
+                    depth_texture = m_image_effect_buffer;
+                }
+                else
+                {
+                    depth_texture = m_image_effect_buffer_back;
+                }
+            }
+        }
+
+        return depth_texture;
     }
 
     void Camera::CreateHDRTargetIfNeeded(int w, int h)
