@@ -80,8 +80,13 @@ namespace Galaxy3D
 		void Render();
 		void SetViewport(int w, int h) const;
         void Clear();
-        void ImageEffects();
+        //
+        // ժҪ:
+        //     ///
+        //     Must keep depth buffer dont clear in this procedure
+        //     ///
         void ImageEffectsOpaque();
+        void ImageEffectsDefault();
 	};
 }
 

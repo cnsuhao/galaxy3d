@@ -121,15 +121,86 @@ namespace Galaxy3D
 
     void Camera::ImageEffectsOpaque()
     {
+        std::shared_ptr<RenderTexture> hdr_render_target_front = m_hdr_render_target;
+        std::shared_ptr<RenderTexture> image_effect_buffer_front = m_image_effect_buffer;
+        auto effects = GetGameObject()->GetComponents<ImageEffect>();
 
+        // remove disabled or default effects
+        for(size_t i=0; i<effects.size(); )
+        {
+            if(!effects[i]->IsEnable() || !effects[i]->IsOpaque())
+            {
+                effects.erase(effects.begin() + i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        if(effects.empty())
+        {
+            return;
+        }
+
+        if(hdr_render_target_front)
+        {
+            hdr_render_target_front->MarkKeepBuffer(true);
+        }
+        if(image_effect_buffer_front)
+        {
+            image_effect_buffer_front->MarkKeepBuffer(true);
+        }
+        for(size_t i=0; i<effects.size(); i++)
+        {
+            std::shared_ptr<RenderTexture> source;
+            std::shared_ptr<RenderTexture> dest;
+
+            if(m_hdr)
+            {
+                source = m_hdr_render_target;
+                dest = m_hdr_render_target_back;
+            }
+            else
+            {
+                source = m_image_effect_buffer;
+                dest = m_image_effect_buffer_back;
+            }
+
+            effects[i]->OnRenderImage(source, dest);
+
+            std::swap(m_hdr_render_target, m_hdr_render_target_back);
+            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+        }
+
+        // make sure front buffer in front, blit and swap if not
+        if(hdr_render_target_front != m_hdr_render_target)
+        {
+            GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, m_hdr_render_target_back, std::shared_ptr<Material>(), 0);
+            std::swap(m_hdr_render_target, m_hdr_render_target_back);
+        }
+        if(image_effect_buffer_front != m_image_effect_buffer)
+        {
+            GraphicsDevice::GetInstance()->Blit(m_image_effect_buffer, m_image_effect_buffer_back, std::shared_ptr<Material>(), 0);
+            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+        }
+        if(hdr_render_target_front)
+        {
+            hdr_render_target_front->MarkKeepBuffer(false);
+        }
+        if(image_effect_buffer_front)
+        {
+            image_effect_buffer_front->MarkKeepBuffer(false);
+        }
     }
 
-    void Camera::ImageEffects()
+    void Camera::ImageEffectsDefault()
     {
         std::shared_ptr<RenderTexture> hdr_render_target_front = m_hdr_render_target;
         std::shared_ptr<RenderTexture> image_effect_buffer_front = m_image_effect_buffer;
         bool hdr = m_hdr;
         auto effects = GetGameObject()->GetComponents<ImageEffect>();
+        bool use_effect = !effects.empty();
         
         // remove disabled or opaque effects
         for(size_t i=0; i<effects.size(); )
@@ -193,8 +264,7 @@ namespace Galaxy3D
             std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
         }
 
-        // have hdr but no image effect, blit hdr buffer to target directly
-        if(effects.empty() && m_hdr)
+        if(effects.empty() && use_effect)
         {
             std::shared_ptr<RenderTexture> dest;
             if(m_render_texture)
@@ -206,7 +276,14 @@ namespace Galaxy3D
                 dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
             }
 
-            GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, dest, std::shared_ptr<Material>(), 0);
+            if(m_hdr)
+            {
+                GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, dest, std::shared_ptr<Material>(), 0);
+            }
+            else
+            {
+                GraphicsDevice::GetInstance()->Blit(m_image_effect_buffer, dest, std::shared_ptr<Material>(), 0);
+            }
         }
 
         // restore front buffer to front
@@ -232,9 +309,7 @@ namespace Galaxy3D
             if(obj->IsActiveInHierarchy() && i->IsEnable())
             {
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
-                
                 i->Render();
-
                 m_current.reset();
             }
         }
@@ -290,7 +365,7 @@ namespace Galaxy3D
         Renderer::RenderOpaqueGeometry();
         ImageEffectsOpaque();
         Renderer::RenderTransparentGeometry();
-        ImageEffects();
+        ImageEffectsDefault();
 	}
 
     void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture)

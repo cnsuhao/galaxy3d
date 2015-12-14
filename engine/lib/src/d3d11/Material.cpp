@@ -260,7 +260,14 @@ namespace Galaxy3D
                 auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
                 if(render_texture)
                 {
-                    find->second.texture = render_texture->GetShaderResourceView();
+                    if(i.first == "_CameraDepthTexture")
+                    {
+                        find->second.texture = render_texture->GetShaderResourceViewDepth();
+                    }
+                    else
+                    {
+                        find->second.texture = render_texture->GetShaderResourceViewColor();
+                    }
 
                     auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
                     if(find_sampler != shader_pass->ps->samplers.end())

@@ -18,7 +18,6 @@ namespace Galaxy3D
         }
 
         auto cam = GetGameObject()->GetComponent<Camera>();
-        auto depth_texture = cam->GetDepthTexture();
         auto camtr = cam->GetTransform();
         float camNear = cam->GetClipNear();
         float camFar = cam->GetClipFar();
@@ -80,9 +79,8 @@ namespace Galaxy3D
 
         SetZBufferParams(cam);
         SetProjectionParams(cam);
-        depth_texture->SetDepthShaderResourceView(true);
+        auto depth_texture = cam->GetDepthTexture();
         m_material->SetTexture("_CameraDepthTexture", depth_texture);
         GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 0);
-        depth_texture->SetDepthShaderResourceView(false);
     }
 }
