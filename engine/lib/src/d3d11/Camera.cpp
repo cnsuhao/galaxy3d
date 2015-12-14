@@ -151,6 +151,7 @@ namespace Galaxy3D
         {
             image_effect_buffer_front->MarkKeepBuffer(true);
         }
+
         for(size_t i=0; i<effects.size(); i++)
         {
             std::shared_ptr<RenderTexture> source;
@@ -169,21 +170,34 @@ namespace Galaxy3D
 
             effects[i]->OnRenderImage(source, dest);
 
-            std::swap(m_hdr_render_target, m_hdr_render_target_back);
-            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+            if(m_hdr)
+            {
+                std::swap(m_hdr_render_target, m_hdr_render_target_back);
+            }
+            else
+            {
+                std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+            }
         }
 
         // make sure front buffer in front, blit and swap if not
-        if(hdr_render_target_front != m_hdr_render_target)
+        if(m_hdr)
         {
-            GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, m_hdr_render_target_back, std::shared_ptr<Material>(), 0);
-            std::swap(m_hdr_render_target, m_hdr_render_target_back);
+            if(hdr_render_target_front != m_hdr_render_target)
+            {
+                GraphicsDevice::GetInstance()->Blit(m_hdr_render_target, m_hdr_render_target_back, std::shared_ptr<Material>(), 0);
+                std::swap(m_hdr_render_target, m_hdr_render_target_back);
+            }
         }
-        if(image_effect_buffer_front != m_image_effect_buffer)
+        else
         {
-            GraphicsDevice::GetInstance()->Blit(m_image_effect_buffer, m_image_effect_buffer_back, std::shared_ptr<Material>(), 0);
-            std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+            if(image_effect_buffer_front != m_image_effect_buffer)
+            {
+                GraphicsDevice::GetInstance()->Blit(m_image_effect_buffer, m_image_effect_buffer_back, std::shared_ptr<Material>(), 0);
+                std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
+            }
         }
+        
         if(hdr_render_target_front)
         {
             hdr_render_target_front->MarkKeepBuffer(false);
