@@ -176,9 +176,4 @@ namespace Galaxy3D
 
         device->CreateSamplerState(&sd, &m_sampler_state);
     }
-
-    ID3D11ShaderResourceView *RenderTexture::GetShaderResourceView() const
-    {
-        return m_is_depth_shader_resource_view ? m_shader_resource_view_depth : m_shader_resource_view_color;
-    }
 }

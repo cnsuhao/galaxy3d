@@ -76,11 +76,11 @@ namespace Galaxy3D
         DepthBuffer::Enum GetDepth() const {return m_depth;}
         ID3D11RenderTargetView *GetRenderTargetView() const {return m_render_target_view;}
         ID3D11DepthStencilView *GetDepthStencilView() const {return m_depth_stencil_view;}
-        ID3D11ShaderResourceView *GetShaderResourceView() const;
+        ID3D11ShaderResourceView *GetShaderResourceViewColor() const {return m_shader_resource_view_color;}
+        ID3D11ShaderResourceView *GetShaderResourceViewDepth() const {return m_shader_resource_view_depth;}
         ID3D11SamplerState *GetSamplerState() const {return m_sampler_state;}
-        void MarkKeepBuffer() {m_keep_buffer = true;}
+        void MarkKeepBuffer(bool keep) {m_keep_buffer = keep;}
         bool IsKeepBuffer() const {return m_keep_buffer;}
-        void SetDepthShaderResourceView(bool is_depth) {m_is_depth_shader_resource_view = is_depth;}
 
     private:
         static std::list<std::shared_ptr<RenderTexture>> m_textures_idle;
