@@ -47,7 +47,7 @@ void Launcher::Start()
     cam3d->GetTransform()->SetPosition(Vector3(-2, 4, -12));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(25, 12, 0));
 
-    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.1f;
     RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
     RenderSettings::light_directional_intensity = 1;
     RenderSettings::light_directional_rotation = Quaternion::Euler(50, 50, 0);

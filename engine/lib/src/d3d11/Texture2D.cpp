@@ -4,6 +4,8 @@
 
 namespace Galaxy3D
 {
+    std::shared_ptr<Texture2D> Texture2D::m_default_texture;
+
 	static const unsigned char JPG_HEAD[] = {0xff, 0xd8, 0xff};
 	static const unsigned char PNG_HEAD[] = {0x89, 0x50, 0x4e, 0x47};
 
@@ -84,6 +86,19 @@ namespace Galaxy3D
 			m_color_buffer_size = 0;
 		}
 	}
+
+    std::shared_ptr<Texture2D> Texture2D::GetDefaultTexture()
+    {
+        if(!m_default_texture)
+        {
+            m_default_texture = Texture2D::Create(1, 1, TextureFormat::RGBA32, FilterMode::Point, TextureWrapMode::Clamp);
+            unsigned char buffer[4] = {255, 255, 255, 255};
+            m_default_texture->SetPixels((char *) buffer);
+            m_default_texture->Apply();
+        }
+
+        return m_default_texture;
+    }
 
 	std::shared_ptr<Texture2D> Texture2D::Create(int w, int h, TextureFormat::Enum format, FilterMode::Enum filter_mode, TextureWrapMode::Enum wrap_mode)
 	{
