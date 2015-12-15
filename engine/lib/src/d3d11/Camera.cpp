@@ -391,7 +391,15 @@ namespace Galaxy3D
         auto color_buffer = render_texture->GetRenderTargetView();
         auto depth_buffer = render_texture->GetDepthStencilView();
 
-        context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
+        if(color_buffer != NULL)
+        {
+            context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
+        }
+        else
+        {
+            context->OMSetRenderTargets(0, NULL, depth_buffer);
+        }
+        
         SetViewport(width, height);
 
         m_render_target_binding = render_texture;
