@@ -491,12 +491,12 @@ namespace Galaxy3D
     {
         if(!m_hdr_render_target)
         {
-            m_hdr_render_target = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_24);
+            m_hdr_render_target = RenderTexture::Create(w, h, RenderTextureFormat::RGBAHalf, DepthBuffer::Depth_24);
         }
 
         if(!m_hdr_render_target_back)
         {
-            m_hdr_render_target_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_0);
+            m_hdr_render_target_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBAHalf, DepthBuffer::Depth_0);
         }
     }
 
