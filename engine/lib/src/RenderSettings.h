@@ -3,6 +3,7 @@
 
 #include "Color.h"
 #include "Vector3.h"
+#include "Quaternion.h"
 
 namespace Galaxy3D
 {
@@ -11,7 +12,7 @@ namespace Galaxy3D
     public:
         static Color light_ambient;
         static Color light_directional_color;
-        static Vector3 light_directional_direction;
+        static Quaternion light_directional_rotation;
         static float light_directional_intensity;
     };
 }

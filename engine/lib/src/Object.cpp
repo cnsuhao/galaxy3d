@@ -10,6 +10,11 @@ namespace Galaxy3D
 	{
 	}
 
+    void Object::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        m_name = source->m_name;
+    }
+
     bool Object::ExistCachedObject(const std::string &key)
     {
         return (bool) FindCachedObject(key);

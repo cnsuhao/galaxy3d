@@ -12,8 +12,9 @@ namespace Galaxy3D
 		friend class GameObject;
 
 	public:
-		static void Destroy(std::shared_ptr<Component> &obj);
+		static void Destroy(std::shared_ptr<Component> &com);
         virtual ~Component() {}
+        virtual void DeepCopy(std::shared_ptr<Object> &source);
 		std::shared_ptr<GameObject> GetGameObject() const {return m_gameobject.lock();}
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
         std::shared_ptr<Component> GetComponentPtr() const;
