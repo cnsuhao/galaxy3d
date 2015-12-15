@@ -26,33 +26,38 @@ namespace Galaxy3D
 		}
 	}
 
+    void GameObject::CopyComponent(std::shared_ptr<Component> &com)
+    {
+        auto transform = std::dynamic_pointer_cast<Transform>(com);
+
+        if(transform)
+        {
+            GetTransform()->DeepCopy(std::dynamic_pointer_cast<Object>(transform));
+        }
+        else
+        {
+            auto class_name = com->GetTypeName();
+            auto *p_com = Component::Create(class_name);
+            if(p_com != NULL)
+            {
+                AddComponent(std::shared_ptr<Component>(p_com));
+                p_com->DeepCopy(std::dynamic_pointer_cast<Object>(com));
+            }
+        }
+    }
+
     void GameObject::DeepCopy(std::shared_ptr<Object> &source)
     {
         auto src_obj = std::dynamic_pointer_cast<GameObject>(source);
 
         for(auto i=src_obj->m_components.begin(); i!=src_obj->m_components.end(); i++)
         {
-            
+            CopyComponent(*i);
         }
 
         for(auto i=src_obj->m_components_new.begin(); i!=src_obj->m_components_new.end(); i++)
         {
-            auto transform = std::dynamic_pointer_cast<Transform>((*i));
-
-            if(transform)
-            {
-                GetTransform()->DeepCopy(std::dynamic_pointer_cast<Object>(transform));
-            }
-            else
-            {
-                auto class_name = (*i)->GetTypeName();
-                auto *com = Component::Create(class_name);
-                if(com != NULL)
-                {
-                    AddComponent(std::shared_ptr<Component>(com));
-                    com->DeepCopy(std::dynamic_pointer_cast<Object>(*i));
-                }
-            }
+            CopyComponent(*i);
         }
 
         m_active_in_hierarchy = src_obj->m_active_in_hierarchy;

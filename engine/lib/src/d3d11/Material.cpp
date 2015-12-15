@@ -299,12 +299,26 @@ namespace Galaxy3D
 
 		for(auto &i : shader_pass->ps->textures)
 		{
-			context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
+            if(i.second.texture == NULL)
+            {
+
+            }
+            else
+            {
+                context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
+            }
 		}
 
 		for(auto &i : shader_pass->ps->samplers)
 		{
-			context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
+            if(i.second.sampler == NULL)
+            {
+
+            }
+            else
+            {
+                context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
+            }
 		}
 	}
 }
