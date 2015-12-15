@@ -1,7 +1,8 @@
 #include "Launcher.h"
 
 #define DEMO_TERRAIN 0
-#define DEMO_SCENE 1
+#define DEMO_SCENE 0
+#define DEMO_DEFERRED_SHADING 1
 
 using namespace Galaxy3D;
 
@@ -10,9 +11,11 @@ std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
 #endif
 
+#if DEMO_SCENE
 static void add_fire_particles(std::shared_ptr<GameObject> &fire, std::shared_ptr<Camera> &cam3d);
 static void add_lamp_particles(std::shared_ptr<GameObject> &lamp, std::shared_ptr<Camera> &cam3d);
 static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_ptr<Camera> &cam3d, const Vector3 &local_pos);
+#endif
 
 void Launcher::Start()
 {
@@ -34,6 +37,37 @@ void Launcher::Start()
 	fps = tr;
 	fps->GetTransform()->SetParent(cam2d->GetTransform());
     fps->GetGameObject()->SetLayer(Layer::UI);
+
+#if DEMO_DEFERRED_SHADING
+    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetFieldOfView(45);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->SetDepth(0);
+    cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
+    cam3d->GetTransform()->SetPosition(Vector3(-2, 4, -12));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(25, 12, 0));
+
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
+    RenderSettings::light_directional_intensity = 1;
+    RenderSettings::light_directional_rotation = Quaternion::Euler(50, 50, 0);
+    
+    auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
+    cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
+    cube->GetTransform()->SetScale(Vector3(10, 2, 10));
+
+    auto sphere = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Sphere.mesh");
+    sphere->GetTransform()->SetPosition(Vector3(3, 1, 1));
+    sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
+
+    cube = GameObject::Instantiate(cube);
+    cube->GetTransform()->SetPosition(Vector3(0, 1, -1));
+    cube->GetTransform()->SetScale(Vector3(2, 2, 2));
+
+    sphere = GameObject::Instantiate(sphere);
+    sphere->GetTransform()->SetPosition(Vector3(-3, 1, -3));
+    sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
+#endif
 
 #if DEMO_SCENE
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
@@ -317,6 +351,7 @@ Launcher::~Launcher()
 #endif
 }
 
+#if DEMO_SCENE
 static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_ptr<Camera> &cam3d, const Vector3 &local_pos)
 {
     auto ps = GameObject::Create("ps")->AddComponent<ParticleSystem>();
@@ -528,3 +563,4 @@ static void add_fire_particles(std::shared_ptr<GameObject> &fire, std::shared_pt
         psr->SetSharedMaterial(psm);
     }
 }
+#endif

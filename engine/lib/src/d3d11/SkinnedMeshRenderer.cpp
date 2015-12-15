@@ -51,7 +51,7 @@ namespace Galaxy3D
             mat->SetVectorArray("Bones", bone_matrix);
             mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
             mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
-            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_direction));
+            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
             mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
 
             auto pass_count = shader->GetPassCount();

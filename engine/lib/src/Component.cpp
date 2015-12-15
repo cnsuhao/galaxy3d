@@ -10,14 +10,24 @@ namespace Galaxy3D
 	{
 	}
 
-	void Component::Destroy(std::shared_ptr<Component> &obj)
+	void Component::Destroy(std::shared_ptr<Component> &com)
 	{
-		if(obj)
+		if(com)
 		{
-			obj->Delete();
-			obj.reset();
+            com->Delete();
+            com.reset();
 		}
 	}
+
+    void Component::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        Object::DeepCopy(source);
+
+        auto com_src = std::dynamic_pointer_cast<Component>(source);
+        m_deleted = com_src->m_deleted;
+        m_started = com_src->m_started;
+        m_enable = com_src->m_enable;
+    }
 
 	void Component::Delete()
 	{

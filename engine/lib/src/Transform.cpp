@@ -15,6 +15,11 @@ namespace Galaxy3D
 	{
 	}
 
+    void Transform::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        Component::DeepCopy(source);
+    }
+
 	void Transform::RemoveChild(std::weak_ptr<Transform> &child)
 	{
 		for(auto i=m_children.begin(); i!=m_children.end(); i++)

@@ -17,7 +17,9 @@ namespace Galaxy3D
 	public:
 		static std::shared_ptr<GameObject> Create(const std::string &name);
 		static void Destroy(std::shared_ptr<GameObject> &obj);
+        static std::shared_ptr<GameObject> Instantiate(std::shared_ptr<GameObject> &source);
 		virtual ~GameObject();
+        virtual void DeepCopy(std::shared_ptr<Object> &source);
 		template<class T> std::shared_ptr<T> AddComponent();
 		template<class T> std::shared_ptr<T> GetComponent() const;
         template<class T> std::vector<std::shared_ptr<T>> GetComponents() const;
