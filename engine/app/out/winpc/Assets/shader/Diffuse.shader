@@ -123,19 +123,23 @@ Diffuse
 
 		float4 main(PS_INPUT input) : SV_Target
 		{
+            float specular = 1.0;
+            float3 spec_color = 0.5;
+
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
 
             float3 normal = normalize(input.v_normal_world);
             float3 light_dir = normalize(input.v_light_dir_world);
             float3 eye_dir = normalize(input.v_eye_dir_world);
 
+            float diff = max(0, dot(normal, light_dir));
             float3 h = normalize(light_dir + eye_dir);
-            float diff = saturate(dot(normal, light_dir));
-            float nh = saturate(dot(normal, h));
-            float spec = pow(nh, 128) * c.a;
+            float nh = max(0, dot(normal, h));
+            float spec = pow(nh, 128 * specular) * c.a;
 
-            c.rgb = GlobalAmbient.rgb * c.rgb + (c.rgb * LightColor.rgb * diff + LightColor.rgb * spec) * 2;
-
+            c.rgb = GlobalAmbient.rgb * c.rgb + 
+                diff * c.rgb * LightColor.rgb + 
+                spec * spec_color * LightColor.rgb;
 			return c;
 		}
 	}

@@ -301,7 +301,8 @@ namespace Galaxy3D
 		{
             if(i.second.texture == NULL)
             {
-
+                auto texture = Texture2D::GetDefaultTexture()->GetTexture();
+                context->PSSetShaderResources(i.second.slot, 1, &texture);
             }
             else
             {
@@ -313,7 +314,8 @@ namespace Galaxy3D
 		{
             if(i.second.sampler == NULL)
             {
-
+                auto sampler = Texture2D::GetDefaultTexture()->GetSampler();
+                context->PSSetSamplers(i.second.slot, 1, &sampler);
             }
             else
             {
