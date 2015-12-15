@@ -2,6 +2,7 @@
 #define __Component_h__
 
 #include "Object.h"
+#include "ComponentClassMap.h"
 
 namespace Galaxy3D
 {
@@ -9,6 +10,9 @@ namespace Galaxy3D
 
 	class Component : public Object
 	{
+        DECLARE_COM_BASE(Component);
+
+    private:
 		friend class GameObject;
 
 	public:

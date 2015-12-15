@@ -4,6 +4,8 @@
 
 namespace Galaxy3D
 {
+    DEFINE_COM_CLASS(Transform);
+
 	Transform::Transform():
 		m_local_position(0, 0, 0),
 		m_local_rotation(0, 0, 0, 1),
@@ -17,7 +19,27 @@ namespace Galaxy3D
 
     void Transform::DeepCopy(std::shared_ptr<Object> &source)
     {
+        auto src_tran = std::dynamic_pointer_cast<Transform>(source);
+
         Component::DeepCopy(source);
+
+        m_changed = src_tran->m_changed;
+        m_position = src_tran->m_position;
+        m_rotation = src_tran->m_rotation;
+        m_scale = src_tran->m_scale;
+        m_local_to_world_matrix = src_tran->m_local_to_world_matrix;
+        m_world_to_local_matrix = src_tran->m_world_to_local_matrix;
+        SetLocalPosition(m_position);
+        SetLocalRotation(m_rotation);
+        SetLocalScale(m_scale);
+
+        for(size_t i=0; i<src_tran->m_children.size(); i++)
+        {
+            auto src_child = src_tran->m_children[i].lock();
+            auto child = GameObject::Instantiate(src_child->GetGameObject());
+            
+            child->GetTransform()->SetParent(std::dynamic_pointer_cast<Transform>(GetComponentPtr()));
+        }
     }
 
 	void Transform::RemoveChild(std::weak_ptr<Transform> &child)

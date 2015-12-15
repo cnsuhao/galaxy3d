@@ -8,7 +8,10 @@ namespace Galaxy3D
 {
     class MeshRenderer : public Renderer
     {
+        DECLARE_COM_CLASS(MeshRenderer, Component);
+
     public:
+        virtual void DeepCopy(std::shared_ptr<Object> &source);
         void SetMesh(const std::shared_ptr<Mesh> &mesh) {m_mesh = mesh;}
         std::shared_ptr<Mesh> GetMesh() const {return m_mesh;}
         void RenderStaticBatch(const RenderBatch *batch, const RenderBatch *last_batch);

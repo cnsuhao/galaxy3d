@@ -3,6 +3,8 @@
 
 namespace Galaxy3D
 {
+    DEFINE_COM_BASE(Component);
+
 	Component::Component():
 		m_deleted(false),
 		m_started(false),
@@ -25,8 +27,8 @@ namespace Galaxy3D
 
         auto com_src = std::dynamic_pointer_cast<Component>(source);
         m_deleted = com_src->m_deleted;
-        m_started = com_src->m_started;
         m_enable = com_src->m_enable;
+        m_started = false;
     }
 
 	void Component::Delete()
