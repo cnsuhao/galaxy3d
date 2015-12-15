@@ -13,7 +13,7 @@ namespace Galaxy3D
 
         bool new_texture_1 = NewAdaptiveTexture();
 
-        auto adaptive_texture = RenderTexture::GetTemporary(m_adaptive_texture_size, m_adaptive_texture_size, RenderTextureFormat::RGBAFloat, DepthBuffer::Depth_0);
+        auto adaptive_texture = RenderTexture::GetTemporary(m_adaptive_texture_size, m_adaptive_texture_size, RenderTextureFormat::RGBAHalf, DepthBuffer::Depth_0);
         // down sample
         GraphicsDevice::GetInstance()->Blit(source, adaptive_texture, mat_empty, 0);
         
@@ -23,7 +23,7 @@ namespace Galaxy3D
         for(int i=0; i<lum_tex_count; i++)
         {
             int size = m_adaptive_texture_size/div;
-            rts[i] = RenderTexture::GetTemporary(size, size, RenderTextureFormat::RGFloat, DepthBuffer::Depth_0);
+            rts[i] = RenderTexture::GetTemporary(size, size, RenderTextureFormat::RGHalf, DepthBuffer::Depth_0);
             div *= 2;
         }
 
@@ -68,7 +68,7 @@ namespace Galaxy3D
         m_adaptive_texture_1 = RenderTexture::Create(
             1,
             1,
-            RenderTextureFormat::RGFloat,
+            RenderTextureFormat::RGHalf,
             DepthBuffer::Depth_0,
             FilterMode::Bilinear);
         m_adaptive_texture_1->MarkKeepBuffer(true);
