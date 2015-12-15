@@ -4,6 +4,17 @@
 
 namespace Galaxy3D
 {
+    DEFINE_COM_CLASS(MeshRenderer);
+
+    void MeshRenderer::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        auto src_renderer = std::dynamic_pointer_cast<MeshRenderer>(source);
+
+        Renderer::DeepCopy(source);
+
+        m_mesh = src_renderer->m_mesh;
+    }
+
     void MeshRenderer::Render(int material_index)
     {
         if(!m_mesh)

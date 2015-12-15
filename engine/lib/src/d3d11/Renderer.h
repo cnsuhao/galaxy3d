@@ -48,6 +48,7 @@ namespace Galaxy3D
         static void BuildStaticBatches();
         static void DrawIndexed(int count, int offset);
         virtual ~Renderer();
+        virtual void DeepCopy(std::shared_ptr<Object> &source);
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
 		void SetSortingOrder(int layer, int order);
@@ -74,6 +75,7 @@ namespace Galaxy3D
 		int m_sorting_layer;
 		int m_sorting_order;
         Bounds m_bounds;// aabb in world space
+        std::vector<std::shared_ptr<Material>> m_shared_materials;
 
 		Renderer();
 		virtual void Render(int material_index) = 0;
@@ -83,7 +85,6 @@ namespace Galaxy3D
         static std::list<RenderBatch> m_batches_renderable_opaque;
         static std::list<RenderBatch> m_batches_renderable_transparent;
         static std::shared_ptr<Octree> m_octree;
-		std::vector<std::shared_ptr<Material>> m_shared_materials;
 
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);

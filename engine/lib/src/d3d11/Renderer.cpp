@@ -43,6 +43,24 @@ namespace Galaxy3D
         RemoveBatches();
 	}
 
+    void Renderer::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        auto src_renderer = std::dynamic_pointer_cast<Renderer>(source);
+
+        Component::DeepCopy(source);
+
+        m_cast_shadow = src_renderer->m_cast_shadow;
+        m_receive_shadow = src_renderer->m_receive_shadow;
+        m_visible = src_renderer->m_visible;
+        m_lightmap_index = src_renderer->m_lightmap_index;
+        m_lightmap_tiling_offset = src_renderer->m_lightmap_tiling_offset;
+        m_sorting_layer = src_renderer->m_sorting_layer;
+        m_sorting_order = src_renderer->m_sorting_order;
+        m_bounds = src_renderer->m_bounds;
+
+        SetSharedMaterials(src_renderer->m_shared_materials);
+    }
+
 	void Renderer::SetSortingOrder(int layer, int order)
 	{
 		m_sorting_layer = layer;

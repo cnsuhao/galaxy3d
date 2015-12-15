@@ -11,6 +11,9 @@ namespace Galaxy3D
 {
 	class Transform : public Component
 	{
+        DECLARE_COM_CLASS(Transform, Component);
+
+    private:
 		friend class GameObject;
 
 	public:
