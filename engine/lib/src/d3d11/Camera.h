@@ -46,6 +46,9 @@ namespace Galaxy3D
         void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
         std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
         std::shared_ptr<RenderTexture> GetDepthTexture() const;
+        void SetZBufferParams(std::shared_ptr<Material> &mat) const;
+        void SetProjectionParams(std::shared_ptr<Material> &mat) const;
+        void SetFrustumCornersWS(std::shared_ptr<Material> &mat) const;
 
 	protected:
 		virtual void Start();
@@ -59,6 +62,7 @@ namespace Galaxy3D
         static std::shared_ptr<RenderTexture> m_image_effect_buffer;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer_back;
         static std::shared_ptr<RenderTexture> m_g_buffer[G_BUFFER_MRT_COUNT];
+        static std::shared_ptr<Material> m_deferred_shading_mat;
 		CameraClearFlags::Enum m_clear_flags;
 		Color m_clear_color;
 		int m_depth;
@@ -81,7 +85,7 @@ namespace Galaxy3D
 		static void UpdateTime();
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);
-        static void CreateGBufferIfNeeded(int w, int h);
+        static void CreateDeferredShadingResourcesIfNeeded(int w, int h);
 		void Render();
 		void SetViewport(int w, int h) const;
         void Clear();
@@ -93,6 +97,8 @@ namespace Galaxy3D
         void ImageEffectsOpaque();
         void ImageEffectsDefault();
         void SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture);
+        void DeferredShading();
+        void DeferredShadingGlobalDirectionalLight(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back);
 	};
 }
 

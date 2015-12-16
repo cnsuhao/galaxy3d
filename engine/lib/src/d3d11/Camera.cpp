@@ -7,6 +7,7 @@
 #include "RenderTexture.h"
 #include "ImageEffect.h"
 #include "ImageEffectToneMapping.h"
+#include "RenderSettings.h"
 
 namespace Galaxy3D
 {
@@ -17,6 +18,7 @@ namespace Galaxy3D
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer;
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer_back;
     std::shared_ptr<RenderTexture> Camera::m_g_buffer[G_BUFFER_MRT_COUNT];
+    std::shared_ptr<Material> Camera::m_deferred_shading_mat;
 
 	Camera::Camera():
 		m_clear_flags(CameraClearFlags::SolidColor),
@@ -280,7 +282,7 @@ namespace Galaxy3D
             std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
         }
 
-        if(effects.empty() && use_effect)
+        if((effects.empty() && use_effect) || m_deferred_shading)
         {
             std::shared_ptr<RenderTexture> dest;
             if(m_render_texture)
@@ -356,7 +358,7 @@ namespace Galaxy3D
         width = render_target->GetWidth();
         height = render_target->GetHeight();
 
-        if(!effects.empty())
+        if(!effects.empty() || (!m_hdr && m_deferred_shading))
         {
             CreateImageEffectBufferIfNeeded(width, height);
         }
@@ -369,7 +371,7 @@ namespace Galaxy3D
         }
         else
         {
-            if(!effects.empty())
+            if(!effects.empty() || m_deferred_shading)
             {
                 render_target = m_image_effect_buffer;
             }
@@ -377,7 +379,7 @@ namespace Galaxy3D
 
         if(m_deferred_shading)
         {
-            CreateGBufferIfNeeded(width, height);
+            CreateDeferredShadingResourcesIfNeeded(width, height);
 
             SetGBufferTarget(render_target);
         }
@@ -388,10 +390,120 @@ namespace Galaxy3D
 		
         Renderer::Prepare();
         Renderer::RenderOpaqueGeometry();
+
+        if(m_deferred_shading)
+        {
+            DeferredShading();
+        }
+
         ImageEffectsOpaque();
         Renderer::RenderTransparentGeometry();
         ImageEffectsDefault();
 	}
+
+    void Camera::DeferredShadingGlobalDirectionalLight(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back)
+    {
+        m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
+        m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
+        m_deferred_shading_mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
+        m_deferred_shading_mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+        m_deferred_shading_mat->SetTexture("_CameraDepthTexture", front);
+        m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
+        m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
+        m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
+        GraphicsDevice::GetInstance()->Blit(front, back, m_deferred_shading_mat, 0);
+    }
+
+    void Camera::DeferredShading()
+    {
+        std::shared_ptr<RenderTexture> front;
+        std::shared_ptr<RenderTexture> back;
+
+        if(m_hdr)
+        {
+            front = m_hdr_render_target;
+            back = m_hdr_render_target_back;
+        }
+        else
+        {
+            front = m_image_effect_buffer;
+            back = m_image_effect_buffer_back;
+        }
+
+        // shading
+        DeferredShadingGlobalDirectionalLight(front, back);
+
+        // blit to rendering target
+        front->MarkKeepBuffer(true);
+        GraphicsDevice::GetInstance()->Blit(back, front, std::shared_ptr<Material>(), 0);
+        front->MarkKeepBuffer(false);
+    }
+
+    void Camera::SetZBufferParams(std::shared_ptr<Material> &mat) const
+    {
+        float cam_far = GetClipFar();
+        float cam_near = GetClipNear();
+
+#if defined(WINPC) || defined(WINPHONE)
+        float zx = (1.0f - cam_far / cam_near) / 2;
+        float zy = (1.0f + cam_far / cam_near) / 2;
+#else
+        float zx = (1.0f - cam_far / cam_near);
+        float zy = (cam_far / cam_near);
+#endif
+
+        mat->SetVector("_ZBufferParams", Vector4(zx, zy, zx / cam_far, zy / cam_near));
+    }
+
+    void Camera::SetProjectionParams(std::shared_ptr<Material> &mat) const
+    {
+        float cam_far = GetClipFar();
+        float cam_near = GetClipNear();
+
+        // x = 1 or -1 (-1 if projection is flipped)
+        // y = near plane
+        // z = far plane
+        // w = 1/far plane
+        mat->SetVector("_ProjectionParams", Vector4(1, cam_near, cam_far, 1 / cam_far));
+    }
+
+    void Camera::SetFrustumCornersWS(std::shared_ptr<Material> &mat) const
+    {
+        auto camtr = GetTransform();
+        float camNear = GetClipNear();
+        float camFar = GetClipFar();
+        float camFov = GetFieldOfView();
+        float aspect = GetRenderTarget()->GetWidth() / (float) GetRenderTarget()->GetHeight();
+
+        float fovWHalf = camFov * 0.5f;
+        auto frustumCorners = Matrix4x4::Identity();
+        Vector3 toRight = camtr->GetRight() * camNear * tan(fovWHalf * Mathf::Deg2Rad) * aspect;
+        Vector3 toTop = camtr->GetUp() * camNear * tan(fovWHalf * Mathf::Deg2Rad);
+
+        Vector3 topLeft = (camtr->GetForward() * camNear - toRight + toTop);
+        float camScale = topLeft.Magnitude() * camFar/camNear;
+        topLeft.Normalize();
+        topLeft *= camScale;
+
+        Vector3 topRight = (camtr->GetForward() * camNear + toRight + toTop);
+        topRight.Normalize();
+        topRight *= camScale;
+
+        Vector3 bottomRight = (camtr->GetForward() * camNear + toRight - toTop);
+        bottomRight.Normalize();
+        bottomRight *= camScale;
+
+        Vector3 bottomLeft = (camtr->GetForward() * camNear - toRight - toTop);
+        bottomLeft.Normalize();
+        bottomLeft *= camScale;
+
+        frustumCorners.SetRow(0, topLeft);
+        frustumCorners.SetRow(1, topRight);
+        frustumCorners.SetRow(2, bottomRight);
+        frustumCorners.SetRow(3, bottomLeft);
+
+        mat->SetMatrix("_FrustumCornersWS", frustumCorners);
+    }
 
     void Camera::SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture)
     {
@@ -541,7 +653,7 @@ namespace Galaxy3D
         }
     }
 
-    void Camera::CreateGBufferIfNeeded(int w, int h)
+    void Camera::CreateDeferredShadingResourcesIfNeeded(int w, int h)
     {
         // 32bit RGHalf for normal 
         if(!m_g_buffer[0])
@@ -553,6 +665,11 @@ namespace Galaxy3D
         if(!m_g_buffer[1])
         {
             m_g_buffer[1] = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0);
+        }
+
+        if(!m_deferred_shading_mat)
+        {
+            m_deferred_shading_mat = Material::Create("DeferredShading");
         }
     }
 
