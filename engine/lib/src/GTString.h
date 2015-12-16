@@ -18,6 +18,15 @@ namespace Galaxy3D
 		
 			return GTString(ss.str());
 		}
+        template<typename T>
+        static T ToType(const std::string &str)
+        {
+            T value;
+            std::stringstream ss(str);
+            ss >> value;
+
+            return value;
+        }
 		static GTString Format(const char *format, ...);
 
 		GTString(const std::string &str):str(str){}

@@ -23,11 +23,24 @@ namespace Galaxy3D
 		"Off",
 	};
 
+    static const D3D11_CULL_MODE CullValues[RenderStates::CullNameCount] =
+    {
+        D3D11_CULL_BACK,
+        D3D11_CULL_FRONT,
+        D3D11_CULL_NONE,
+    };
+
 	const std::string RenderStates::ZWriteNames[ZWriteNameCount] =
 	{
 		"On",
 		"Off",
 	};
+
+    static const D3D11_DEPTH_WRITE_MASK ZWriteValues[RenderStates::ZWriteNameCount] = 
+    {
+        D3D11_DEPTH_WRITE_MASK_ALL,
+        D3D11_DEPTH_WRITE_MASK_ZERO,
+    };
 
 	const std::string RenderStates::ZTestNames[ZTestNameCount] =
 	{
@@ -39,6 +52,17 @@ namespace Galaxy3D
 		"NotEqual",
 		"Always",
 	};
+
+    static const D3D11_COMPARISON_FUNC ZTestValues[RenderStates::ZTestNameCount] = 
+    {
+        D3D11_COMPARISON_LESS,
+        D3D11_COMPARISON_GREATER,
+        D3D11_COMPARISON_LESS_EQUAL,
+        D3D11_COMPARISON_GREATER_EQUAL,
+        D3D11_COMPARISON_EQUAL,
+        D3D11_COMPARISON_NOT_EQUAL,
+        D3D11_COMPARISON_ALWAYS,
+    };
 
 	const std::string RenderStates::BlendNames[BlendNameCount] =
 	{
@@ -55,6 +79,21 @@ namespace Galaxy3D
 		"OneMinusDstAlpha",
 	};
 
+    static const int BlendValues[RenderStates::BlendNameCount] = 
+    {
+        0,
+        D3D11_BLEND_ONE,
+        D3D11_BLEND_ZERO,
+        D3D11_BLEND_SRC_COLOR,
+        D3D11_BLEND_SRC_ALPHA,
+        D3D11_BLEND_DEST_COLOR,
+        D3D11_BLEND_DEST_ALPHA,
+        D3D11_BLEND_INV_SRC_COLOR,
+        D3D11_BLEND_INV_SRC_ALPHA,
+        D3D11_BLEND_INV_DEST_COLOR,
+        D3D11_BLEND_INV_DEST_ALPHA,
+    };
+
 	const std::string RenderStates::BlendOpNames[BlendOpNameCount] =
 	{
 		"Add",
@@ -63,6 +102,40 @@ namespace Galaxy3D
 		"Min",
 		"Max",
 	};
+
+    static const D3D11_BLEND_OP BlendOpValues[RenderStates::BlendOpNameCount] = 
+    {
+        D3D11_BLEND_OP_ADD,
+        D3D11_BLEND_OP_SUBTRACT,
+        D3D11_BLEND_OP_REV_SUBTRACT,
+        D3D11_BLEND_OP_MIN,
+        D3D11_BLEND_OP_MAX,
+    };
+
+    struct StencilKey
+    {
+        enum Enum
+        {
+            Ref,
+            ReadMask,
+            WriteMask,
+            Comp,
+            Pass,
+            Fail,
+            ZFail,
+        };
+    };
+    static const int StencilKeyNamesCount = 7;
+    static const std::string StencilKeyNames[StencilKeyNamesCount] =
+    {
+        "Ref",
+        "ReadMask",
+        "WriteMask",
+        "Comp",
+        "Pass",
+        "Fail",
+        "ZFail",
+    };
 
     const std::string RenderStates::StencilComparisonFunctionNames[StencilComparisonFunctionNameCount] =
     {
@@ -74,6 +147,18 @@ namespace Galaxy3D
         "NotEqual",
         "Always",
         "Never",
+    };
+
+    static const D3D11_COMPARISON_FUNC StencilComparisonFunctionValues[RenderStates::StencilComparisonFunctionNameCount] = 
+    {
+        D3D11_COMPARISON_GREATER,
+        D3D11_COMPARISON_GREATER_EQUAL,
+        D3D11_COMPARISON_LESS,
+        D3D11_COMPARISON_LESS_EQUAL,
+        D3D11_COMPARISON_EQUAL,
+        D3D11_COMPARISON_NOT_EQUAL,
+        D3D11_COMPARISON_ALWAYS,
+        D3D11_COMPARISON_NEVER,
     };
 
     const std::string RenderStates::StencilOperationNames[StencilOperationNameCount] =
@@ -88,53 +173,17 @@ namespace Galaxy3D
         "DecrWrap",
     };
 
-	static const D3D11_CULL_MODE CullValues[RenderStates::CullNameCount] =
-	{
-		D3D11_CULL_BACK,
-		D3D11_CULL_FRONT,
-		D3D11_CULL_NONE,
-	};
-
-	static const D3D11_DEPTH_WRITE_MASK ZWriteValues[RenderStates::ZWriteNameCount] = 
-	{
-		D3D11_DEPTH_WRITE_MASK_ALL,
-		D3D11_DEPTH_WRITE_MASK_ZERO,
-	};
-
-	static const D3D11_COMPARISON_FUNC ZTestValues[RenderStates::ZTestNameCount] = 
-	{
-		D3D11_COMPARISON_LESS,
-		D3D11_COMPARISON_GREATER,
-		D3D11_COMPARISON_LESS_EQUAL,
-		D3D11_COMPARISON_GREATER_EQUAL,
-		D3D11_COMPARISON_EQUAL,
-		D3D11_COMPARISON_NOT_EQUAL,
-		D3D11_COMPARISON_ALWAYS,
-	};
-
-	static const int BlendValues[RenderStates::BlendNameCount] = 
-	{
-		0,
-		D3D11_BLEND_ONE,
-		D3D11_BLEND_ZERO,
-		D3D11_BLEND_SRC_COLOR,
-		D3D11_BLEND_SRC_ALPHA,
-		D3D11_BLEND_DEST_COLOR,
-		D3D11_BLEND_DEST_ALPHA,
-		D3D11_BLEND_INV_SRC_COLOR,
-		D3D11_BLEND_INV_SRC_ALPHA,
-		D3D11_BLEND_INV_DEST_COLOR,
-		D3D11_BLEND_INV_DEST_ALPHA,
-	};
-
-	static const D3D11_BLEND_OP BlendOpValues[RenderStates::BlendOpNameCount] = 
-	{
-		D3D11_BLEND_OP_ADD,
-		D3D11_BLEND_OP_SUBTRACT,
-		D3D11_BLEND_OP_REV_SUBTRACT,
-		D3D11_BLEND_OP_MIN,
-		D3D11_BLEND_OP_MAX,
-	};
+    static const D3D11_STENCIL_OP StencilOperationValues[RenderStates::StencilOperationNameCount] = 
+    {
+        D3D11_STENCIL_OP_KEEP,
+        D3D11_STENCIL_OP_ZERO,
+        D3D11_STENCIL_OP_REPLACE,
+        D3D11_STENCIL_OP_INCR_SAT,
+        D3D11_STENCIL_OP_DECR_SAT,
+        D3D11_STENCIL_OP_INVERT,
+        D3D11_STENCIL_OP_INCR,
+        D3D11_STENCIL_OP_DECR,
+    };
 
 	std::string RenderStates::m_current_states[KeyCount];
 
@@ -348,7 +397,70 @@ namespace Galaxy3D
 			}
 		}
 
+        bool stencil_enable = false;
         std::string stencil_str = m_values[Key::Stencil];
+        int stencil_values[StencilKeyNamesCount] =
+        {
+            0, 255, 255,
+            D3D11_COMPARISON_ALWAYS,
+            D3D11_STENCIL_OP_KEEP,
+            D3D11_STENCIL_OP_KEEP,
+            D3D11_STENCIL_OP_KEEP
+        };
+        if(!stencil_str.empty())
+        {
+            stencil_enable = true;
+
+            auto values = GTString(stencil_str).Replace("\r\n", "\n").Split("\n", true);
+            for(auto i : values)
+            {
+                auto pair = GTString(i).Split(" ", true);
+                if(pair.size() == 2)
+                {
+                    auto key = pair[0].str;
+
+                    if(key == "Comp")
+                    {
+                        for(int j=0; j<StencilComparisonFunctionNameCount; j++)
+                        {
+                            if(pair[1].str == StencilComparisonFunctionNames[j])
+                            {
+                                stencil_values[StencilKey::Comp] = StencilComparisonFunctionValues[j];
+                                break;
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    for(int j=0; j<StencilKeyNamesCount; j++)
+                    {
+                        if((key == "Ref" ||
+                            key == "ReadMask" ||
+                            key == "WriteMask") && key == StencilKeyNames[j])
+                        {
+                            auto value = GTString::ToType<int>(pair[1].str);
+                            stencil_values[j] = value;
+                            break;
+                        }
+                        else if((key == "Pass" ||
+                            key == "Fail" ||
+                            key == "ZFail") && key == StencilKeyNames[j])
+                        {
+                            for(int k=0; k<StencilOperationNameCount; k++)
+                            {
+                                if(pair[1].str == StencilOperationNames[k])
+                                {
+                                    stencil_values[j] = StencilOperationValues[k];
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
 		bool line_mode = false;
 
@@ -374,6 +486,17 @@ namespace Galaxy3D
 		dsd.DepthEnable = true;
 		dsd.DepthWriteMask = ZWriteValues[zwrite_index];
 		dsd.DepthFunc = ZTestValues[ztest_index];
+        if(stencil_enable)
+        {
+            dsd.StencilEnable = true;
+            dsd.StencilReadMask = stencil_values[StencilKey::ReadMask];
+            dsd.StencilWriteMask = stencil_values[StencilKey::WriteMask];
+            dsd.FrontFace.StencilFunc = (D3D11_COMPARISON_FUNC) stencil_values[StencilKey::Comp];
+            dsd.FrontFace.StencilPassOp = (D3D11_STENCIL_OP) stencil_values[StencilKey::Pass];
+            dsd.FrontFace.StencilFailOp = (D3D11_STENCIL_OP) stencil_values[StencilKey::Fail];
+            dsd.FrontFace.StencilDepthFailOp = (D3D11_STENCIL_OP) stencil_values[StencilKey::ZFail];
+            dsd.BackFace = dsd.FrontFace;
+        }
 
 		device->CreateDepthStencilState(&dsd, &depth_stencil_state);
 
@@ -416,7 +539,8 @@ namespace Galaxy3D
 			}
 
 			if(	m_current_states[Key::ZWrite] != m_values[Key::ZWrite] ||
-				m_current_states[Key::ZTest] != m_values[Key::ZTest])
+				m_current_states[Key::ZTest] != m_values[Key::ZTest] ||
+                m_current_states[Key::Stencil] != m_values[Key::Stencil])
 			{
 				context->OMSetDepthStencilState(depth_stencil_state, 1);
 			}

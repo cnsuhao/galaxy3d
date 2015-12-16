@@ -29,8 +29,8 @@ Diffuse
 		Stencil
 		{
 			Ref 0
-			ReadMask 0xffff
-			WriteMask 0xffff
+			ReadMask 255
+			WriteMask 255
 			Comp Always
 			Pass Keep
 			Fail Keep
