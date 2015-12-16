@@ -20,16 +20,6 @@ UI/Shader Text
 		Offset -1, -1
 		Blend SrcAlpha OneMinusSrcAlpha
 		BlendOp Add
-		Stencil
-		{
-			Ref referenceValue
-			ReadMask readMask
-			WriteMask writeMask
-			Comp comparisonFunction
-			Pass stencilOperation
-			Fail stencilOperation
-			ZFail stencilOperation
-		}
 	}
 
 	HLVS vs
