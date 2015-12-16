@@ -81,11 +81,14 @@ namespace Galaxy3D
                     context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
                 }
 
-                mat->ReadyPass(j);
-                pass->rs->Apply();
-                mat->ApplyPass(j);
+                if(camera->IsDeferredShading() == (pass->name == "deferred"))
+                {
+                    mat->ReadyPass(j);
+                    pass->rs->Apply();
+                    mat->ApplyPass(j);
 
-                DrawIndexed(index_count, index_offset);
+                    DrawIndexed(index_count, index_offset);
+                }
             }
         }while(false);
 

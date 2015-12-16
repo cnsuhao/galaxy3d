@@ -108,7 +108,6 @@ namespace Galaxy3D
 	void World::Done()
 	{
         Renderer::Done();
-        Camera::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
         Object::ClearAllCachedObjects();

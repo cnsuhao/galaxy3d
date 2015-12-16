@@ -18,7 +18,6 @@ namespace Galaxy3D
 	public:
 		static void RenderAll();
 		static std::shared_ptr<Camera> GetCurrent() {return m_current;}
-        static void Done();
 		Camera();
 		virtual ~Camera();
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
@@ -41,6 +40,8 @@ namespace Galaxy3D
         Vector3 WorldToViewportPoint(const Vector3 &position);
         Ray ScreenPointToRay(const Vector3 &position);
         void EnableHDR(bool enable) {m_hdr = enable;}
+        void EnableDeferredShading(bool enable) {m_deferred_shading = enable;}
+        bool IsDeferredShading() const {return m_deferred_shading;}
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
         void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
         std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
@@ -50,12 +51,14 @@ namespace Galaxy3D
 		virtual void Start();
 		
 	private:
+        static const int G_BUFFER_MRT_COUNT = 2;
 		static std::list<Camera *> m_cameras;
 		static std::shared_ptr<Camera> m_current;
         static std::shared_ptr<RenderTexture> m_hdr_render_target;
         static std::shared_ptr<RenderTexture> m_hdr_render_target_back;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer_back;
+        static std::shared_ptr<RenderTexture> m_g_buffer[G_BUFFER_MRT_COUNT];
 		CameraClearFlags::Enum m_clear_flags;
 		Color m_clear_color;
 		int m_depth;
@@ -67,6 +70,7 @@ namespace Galaxy3D
 		float m_far_clip_plane;
 		Rect m_rect;
         bool m_hdr;
+        bool m_deferred_shading;
         std::shared_ptr<RenderTexture> m_render_texture;
         std::shared_ptr<RenderTexture> m_render_target_binding;
 		Matrix4x4 m_view_matrix;
@@ -77,16 +81,18 @@ namespace Galaxy3D
 		static void UpdateTime();
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);
+        static void CreateGBufferIfNeeded(int w, int h);
 		void Render();
 		void SetViewport(int w, int h) const;
         void Clear();
         //
-        // ժҪ:
+        // 摘要:
         //     ///
         //     Must keep depth buffer dont clear in this procedure
         //     ///
         void ImageEffectsOpaque();
         void ImageEffectsDefault();
+        void SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture);
 	};
 }
 
