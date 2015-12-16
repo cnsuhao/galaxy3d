@@ -401,7 +401,7 @@ namespace Galaxy3D
         ImageEffectsDefault();
 	}
 
-    void Camera::DeferredShadingGlobalDirectionalLight(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back)
+    void Camera::DeferredShadingLightGlobalDirectional(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back)
     {
         m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
         m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
@@ -411,6 +411,7 @@ namespace Galaxy3D
         m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
         m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
         m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
+
         GraphicsDevice::GetInstance()->Blit(front, back, m_deferred_shading_mat, 0);
     }
 
@@ -431,7 +432,7 @@ namespace Galaxy3D
         }
 
         // shading
-        DeferredShadingGlobalDirectionalLight(front, back);
+        DeferredShadingLightGlobalDirectional(front, back);
 
         // blit to rendering target
         front->MarkKeepBuffer(true);
