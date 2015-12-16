@@ -5,7 +5,7 @@ DeferredShading
         Queue Geometry
     }
 
-    Pass
+    Pass 0
     {
         VS vs
         PS ps
