@@ -236,15 +236,30 @@ Diffuse
 
             float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
             float3 normal = normalize(input.v_normal_world);
-            
-            // encode normal to float2
-            float2 normal_2 = normalize(normal.xy)*sqrt(normal.z*0.5+0.5);
+
+            // encode normal3 to normal2
+            float2 normal_2 = 0;
+            if(length(normal.xy) <= 0)
+            {
+                normal_2 = float2(normal.z * 10, 0);
+            }
+            else
+            {
+                normal_2 = normalize(normal.xy)*sqrt(normal.z*0.5+0.5);
+            }
 
             /*
-            // decode
-            float len = length(normal_2.xy);
-            normal.z = len*len*2-1;
-            normal.xy = normalize(normal_2.xy)*sqrt(1-normal.z*normal.z);
+            // decode normal2 to normal3
+            if(length(normal_2) > 1)
+            {
+                normal = float3(0, 0, sign(normal_2.x));
+            }
+            else
+            {
+                float len = length(normal_2);
+                normal.z = len*len*2-1;
+                normal.xy = normalize(normal_2.xy)*sqrt(1-normal.z*normal.z);
+            }
             */
 
             float specular_power = 1.0;

@@ -19,43 +19,12 @@ namespace Galaxy3D
 
         auto cam = GetGameObject()->GetComponent<Camera>();
         auto camtr = cam->GetTransform();
-        float camNear = cam->GetClipNear();
-        float camFar = cam->GetClipFar();
-        float camFov = cam->GetFieldOfView();
-        float camAspect = source->GetWidth() / (float) source->GetHeight();
-        auto frustumCorners = Matrix4x4::Identity();
-        float fovWHalf = camFov * 0.5f;
-
-        Vector3 toRight = camtr->GetRight() * camNear * tan(fovWHalf * Mathf::Deg2Rad) * camAspect;
-        Vector3 toTop = camtr->GetUp() * camNear * tan(fovWHalf * Mathf::Deg2Rad);
-
-        Vector3 topLeft = (camtr->GetForward() * camNear - toRight + toTop);
-        float camScale = topLeft.Magnitude() * camFar/camNear;
-        topLeft.Normalize();
-        topLeft *= camScale;
-
-        Vector3 topRight = (camtr->GetForward() * camNear + toRight + toTop);
-        topRight.Normalize();
-        topRight *= camScale;
-
-        Vector3 bottomRight = (camtr->GetForward() * camNear + toRight - toTop);
-        bottomRight.Normalize();
-        bottomRight *= camScale;
-
-        Vector3 bottomLeft = (camtr->GetForward() * camNear - toRight - toTop);
-        bottomLeft.Normalize();
-        bottomLeft *= camScale;
-
-        frustumCorners.SetRow(0, topLeft);
-        frustumCorners.SetRow(1, topRight);
-        frustumCorners.SetRow(2, bottomRight);
-        frustumCorners.SetRow(3, bottomLeft);
-
         auto camPos= camtr->GetPosition();
         float FdotC = camPos.y - m_height;
         float paramK = (FdotC <= 0.0f ? 1.0f : 0.0f);
         float excludeDepth = m_exclude_far_pixels ? 1.0f : 2.0f;
-        m_material->SetMatrix("_FrustumCornersWS", frustumCorners);
+
+        cam->SetFrustumCornersWS(m_material);
         m_material->SetVector("_CameraWS", camPos);
         m_material->SetVector("_HeightParams", Vector4(m_height, FdotC, paramK, m_height_density * 0.5f));
         m_material->SetVector("_DistanceParams", Vector4(-Mathf::Max(m_start_distance, 0.0f), excludeDepth, 0, 0));
@@ -77,8 +46,8 @@ namespace Galaxy3D
                 m_height_fog_enable ? 1.0f : 0.0f));
         m_material->SetColor("_SceneFogColor", m_fog_color);
 
-        SetZBufferParams(cam);
-        SetProjectionParams(cam);
+        cam->SetZBufferParams(m_material);
+        cam->SetProjectionParams(m_material);
         auto depth_texture = cam->GetDepthTexture();
         m_material->SetTexture("_CameraDepthTexture", depth_texture);
         GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 0);

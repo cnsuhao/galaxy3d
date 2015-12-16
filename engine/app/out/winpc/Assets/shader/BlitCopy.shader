@@ -59,19 +59,10 @@ BlitCopy
             float2 v_uv : TEXCOORD0;
         };
 
-        struct PS_OUTPUT
+        float4 main(PS_INPUT input) : SV_Target
         {
-            float4 o_color : SV_Target;
-        };
-
-        PS_OUTPUT main(PS_INPUT input) : SV_Target0
-        {
-            PS_OUTPUT output = (PS_OUTPUT) 0;
-
             float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
-            output.o_color = c;
-
-            return output;
+            return c;
         }
     }
 
