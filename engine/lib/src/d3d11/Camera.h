@@ -98,7 +98,7 @@ namespace Galaxy3D
         void ImageEffectsDefault();
         void SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture);
         void DeferredShading();
-        void DeferredShadingGlobalDirectionalLight(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back);
+        void DeferredShadingLightGlobalDirectional(std::shared_ptr<RenderTexture> &front, std::shared_ptr<RenderTexture> &back);
 	};
 }
 
