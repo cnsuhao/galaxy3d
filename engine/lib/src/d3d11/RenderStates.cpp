@@ -64,6 +64,30 @@ namespace Galaxy3D
 		"Max",
 	};
 
+    const std::string RenderStates::StencilComparisonFunctionNames[StencilComparisonFunctionNameCount] =
+    {
+        "Greater",
+        "GEqual",
+        "Less",
+        "LEqual",
+        "Equal",
+        "NotEqual",
+        "Always",
+        "Never",
+    };
+
+    const std::string RenderStates::StencilOperationNames[StencilOperationNameCount] =
+    {
+        "Keep",
+        "Zero",
+        "Replace",
+        "IncrSat",
+        "DecrSat",
+        "Invert",
+        "IncrWrap",
+        "DecrWrap",
+    };
+
 	static const D3D11_CULL_MODE CullValues[RenderStates::CullNameCount] =
 	{
 		D3D11_CULL_BACK,
@@ -208,7 +232,7 @@ namespace Galaxy3D
 		int cull_index = -1;
 		for(int i=0; i<RenderStates::CullNameCount; i++)
 		{
-			if(m_values[0] == RenderStates::CullNames[i])
+			if(m_values[Key::Cull] == RenderStates::CullNames[i])
 			{
 				cull_index = i;
 				break;
@@ -218,7 +242,7 @@ namespace Galaxy3D
 		int zwrite_index = -1;
 		for(int i=0; i<RenderStates::ZWriteNameCount; i++)
 		{
-			if(m_values[1] == RenderStates::ZWriteNames[i])
+			if(m_values[Key::ZWrite] == RenderStates::ZWriteNames[i])
 			{
 				zwrite_index = i;
 				break;
@@ -228,7 +252,7 @@ namespace Galaxy3D
 		int ztest_index = -1;
 		for(int i=0; i<RenderStates::ZTestNameCount; i++)
 		{
-			if(m_values[2] == RenderStates::ZTestNames[i])
+			if(m_values[Key::ZTest] == RenderStates::ZTestNames[i])
 			{
 				ztest_index = i;
 				break;
@@ -237,7 +261,7 @@ namespace Galaxy3D
 
 		float zoffset_factor = 0;
 		float zoffset_units = 0;
-		GTString zoffset = m_values[3];
+		GTString zoffset = m_values[Key::Offset];
 		zoffset = zoffset.Replace(" ", "");
 		std::vector<GTString> zoffset_values = zoffset.Split(",");
 		if(zoffset_values.size() == 2)
@@ -255,7 +279,7 @@ namespace Galaxy3D
 		blends_index[1] = -1;
 		blends_index[2] = -1;
 		blends_index[3] = -1;
-		GTString blend = m_values[4];
+		GTString blend = m_values[Key::Blend];
 		if(blend.str != RenderStates::BlendNames[0])
 		{
 			blend_enable = true;
@@ -295,7 +319,7 @@ namespace Galaxy3D
 		int blendop_index = -1;
 		for(int i=0; i<RenderStates::BlendOpNameCount; i++)
 		{
-			if(m_values[5] == RenderStates::BlendOpNames[i])
+			if(m_values[Key::BlendOp] == RenderStates::BlendOpNames[i])
 			{
 				blendop_index = i;
 				break;
@@ -303,7 +327,7 @@ namespace Galaxy3D
 		}
 
 		int color_mask = 0;
-		std::string color_mask_str = m_values[6];
+		std::string color_mask_str = m_values[Key::ColorMask];
 		for(size_t i=0; i<color_mask_str.size(); i++)
 		{
 			if(color_mask_str[i] == 'R')
@@ -323,6 +347,8 @@ namespace Galaxy3D
 				color_mask |= D3D11_COLOR_WRITE_ENABLE_ALPHA;
 			}
 		}
+
+        std::string stencil_str = m_values[Key::Stencil];
 
 		bool line_mode = false;
 

@@ -28,13 +28,13 @@ Diffuse
 		Blend Off
 		Stencil
 		{
-			Ref referenceValue
-			ReadMask readMask
-			WriteMask writeMask
-			Comp comparisonFunction
-			Pass stencilOperation
-			Fail stencilOperation
-			ZFail stencilOperation
+			Ref 0
+			ReadMask 0xffff
+			WriteMask 0xffff
+			Comp Always
+			Pass Keep
+			Fail Keep
+			ZFail Keep
 		}
 	}
 

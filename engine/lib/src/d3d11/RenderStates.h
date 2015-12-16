@@ -43,6 +43,12 @@ namespace Galaxy3D
 		static const int BlendOpNameCount = 5;
 		static const std::string BlendOpNames[BlendOpNameCount];
 
+        static const int StencilComparisonFunctionNameCount = 8;
+        static const std::string StencilComparisonFunctionNames[StencilComparisonFunctionNameCount];
+
+        static const int StencilOperationNameCount = 8;
+        static const std::string StencilOperationNames[StencilOperationNameCount];
+
 		ID3D11RasterizerState *resterizer_state;
 		ID3D11DepthStencilState *depth_stencil_state;
 		ID3D11BlendState *blend_state;
