@@ -16,6 +16,7 @@ namespace Galaxy3D
     std::shared_ptr<RenderTexture> Camera::m_hdr_render_target_back;
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer;
     std::shared_ptr<RenderTexture> Camera::m_image_effect_buffer_back;
+    std::shared_ptr<RenderTexture> Camera::m_g_buffer[G_BUFFER_MRT_COUNT];
 
 	Camera::Camera():
 		m_clear_flags(CameraClearFlags::SolidColor),
@@ -28,7 +29,8 @@ namespace Galaxy3D
 		m_near_clip_plane(0.3f),
 		m_far_clip_plane(1000),
 		m_rect(0, 0, 1, 1),
-        m_hdr(false)
+        m_hdr(false),
+        m_deferred_shading(false)
 	{
 		m_cameras.push_back(this);
 		m_cameras.sort(Less);
@@ -373,7 +375,16 @@ namespace Galaxy3D
             }
         }
 
-        SetRenderTarget(render_target);
+        if(m_deferred_shading)
+        {
+            CreateGBufferIfNeeded(width, height);
+
+            SetGBufferTarget(render_target);
+        }
+        else
+        {
+            SetRenderTarget(render_target);
+        }
 		
         Renderer::Prepare();
         Renderer::RenderOpaqueGeometry();
@@ -381,6 +392,31 @@ namespace Galaxy3D
         Renderer::RenderTransparentGeometry();
         ImageEffectsDefault();
 	}
+
+    void Camera::SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture)
+    {
+        int width = render_texture->GetWidth();
+        int height = render_texture->GetHeight();
+
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+        auto color_buffer = render_texture->GetRenderTargetView();
+        auto depth_buffer = render_texture->GetDepthStencilView();
+
+        ID3D11RenderTargetView *views[G_BUFFER_MRT_COUNT + 1];
+        views[0] = color_buffer;
+        views[1] = m_g_buffer[0]->GetRenderTargetView();
+        views[2] = m_g_buffer[1]->GetRenderTargetView();
+
+        context->OMSetRenderTargets(3, views, depth_buffer);
+        SetViewport(width, height);
+
+        m_render_target_binding = render_texture;
+
+        context->ClearRenderTargetView(views[0], (const float *) &m_clear_color);
+        context->ClearRenderTargetView(views[1], (const float *) &m_clear_color);
+        context->ClearRenderTargetView(views[2], (const float *) &m_clear_color);
+        context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    }
 
     void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture)
     {
@@ -434,14 +470,6 @@ namespace Galaxy3D
                 context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
             }
         }
-    }
-
-    void Camera::Done()
-    {
-        m_hdr_render_target.reset();
-        m_hdr_render_target_back.reset();
-        m_image_effect_buffer.reset();
-        m_image_effect_buffer_back.reset();
     }
 
     std::shared_ptr<RenderTexture> Camera::GetDepthTexture() const
@@ -510,6 +538,21 @@ namespace Galaxy3D
         if(!m_image_effect_buffer_back)
         {
             m_image_effect_buffer_back = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0);
+        }
+    }
+
+    void Camera::CreateGBufferIfNeeded(int w, int h)
+    {
+        // 32bit RGHalf for normal 
+        if(!m_g_buffer[0])
+        {
+            m_g_buffer[0] = RenderTexture::Create(w, h, RenderTextureFormat::RGHalf, DepthBuffer::Depth_0);
+        }
+
+        // 32bit RGBA32 for motion vector and specular 
+        if(!m_g_buffer[1])
+        {
+            m_g_buffer[1] = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0);
         }
     }
 

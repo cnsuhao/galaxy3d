@@ -44,8 +44,9 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->GetTransform()->SetPosition(Vector3(-2, 4, -12));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(25, 12, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 5, -12));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
+    cam3d->EnableDeferredShading(true);
 
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.1f;
     RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
