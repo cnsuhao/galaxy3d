@@ -408,9 +408,9 @@ namespace Galaxy3D
         m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
         m_deferred_shading_mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
         m_deferred_shading_mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
-        m_deferred_shading_mat->SetTexture("_CameraDepthTexture", front);
         m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
         m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
+        m_deferred_shading_mat->SetTexture("_GBuffer3", m_g_buffer[2]);
         m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
 
         GraphicsDevice::GetInstance()->Blit(front, back, m_deferred_shading_mat, 0);
@@ -456,8 +456,9 @@ namespace Galaxy3D
         views[0] = color_buffer;
         views[1] = m_g_buffer[0]->GetRenderTargetView();
         views[2] = m_g_buffer[1]->GetRenderTargetView();
+        views[3] = m_g_buffer[2]->GetRenderTargetView();
 
-        context->OMSetRenderTargets(3, views, depth_buffer);
+        context->OMSetRenderTargets(G_BUFFER_MRT_COUNT + 1, views, depth_buffer);
         SetViewport(width, height);
 
         m_render_target_binding = render_texture;
@@ -603,6 +604,12 @@ namespace Galaxy3D
         if(!m_g_buffer[1])
         {
             m_g_buffer[1] = RenderTexture::Create(w, h, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0);
+        }
+
+        // 32bit RFloat for depth 
+        if(!m_g_buffer[2])
+        {
+            m_g_buffer[2] = RenderTexture::Create(w, h, RenderTextureFormat::RFloat, DepthBuffer::Depth_0);
         }
 
         if(!m_deferred_shading_mat)

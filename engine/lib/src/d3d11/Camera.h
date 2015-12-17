@@ -52,13 +52,13 @@ namespace Galaxy3D
 		virtual void Start();
 		
 	private:
-        static const int G_BUFFER_MRT_COUNT = 2;
 		static std::list<Camera *> m_cameras;
 		static std::shared_ptr<Camera> m_current;
         static std::shared_ptr<RenderTexture> m_hdr_render_target;
         static std::shared_ptr<RenderTexture> m_hdr_render_target_back;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer;
         static std::shared_ptr<RenderTexture> m_image_effect_buffer_back;
+        static const int G_BUFFER_MRT_COUNT = 3;
         static std::shared_ptr<RenderTexture> m_g_buffer[G_BUFFER_MRT_COUNT];
         static std::shared_ptr<Material> m_deferred_shading_mat;
 		CameraClearFlags::Enum m_clear_flags;
