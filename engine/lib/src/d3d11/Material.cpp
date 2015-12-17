@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "Guid.h"
 #include "RenderTexture.h"
+#include "Camera.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
 static const std::string MAIN_COLOR_NAME = "_MainColor";
@@ -323,4 +324,70 @@ namespace Galaxy3D
             }
 		}
 	}
+
+    void Material::SetZBufferParams(std::shared_ptr<Camera> &cam)
+    {
+        float cam_far = cam->GetClipFar();
+        float cam_near = cam->GetClipNear();
+
+#if defined(WINPC) || defined(WINPHONE)
+        float zx = (1.0f - cam_far / cam_near) / 2;
+        float zy = (1.0f + cam_far / cam_near) / 2;
+#else
+        float zx = (1.0f - cam_far / cam_near);
+        float zy = (cam_far / cam_near);
+#endif
+
+        SetVector("_ZBufferParams", Vector4(zx, zy, zx / cam_far, zy / cam_near));
+    }
+
+    void Material::SetProjectionParams(std::shared_ptr<Camera> &cam)
+    {
+        float cam_far = cam->GetClipFar();
+        float cam_near = cam->GetClipNear();
+
+        // x = 1 or -1 (-1 if projection is flipped)
+        // y = near plane
+        // z = far plane
+        // w = 1/far plane
+        SetVector("_ProjectionParams", Vector4(1, cam_near, cam_far, 1 / cam_far));
+    }
+
+    void Material::SetFrustumCornersWS(std::shared_ptr<Camera> &cam)
+    {
+        auto camtr = cam->GetTransform();
+        float camNear = cam->GetClipNear();
+        float camFar = cam->GetClipFar();
+        float camFov = cam->GetFieldOfView();
+        float aspect = cam->GetRenderTarget()->GetWidth() / (float) cam->GetRenderTarget()->GetHeight();
+
+        float fovWHalf = camFov * 0.5f;
+        auto frustumCorners = Matrix4x4::Identity();
+        Vector3 toRight = camtr->GetRight() * camNear * tan(fovWHalf * Mathf::Deg2Rad) * aspect;
+        Vector3 toTop = camtr->GetUp() * camNear * tan(fovWHalf * Mathf::Deg2Rad);
+
+        Vector3 topLeft = (camtr->GetForward() * camNear - toRight + toTop);
+        float camScale = topLeft.Magnitude() * camFar/camNear;
+        topLeft.Normalize();
+        topLeft *= camScale;
+
+        Vector3 topRight = (camtr->GetForward() * camNear + toRight + toTop);
+        topRight.Normalize();
+        topRight *= camScale;
+
+        Vector3 bottomRight = (camtr->GetForward() * camNear + toRight - toTop);
+        bottomRight.Normalize();
+        bottomRight *= camScale;
+
+        Vector3 bottomLeft = (camtr->GetForward() * camNear - toRight - toTop);
+        bottomLeft.Normalize();
+        bottomLeft *= camScale;
+
+        frustumCorners.SetRow(0, topLeft);
+        frustumCorners.SetRow(1, topRight);
+        frustumCorners.SetRow(2, bottomRight);
+        frustumCorners.SetRow(3, bottomLeft);
+
+        SetMatrix("_FrustumCornersWS", frustumCorners);
+    }
 }

@@ -12,6 +12,8 @@
 
 namespace Galaxy3D
 {
+    class Camera;
+
 	class Material : public Object
 	{
 	public:
@@ -41,6 +43,9 @@ namespace Galaxy3D
 		void ApplyPass(int pass);
         void SetGuid(const std::string &guid) {m_guid = guid;}
         std::string GetGuid() const {return m_guid;}
+        void SetZBufferParams(std::shared_ptr<Camera> &cam);
+        void SetProjectionParams(std::shared_ptr<Camera> &cam);
+        void SetFrustumCornersWS(std::shared_ptr<Camera> &cam);
 
 	private:
         std::string m_guid;
