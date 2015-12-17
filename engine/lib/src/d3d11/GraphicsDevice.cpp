@@ -170,6 +170,9 @@ namespace Galaxy3D
     {
         CreateBlitMeshIfNeeded();
 
+        auto cam = Camera::GetCurrent();
+        cam->SetRenderTarget(destination);
+
         std::shared_ptr<Material> mat;
         if(material)
         {
@@ -183,14 +186,11 @@ namespace Galaxy3D
         }
         mat->SetMainTexture(source);
 
-        auto cam = Camera::GetCurrent();
-        cam->SetRenderTarget(destination);
-
         auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto vertex_buffer = m_blit_mesh->GetVertexBuffer();
         auto index_buffer = m_blit_mesh->GetIndexBuffer();
         auto shader = mat->GetShader();
-        
+
         int pass_begin;
         int pass_end;
         if(pass >= 0)
