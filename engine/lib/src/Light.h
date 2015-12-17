@@ -37,12 +37,10 @@ namespace Galaxy3D
         LightType::Enum m_type;
         float m_spot_angle;
         float m_range;
-        float m_attenuation;
         Color m_color;
         float m_intensity;
 
         static void CreateVolumeMeshIfNeeded();
-        void ComputeAttenuation();
     };
 }
 

@@ -16,14 +16,14 @@ DeferredShading
     {
         VS vs_point_cull
         PS ps_point_cull
-        RenderStates rs_point_cull_0
+        RenderStates rs_point_cull
     }
 
     Pass 2
     {
         VS vs_point
         PS ps_point
-        RenderStates rs_point_cull_1
+        RenderStates rs_point
     }
 
     RenderStates rs
@@ -34,7 +34,7 @@ DeferredShading
         Blend Off
     }
 
-    RenderStates rs_point_cull_0
+    RenderStates rs_point_cull
     {
         Cull Back
         ZWrite Off
@@ -53,12 +53,12 @@ DeferredShading
         }
     }
 
-    RenderStates rs_point_cull_1
+    RenderStates rs_point
     {
         Cull Front
         ZWrite Off
         ZTest GEqual
-        Blend Off
+        Blend One, One
         Stencil
         {
             Ref 0
@@ -295,11 +295,6 @@ DeferredShading
 
         cbuffer cbuffer1 : register(b1)
         {
-            float4 LightAttenuation;
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
             matrix InvViewProjection;
         };
 
@@ -363,7 +358,8 @@ DeferredShading
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
 
-            float intensity = 1 - length(dis) / LightAttenuation.x;
+            float len = length(dis);
+            float intensity = min(1, 1 / (0.1 + len));
 
             return float4(c * intensity, 1);
         }

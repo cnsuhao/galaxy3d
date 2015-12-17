@@ -435,12 +435,13 @@ namespace Galaxy3D
         // swap diffuse buffer to back
         RenderTexture::SwapColorBuffer(front, back);
 
-        // shading
+        // shading to front buffer
         front->MarkKeepBuffer(true);
         DeferredShadingLightGlobalDirectional(back, front);
         front->MarkKeepBuffer(false);
 
-        // now target is front, and diffuse is in back
+        // now target is front, and diffuse is in back,
+        // add all lights colors to front buffer
         m_deferred_shading_mat->SetMainTexture(back);
         Light::DeferredShadingLights(m_deferred_shading_mat);
     }

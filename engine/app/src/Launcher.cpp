@@ -71,6 +71,7 @@ void Launcher::Start()
 
     auto light = GameObject::Create("point light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(2, 1, -3));
+    light->SetColor(Color(1, 0, 0, 1));
 #endif
 
 #if DEMO_SCENE
