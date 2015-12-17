@@ -72,6 +72,20 @@ void Launcher::Start()
     auto light = GameObject::Create("point light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(2, 1, -3));
     light->SetColor(Color(1, 0, 0, 1));
+
+    light = GameObject::Create("point light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
+    light->SetColor(Color(0, 1, 0, 1));
+
+    light = GameObject::Create("point light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(0, 1, -3));
+    light->SetColor(Color(0, 0, 1, 1));
+    light->SetRange(15);
+
+    light = GameObject::Create("point light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(0, 3, 0));
+    light->SetColor(Color(1, 0, 1, 1));
+    light->SetRange(20);
 #endif
 
 #if DEMO_SCENE
