@@ -16,7 +16,14 @@ DeferredShading
     {
         VS vs_point
         PS ps_point
-        RenderStates rs_point
+        RenderStates rs_point_0
+    }
+
+    Pass 2
+    {
+        VS vs_point
+        PS ps_point
+        RenderStates rs_point_1
     }
 
     RenderStates rs
@@ -27,12 +34,41 @@ DeferredShading
         Blend Off
     }
 
-    RenderStates rs_point
+    RenderStates rs_point_0
     {
         Cull Back
-        ZWrite On
+        ZWrite Off
         ZTest LEqual
         Blend Off
+        ColorMask 0
+        Stencil
+        {
+            Ref 0
+            ReadMask 255
+            WriteMask 255
+            Comp Always
+            Pass Keep
+            Fail Keep
+            ZFail IncrSat
+        }
+    }
+
+    RenderStates rs_point_1
+    {
+        Cull Front
+        ZWrite Off
+        ZTest GEqual
+        Blend Off
+        Stencil
+        {
+            Ref 0
+            ReadMask 255
+            WriteMask 255
+            Comp Equal
+            Pass Replace
+            Fail Replace
+            ZFail Replace
+        }
     }
 
     HLVS vs

@@ -62,6 +62,7 @@ namespace Galaxy3D
 	private:
 		static std::string m_current_states[KeyCount];
 		std::string m_values[KeyCount];
+        int m_stencil_ref;
 	};
 }
 

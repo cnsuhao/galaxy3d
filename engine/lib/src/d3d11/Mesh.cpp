@@ -161,27 +161,52 @@ namespace Galaxy3D
         float rot_y;
         int x_count = 10;
         int y_count = 10;
-        for(int i=1; i<x_count; i++)
+        for(int i=0; i<x_count; i++)
         {
             rot_x = 180.0f / x_count * i;
 
             for(int j=0; j<y_count; j++)
             {
-                rot_y = 360.0f / y_count * j;
+                if(i > 0)
+                {
+                    rot_y = 360.0f / y_count * j;
 
-                auto pos = Quaternion::Euler(rot_x, rot_y, 0) * Vector3(0, 1, 0);
+                    auto pos = Quaternion::Euler(rot_x, rot_y, 0) * Vector3(0, 1, 0);
 
-                VertexMesh v;
-                v.POSITION = pos;
-                vertices.push_back(v);
+                    VertexMesh v;
+                    v.POSITION = pos;
+                    vertices.push_back(v);
+                }
 
                 if(i == 0)
                 {
-
+                    if(j == y_count - 1)
+                    {
+                        indices.push_back(0);
+                        indices.push_back(1 + j);
+                        indices.push_back(1 + 0);
+                    }
+                    else
+                    {
+                        indices.push_back(0);
+                        indices.push_back(1 + j);
+                        indices.push_back(1 + j + 1);
+                    }
                 }
                 else if(i == x_count - 1)
                 {
-                    
+                    if(j == y_count - 1)
+                    {
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * i);
+                        indices.push_back(1 + y_count * (i - 1) + 0);
+                    }
+                    else
+                    {
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * i);
+                        indices.push_back(1 + y_count * (i - 1) + j + 1);
+                    }
                 }
                 else
                 {
