@@ -12,11 +12,26 @@ DeferredShading
         RenderStates rs
     }
 
+    Pass 1
+    {
+        VS vs_point
+        PS ps_point
+        RenderStates rs_point
+    }
+
     RenderStates rs
     {
         Cull Off
         ZWrite Off
         ZTest Always
+        Blend Off
+    }
+
+    RenderStates rs_point
+    {
+        Cull Back
+        ZWrite On
+        ZTest LEqual
         Blend Off
     }
 
@@ -140,6 +155,50 @@ DeferredShading
                 spec * LightColor.rgb;
 
             return c;
+        }
+    }
+
+    HLVS vs_point
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix WorldViewProjection;
+        };
+
+        struct VS_INPUT
+        {
+            float4 Position : POSITION;
+            float3 Normal : NORMAL;
+            float4 Tangent : TANGENT;
+            float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord1 : TEXCOORD1;
+        };
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+        };
+
+        PS_INPUT main(VS_INPUT input)
+        {
+            PS_INPUT output = (PS_INPUT) 0;
+
+            output.v_pos = mul(input.Position, WorldViewProjection);
+
+            return output;
+        }
+    }
+
+    HLPS ps_point
+    {
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+        };
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            return float4(1, 1, 1, 1);
         }
     }
 }

@@ -32,6 +32,7 @@
 #include "ImageEffectBloom.h"
 #include "ImageEffectToneMapping.h"
 #include "ImageEffectGlobalFog.h"
+#include "Light.h"
 
 namespace Galaxy3D
 {

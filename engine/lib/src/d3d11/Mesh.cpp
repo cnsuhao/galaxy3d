@@ -148,6 +148,82 @@ namespace Galaxy3D
         return mesh;
     }
 
+    std::shared_ptr<Mesh> Mesh::CreateMeshSphere()
+    {
+        auto mesh = Mesh::Create();
+
+        std::vector<VertexMesh> vertices;
+        std::vector<unsigned short> indices;
+
+        vertices.push_back({Vector3(0, 1, 0), Vector3(), Vector4(), Vector2(), Vector2()});
+
+        float rot_x;
+        float rot_y;
+        int x_count = 10;
+        int y_count = 10;
+        for(int i=1; i<x_count; i++)
+        {
+            rot_x = 180.0f / x_count * i;
+
+            for(int j=0; j<y_count; j++)
+            {
+                rot_y = 360.0f / y_count * j;
+
+                auto pos = Quaternion::Euler(rot_x, rot_y, 0) * Vector3(0, 1, 0);
+
+                VertexMesh v;
+                v.POSITION = pos;
+                vertices.push_back(v);
+
+                if(i == 0)
+                {
+
+                }
+                else if(i == x_count - 1)
+                {
+                    
+                }
+                else
+                {
+                    if(j == y_count - 1)
+                    {
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * (i) + 0);
+                        indices.push_back(1 + y_count * (i - 1) + 0);
+
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * (i) + j);
+                        indices.push_back(1 + y_count * (i) + 0);
+                    }
+                    else
+                    {
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * (i) + j + 1);
+                        indices.push_back(1 + y_count * (i - 1) + j + 1);
+
+                        indices.push_back(1 + y_count * (i - 1) + j);
+                        indices.push_back(1 + y_count * (i) + j);
+                        indices.push_back(1 + y_count * (i) + j + 1);
+                    }
+                }
+            }
+        }
+
+        vertices.push_back({Vector3(0, -1, 0), Vector3(), Vector4(), Vector2(), Vector2()});
+
+        mesh->SetVertices(vertices);
+        mesh->SetIndices(std::vector<std::vector<unsigned short>>(1, indices));
+
+        return mesh;
+    }
+
+    std::shared_ptr<Mesh> Mesh::CreateMeshCone()
+    {
+        std::shared_ptr<Mesh> mesh;
+
+        return mesh;
+    }
+
     std::shared_ptr<GameObject> Mesh::LoadSkinnedMesh(const std::string &file)
     {
         std::shared_ptr<GameObject> obj;
