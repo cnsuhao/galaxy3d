@@ -1,10 +1,13 @@
 #include "Light.h"
 #include "Mesh.h"
 #include "GraphicsDevice.h"
+#include "RenderSettings.h"
+#include "RenderTexture.h"
 
 namespace Galaxy3D
 {
     // light attenuation : intensity = 1 / (C + L * d + Q * d * d)
+    // use L = 0
     static const float LIGHT_CONSTANT_ATTENUATION = 1;
     static const float LIGHT_LINEAR_ATTENUATION = 0;
     static const float LIGHT_QUADRATIC_ATTENUATION = 1;
@@ -77,6 +80,10 @@ namespace Galaxy3D
                 auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), Quaternion::Identity(), Vector3(1, 1, 1) * i->m_range);
                 material->SetMatrix("WorldViewProjection", wvp);
                 GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 1);
+                
+                material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
+                material->SetColor("LightColor", i->m_color * i->m_intensity);
+                material->SetVector("LightAttenuation", i->m_range);
                 GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
             }
             else if(i->m_type == LightType::Spot)
