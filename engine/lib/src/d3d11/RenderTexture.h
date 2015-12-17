@@ -56,6 +56,7 @@ namespace Galaxy3D
             RenderTextureFormat::Enum format,
             DepthBuffer::Enum depth);
         static void ReleaseTemporary(const std::shared_ptr<RenderTexture> &temp);
+        static void SwapColorBuffer(std::shared_ptr<RenderTexture> &t1, std::shared_ptr<RenderTexture> &t2);
         RenderTexture(int w, int h, ID3D11RenderTargetView *render_target_view, ID3D11DepthStencilView *depth_stencil_view):
             Texture(w, h, FilterMode::Point, TextureWrapMode::Clamp),
             m_format(RenderTextureFormat::RGBA32),

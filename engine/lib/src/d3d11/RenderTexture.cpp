@@ -52,6 +52,17 @@ namespace Galaxy3D
         }
     }
 
+    void RenderTexture::SwapColorBuffer(std::shared_ptr<RenderTexture> &t1, std::shared_ptr<RenderTexture> &t2)
+    {
+        auto temp_rt = t1->m_render_target_view;
+        t1->m_render_target_view = t2->m_render_target_view;
+        t2->m_render_target_view = temp_rt;
+
+        auto temp_srv = t1->m_shader_resource_view_color;
+        t1->m_shader_resource_view_color = t2->m_shader_resource_view_color;
+        t2->m_shader_resource_view_color = temp_srv;
+    }
+
     std::shared_ptr<RenderTexture> RenderTexture::Create(
         int width,
         int height,
