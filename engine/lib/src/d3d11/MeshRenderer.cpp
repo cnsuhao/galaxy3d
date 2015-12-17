@@ -47,11 +47,6 @@ namespace Galaxy3D
             int index_count = m_mesh->GetIndexCount(material_index);
             auto mat = mats[material_index];
 
-            if(!mat)
-            {
-                continue;
-            }
-
             auto shader = mat->GetShader();
 
             mat->SetMatrix("WorldViewProjection", wvp);

@@ -226,4 +226,39 @@ namespace Galaxy3D
 
         GraphicsDevice::GetInstance()->ClearShaderResources();
     }
+
+    void GraphicsDevice::DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index)
+    {
+        auto vertex_buffer = mesh->GetVertexBuffer();
+        auto index_buffer = mesh->GetIndexBuffer();
+
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+        int index_offset = 0;
+        for(int i=0; i<sub_mesh_index; i++)
+        {
+            index_offset += mesh->GetIndexCount(i);
+        }
+
+        do
+        {
+            int index_count = mesh->GetIndexCount(sub_mesh_index);
+            auto shader = material->GetShader();
+
+            auto pass_count = shader->GetPassCount();
+            auto pass = shader->GetPass(pass_index);
+
+            UINT stride = pass->vs->vertex_stride;
+            UINT offset = 0;
+            context->IASetInputLayout(pass->vs->input_layout);
+            context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+            context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+
+            material->ReadyPass(pass_index);
+            pass->rs->Apply();
+            material->ApplyPass(pass_index);
+
+            Renderer::DrawIndexed(index_count, index_offset);
+        }while(false);
+    }
 }

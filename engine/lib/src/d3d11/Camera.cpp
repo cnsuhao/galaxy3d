@@ -8,6 +8,7 @@
 #include "ImageEffect.h"
 #include "ImageEffectToneMapping.h"
 #include "RenderSettings.h"
+#include "Light.h"
 
 namespace Galaxy3D
 {
@@ -438,6 +439,8 @@ namespace Galaxy3D
         front->MarkKeepBuffer(true);
         GraphicsDevice::GetInstance()->Blit(back, front, std::shared_ptr<Material>(), 0);
         front->MarkKeepBuffer(false);
+
+        Light::DeferredShadingLights(m_deferred_shading_mat);
     }
 
     void Camera::SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture)

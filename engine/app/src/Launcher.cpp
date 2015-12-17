@@ -34,9 +34,9 @@ void Launcher::Start()
 	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
+    tr->GetTransform()->SetParent(cam2d->GetTransform());
+    tr->GetGameObject()->SetLayer(Layer::UI);
 	fps = tr;
-	fps->GetTransform()->SetParent(cam2d->GetTransform());
-    fps->GetGameObject()->SetLayer(Layer::UI);
 
 #if DEMO_DEFERRED_SHADING
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
@@ -49,7 +49,7 @@ void Launcher::Start()
     cam3d->EnableDeferredShading(true);
 
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.1f;
-    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.4f;
     RenderSettings::light_directional_intensity = 1;
     RenderSettings::light_directional_rotation = Quaternion::Euler(50, 50, 0);
     
@@ -68,6 +68,9 @@ void Launcher::Start()
     sphere = GameObject::Instantiate(sphere);
     sphere->GetTransform()->SetPosition(Vector3(-3, 1, -3));
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
+
+    auto light = GameObject::Create("point light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(2, 1, -3));
 #endif
 
 #if DEMO_SCENE
