@@ -190,7 +190,8 @@ namespace Galaxy3D
 	RenderStates::RenderStates():
 		resterizer_state(NULL),
 		depth_stencil_state(NULL),
-		blend_state(NULL)
+		blend_state(NULL),
+        m_stencil_ref(0)
 	{
 		m_values[0] = CullNames[0];
 		m_values[1] = ZWriteNames[0];
@@ -496,6 +497,8 @@ namespace Galaxy3D
             dsd.FrontFace.StencilFailOp = (D3D11_STENCIL_OP) stencil_values[StencilKey::Fail];
             dsd.FrontFace.StencilDepthFailOp = (D3D11_STENCIL_OP) stencil_values[StencilKey::ZFail];
             dsd.BackFace = dsd.FrontFace;
+
+            m_stencil_ref = stencil_values[StencilKey::Ref];
         }
 
 		device->CreateDepthStencilState(&dsd, &depth_stencil_state);
@@ -527,7 +530,7 @@ namespace Galaxy3D
 		if(m_current_states[0].empty())
 		{
 			context->RSSetState(resterizer_state);
-			context->OMSetDepthStencilState(depth_stencil_state, 1);
+			context->OMSetDepthStencilState(depth_stencil_state, m_stencil_ref);
 			context->OMSetBlendState(blend_state, 0, 0xffffffff);
 		}
 		else
@@ -542,7 +545,7 @@ namespace Galaxy3D
 				m_current_states[Key::ZTest] != m_values[Key::ZTest] ||
                 m_current_states[Key::Stencil] != m_values[Key::Stencil])
 			{
-				context->OMSetDepthStencilState(depth_stencil_state, 1);
+				context->OMSetDepthStencilState(depth_stencil_state, m_stencil_ref);
 			}
 
 			if(	m_current_states[Key::ColorMask] != m_values[Key::ColorMask] ||

@@ -17,7 +17,7 @@ namespace Galaxy3D
     Light::Light():
         m_type(LightType::Point),
         m_spot_angle(30),
-        m_range(1),
+        m_range(10),
         m_attenuation(0),
         m_color(1, 1, 1, 1),
         m_intensity(1)
@@ -77,10 +77,11 @@ namespace Galaxy3D
                 auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), Quaternion::Identity(), Vector3(1, 1, 1) * i->m_range);
                 material->SetMatrix("WorldViewProjection", wvp);
                 GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 1);
+                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
             }
             else if(i->m_type == LightType::Spot)
             {
-                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
+                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
             }
         }
     }
