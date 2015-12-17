@@ -303,10 +303,12 @@ DeferredShading
             matrix InvViewProjection;
         };
 
-        Texture2D _GBuffer1 : register(t0);
-        SamplerState _GBuffer1_Sampler : register(s0);
-        Texture2D _GBuffer2 : register(t1);
-        SamplerState _GBuffer2_Sampler : register(s1);
+        Texture2D _MainTex : register(t0);
+        SamplerState _MainTex_Sampler : register(s0);
+        Texture2D _GBuffer1 : register(t1);
+        SamplerState _GBuffer1_Sampler : register(s1);
+        Texture2D _GBuffer2 : register(t2);
+        SamplerState _GBuffer2_Sampler : register(s2);
         Texture2D _GBuffer3 : register(t3);
         SamplerState _GBuffer3_Sampler : register(s3);
 
@@ -324,6 +326,7 @@ DeferredShading
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
 
+            float4 color = _MainTex.Sample(_MainTex_Sampler, uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
             float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
@@ -357,7 +360,6 @@ DeferredShading
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
 
-            float4 color = 1;
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
 
