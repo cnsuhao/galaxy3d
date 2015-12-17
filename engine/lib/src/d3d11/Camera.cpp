@@ -439,13 +439,10 @@ namespace Galaxy3D
         front->MarkKeepBuffer(true);
         DeferredShadingLightGlobalDirectional(back, front);
         front->MarkKeepBuffer(false);
-        /*
-        // blit to rendering target
-        front->MarkKeepBuffer(true);
-        GraphicsDevice::GetInstance()->Blit(back, front, std::shared_ptr<Material>(), 0);
-        front->MarkKeepBuffer(false);
-        */
-        //Light::DeferredShadingLights(m_deferred_shading_mat);
+
+        // now target is front, and diffuse is in back
+        m_deferred_shading_mat->SetMainTexture(back);
+        Light::DeferredShadingLights(m_deferred_shading_mat);
     }
 
     void Camera::SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture)
