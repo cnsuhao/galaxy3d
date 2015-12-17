@@ -79,9 +79,7 @@ namespace Galaxy3D
     {
         auto device = GraphicsDevice::GetInstance()->GetDevice();
 
-        if( m_format == RenderTextureFormat::RGBA32 ||
-            m_format == RenderTextureFormat::RGBAHalf ||
-            m_format == RenderTextureFormat::RGHalf)
+        if(m_format != RenderTextureFormat::Depth)
         {
             DXGI_FORMAT fmt;
             if(m_format == RenderTextureFormat::RGBA32)
@@ -95,6 +93,10 @@ namespace Galaxy3D
             else if(m_format == RenderTextureFormat::RGHalf)
             {
                 fmt = DXGI_FORMAT_R16G16_FLOAT;
+            }
+            else if(m_format == RenderTextureFormat::RFloat)
+            {
+                fmt = DXGI_FORMAT_R32_FLOAT;
             }
 
             D3D11_TEXTURE2D_DESC td =

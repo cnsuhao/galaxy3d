@@ -21,7 +21,7 @@ namespace Galaxy3D
             //          RGBAFloat = 11,		//Color render texture format, 32 bit floating point per channel
             //          RGFloat = 12,
             RGHalf = 13,
-            //			RFloat = 14,		//Scalar (R) render texture format, 32 bit floating point
+            RFloat = 14,		//Scalar (R) render texture format, 32 bit floating point
             //			RHalf = 15,
             //			R8 = 16,			//Scalar (R) render texture format, 8 bit fixed point
             //			ARGBInt = 17,		//Four channel (ARGB) render texture format, 32 bit signed integer per channel

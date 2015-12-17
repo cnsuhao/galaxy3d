@@ -21,8 +21,8 @@ DeferredShading
 
     Pass 2
     {
-        VS vs_point_cull
-        PS vs_point_cull
+        VS vs_point
+        PS ps_point
         RenderStates rs_point_cull_1
     }
 
@@ -136,8 +136,8 @@ DeferredShading
         SamplerState _GBuffer1_Sampler : register(s1);
         Texture2D _GBuffer2 : register(t2);
         SamplerState _GBuffer2_Sampler : register(s2);
-        Texture2D _CameraDepthTexture : register(t3);
-        SamplerState _CameraDepthTexture_Sampler : register(s3);
+        Texture2D _GBuffer3 : register(t3);
+        SamplerState _GBuffer3_Sampler : register(s3);
 
         struct PS_INPUT
         {
@@ -152,7 +152,7 @@ DeferredShading
             float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, input.v_uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, input.v_uv).zw;
-            float depth = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, input.v_uv).r;
+            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, input.v_uv).r;
 
             float3 normal = 0;
 
@@ -307,8 +307,8 @@ DeferredShading
         SamplerState _GBuffer1_Sampler : register(s0);
         Texture2D _GBuffer2 : register(t1);
         SamplerState _GBuffer2_Sampler : register(s1);
-        Texture2D _CameraDepthTexture : register(t2);
-        SamplerState _CameraDepthTexture_Sampler : register(s2);
+        Texture2D _GBuffer3 : register(t3);
+        SamplerState _GBuffer3_Sampler : register(s3);
 
         struct PS_INPUT
         {
@@ -326,7 +326,7 @@ DeferredShading
 
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
-            float depth = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, uv).r;
+            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
 
             float3 normal = 0;
 
@@ -344,7 +344,7 @@ DeferredShading
             //
 
             // get world position from depth and uv
-            float4 pos_world = mul(float4(input.v_pos_proj.xy, depth, 1), InvViewProjection);
+            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
             pos_world /= pos_world.w;
             //
 
@@ -363,7 +363,7 @@ DeferredShading
 
             float intensity = 1 - length(dis) / LightAttenuation.x;
 
-            return depth;
+            return float4(c * intensity, 1);
         }
     }
 }

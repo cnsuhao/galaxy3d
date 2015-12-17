@@ -182,7 +182,7 @@ Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float4 v_color : COLOR;
-            float3 v_pos_world : TEXCOORD1;
+            float4 v_pos_proj : TEXCOORD1;
             float3 v_normal_world : TEXCOORD2;
         };
 
@@ -193,12 +193,8 @@ Diffuse
             output.v_pos = mul(input.Position, WorldViewProjection);
             output.v_uv = input.Texcoord0;
             output.v_color = _Color;
-
-            float3 pos_world = mul(input.Position, World).xyz;
-            float3 normal_world = mul(input.Normal, World);
-
-            output.v_pos_world = pos_world;
-            output.v_normal_world = normal_world;
+            output.v_normal_world = mul(input.Normal, World);
+            output.v_pos_proj = output.v_pos;
 
             return output;
         }
@@ -219,7 +215,7 @@ Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float4 v_color : COLOR;
-            float3 v_pos_world : TEXCOORD1;
+            float4 v_pos_proj : TEXCOORD1;
             float3 v_normal_world : TEXCOORD2;
         };
 
@@ -228,6 +224,7 @@ Diffuse
             float4 o_color : SV_Target0;
             float4 o_normal : SV_Target1;
             float4 o_specular : SV_Target2;
+            float4 o_depth : SV_Target3;
         };
 
         PS_OUTPUT main(PS_INPUT input)
@@ -269,6 +266,7 @@ Diffuse
             output.o_normal.xy = normal_2;
             output.o_specular.z = specular_power;
             output.o_specular.w = specular_intensity;
+            output.o_depth.r = input.v_pos_proj.z / input.v_pos_proj.w;
 
             return output;
         }
