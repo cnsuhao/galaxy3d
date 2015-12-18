@@ -75,6 +75,12 @@ void Launcher::Start()
     light->SetType(LightType::Spot);
     light->SetSpotAngle(90);
     light->SetRange(100);
+    light->SetColor(Color(0, 1, 0, 1));
+
+    light = GameObject::Create("spot light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
+    light->SetRange(30);
+    light->SetColor(Color(1, 0, 0, 1));
 #endif
 
 #if DEMO_SCENE

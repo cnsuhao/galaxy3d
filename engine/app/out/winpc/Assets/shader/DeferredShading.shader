@@ -7,33 +7,33 @@ DeferredShading
 
     Pass 0
     {
-        VS vs
-        PS ps
-        RenderStates rs
+        VS vs_light_dir
+        PS ps_light_dir
+        RenderStates rs_light_dir
     }
 
     Pass 1
     {
-        VS vs_point_cull
-        PS ps_point_cull
-        RenderStates rs_point_cull
+        VS vs_volume_cull
+        PS ps_volume_cull
+        RenderStates rs_volume_cull
     }
 
     Pass 2
     {
-        VS vs_point
+        VS vs_lighting
         PS ps_point
-        RenderStates rs_point
+        RenderStates rs_lighting
     }
 
     Pass 3
     {
-        VS vs_point
+        VS vs_lighting
         PS ps_spot
-        RenderStates rs_point
+        RenderStates rs_lighting
     }
 
-    RenderStates rs
+    RenderStates rs_light_dir
     {
         Cull Off
         ZWrite Off
@@ -41,7 +41,7 @@ DeferredShading
         Blend Off
     }
 
-    RenderStates rs_point_cull
+    RenderStates rs_volume_cull
     {
         Cull Back
         ZWrite Off
@@ -60,7 +60,7 @@ DeferredShading
         }
     }
 
-    RenderStates rs_point
+    RenderStates rs_lighting
     {
         Cull Front
         ZWrite Off
@@ -78,7 +78,7 @@ DeferredShading
         }
     }
 
-    HLVS vs
+    HLVS vs_light_dir
     {
         cbuffer cbuffer0 : register(b0)
         {
@@ -120,7 +120,7 @@ DeferredShading
         }
     }
 
-    HLPS ps
+    HLPS ps_light_dir
     {
         cbuffer cbuffer0 : register(b0)
         {
@@ -201,7 +201,7 @@ DeferredShading
         }
     }
 
-    HLVS vs_point_cull
+    HLVS vs_volume_cull
     {
         cbuffer cbuffer0 : register(b0)
         {
@@ -232,7 +232,7 @@ DeferredShading
         }
     }
 
-    HLPS ps_point_cull
+    HLPS ps_volume_cull
     {
         struct PS_INPUT
         {
@@ -245,7 +245,7 @@ DeferredShading
         }
     }
 
-    HLVS vs_point
+    HLVS vs_lighting
     {
         cbuffer cbuffer0 : register(b0)
         {
