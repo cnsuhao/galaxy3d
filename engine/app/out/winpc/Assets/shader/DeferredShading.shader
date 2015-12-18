@@ -26,6 +26,13 @@ DeferredShading
         RenderStates rs_point
     }
 
+    Pass 3
+    {
+        VS vs_point
+        PS ps_spot
+        RenderStates rs_point
+    }
+
     RenderStates rs
     {
         Cull Off
@@ -360,6 +367,85 @@ DeferredShading
 
             float len = length(dis);
             float intensity = min(1, 1 / (0.1 + len));
+
+            return float4(c * intensity, 1);
+        }
+    }
+
+    HLPS ps_spot
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 LightColor;
+        };
+
+        cbuffer cbuffer1 : register(b1)
+        {
+            matrix InvViewProjection;
+        };
+
+        Texture2D _MainTex : register(t0);
+        SamplerState _MainTex_Sampler : register(s0);
+        Texture2D _GBuffer1 : register(t1);
+        SamplerState _GBuffer1_Sampler : register(s1);
+        Texture2D _GBuffer2 : register(t2);
+        SamplerState _GBuffer2_Sampler : register(s2);
+        Texture2D _GBuffer3 : register(t3);
+        SamplerState _GBuffer3_Sampler : register(s3);
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float4 v_pos_proj : TEXCOORD0;
+            float3 v_light_pos_world : TEXCOORD1;
+            float3 v_eye_pos_world : TEXCOORD2;
+        };
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            float2 uv = 0;
+            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
+            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
+
+            float4 color = _MainTex.Sample(_MainTex_Sampler, uv);
+            float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
+            float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
+            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
+
+            float3 normal = 0;
+
+            // decode normal2 to normal3
+            if(length(normal_2) > 1)
+            {
+                normal = float3(0, 0, sign(normal_2.x));
+            }
+            else
+            {
+                float len = length(normal_2);
+                normal.z = len*len*2-1;
+                normal.xy = normalize(normal_2.xy)*sqrt(1-normal.z*normal.z);
+            }
+            //
+
+            // get world position from depth and uv
+            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
+            pos_world /= pos_world.w;
+            //
+
+            float3 eye_dir = normalize(input.v_eye_pos_world - pos_world);
+            float3 dis = input.v_light_pos_world - pos_world;
+            float3 light_dir = normalize(dis);
+
+            float diff = max(0, dot(normal, light_dir));
+            float3 h = normalize(light_dir + eye_dir);
+            float nh = max(0, dot(normal, h));
+            float spec = pow(nh, 128 * specular.x) * specular.y;
+
+            float3 c = diff * color * LightColor.rgb +
+                spec * LightColor.rgb;
+
+            float len = length(dis);
+            float intensity = 1;
 
             return float4(c * intensity, 1);
         }

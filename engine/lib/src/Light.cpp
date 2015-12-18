@@ -64,6 +64,13 @@ namespace Galaxy3D
             }
             else if(i->m_type == LightType::Spot)
             {
+                float scale_xy = i->m_range * tanf(i->m_spot_angle / 2 * Mathf::Deg2Rad);
+                auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
+                material->SetMatrix("WorldViewProjection", wvp);
+                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 1);
+
+                material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
+                material->SetColor("LightColor", i->m_color * i->m_intensity);
                 GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
             }
         }
