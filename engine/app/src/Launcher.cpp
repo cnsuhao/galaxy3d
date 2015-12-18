@@ -48,8 +48,8 @@ void Launcher::Start()
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
     cam3d->EnableDeferredShading(true);
 
-    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.1f;
-    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.4f;
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0;
+    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.2f;
     RenderSettings::light_directional_intensity = 1;
     RenderSettings::light_directional_rotation = Quaternion::Euler(50, 50, 0);
     
