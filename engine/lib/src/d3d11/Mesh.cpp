@@ -244,7 +244,48 @@ namespace Galaxy3D
 
     std::shared_ptr<Mesh> Mesh::CreateMeshCone()
     {
-        std::shared_ptr<Mesh> mesh;
+        auto mesh = Mesh::Create();
+
+        std::vector<VertexMesh> vertices;
+        std::vector<unsigned short> indices;
+
+        vertices.push_back({Vector3(0, 0, 0), Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(0, 0, 1), Vector3(), Vector4(), Vector2(), Vector2()});
+
+        int z_count = 64;
+        for(int i=0; i<z_count; i++)
+        {
+            float rot_z = 360.0f / z_count * i;
+            auto pos = Quaternion::Euler(0, 0, rot_z) * Vector3(0, 1, 1);
+
+            VertexMesh v;
+            v.POSITION = pos;
+            vertices.push_back(v);
+
+            if(i == z_count - 1)
+            {
+                indices.push_back(0);
+                indices.push_back(2 + 0);
+                indices.push_back(2 + i);
+
+                indices.push_back(1);
+                indices.push_back(2 + i);
+                indices.push_back(2 + 0);
+            }
+            else
+            {
+                indices.push_back(0);
+                indices.push_back(2 + i + 1);
+                indices.push_back(2 + i);
+
+                indices.push_back(1);
+                indices.push_back(2 + i);
+                indices.push_back(2 + i + 1);
+            }
+        }
+
+        mesh->SetVertices(vertices);
+        mesh->SetIndices(std::vector<std::vector<unsigned short>>(1, indices));
 
         return mesh;
     }
