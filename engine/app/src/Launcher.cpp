@@ -83,7 +83,7 @@ void Launcher::Start()
     light->SetSpotAngle(90);
     light->SetRange(100);
     //light->SetColor(Color(0, 1, 0, 1));
-    
+
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(10);

@@ -43,13 +43,13 @@ namespace Galaxy3D
         }
     }
 
-    void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material)
+    void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add)
     {
         auto camera = Camera::GetCurrent();
 
         material->SetVector("LightDirection", Vector4(light->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
         material->SetColor("LightColor", light->GetColor() * light->GetIntensity());
-        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, add ? 1 : 0);
     }
 
     void Light::DeferredShadingLights(std::shared_ptr<Material> &material)
@@ -61,7 +61,7 @@ namespace Galaxy3D
         FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
         // shading global directional light first with blend off
-        ShadingDirectionalLight(RenderSettings::GetGlobalDirectionalLight().get(), material);
+        ShadingDirectionalLight(RenderSettings::GetGlobalDirectionalLight().get(), material, false);
 
         // shading other lights with blend add
         for(auto i : m_lights)
@@ -77,11 +77,11 @@ namespace Galaxy3D
                 {
                     auto wvp = vp * Matrix4x4::TRS(pos, Quaternion::Identity(), Vector3(1, 1, 1) * radius);
                     material->SetMatrix("WorldViewProjection", wvp);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 1);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
 
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 3);
                 }
             }
             else if(i->m_type == LightType::Spot)
@@ -102,18 +102,18 @@ namespace Galaxy3D
                     float scale_xy = i->m_range * tg;
                     auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
                     material->SetMatrix("WorldViewProjection", wvp);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 1);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
 
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 4);
                 }
             }
             else if(i->m_type == LightType::Directional)
             {
                 if(i != RenderSettings::GetGlobalDirectionalLight().get())
                 {
-                    ShadingDirectionalLight(i, material);
+                    ShadingDirectionalLight(i, material, true);
                 }
             }
         }

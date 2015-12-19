@@ -208,7 +208,7 @@ namespace Galaxy3D
         {
             auto pass = shader->GetPass(i);
 
-            if(i == 0)
+            if(i == pass_begin)
             {
                 context->IASetInputLayout(pass->vs->input_layout);
                 UINT stride = pass->vs->vertex_stride;
