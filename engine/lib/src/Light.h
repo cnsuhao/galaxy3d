@@ -32,6 +32,8 @@ namespace Galaxy3D
         Color GetColor() const {return m_color;}
         void SetIntensity(float intensity) {m_intensity = intensity;}
         float GetIntensity() const {return m_intensity;}
+        void EnableShadow(bool enable) {m_shadow_enable = enable;}
+        bool IsShadowEnable() const {return m_shadow_enable;}
 
     private:
         static std::list<Light *> m_lights;
@@ -42,6 +44,7 @@ namespace Galaxy3D
         float m_range;
         Color m_color;
         float m_intensity;
+        bool m_shadow_enable;
 
         static void CreateVolumeMeshIfNeeded();
     };
