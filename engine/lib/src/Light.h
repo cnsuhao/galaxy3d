@@ -47,6 +47,7 @@ namespace Galaxy3D
         bool m_shadow_enable;
 
         static void CreateVolumeMeshIfNeeded();
+        static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material);
     };
 }
 
