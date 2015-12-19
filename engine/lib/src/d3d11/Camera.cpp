@@ -283,7 +283,7 @@ namespace Galaxy3D
             std::swap(m_image_effect_buffer, m_image_effect_buffer_back);
         }
 
-        if((effects.empty() && use_effect) || m_deferred_shading)
+        if(effects.empty() && (use_effect || m_deferred_shading))
         {
             std::shared_ptr<RenderTexture> dest;
             if(m_render_texture)
