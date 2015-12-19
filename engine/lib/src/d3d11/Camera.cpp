@@ -402,20 +402,6 @@ namespace Galaxy3D
         ImageEffectsDefault();
 	}
 
-    void Camera::DeferredShadingLightGlobalDirectional(std::shared_ptr<RenderTexture> &diffuse, std::shared_ptr<RenderTexture> &result)
-    {
-        m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
-        m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
-        m_deferred_shading_mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
-        m_deferred_shading_mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
-        m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
-        m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
-        m_deferred_shading_mat->SetTexture("_GBuffer3", m_g_buffer[2]);
-        m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
-
-        GraphicsDevice::GetInstance()->Blit(diffuse, result, m_deferred_shading_mat, 0);
-    }
-
     void Camera::DeferredShading()
     {
         std::shared_ptr<RenderTexture> front;
@@ -435,14 +421,20 @@ namespace Galaxy3D
         // swap diffuse buffer to back
         RenderTexture::SwapColorBuffer(front, back);
 
-        // shading to front buffer
+        // set target to front force
         front->MarkKeepBuffer(true);
-        DeferredShadingLightGlobalDirectional(back, front);
+        SetRenderTarget(front, true);
         front->MarkKeepBuffer(false);
 
         // now target is front, and diffuse is in back,
         // add all lights colors to front buffer
+        m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
         m_deferred_shading_mat->SetMainTexture(back);
+        m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
+        m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
+        m_deferred_shading_mat->SetTexture("_GBuffer3", m_g_buffer[2]);
+        m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
+        m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
         Light::DeferredShadingLights(m_deferred_shading_mat);
     }
 
@@ -472,8 +464,13 @@ namespace Galaxy3D
         context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     }
 
-    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture)
+    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force)
     {
+        if(!force && m_render_target_binding == render_texture)
+        {
+            return;
+        }
+
         int width = render_texture->GetWidth();
         int height = render_texture->GetHeight();
 
