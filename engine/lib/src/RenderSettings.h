@@ -4,6 +4,7 @@
 #include "Color.h"
 #include "Vector3.h"
 #include "Quaternion.h"
+#include "Light.h"
 
 namespace Galaxy3D
 {
@@ -11,9 +12,11 @@ namespace Galaxy3D
     {
     public:
         static Color light_ambient;
-        static Color light_directional_color;
-        static Quaternion light_directional_rotation;
-        static float light_directional_intensity;
+        static void SetGlobalDirectionalLight(std::shared_ptr<Light> &light) {m_light_directional = light;}
+        static std::shared_ptr<Light> GetGlobalDirectionalLight();
+
+    private:
+        static std::shared_ptr<Light> m_light_directional;
     };
 }
 

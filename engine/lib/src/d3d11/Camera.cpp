@@ -406,8 +406,8 @@ namespace Galaxy3D
     {
         m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
         m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
-        m_deferred_shading_mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
-        m_deferred_shading_mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+        m_deferred_shading_mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
+        m_deferred_shading_mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
         m_deferred_shading_mat->SetTexture("_GBuffer1", m_g_buffer[0]);
         m_deferred_shading_mat->SetTexture("_GBuffer2", m_g_buffer[1]);
         m_deferred_shading_mat->SetTexture("_GBuffer3", m_g_buffer[2]);

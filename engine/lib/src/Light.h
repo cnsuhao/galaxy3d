@@ -29,7 +29,9 @@ namespace Galaxy3D
         void SetSpotAngle(float angle) {m_spot_angle = angle;}
         void SetRange(float range);
         void SetColor(const Color &color) {m_color = color;}
+        Color GetColor() const {return m_color;}
         void SetIntensity(float intensity) {m_intensity = intensity;}
+        float GetIntensity() const {return m_intensity;}
 
     private:
         static std::list<Light *> m_lights;

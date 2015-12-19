@@ -53,8 +53,8 @@ namespace Galaxy3D
             mat->SetMatrix("World", GetTransform()->GetLocalToWorldMatrix());
             mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
             mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
-            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
-            mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+            mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
+            mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
 
             if(m_lightmap_index >= 0)
             {
@@ -151,8 +151,8 @@ namespace Galaxy3D
             mat->SetMatrix("World", Matrix4x4::Identity());
             mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
             mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
-            mat->SetVector("LightDirection", Vector4(RenderSettings::light_directional_rotation * Vector3(0, 0, 1)));
-            mat->SetColor("LightColor", RenderSettings::light_directional_color * RenderSettings::light_directional_intensity);
+            mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
+            mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
         }
 
         if(set_lightmap)
