@@ -171,7 +171,7 @@ namespace Galaxy3D
         CreateBlitMeshIfNeeded();
 
         auto cam = Camera::GetCurrent();
-        cam->SetRenderTarget(destination);
+        cam->SetRenderTarget(destination, false);
 
         std::shared_ptr<Material> mat;
         if(material)

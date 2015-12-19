@@ -44,7 +44,7 @@ namespace Galaxy3D
         void EnableDeferredShading(bool enable) {m_deferred_shading = enable;}
         bool IsDeferredShading() const {return m_deferred_shading;}
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
-        void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture);
+        void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force = true);
         std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
         std::shared_ptr<RenderTexture> GetDepthTexture() const;
 
@@ -96,7 +96,6 @@ namespace Galaxy3D
         void ImageEffectsDefault();
         void SetGBufferTarget(std::shared_ptr<RenderTexture> &render_texture);
         void DeferredShading();
-        void DeferredShadingLightGlobalDirectional(std::shared_ptr<RenderTexture> &diffuse, std::shared_ptr<RenderTexture> &result);
     };
 }
 
