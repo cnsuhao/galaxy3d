@@ -83,13 +83,13 @@ namespace Galaxy3D
                     material->SetMatrix("WorldViewProjection", wvp);
                     GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 1);
 
-                    material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
-                    material->SetColor("LightColor", i->m_color * i->m_intensity);
                     Vector3 spot_dir = (i->GetTransform()->GetRotation() * Vector3(0, 0, 1));
                     spot_dir.Normalize();
                     Vector4 spot_param = spot_dir;
                     spot_param.w = i->m_spot_angle * Mathf::Deg2Rad;
                     material->SetVector("SpotParam", spot_param);
+                    material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
+                    material->SetColor("LightColor", i->m_color * i->m_intensity);
                     GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
                 }
             }
