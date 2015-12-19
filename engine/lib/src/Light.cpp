@@ -43,6 +43,15 @@ namespace Galaxy3D
         }
     }
 
+    void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material)
+    {
+        auto camera = Camera::GetCurrent();
+
+        material->SetVector("LightDirection", Vector4(light->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
+        material->SetColor("LightColor", light->GetColor() * light->GetIntensity());
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
+    }
+
     void Light::DeferredShadingLights(std::shared_ptr<Material> &material)
     {
         CreateVolumeMeshIfNeeded();
@@ -51,8 +60,14 @@ namespace Galaxy3D
         auto vp = camera->GetViewProjectionMatrix();
         FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
+        // shading global directional light first with blend off
+        ShadingDirectionalLight(RenderSettings::GetGlobalDirectionalLight().get(), material);
+
+        // shading other lights with blend add
         for(auto i : m_lights)
         {
+            material->SetVector("LightRange", Vector4(i->m_range));
+
             if(i->m_type == LightType::Point)
             {
                 Vector3 pos = i->GetTransform()->GetPosition();
@@ -96,10 +111,10 @@ namespace Galaxy3D
             }
             else if(i->m_type == LightType::Directional)
             {
-                material->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
-                material->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
-                
-                GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
+                if(i != RenderSettings::GetGlobalDirectionalLight().get())
+                {
+                    ShadingDirectionalLight(i, material);
+                }
             }
         }
     }

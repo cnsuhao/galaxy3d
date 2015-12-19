@@ -305,6 +305,11 @@ DeferredShading
             matrix InvViewProjection;
         };
 
+        cbuffer cbuffer2 : register(b2)
+        {
+            float4 LightRange;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -365,8 +370,8 @@ DeferredShading
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
 
-            float len = length(dis);
-            float intensity = min(1, 1 / (0.1 + len));
+            float range = (LightRange.x - length(dis)) / LightRange.x;
+            float intensity = range * range;
 
             return float4(c * intensity, 1);
         }
@@ -389,6 +394,11 @@ DeferredShading
             float4 SpotParam;
         };
 
+        cbuffer cbuffer3 : register(b3)
+        {
+            float4 LightRange;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -449,8 +459,9 @@ DeferredShading
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
 
-            float len = length(dis);
-            float intensity = min(1, 1 / (0.1 + 0.1 * len));
+            float range = (LightRange.x - length(dis)) / LightRange.x;
+            float intensity = range * range;
+
             float rho = dot(SpotParam.xyz, -light_dir);
             float cos_phi = cos(SpotParam.w * 0.5);
             float cos_theta = cos(SpotParam.w * 0.5 * 0.7);

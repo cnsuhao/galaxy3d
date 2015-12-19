@@ -75,7 +75,7 @@ void Launcher::Start()
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
 
     RenderSettings::SetGlobalDirectionalLight(light);
-
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(4, 3, -5));
     light->GetTransform()->SetRotation(Quaternion::Euler(36, -46, 0));
@@ -83,7 +83,7 @@ void Launcher::Start()
     light->SetSpotAngle(90);
     light->SetRange(100);
     //light->SetColor(Color(0, 1, 0, 1));
-
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(10);
