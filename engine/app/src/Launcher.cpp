@@ -49,10 +49,7 @@ void Launcher::Start()
     cam3d->EnableDeferredShading(true);
 
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0;
-    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.2f;
-    RenderSettings::light_directional_intensity = 1;
-    RenderSettings::light_directional_rotation = Quaternion::Euler(50, 50, 0);
-    
+
     auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
     cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
     cube->GetTransform()->SetScale(Vector3(200, 2, 200));
@@ -70,6 +67,13 @@ void Launcher::Start()
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
+    light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
+    light->SetType(LightType::Directional);
+    light->SetColor(Color(1, 1, 1, 1) * 0.2f);
+
+    RenderSettings::SetGlobalDirectionalLight(light);
+
+    light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(4, 3, -5));
     light->GetTransform()->SetRotation(Quaternion::Euler(36, -46, 0));
     light->SetType(LightType::Spot);
