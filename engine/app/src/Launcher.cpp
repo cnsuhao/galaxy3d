@@ -44,7 +44,7 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 5, -12));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 10, -25));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
     cam3d->EnableDeferredShading(true);
 
@@ -55,7 +55,7 @@ void Launcher::Start()
     
     auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
     cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
-    cube->GetTransform()->SetScale(Vector3(10, 2, 10));
+    cube->GetTransform()->SetScale(Vector3(200, 2, 200));
 
     auto sphere = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Sphere.mesh");
     sphere->GetTransform()->SetPosition(Vector3(3, 1, 1));
@@ -69,7 +69,7 @@ void Launcher::Start()
     sphere->GetTransform()->SetPosition(Vector3(-3, 1, -3));
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
 
-    auto light = GameObject::Create("spot light")->AddComponent<Light>();
+    auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(4, 3, -5));
     light->GetTransform()->SetRotation(Quaternion::Euler(36, -46, 0));
     light->SetType(LightType::Spot);
@@ -77,10 +77,13 @@ void Launcher::Start()
     light->SetRange(100);
     light->SetColor(Color(0, 1, 0, 1));
 
-    light = GameObject::Create("spot light")->AddComponent<Light>();
+    light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(30);
     light->SetColor(Color(1, 0, 0, 1));
+
+    light = GameObject::Create("light")->AddComponent<Light>();
+    light->GetTransform()->SetPosition(Vector3(2, 2, -35));
 #endif
 
 #if DEMO_SCENE

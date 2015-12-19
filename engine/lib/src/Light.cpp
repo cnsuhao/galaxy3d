@@ -49,18 +49,24 @@ namespace Galaxy3D
 
         auto camera = Camera::GetCurrent();
         auto vp = camera->GetViewProjectionMatrix();
+        FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
         for(auto i : m_lights)
         {
             if(i->m_type == LightType::Point)
             {
-                auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), Quaternion::Identity(), Vector3(1, 1, 1) * i->m_range);
-                material->SetMatrix("WorldViewProjection", wvp);
-                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 1);
-                
-                material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
-                material->SetColor("LightColor", i->m_color * i->m_intensity);
-                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
+                Vector3 pos = i->GetTransform()->GetPosition();
+                float radius = i->m_range;
+                if(frustum.ContainsSphere(pos, radius) != ContainsResult::Out)
+                {
+                    auto wvp = vp * Matrix4x4::TRS(pos, Quaternion::Identity(), Vector3(1, 1, 1) * radius);
+                    material->SetMatrix("WorldViewProjection", wvp);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 1);
+
+                    material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
+                    material->SetColor("LightColor", i->m_color * i->m_intensity);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
+                }
             }
             else if(i->m_type == LightType::Spot)
             {

@@ -73,6 +73,8 @@ namespace Galaxy3D
 
 	int FrustumBounds::ContainsSphere(const Vector3 &center, float radius) const
 	{
+        bool all_in = true;
+
 		for(int i=0; i<6; i++)
 		{
 			float distance = m_frustum_planes[i].x * center.x + m_frustum_planes[i].y * center.y + m_frustum_planes[i].z * center.z + m_frustum_planes[i].w;
@@ -80,12 +82,17 @@ namespace Galaxy3D
 			{
 				return ContainsResult::Out;
 			}
-
-			if(fabs(distance) < radius)
-			{
-				return ContainsResult::Cross;
-			}
+            
+            if(fabs(distance) < radius)
+            {
+                all_in = false;
+            }
 		}
+
+        if(!all_in)
+        {
+            return ContainsResult::Cross;
+        }
 
 		return ContainsResult::In;
 	}
