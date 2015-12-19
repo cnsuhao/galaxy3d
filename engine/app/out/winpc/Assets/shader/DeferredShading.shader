@@ -14,19 +14,26 @@ DeferredShading
 
     Pass 1
     {
+        VS vs_light_dir
+        PS ps_light_dir
+        RenderStates rs_light_dir_add
+    }
+
+    Pass 2
+    {
         VS vs_volume_cull
         PS ps_volume_cull
         RenderStates rs_volume_cull
     }
 
-    Pass 2
+    Pass 3
     {
         VS vs_lighting
         PS ps_point
         RenderStates rs_lighting
     }
 
-    Pass 3
+    Pass 4
     {
         VS vs_lighting
         PS ps_spot
@@ -39,6 +46,14 @@ DeferredShading
         ZWrite Off
         ZTest Always
         Blend Off
+    }
+
+    RenderStates rs_light_dir_add
+    {
+        Cull Off
+        ZWrite Off
+        ZTest Always
+        Blend One, One
     }
 
     RenderStates rs_volume_cull
