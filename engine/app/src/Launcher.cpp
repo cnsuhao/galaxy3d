@@ -81,9 +81,6 @@ void Launcher::Start()
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(30);
     light->SetColor(Color(1, 0, 0, 1));
-
-    light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetPosition(Vector3(2, 2, -35));
 #endif
 
 #if DEMO_SCENE

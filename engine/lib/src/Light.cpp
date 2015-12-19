@@ -57,6 +57,7 @@ namespace Galaxy3D
             {
                 Vector3 pos = i->GetTransform()->GetPosition();
                 float radius = i->m_range;
+
                 if(frustum.ContainsSphere(pos, radius) != ContainsResult::Out)
                 {
                     auto wvp = vp * Matrix4x4::TRS(pos, Quaternion::Identity(), Vector3(1, 1, 1) * radius);
@@ -70,19 +71,27 @@ namespace Galaxy3D
             }
             else if(i->m_type == LightType::Spot)
             {
-                float scale_xy = i->m_range * tanf(i->m_spot_angle / 2 * Mathf::Deg2Rad);
-                auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
-                material->SetMatrix("WorldViewProjection", wvp);
-                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 1);
+                // 使用圆锥的外接球进行视锥剔除
+                float tg = tanf(i->m_spot_angle * 0.5f * Mathf::Deg2Rad);
+                float radius = i->m_range * 0.5f * (1 + tg * tg);
+                Vector3 pos = i->GetTransform()->GetRotation() * (i->GetTransform()->GetPosition() + Vector3(0, 0, radius));
 
-                material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
-                material->SetColor("LightColor", i->m_color * i->m_intensity);
-                Vector3 spot_dir = (i->GetTransform()->GetRotation() * Vector3(0, 0, 1));
-                spot_dir.Normalize();
-                Vector4 spot_param = spot_dir;
-                spot_param.w = i->m_spot_angle * Mathf::Deg2Rad;
-                material->SetVector("SpotParam", spot_param);
-                GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
+                if(frustum.ContainsSphere(pos, radius) != ContainsResult::Out)
+                {
+                    float scale_xy = i->m_range * tg;
+                    auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
+                    material->SetMatrix("WorldViewProjection", wvp);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 1);
+
+                    material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
+                    material->SetColor("LightColor", i->m_color * i->m_intensity);
+                    Vector3 spot_dir = (i->GetTransform()->GetRotation() * Vector3(0, 0, 1));
+                    spot_dir.Normalize();
+                    Vector4 spot_param = spot_dir;
+                    spot_param.w = i->m_spot_angle * Mathf::Deg2Rad;
+                    material->SetVector("SpotParam", spot_param);
+                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 3);
+                }
             }
         }
     }
