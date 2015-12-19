@@ -11,6 +11,7 @@ namespace Galaxy3D
         enum Enum
         {
             Point,
+            Directional,
             Spot,
         };
     };
