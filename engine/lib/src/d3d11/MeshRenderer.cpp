@@ -83,6 +83,8 @@ namespace Galaxy3D
                 {
                     if(pass->name == "depth")
                     {
+                        wvp = shadow_light->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
+                        mat->SetMatrix("WorldViewProjection", wvp);
                         right_pass = true;
                     }
                 }
