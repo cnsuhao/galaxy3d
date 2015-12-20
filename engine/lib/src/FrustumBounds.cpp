@@ -57,11 +57,19 @@ namespace Galaxy3D
 		}
 	}
 
+    float FrustumBounds::TestPlane(const Vector3 &point, int plane_index) const
+    {
+        Vector4 p(point);
+        p.w = 1;
+
+        return Vector4::Dot(m_frustum_planes[plane_index], p);
+    }
+
 	bool FrustumBounds::ContainsPoint(const Vector3 &point) const
 	{
 		for(int i=0; i<6; i++)
 		{
-			float distance = m_frustum_planes[i].x * point.x + m_frustum_planes[i].y * point.y + m_frustum_planes[i].z * point.z + m_frustum_planes[i].w;
+			float distance = TestPlane(point, i);
 			if(distance < 0)
 			{
 				return false;
@@ -77,7 +85,7 @@ namespace Galaxy3D
 
 		for(int i=0; i<6; i++)
 		{
-			float distance = m_frustum_planes[i].x * center.x + m_frustum_planes[i].y * center.y + m_frustum_planes[i].z * center.z + m_frustum_planes[i].w;
+            float distance = TestPlane(center, i);
 			if(distance < -radius)
 			{
 				return ContainsResult::Out;
@@ -117,8 +125,7 @@ namespace Galaxy3D
 
             for(int j=0; j<8; j++)
             {
-                Vector3 point = corners[j];
-                float distance = m_frustum_planes[i].x * point.x + m_frustum_planes[i].y * point.y + m_frustum_planes[i].z * point.z + m_frustum_planes[i].w;
+                float distance = TestPlane(corners[j], i);
                 if(distance >= 0)
                 {
                     in_count++;

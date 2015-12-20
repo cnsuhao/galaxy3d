@@ -360,7 +360,10 @@ namespace Galaxy3D
             {
                 RenderSettings::SetLightRenderingShadowMap(std::dynamic_pointer_cast<Light>(i->GetComponentPtr()));
 
+                // set target to shadow map,
+                // build light matrix
                 i->PrepareForRenderShadowMap();
+
                 Renderer::RenderOpaqueGeometry();
 
                 RenderSettings::SetLightRenderingShadowMap(std::shared_ptr<Light>());
@@ -534,16 +537,19 @@ namespace Galaxy3D
 
         if(m_clear_flags == CameraClearFlags::SolidColor)
         {
-            context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
+            if(color_buffer != NULL)
+            {
+                context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
+            }
 
-            if(depth_buffer != 0)
+            if(depth_buffer != NULL)
             {
                 context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
             }
         }
         else if(m_clear_flags == CameraClearFlags::Depth)
         {
-            if(depth_buffer != 0)
+            if(depth_buffer != NULL)
             {
                 context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
             }

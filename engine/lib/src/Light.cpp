@@ -47,6 +47,9 @@ namespace Galaxy3D
     void Light::PrepareForRenderShadowMap()
     {
         auto shadow_map = GetShadowMap();
+        auto camera = Camera::GetCurrent();
+
+        camera->SetRenderTarget(shadow_map);
     }
 
     void Light::CreateVolumeMeshIfNeeded()
@@ -114,13 +117,23 @@ namespace Galaxy3D
 
                 if(frustum.ContainsSphere(pos, radius) != ContainsResult::Out)
                 {
-                    auto wvp = vp * Matrix4x4::TRS(pos, Quaternion::Identity(), Vector3(1, 1, 1) * radius);
-                    material->SetMatrix("WorldViewProjection", wvp);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
-
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 3);
+
+                    float distance = frustum.TestPlane(pos, 5);
+                    if(fabs(distance) < radius)
+                    {
+                        // bound sphere cross with far plane, stencil test will get error result
+                        // so draw full screen quad like directional light
+                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 5);
+                    }
+                    else
+                    {
+                        auto wvp = vp * Matrix4x4::TRS(pos, Quaternion::Identity(), Vector3(1, 1, 1) * radius);
+                        material->SetMatrix("WorldViewProjection", wvp);
+                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 2);
+                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_sphere, 0, material, 3);
+                    }
                 }
             }
             else if(i->m_type == LightType::Spot)
@@ -137,15 +150,24 @@ namespace Galaxy3D
                     Vector4 spot_param = spot_dir;
                     spot_param.w = i->m_spot_angle * Mathf::Deg2Rad;
                     material->SetVector("SpotParam", spot_param);
-
-                    float scale_xy = i->m_range * tg;
-                    auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
-                    material->SetMatrix("WorldViewProjection", wvp);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
-
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
-                    GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 4);
+
+                    float distance = frustum.TestPlane(pos, 5);
+                    if(fabs(distance) < radius)
+                    {
+                        // bound sphere cross with far plane, stencil test will get error result
+                        // so draw full screen quad like directional light
+                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 6);
+                    }
+                    else
+                    {
+                        float scale_xy = i->m_range * tg;
+                        auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
+                        material->SetMatrix("WorldViewProjection", wvp);
+                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
+                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 4);
+                    }
                 }
             }
             else if(i->m_type == LightType::Directional)

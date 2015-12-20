@@ -7,40 +7,54 @@ DeferredShading
 
     Pass 0
     {
-        VS vs_light_dir
+        VS vs_light_quad
         PS ps_light_dir
-        RenderStates rs_light_dir
+        RenderStates rs_light_quad
     }
 
     Pass 1
     {
-        VS vs_light_dir
+        VS vs_light_quad
         PS ps_light_dir
-        RenderStates rs_light_dir_add
+        RenderStates rs_light_quad_add
     }
 
     Pass 2
     {
-        VS vs_volume_cull
-        PS ps_volume_cull
-        RenderStates rs_volume_cull
+        VS vs_light_volume_cull
+        PS ps_light_volume_cull
+        RenderStates rs_light_volume_cull
     }
 
     Pass 3
     {
-        VS vs_lighting
-        PS ps_point
-        RenderStates rs_lighting
+        VS vs_light_volume
+        PS ps_light_point
+        RenderStates rs_light_volume
     }
 
     Pass 4
     {
-        VS vs_lighting
-        PS ps_spot
-        RenderStates rs_lighting
+        VS vs_light_volume
+        PS ps_light_spot
+        RenderStates rs_light_volume
     }
 
-    RenderStates rs_light_dir
+    Pass 5
+    {
+        VS vs_light_quad
+        PS ps_light_point
+        RenderStates rs_light_quad_add
+    }
+
+    Pass 6
+    {
+        VS vs_light_quad
+        PS ps_light_spot
+        RenderStates rs_light_quad_add
+    }
+
+    RenderStates rs_light_quad
     {
         Cull Off
         ZWrite Off
@@ -48,7 +62,7 @@ DeferredShading
         Blend Off
     }
 
-    RenderStates rs_light_dir_add
+    RenderStates rs_light_quad_add
     {
         Cull Off
         ZWrite Off
@@ -56,7 +70,7 @@ DeferredShading
         Blend One, One
     }
 
-    RenderStates rs_volume_cull
+    RenderStates rs_light_volume_cull
     {
         Cull Back
         ZWrite Off
@@ -75,7 +89,7 @@ DeferredShading
         }
     }
 
-    RenderStates rs_lighting
+    RenderStates rs_light_volume
     {
         Cull Front
         ZWrite Off
@@ -93,18 +107,8 @@ DeferredShading
         }
     }
 
-    HLVS vs_light_dir
+    HLVS vs_light_quad
     {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 LightDirection;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            float4 EyePosition;
-        };
-
         struct VS_INPUT
         {
             float4 Position : POSITION;
@@ -117,9 +121,7 @@ DeferredShading
         struct PS_INPUT
         {
             float4 v_pos : SV_POSITION;
-            float2 v_uv : TEXCOORD0;
-            float3 v_light_dir_world : TEXCOORD1;
-            float3 v_eye_pos_world : TEXCOORD2;
+            float4 v_pos_proj : TEXCOORD0;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -127,9 +129,8 @@ DeferredShading
             PS_INPUT output = (PS_INPUT) 0;
 
             output.v_pos = input.Position;
-            output.v_uv = input.Texcoord0;
-            output.v_light_dir_world = -LightDirection.xyz;
-            output.v_eye_pos_world = EyePosition.xyz;
+            output.v_pos_proj = output.v_pos;
+            output.v_pos_proj.w = 1;
 
             return output;
         }
@@ -149,6 +150,16 @@ DeferredShading
 
         cbuffer cbuffer2 : register(b2)
         {
+            float4 LightDirection;
+        };
+
+        cbuffer cbuffer3 : register(b3)
+        {
+            float4 EyePosition;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
             matrix InvViewProjection;
         };
 
@@ -164,17 +175,19 @@ DeferredShading
         struct PS_INPUT
         {
             float4 v_pos : SV_POSITION;
-            float2 v_uv : TEXCOORD0;
-            float3 v_light_dir_world : TEXCOORD1;
-            float3 v_eye_pos_world : TEXCOORD2;
+            float4 v_pos_proj : TEXCOORD0;
         };
 
         float4 main(PS_INPUT input) : SV_Target
         {
-            float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
-            float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, input.v_uv).rg;
-            float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, input.v_uv).zw;
-            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, input.v_uv).r;
+            float2 uv = 0;
+            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
+            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
+
+            float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
+            float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
+            float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
+            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
 
             float3 normal = 0;
 
@@ -191,17 +204,13 @@ DeferredShading
             }
             //
 
-            // get world position from depth and uv
-            float x = input.v_uv.x * 2 - 1;
-            float y = (1 - input.v_uv.y) * 2 - 1;
-            float z = depth;
-
-            float4 pos_world = mul(float4(x, y, z, 1), InvViewProjection);
+            // get world position from depth and pos proj
+            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
             pos_world /= pos_world.w;
             //
 
-            float3 eye_dir = normalize(input.v_eye_pos_world - pos_world.xyz);
-            float3 light_dir = normalize(input.v_light_dir_world);
+            float3 eye_dir = normalize(EyePosition - pos_world.xyz);
+            float3 light_dir = normalize(-LightDirection);
 
             float diff = max(0, dot(normal, light_dir));
             float3 h = normalize(light_dir + eye_dir);
@@ -216,7 +225,7 @@ DeferredShading
         }
     }
 
-    HLVS vs_volume_cull
+    HLVS vs_light_volume_cull
     {
         cbuffer cbuffer0 : register(b0)
         {
@@ -247,7 +256,7 @@ DeferredShading
         }
     }
 
-    HLPS ps_volume_cull
+    HLPS ps_light_volume_cull
     {
         struct PS_INPUT
         {
@@ -260,21 +269,11 @@ DeferredShading
         }
     }
 
-    HLVS vs_lighting
+    HLVS vs_light_volume
     {
         cbuffer cbuffer0 : register(b0)
         {
             matrix WorldViewProjection;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            float4 EyePosition;
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
-            float4 LightPositon;
         };
 
         struct VS_INPUT
@@ -290,8 +289,6 @@ DeferredShading
         {
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
-            float3 v_light_pos_world : TEXCOORD1;
-            float3 v_eye_pos_world : TEXCOORD2;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -299,30 +296,37 @@ DeferredShading
             PS_INPUT output = (PS_INPUT) 0;
 
             output.v_pos = mul(input.Position, WorldViewProjection);
-
             output.v_pos_proj = output.v_pos;
-            output.v_light_pos_world = LightPositon.xyz;
-            output.v_eye_pos_world = EyePosition.xyz;
 
             return output;
         }
     }
 
-    HLPS ps_point
+    HLPS ps_light_point
     {
         cbuffer cbuffer0 : register(b0)
-        {
-            float4 LightColor;
-        };
-
-        cbuffer cbuffer1 : register(b1)
         {
             matrix InvViewProjection;
         };
 
+        cbuffer cbuffer1 : register(b1)
+        {
+            float4 EyePosition;
+        };
+
         cbuffer cbuffer2 : register(b2)
         {
+            float4 LightColor;
+        };
+
+        cbuffer cbuffer3 : register(b3)
+        {
             float4 LightRange;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
+            float4 LightPositon;
         };
 
         Texture2D _MainTex : register(t0);
@@ -338,8 +342,6 @@ DeferredShading
         {
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
-            float3 v_light_pos_world : TEXCOORD1;
-            float3 v_eye_pos_world : TEXCOORD2;
         };
 
         float4 main(PS_INPUT input) : SV_Target
@@ -368,13 +370,13 @@ DeferredShading
             }
             //
 
-            // get world position from depth and uv
+            // get world position from depth and pos proj
             float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
             pos_world /= pos_world.w;
             //
 
-            float3 eye_dir = normalize(input.v_eye_pos_world - pos_world);
-            float3 dis = input.v_light_pos_world - pos_world;
+            float3 eye_dir = normalize(EyePosition - pos_world);
+            float3 dis = LightPositon - pos_world;
             float3 light_dir = normalize(dis);
 
             float diff = max(0, dot(normal, light_dir));
@@ -392,26 +394,36 @@ DeferredShading
         }
     }
 
-    HLPS ps_spot
+    HLPS ps_light_spot
     {
         cbuffer cbuffer0 : register(b0)
-        {
-            float4 LightColor;
-        };
-
-        cbuffer cbuffer1 : register(b1)
         {
             matrix InvViewProjection;
         };
 
+        cbuffer cbuffer1 : register(b1)
+        {
+            float4 EyePosition;
+        };
+
         cbuffer cbuffer2 : register(b2)
         {
-            float4 SpotParam;
+            float4 LightColor;
         };
 
         cbuffer cbuffer3 : register(b3)
         {
             float4 LightRange;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
+            float4 LightPositon;
+        };
+
+        cbuffer cbuffer5 : register(b5)
+        {
+            float4 SpotParam;
         };
 
         Texture2D _MainTex : register(t0);
@@ -427,8 +439,6 @@ DeferredShading
         {
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
-            float3 v_light_pos_world : TEXCOORD1;
-            float3 v_eye_pos_world : TEXCOORD2;
         };
 
         float4 main(PS_INPUT input) : SV_Target
@@ -457,13 +467,13 @@ DeferredShading
             }
             //
 
-            // get world position from depth and uv
+            // get world position from depth and pos proj
             float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
             pos_world /= pos_world.w;
             //
 
-            float3 eye_dir = normalize(input.v_eye_pos_world - pos_world);
-            float3 dis = input.v_light_pos_world - pos_world;
+            float3 eye_dir = normalize(EyePosition - pos_world);
+            float3 dis = LightPositon - pos_world;
             float3 light_dir = normalize(dis);
 
             float diff = max(0, dot(normal, light_dir));
