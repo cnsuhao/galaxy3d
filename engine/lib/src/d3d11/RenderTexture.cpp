@@ -131,16 +131,22 @@ namespace Galaxy3D
             texture->Release();
         }
 
-        if(m_format != RenderTextureFormat::Depth && m_depth != DepthBuffer::Depth_0)
+        if(m_format == RenderTextureFormat::Depth || m_depth != DepthBuffer::Depth_0)
         {
             DXGI_FORMAT fmt;
+            DXGI_FORMAT fmt_dsv;
+            DXGI_FORMAT fmt_srv;
             if(m_depth == DepthBuffer::Depth_16)
             {
-                fmt = DXGI_FORMAT_D16_UNORM;
+                fmt = DXGI_FORMAT_R16_TYPELESS;
+                fmt_dsv = DXGI_FORMAT_D16_UNORM;
+                fmt_srv = DXGI_FORMAT_R16_UNORM;
             }
-            else if(m_depth == DepthBuffer::Depth_24)
+            else if(m_depth == DepthBuffer::Depth_24 || m_format == RenderTextureFormat::Depth)
             {
                 fmt = DXGI_FORMAT_R24G8_TYPELESS;
+                fmt_dsv = DXGI_FORMAT_D24_UNORM_S8_UINT;
+                fmt_srv = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
             }
 
             D3D11_TEXTURE2D_DESC td =
@@ -162,13 +168,13 @@ namespace Galaxy3D
 
             D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
             ZeroMemory(&dsvd, sizeof(dsvd));
-            dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+            dsvd.Format = fmt_dsv;
             dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
             device->CreateDepthStencilView(depth_texture, &dsvd, &m_depth_stencil_view);
 
             D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
             ZeroMemory(&srvd, sizeof(srvd));
-            srvd.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+            srvd.Format = fmt_srv;
             srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             srvd.Texture2D.MipLevels = 1;
             device->CreateShaderResourceView(depth_texture, &srvd, &m_shader_resource_view_depth);

@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "GameObject.h"
 #include "Camera.h"
-#include "LayerMask.h"
 #include "Octree.h"
 #include "FrustumBounds.h"
 #include "Debug.h"
@@ -261,7 +260,7 @@ namespace Galaxy3D
 
                 if(	obj->IsActiveInHierarchy() &&
                     renderer->IsEnable() &&
-                    ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+                    !camera->IsCulling(obj))
                 {
                     auto bounds = renderer->GetBounds();
                     contains = frustum.ContainsBounds(bounds.center, bounds.extents);
@@ -304,7 +303,7 @@ namespace Galaxy3D
 
             if( obj->IsActiveInHierarchy() &&
                 i->renderer->IsEnable() &&
-                ((camera->GetCullingMask() & LayerMask::GetMask(obj->GetLayer())) != 0))
+                !camera->IsCulling(obj))
             {
                 if(i->renderer->GetSharedMaterials()[i->material_index]->GetRenderQueue() <= TRANSPARENT_ORDER_MIN)
                 {

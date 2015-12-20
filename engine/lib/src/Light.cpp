@@ -15,7 +15,8 @@ namespace Galaxy3D
         m_spot_angle(30),
         m_range(10),
         m_color(1, 1, 1, 1),
-        m_intensity(1)
+        m_intensity(1),
+        m_shadow_enable(false)
     {
         m_lights.push_back(this);
     }
@@ -30,6 +31,24 @@ namespace Galaxy3D
         m_range = range;
     }
 
+    std::shared_ptr<RenderTexture> Light::GetShadowMap()
+    {
+        if(m_shadow_enable)
+        {
+            if(!m_shadow_map)
+            {
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Bilinear);
+            }
+        }
+
+        return m_shadow_map;
+    }
+
+    void Light::PrepareForRenderShadowMap()
+    {
+        auto shadow_map = GetShadowMap();
+    }
+
     void Light::CreateVolumeMeshIfNeeded()
     {
         if(!m_volume_sphere)
@@ -41,6 +60,21 @@ namespace Galaxy3D
         {
             m_volume_cone = Mesh::CreateMeshCone();
         }
+    }
+
+    std::list<Light *> Light::GetLightsHasShadow()
+    {
+        std::list<Light *> lights;
+
+        for(auto i : m_lights)
+        {
+            if(i->m_shadow_enable)
+            {
+                lights.push_back(i);
+            }
+        }
+
+        return lights;
     }
 
     void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add)
@@ -66,6 +100,11 @@ namespace Galaxy3D
         // shading other lights with blend add
         for(auto i : m_lights)
         {
+            if(camera->IsCulling(i->GetGameObject()))
+            {
+                continue;
+            }
+
             material->SetVector("LightRange", Vector4(i->m_range));
 
             if(i->m_type == LightType::Point)

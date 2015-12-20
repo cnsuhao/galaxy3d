@@ -5,6 +5,7 @@ namespace Galaxy3D
 {
     Color RenderSettings::light_ambient(0, 0, 0, 0);
     std::shared_ptr<Light> RenderSettings::m_light_directional;
+    std::shared_ptr<Light> RenderSettings::m_light_rendering_shadow_map;
 
     std::shared_ptr<Light> RenderSettings::GetGlobalDirectionalLight()
     {

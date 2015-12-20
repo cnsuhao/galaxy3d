@@ -73,6 +73,7 @@ void Launcher::Start()
     light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
+    light->EnableShadow(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
     

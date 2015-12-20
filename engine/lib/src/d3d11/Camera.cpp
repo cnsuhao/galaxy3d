@@ -9,6 +9,7 @@
 #include "ImageEffectToneMapping.h"
 #include "RenderSettings.h"
 #include "Light.h"
+#include "LayerMask.h"
 
 namespace Galaxy3D
 {
@@ -328,7 +329,11 @@ namespace Galaxy3D
             if(obj->IsActiveInHierarchy() && i->IsEnable())
             {
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
+
+                Renderer::Prepare();
+                i->RenderShadowMaps();
                 i->Render();
+
                 m_current.reset();
             }
         }
@@ -339,6 +344,29 @@ namespace Galaxy3D
 
 		UpdateTime();
 	}
+
+    bool Camera::IsCulling(std::shared_ptr<GameObject> &obj) const
+    {
+        return (m_culling_mask & LayerMask::GetMask(obj->GetLayer())) == 0;
+    }
+
+    void Camera::RenderShadowMaps()
+    {
+        auto shadow_lights = Light::GetLightsHasShadow();
+
+        for(auto i : shadow_lights)
+        {
+            if(!IsCulling(i->GetGameObject()))
+            {
+                RenderSettings::SetLightRenderingShadowMap(std::dynamic_pointer_cast<Light>(i->GetComponentPtr()));
+
+                i->PrepareForRenderShadowMap();
+                Renderer::RenderOpaqueGeometry();
+
+                RenderSettings::SetLightRenderingShadowMap(std::shared_ptr<Light>());
+            }
+        }
+    }
 
 	void Camera::Render()
 	{
@@ -389,7 +417,6 @@ namespace Galaxy3D
             SetRenderTarget(render_target);
         }
 		
-        Renderer::Prepare();
         Renderer::RenderOpaqueGeometry();
 
         if(m_deferred_shading)
