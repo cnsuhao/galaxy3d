@@ -19,6 +19,12 @@ Diffuse
         RenderStates rs
     }
 
+    Pass depth
+    {
+        VS vs_depth
+        RenderStates rs
+    }
+
 	RenderStates rs
 	{
         Cull Back
@@ -267,6 +273,37 @@ Diffuse
             output.o_specular.z = specular_power;
             output.o_specular.w = specular_intensity;
             output.o_depth.r = input.v_pos_proj.z / input.v_pos_proj.w;
+
+            return output;
+        }
+    }
+
+    HLVS vs_depth
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix WorldViewProjection;
+        };
+
+        struct VS_INPUT
+        {
+            float4 Position : POSITION;
+            float3 Normal : NORMAL;
+            float4 Tangent : TANGENT;
+            float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord1 : TEXCOORD1;
+        };
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+        };
+
+        PS_INPUT main(VS_INPUT input)
+        {
+            PS_INPUT output = (PS_INPUT) 0;
+
+            output.v_pos = mul(input.Position, WorldViewProjection);
 
             return output;
         }

@@ -135,11 +135,14 @@ namespace Galaxy3D
 			context->UpdateSubresource(find->second.buffer, 0, NULL, data, size, 0);
 		}
 
-		find = pass->ps->cbuffers.find(name);
-		if(find != pass->ps->cbuffers.end())
-		{
-			context->UpdateSubresource(find->second.buffer, 0, NULL, data, size, 0);
-		}
+        if(pass->ps != NULL)
+        {
+            find = pass->ps->cbuffers.find(name);
+            if(find != pass->ps->cbuffers.end())
+            {
+                context->UpdateSubresource(find->second.buffer, 0, NULL, data, size, 0);
+            }
+        }
 	}
 
     void Material::SetVectorDirectlyVS(const std::string &name, const Vector4 &vector, int pass)
@@ -177,20 +180,23 @@ namespace Galaxy3D
         auto shader_pass = m_shader->GetPass(pass);
         auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 
-        auto find = shader_pass->ps->textures.find(name);
-        if(find != shader_pass->ps->textures.end())
+        if(shader_pass->ps != NULL)
         {
-            auto tex = std::dynamic_pointer_cast<Texture2D>(texture);
-            if(tex)
+            auto find = shader_pass->ps->textures.find(name);
+            if(find != shader_pass->ps->textures.end())
             {
-                find->second.texture = tex->GetTexture();
-                context->PSSetShaderResources(find->second.slot, 1, &find->second.texture);
-
-                auto find_sampler = shader_pass->ps->samplers.find(name + "_Sampler");
-                if(find_sampler != shader_pass->ps->samplers.end())
+                auto tex = std::dynamic_pointer_cast<Texture2D>(texture);
+                if(tex)
                 {
-                    find_sampler->second.sampler = tex->GetSampler();
-                    context->PSSetSamplers(find_sampler->second.slot, 1, &find_sampler->second.sampler);
+                    find->second.texture = tex->GetTexture();
+                    context->PSSetShaderResources(find->second.slot, 1, &find->second.texture);
+
+                    auto find_sampler = shader_pass->ps->samplers.find(name + "_Sampler");
+                    if(find_sampler != shader_pass->ps->samplers.end())
+                    {
+                        find_sampler->second.sampler = tex->GetSampler();
+                        context->PSSetSamplers(find_sampler->second.slot, 1, &find_sampler->second.sampler);
+                    }
                 }
             }
         }
@@ -243,6 +249,11 @@ namespace Galaxy3D
 
 		for(auto &i: m_textures)
 		{
+            if(shader_pass->ps == NULL)
+            {
+                continue;
+            }
+
 			auto find = shader_pass->ps->textures.find(i.first);
 			if(find != shader_pass->ps->textures.end())
 			{
@@ -286,43 +297,53 @@ namespace Galaxy3D
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 
 		context->VSSetShader(shader_pass->vs->shader, NULL, 0);
-		context->PSSetShader(shader_pass->ps->shader, NULL, 0);
+        if(shader_pass->ps != NULL)
+        {
+            context->PSSetShader(shader_pass->ps->shader, NULL, 0);
+        }
+        else
+        {
+            context->PSSetShader(NULL, NULL, 0);
+        }
 
 		for(auto &i : shader_pass->vs->cbuffers)
 		{
 			context->VSSetConstantBuffers(i.second.slot, 1, &i.second.buffer);
 		}
 
-		for(auto &i : shader_pass->ps->cbuffers)
-		{
-			context->PSSetConstantBuffers(i.second.slot, 1, &i.second.buffer);
-		}
+        if(shader_pass->ps != NULL)
+        {
+            for(auto &i : shader_pass->ps->cbuffers)
+            {
+                context->PSSetConstantBuffers(i.second.slot, 1, &i.second.buffer);
+            }
 
-		for(auto &i : shader_pass->ps->textures)
-		{
-            if(i.second.texture == NULL)
+            for(auto &i : shader_pass->ps->textures)
             {
-                auto texture = Texture2D::GetDefaultTexture()->GetTexture();
-                context->PSSetShaderResources(i.second.slot, 1, &texture);
+                if(i.second.texture == NULL)
+                {
+                    auto texture = Texture2D::GetDefaultTexture()->GetTexture();
+                    context->PSSetShaderResources(i.second.slot, 1, &texture);
+                }
+                else
+                {
+                    context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
+                }
             }
-            else
-            {
-                context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
-            }
-		}
 
-		for(auto &i : shader_pass->ps->samplers)
-		{
-            if(i.second.sampler == NULL)
+            for(auto &i : shader_pass->ps->samplers)
             {
-                auto sampler = Texture2D::GetDefaultTexture()->GetSampler();
-                context->PSSetSamplers(i.second.slot, 1, &sampler);
+                if(i.second.sampler == NULL)
+                {
+                    auto sampler = Texture2D::GetDefaultTexture()->GetSampler();
+                    context->PSSetSamplers(i.second.slot, 1, &sampler);
+                }
+                else
+                {
+                    context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
+                }
             }
-            else
-            {
-                context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
-            }
-		}
+        }
 	}
 
     void Material::SetZBufferParams(std::shared_ptr<Camera> &cam)

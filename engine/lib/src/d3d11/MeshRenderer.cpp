@@ -62,6 +62,8 @@ namespace Galaxy3D
                 mat->SetTexture("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index]);
             }
 
+            auto shadow_light = RenderSettings::GetLightRenderingShadowMap();
+
             auto pass_count = shader->GetPassCount();
             for(int j=0; j<pass_count; j++)
             {
@@ -76,7 +78,34 @@ namespace Galaxy3D
                     context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
                 }
 
-                if(camera->IsDeferredShading() == (pass->name == "deferred"))
+                bool right_pass = false;
+                if(shadow_light)
+                {
+                    if(pass->name == "depth")
+                    {
+                        right_pass = true;
+                    }
+                }
+                else
+                {
+                    if(camera->IsDeferredShading())
+                    {
+                        if(pass->name == "deferred")
+                        {
+                            right_pass = true;
+                        }
+                    }
+                    else
+                    {
+                        if( pass->name != "depth" &&
+                            pass->name != "deferred")
+                        {
+                            right_pass = true;
+                        }
+                    }
+                }
+
+                if(right_pass)
                 {
                     mat->ReadyPass(j);
                     pass->rs->Apply();
