@@ -12,11 +12,14 @@ namespace Galaxy3D
     {
     public:
         static Color light_ambient;
-        static void SetGlobalDirectionalLight(std::shared_ptr<Light> &light) {m_light_directional = light;}
+        static void SetGlobalDirectionalLight(const std::shared_ptr<Light> &light) {m_light_directional = light;}
         static std::shared_ptr<Light> GetGlobalDirectionalLight();
+        static void SetLightRenderingShadowMap(const std::shared_ptr<Light> &light) {m_light_rendering_shadow_map = light;}
+        static std::shared_ptr<Light> GetLightRenderingShadowMap() {return m_light_rendering_shadow_map;}
 
     private:
         static std::shared_ptr<Light> m_light_directional;
+        static std::shared_ptr<Light> m_light_rendering_shadow_map;
     };
 }
 

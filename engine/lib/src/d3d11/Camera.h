@@ -25,7 +25,7 @@ namespace Galaxy3D
 		void SetClearColor(const Color &color) {m_clear_color = color;}
 		void SetDepth(int depth);
 		void SetCullingMask(int mask) {m_culling_mask = mask;}
-		int GetCullingMask() const {return m_culling_mask;}
+        bool IsCulling(std::shared_ptr<GameObject> &obj) const;
 		void SetOrthographic(bool ortho) {m_orthographic = ortho;}
 		void SetOrthographicSize(float ortho_size) {m_orthographic_size = ortho_size;}
 		void SetFieldOfView(float fov) {m_field_of_view = fov;}
@@ -84,6 +84,7 @@ namespace Galaxy3D
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);
         static void CreateDeferredShadingResourcesIfNeeded(int w, int h);
+        void RenderShadowMaps();
 		void Render();
 		void SetViewport(int w, int h) const;
         void Clear();
