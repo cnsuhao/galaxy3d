@@ -1032,6 +1032,9 @@ namespace Galaxy3D
 
 				ShaderPass pass;
 				pass.name = i.name;
+                pass.vs = NULL;
+                pass.ps = NULL;
+                pass.rs = NULL;
 				
 				if(m_vertex_shaders.count(vs) > 0)
 				{

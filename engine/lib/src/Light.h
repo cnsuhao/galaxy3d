@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Color.h"
+#include "Matrix4x4.h"
 
 namespace Galaxy3D
 {
@@ -38,6 +39,7 @@ namespace Galaxy3D
         bool IsShadowEnable() const {return m_shadow_enable;}
         std::shared_ptr<RenderTexture> GetShadowMap();
         void PrepareForRenderShadowMap();
+        const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
 
     private:
         static const int SHADOW_MAP_SIZE = 1024;
@@ -51,9 +53,11 @@ namespace Galaxy3D
         float m_intensity;
         bool m_shadow_enable;
         std::shared_ptr<RenderTexture> m_shadow_map;
+        Matrix4x4 m_view_projection_matrix;
 
         static void CreateVolumeMeshIfNeeded();
         static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add);
+        void BuildViewProjectionMatrix();
     };
 }
 

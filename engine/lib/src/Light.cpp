@@ -50,6 +50,15 @@ namespace Galaxy3D
         auto camera = Camera::GetCurrent();
 
         camera->SetRenderTarget(shadow_map);
+
+        BuildViewProjectionMatrix();
+    }
+
+    void Light::BuildViewProjectionMatrix()
+    {
+        auto camera = Camera::GetCurrent();
+
+
     }
 
     void Light::CreateVolumeMeshIfNeeded()
