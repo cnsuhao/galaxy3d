@@ -26,6 +26,7 @@ namespace Galaxy3D
 		bool ContainsPoint(const Vector3 &point) const;
 		int ContainsSphere(const Vector3 &center, float radius) const;
         int ContainsBounds(const Vector3 &center, const Vector3 &extents) const;
+        float TestPlane(const Vector3 &point, int plane_index) const; 
 
 	private:
         Vector4 m_frustum_planes[6];

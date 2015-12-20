@@ -44,8 +44,9 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 10, -25));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 8, -15));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
+    cam3d->SetClipPlane(1, 100);
     cam3d->EnableDeferredShading(true);
     //cam3d->EnableHDR(true);
     //cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
@@ -83,12 +84,12 @@ void Launcher::Start()
     light->SetType(LightType::Spot);
     light->SetSpotAngle(90);
     light->SetRange(100);
-    //light->SetColor(Color(0, 1, 0, 1));
+    light->SetColor(Color(0, 1, 0, 1));
 
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(10);
-    //light->SetColor(Color(1, 0, 0, 1));
+    light->SetColor(Color(1, 0, 0, 1));
 #endif
 
 #if DEMO_SCENE
