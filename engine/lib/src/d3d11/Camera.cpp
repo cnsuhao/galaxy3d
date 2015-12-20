@@ -363,9 +363,8 @@ namespace Galaxy3D
                 // set target to shadow map,
                 // build light matrix
                 i->PrepareForRenderShadowMap();
-
                 Renderer::RenderOpaqueGeometry();
-
+                
                 RenderSettings::SetLightRenderingShadowMap(std::shared_ptr<Light>());
             }
         }
