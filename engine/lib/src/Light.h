@@ -40,6 +40,8 @@ namespace Galaxy3D
         std::shared_ptr<RenderTexture> GetShadowMap();
         void PrepareForRenderShadowMap();
         const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
+        void SetShadowBias(float bias) {m_shadow_bias = bias;}
+        void SetShadowStrength(float strength) {m_shadow_strength = strength;}
 
     private:
         static const int SHADOW_MAP_SIZE = 1024;
@@ -52,6 +54,8 @@ namespace Galaxy3D
         Color m_color;
         float m_intensity;
         bool m_shadow_enable;
+        float m_shadow_bias;
+        float m_shadow_strength;
         std::shared_ptr<RenderTexture> m_shadow_map;
         Matrix4x4 m_view_projection_matrix;
 
