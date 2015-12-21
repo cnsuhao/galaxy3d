@@ -52,7 +52,7 @@ void Launcher::Start()
     //cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
     //cam3d->GetGameObject()->AddComponent<ImageEffectToneMapping>();
 
-    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0;
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.1f;
 
     auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
     cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
@@ -74,18 +74,19 @@ void Launcher::Start()
     light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
-    light->EnableShadow(true);
+    //light->EnableShadow(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
-    /*
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(4, 3, -5));
     light->GetTransform()->SetRotation(Quaternion::Euler(36, -46, 0));
     light->SetType(LightType::Spot);
     light->SetSpotAngle(90);
-    light->SetRange(100);
-    light->SetColor(Color(0, 1, 0, 1));
-
+    light->SetRange(20);
+    light->EnableShadow(true);
+    //light->SetColor(Color(0, 1, 0, 1));
+    /*
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(10);
@@ -95,7 +96,7 @@ void Launcher::Start()
     light->GetTransform()->SetRotation(Quaternion::Euler(30, 150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
-    light->EnableShadow(true);
+    //light->EnableShadow(true);
 #endif
 
 #if DEMO_SCENE

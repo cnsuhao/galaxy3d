@@ -114,6 +114,10 @@ namespace Galaxy3D
 
             m_view_projection_matrix = projection_matrix * view_matrix;
         }
+        else if(m_type == LightType::Spot)
+        {
+
+        }
     }
 
     void Light::CreateVolumeMeshIfNeeded()
@@ -163,11 +167,11 @@ namespace Galaxy3D
 
         // shading global directional light first with blend off
         auto global_dir = RenderSettings::GetGlobalDirectionalLight();
+        material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, 0, global_dir->IsShadowEnable() ? 1.0f : 0));
         if(global_dir->IsShadowEnable())
         {
             material->SetTexture("_ShadowMapTexture", global_dir->GetShadowMap());
             material->SetMatrix("ViewProjectionLight", global_dir->GetViewProjectionMatrix());
-            material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, 0, 0));
         }
         ShadingDirectionalLight(global_dir.get(), material, false);
  
@@ -179,11 +183,11 @@ namespace Galaxy3D
                 continue;
             }
 
+            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, 0, i->IsShadowEnable() ? 1.0f : 0));
             if(i->IsShadowEnable())
             {
                 material->SetTexture("_ShadowMapTexture", i->GetShadowMap());
                 material->SetMatrix("ViewProjectionLight", i->GetViewProjectionMatrix());
-                material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, 0, 0));
             }
 
             material->SetVector("LightRange", Vector4(i->m_range));
