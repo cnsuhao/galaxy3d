@@ -6,6 +6,7 @@
 
 namespace Galaxy3D
 {
+    const float Light::SPOT_NEAR = 0.3f;
     std::list<Light *> Light::m_lights;
     std::shared_ptr<Mesh> Light::m_volume_sphere;
     std::shared_ptr<Mesh> Light::m_volume_cone;
@@ -116,7 +117,14 @@ namespace Galaxy3D
         }
         else if(m_type == LightType::Spot)
         {
+            auto projection_matrix = Matrix4x4::Perspective(m_spot_angle, 1.0f, SPOT_NEAR, m_range);
 
+            auto view_matrix = Matrix4x4::LookTo(
+                GetTransform()->GetPosition(),
+                GetTransform()->GetRotation() * Vector3(0, 0, 1),
+                GetTransform()->GetRotation() * Vector3(0, 1, 0));
+
+            m_view_projection_matrix = projection_matrix * view_matrix;
         }
     }
 

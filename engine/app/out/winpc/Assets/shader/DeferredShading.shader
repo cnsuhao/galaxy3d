@@ -235,6 +235,8 @@ DeferredShading
             {
                 float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
                 float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                pos_light.z = min(1, pos_light.z);
+
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
@@ -351,6 +353,8 @@ DeferredShading
             {
                 float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
                 float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                pos_light.z = min(1, pos_light.z);
+
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
@@ -667,10 +671,13 @@ DeferredShading
             {
                 float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
                 float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                pos_light.z = min(1, pos_light.z);
+
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
                 float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
+
                 float shadow = 1;
                 float bias = ShadowParam.x;
                 float strength = ShadowParam.y;

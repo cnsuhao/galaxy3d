@@ -29,6 +29,7 @@ namespace Galaxy3D
         Light();
         ~Light();
         void SetType(LightType::Enum type) {m_type = type;}
+        LightType::Enum GetType() const {return m_type;}
         void SetSpotAngle(float angle) {m_spot_angle = angle;}
         void SetRange(float range);
         void SetColor(const Color &color) {m_color = color;}
@@ -45,6 +46,7 @@ namespace Galaxy3D
 
     private:
         static const int SHADOW_MAP_SIZE = 1024;
+        static const float SPOT_NEAR;
         static std::list<Light *> m_lights;
         static std::shared_ptr<Mesh> m_volume_sphere;
         static std::shared_ptr<Mesh> m_volume_cone;
