@@ -201,6 +201,8 @@ DeferredShading
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
 
+            //return _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+
             float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
@@ -259,7 +261,10 @@ DeferredShading
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
-                uv_shadow.y = index / 3.0 + uv_shadow.y / 3.0;
+
+                float top[3] = {0, 0.6f, 0.9f};
+                float height[3] = {0.6f, 0.3f, 0.1f};
+                uv_shadow.y = top[index] + uv_shadow.y * height[index];
 
                 float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
 

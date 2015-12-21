@@ -114,11 +114,14 @@ namespace Galaxy3D
 
         auto shadow_map = GetShadowMap();
 
+        float top[3] = {0, 0.6f, 0.9f};
+        float height[3] = {0.6f, 0.3f, 0.1f};
+
         Rect rect;
         rect.left = 0;
-        rect.top = index * 1.0f / CASCADE_SHADOW_COUNT * shadow_map->GetHeight();
+        rect.top = top[index] * shadow_map->GetHeight();
         rect.width = 1.0f * shadow_map->GetWidth();
-        rect.height = 1.0f / CASCADE_SHADOW_COUNT * shadow_map->GetHeight();
+        rect.height = height[index] * shadow_map->GetHeight();
         Camera::SetViewport(rect);
     }
 
