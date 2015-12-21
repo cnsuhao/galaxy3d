@@ -34,6 +34,7 @@ namespace Galaxy3D
         float GetClipNear() const {return m_near_clip_plane;}
         float GetClipFar() const {return m_far_clip_plane;}
         void SetRect(const Rect &rect) {m_rect = rect;}
+        float GetAspect() const;
 		void UpdateMatrix();
 		const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
         Vector3 ScreenToViewportPoint(const Vector3 &position);

@@ -555,6 +555,22 @@ namespace Galaxy3D
         }
     }
 
+    float Camera::GetAspect() const
+    {
+        std::shared_ptr<RenderTexture> target;
+
+        if(m_render_texture)
+        {
+            target = m_render_texture;
+        }
+        else
+        {
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+        }
+
+        return target->GetWidth() / (float) target->GetHeight();
+    }
+
     std::shared_ptr<RenderTexture> Camera::GetDepthTexture() const
     {
         auto effects = GetGameObject()->GetComponents<ImageEffect>();

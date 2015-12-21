@@ -163,6 +163,16 @@ DeferredShading
             matrix InvViewProjection;
         };
 
+        cbuffer cbuffer5 : register(b5)
+        {
+            matrix ViewProjectionLight;
+        };
+
+        cbuffer cbuffer6 : register(b6)
+        {
+            float4 ShadowParam;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -171,6 +181,8 @@ DeferredShading
         SamplerState _GBuffer2_Sampler : register(s2);
         Texture2D _GBuffer3 : register(t3);
         SamplerState _GBuffer3_Sampler : register(s3);
+        Texture2D _ShadowMapTexture : register(t4);
+        SamplerState _ShadowMapTexture_Sampler : register(s4);
 
         struct PS_INPUT
         {
@@ -217,9 +229,25 @@ DeferredShading
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
 
+            // shadow
+            float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
+            float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+            float2 uv_shadow = 0;
+            uv_shadow.x = 0.5 + pos_light.x * 0.5;
+            uv_shadow.y = 0.5 - pos_light.y * 0.5;
+            float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
+            float shadow = 1;
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            if(pos_light.z > shadow_depth + bias)
+            {
+                shadow = clamp(1 - strength, 0, 1);
+            }
+            //
+
             c.rgb = GlobalAmbient.rgb * c.rgb +
-                diff * c.rgb * LightColor.rgb +
-                spec * LightColor.rgb;
+                (diff * c.rgb * LightColor.rgb +
+                spec * LightColor.rgb) * shadow;
 
             return c;
         }
