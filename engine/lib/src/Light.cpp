@@ -19,7 +19,9 @@ namespace Galaxy3D
         m_intensity(1),
         m_shadow_enable(false),
         m_shadow_bias(0.005f),
-        m_shadow_strength(1.0f)
+        m_shadow_strength(1.0f),
+        m_cascade(false),
+        m_cascade_rendering_index(0)
     {
         m_lights.push_back(this);
     }
@@ -57,6 +59,69 @@ namespace Galaxy3D
         BuildViewProjectionMatrix();
     }
 
+    Matrix4x4 Light::BuildDirectionalMatrix(float clip_near, float clip_far)
+    {
+        auto camera = Camera::GetCurrent();
+
+        float far_z = clip_far;
+        float near_z = clip_near;
+        float far_h = far_z * tanf(camera->GetFieldOfView() * 0.5f * Mathf::Deg2Rad);
+        float far_w = far_h * camera->GetAspect();
+        float near_h = far_h * near_z / far_z;
+        float near_w = far_w * near_z / far_z;
+        Vector3 corners[8];
+        corners[0] = Vector3(-near_w, near_h, near_z);
+        corners[1] = Vector3(-near_w, -near_h, near_z);
+        corners[2] = Vector3(near_w, -near_h, near_z);
+        corners[3] = Vector3(near_w, near_h, near_z);
+        corners[4] = Vector3(-far_w, far_h, far_z);
+        corners[5] = Vector3(-far_w, -far_h, far_z);
+        corners[6] = Vector3(far_w, -far_h, far_z);
+        corners[7] = Vector3(far_w, far_h, far_z);
+
+        // transform corners from view space to light space
+        Vector3 max_v(Mathf::MinFloatValue, Mathf::MinFloatValue, Mathf::MinFloatValue);
+        Vector3 min_v(Mathf::MaxFloatValue, Mathf::MaxFloatValue, Mathf::MaxFloatValue);
+        for(auto &i : corners)
+        {
+            Vector3 in_wolrd = camera->GetTransform()->TransformPoint(i);
+            Matrix4x4 inverse_mat = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
+            inverse_mat = inverse_mat.Inverse();
+            Vector3 in_light = inverse_mat.MultiplyPoint3x4(in_wolrd);
+
+            max_v = Vector3::Max(max_v, in_light);
+            min_v = Vector3::Min(min_v, in_light);
+        }
+
+        Vector3 center = (max_v + min_v) * 0.5f;
+        Vector3 size = max_v - min_v;
+
+        GetTransform()->SetPosition(GetTransform()->TransformPoint(center));
+
+        //build light orthographic matrix
+        float top = size.y / 2;
+        float bottom = - size.y / 2;
+        float plane_h = size.y;
+        float plane_w = size.x;
+        float plane_near = - size.z / 2;
+        float plane_far = size.z / 2;
+        return Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
+    }
+
+    void Light::SetCascadeViewport(int index)
+    {
+        m_cascade_rendering_index = index;
+
+        auto shadow_map = GetShadowMap();
+
+        Rect rect;
+        rect.left = 0;
+        rect.top = index * 1.0f / CASCADE_SHADOW_COUNT * shadow_map->GetHeight();
+        rect.width = 1.0f * shadow_map->GetWidth();
+        rect.height = 1.0f / CASCADE_SHADOW_COUNT * shadow_map->GetHeight();
+        Camera::SetViewport(rect);
+    }
+
     void Light::BuildViewProjectionMatrix()
     {
         auto shadow_map = GetShadowMap();
@@ -64,56 +129,37 @@ namespace Galaxy3D
 
         if(m_type == LightType::Directional)
         {
-            float far_z = camera->GetClipFar();
-            float near_z = camera->GetClipNear();
-            float far_h = far_z * tanf(camera->GetFieldOfView() * 0.5f * Mathf::Deg2Rad);
-            float far_w = far_h * camera->GetAspect();
-            float near_h = far_h * near_z / far_z;
-            float near_w = far_w * near_z / far_z;
-            Vector3 corners[8];
-            corners[0] = Vector3(-near_w, near_h, near_z);
-            corners[1] = Vector3(-near_w, -near_h, near_z);
-            corners[2] = Vector3(near_w, -near_h, near_z);
-            corners[3] = Vector3(near_w, near_h, near_z);
-            corners[4] = Vector3(-far_w, far_h, far_z);
-            corners[5] = Vector3(-far_w, -far_h, far_z);
-            corners[6] = Vector3(far_w, -far_h, far_z);
-            corners[7] = Vector3(far_w, far_h, far_z);
-
-            // transform corners from view space to light space
-            Vector3 max_v(Mathf::MinFloatValue, Mathf::MinFloatValue, Mathf::MinFloatValue);
-            Vector3 min_v(Mathf::MaxFloatValue, Mathf::MaxFloatValue, Mathf::MaxFloatValue);
-            for(auto &i : corners)
+            if(m_cascade)
             {
-                Vector3 in_wolrd = camera->GetTransform()->TransformPoint(i);
-                Matrix4x4 inverse_mat = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
-                inverse_mat = inverse_mat.Inverse();
-                Vector3 in_light = inverse_mat.MultiplyPoint3x4(in_wolrd);
+                const int nears[] = {0, 1, 5};
+                const int fars[] = {1, 5, 21};
+                const float full = 21.0f;
 
-                max_v = Vector3::Max(max_v, in_light);
-                min_v = Vector3::Min(min_v, in_light);
+                for(int i=0; i<CASCADE_SHADOW_COUNT; i++)
+                {
+                    float clip_near = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), nears[i] / full, false);
+                    float clip_far = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), fars[i] / full, false);
+                    auto projection_matrix = BuildDirectionalMatrix(clip_near, clip_far);
+
+                    auto view_matrix = Matrix4x4::LookTo(
+                        GetTransform()->GetPosition(),
+                        GetTransform()->GetRotation() * Vector3(0, 0, 1),
+                        GetTransform()->GetRotation() * Vector3(0, 1, 0));
+
+                    m_view_projection_matrices[i] = projection_matrix * view_matrix;
+                }
             }
+            else
+            {
+                auto projection_matrix = BuildDirectionalMatrix(camera->GetClipNear(), camera->GetClipFar());
 
-            Vector3 center = (max_v + min_v) * 0.5f;
-            Vector3 size = max_v - min_v;
+                auto view_matrix = Matrix4x4::LookTo(
+                    GetTransform()->GetPosition(),
+                    GetTransform()->GetRotation() * Vector3(0, 0, 1),
+                    GetTransform()->GetRotation() * Vector3(0, 1, 0));
 
-            GetTransform()->SetPosition(GetTransform()->TransformPoint(center));
-
-            //build light orthographic matrix
-            float top = size.y / 2;
-            float bottom = - size.y / 2;
-            float plane_h = size.y;
-            float plane_w = size.x;
-            float plane_near = - size.z / 2;
-            float plane_far = size.z / 2;
-            auto projection_matrix = Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
-
-            auto view_matrix = Matrix4x4::LookTo(
-                GetTransform()->GetPosition(),
-                GetTransform()->GetRotation() * Vector3(0, 0, 1),
-                GetTransform()->GetRotation() * Vector3(0, 1, 0));
-
-            m_view_projection_matrix = projection_matrix * view_matrix;
+                m_view_projection_matrices[0] = projection_matrix * view_matrix;
+            }
         }
         else if(m_type == LightType::Spot)
         {
@@ -124,7 +170,7 @@ namespace Galaxy3D
                 GetTransform()->GetRotation() * Vector3(0, 0, 1),
                 GetTransform()->GetRotation() * Vector3(0, 1, 0));
 
-            m_view_projection_matrix = projection_matrix * view_matrix;
+            m_view_projection_matrices[0] = projection_matrix * view_matrix;
         }
     }
 
@@ -173,13 +219,17 @@ namespace Galaxy3D
         auto vp = camera->GetViewProjectionMatrix();
         FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
+        material->SetZBufferParams(camera);
+
         // shading global directional light first with blend off
         auto global_dir = RenderSettings::GetGlobalDirectionalLight();
         material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, 0, global_dir->IsShadowEnable() ? 1.0f : 0));
         if(global_dir->IsShadowEnable())
         {
             material->SetTexture("_ShadowMapTexture", global_dir->GetShadowMap());
-            material->SetMatrix("ViewProjectionLight", global_dir->GetViewProjectionMatrix());
+            std::vector<Matrix4x4> mats(3);
+            memcpy(&mats[0], global_dir->m_view_projection_matrices, sizeof(Matrix4x4) * 3);
+            material->SetMatrixArray("ViewProjectionLight", mats);
         }
         ShadingDirectionalLight(global_dir.get(), material, false);
  

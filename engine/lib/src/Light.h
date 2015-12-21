@@ -24,6 +24,7 @@ namespace Galaxy3D
     class Light : public Component
     {
     public:
+        static const int CASCADE_SHADOW_COUNT = 3;
         static void DeferredShadingLights(std::shared_ptr<Material> &material);
         static std::list<Light *> GetLightsHasShadow();
         Light();
@@ -40,9 +41,12 @@ namespace Galaxy3D
         bool IsShadowEnable() const {return m_shadow_enable;}
         std::shared_ptr<RenderTexture> GetShadowMap();
         void PrepareForRenderShadowMap();
-        const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
+        const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrices[m_cascade_rendering_index];}
         void SetShadowBias(float bias) {m_shadow_bias = bias;}
         void SetShadowStrength(float strength) {m_shadow_strength = strength;}
+        void EnableCascade(bool enable) {m_cascade = enable;}
+        bool IsCascade() const {return m_cascade;}
+        void SetCascadeViewport(int index);
 
     private:
         static const int SHADOW_MAP_SIZE = 1024;
@@ -58,12 +62,15 @@ namespace Galaxy3D
         bool m_shadow_enable;
         float m_shadow_bias;
         float m_shadow_strength;
+        bool m_cascade;
+        int m_cascade_rendering_index;
         std::shared_ptr<RenderTexture> m_shadow_map;
-        Matrix4x4 m_view_projection_matrix;
+        Matrix4x4 m_view_projection_matrices[CASCADE_SHADOW_COUNT];
 
         static void CreateVolumeMeshIfNeeded();
         static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add);
         void BuildViewProjectionMatrix();
+        Matrix4x4 BuildDirectionalMatrix(float clip_near, float clip_far);
     };
 }
 

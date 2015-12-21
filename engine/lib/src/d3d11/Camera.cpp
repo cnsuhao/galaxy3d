@@ -88,6 +88,21 @@ namespace Galaxy3D
 		m_view_projection_matrix = m_projection_matrix * m_view_matrix;
 	}
 
+    void Camera::SetViewport(const Rect &rect)
+    {
+        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
+
+        D3D11_VIEWPORT vp;
+        vp.Width = rect.width;
+        vp.Height = rect.height;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        vp.TopLeftX = rect.left;
+        vp.TopLeftY = rect.top;
+
+        context->RSSetViewports(1, &vp);
+    }
+
 	void Camera::SetViewport(int w, int h) const
 	{
 		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
@@ -363,7 +378,18 @@ namespace Galaxy3D
                 // set target to shadow map,
                 // build light matrix
                 i->PrepareForRenderShadowMap();
-                Renderer::RenderOpaqueGeometry();
+                if(i->GetType() == LightType::Directional && i->IsCascade())
+                {
+                    for(int j=0; j<Light::CASCADE_SHADOW_COUNT; j++)
+                    {
+                        i->SetCascadeViewport(j);
+                        Renderer::RenderOpaqueGeometry();
+                    }
+                }
+                else
+                {
+                    Renderer::RenderOpaqueGeometry();
+                }
                 
                 RenderSettings::SetLightRenderingShadowMap(std::shared_ptr<Light>());
             }

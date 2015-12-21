@@ -160,7 +160,7 @@ DeferredShading
 
         cbuffer cbuffer4 : register(b4)
         {
-            matrix ViewProjectionLight;
+            matrix ViewProjectionLight[3];
         };
 
         cbuffer cbuffer5 : register(b5)
@@ -171,6 +171,11 @@ DeferredShading
         cbuffer cbuffer6 : register(b6)
         {
             float4 GlobalAmbient;
+        };
+
+        cbuffer cbuffer7 : register(b7)
+        {
+            float4 _ZBufferParams;
         };
 
         Texture2D _MainTex : register(t0);
@@ -200,7 +205,6 @@ DeferredShading
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
             float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
-
             float3 normal = 0;
 
             // decode normal2 to normal3
@@ -233,14 +237,32 @@ DeferredShading
             float intensity = 1;
             if((int) ShadowParam.w == 1)
             {
-                float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
+                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+                int index = 0;
+                if(linear_depth < 1.0 / 21)
+                {
+                    index = 0;
+                }
+                else if(linear_depth < 5.0 / 21)
+                {
+                    index = 1;
+                }
+                else
+                {
+                    index = 2;
+                }
+
+                float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
                 float3 pos_light = pos_light_4.xyz / pos_light_4.w;
                 pos_light.z = min(1, pos_light.z);
 
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
+                uv_shadow.y = index / 3.0 + uv_shadow.y / 3.0;
+
                 float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
+
                 float shadow = 1;
                 float bias = ShadowParam.x;
                 float strength = ShadowParam.y;

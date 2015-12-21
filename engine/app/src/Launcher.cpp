@@ -44,9 +44,9 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 8, -15));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
-    cam3d->SetClipPlane(5, 60);
+    cam3d->GetTransform()->SetPosition(Vector3(0, 6, -30));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, 0, 0));
+    cam3d->SetClipPlane(0.3f, 400);
     cam3d->EnableDeferredShading(true);
     //cam3d->EnableHDR(true);
     //cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
@@ -56,10 +56,10 @@ void Launcher::Start()
 
     auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
     cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
-    cube->GetTransform()->SetScale(Vector3(200, 2, 200));
+    cube->GetTransform()->SetScale(Vector3(200, 2, 1000));
 
     auto sphere = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Sphere.mesh");
-    sphere->GetTransform()->SetPosition(Vector3(3, 1, 1));
+    sphere->GetTransform()->SetPosition(Vector3(10, 1, 50));
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
 
     cube = GameObject::Instantiate(cube);
@@ -67,7 +67,7 @@ void Launcher::Start()
     cube->GetTransform()->SetScale(Vector3(2, 2, 2));
 
     sphere = GameObject::Instantiate(sphere);
-    sphere->GetTransform()->SetPosition(Vector3(-3, 1, -3));
+    sphere->GetTransform()->SetPosition(Vector3(-3, 1, -20));
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
@@ -75,6 +75,7 @@ void Launcher::Start()
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
+    light->EnableCascade(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
     /*
