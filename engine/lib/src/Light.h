@@ -49,7 +49,8 @@ namespace Galaxy3D
         void SetCascadeViewport(int index);
 
     private:
-        static const int SHADOW_MAP_SIZE = 1024;
+        static const int SHADOW_MAP_SIZE_W = 1536;
+        static const int SHADOW_MAP_SIZE_H = 1024;
         static const float SPOT_NEAR;
         static std::list<Light *> m_lights;
         static std::shared_ptr<Mesh> m_volume_sphere;

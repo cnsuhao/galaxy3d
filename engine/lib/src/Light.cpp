@@ -42,7 +42,7 @@ namespace Galaxy3D
         {
             if(!m_shadow_map)
             {
-                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Point);
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE_W, SHADOW_MAP_SIZE_H, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Point);
             }
         }
 
@@ -114,13 +114,15 @@ namespace Galaxy3D
 
         auto shadow_map = GetShadowMap();
 
-        float top[3] = {0, 0.6f, 0.9f};
-        float height[3] = {0.6f, 0.3f, 0.1f};
+        float left[3] = {0, 0.67f, 0.67f};
+        float top[3] = {0, 0, 0.75f};
+        float width[3] = {0.67f, 0.33f, 0.33f};
+        float height[3] = {1, 0.75f, 0.25f};
 
         Rect rect;
-        rect.left = 0;
+        rect.left = left[index] * shadow_map->GetWidth();
         rect.top = top[index] * shadow_map->GetHeight();
-        rect.width = 1.0f * shadow_map->GetWidth();
+        rect.width = width[index] * shadow_map->GetWidth();
         rect.height = height[index] * shadow_map->GetHeight();
         Camera::SetViewport(rect);
     }
