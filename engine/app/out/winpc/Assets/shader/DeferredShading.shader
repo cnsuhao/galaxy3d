@@ -200,18 +200,36 @@ DeferredShading
             float4 v_pos_proj : TEXCOORD0;
         };
 
-        float PCF(float2 uv, float2 size)
+        float texture2DCompare(float2 uv, float compare)
         {
-            float result = 0;
-            for(int x=-2; x<=2; x++)
+            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+            return step(compare, depth);
+        }
+
+        float PCF(float2 uv, float2 size, float z)
+        {
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            float shadow_weak = clamp(1 - strength, 0, 1);
+            float shadow = 0;
+            for(int i=-2;i<=2;i++)
             {
-                for(int y=-2; y<=2; y++)
+                for(int j=-2;j<=2;j++)
                 {
-                    float2 off = float2(x, y) / size;
-                    result += _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv + off).r;
+                    float2 off = float2(i, j) * size;
+                    float compare = texture2DCompare(uv + off, z - bias);
+
+                    if(compare < 1)
+                    {
+                        shadow += shadow_weak;
+                    }
+                    else
+                    {
+                        shadow += 1;
+                    }
                 }
             }
-            return result / 25;
+            return shadow / 25;
         }
 
         float4 main(PS_INPUT input) : SV_Target
@@ -258,69 +276,80 @@ DeferredShading
             float intensity = 1;
             if((int) ShadowParam.w == 1)
             {
-                int index = 0;
-                if((int) ShadowParam.z == 1)
+                bool cascade = ((int) ShadowParam.z) == 1;
+
+                int indices[3];
+
+                if(cascade)
                 {
                     float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
-                    if(linear_depth < 1.0 / 21)
+                    if(linear_depth < 0.95 / 21)
                     {
-                        index = 0;
+                        indices[0] = 1;
+                        indices[1] = 0;
+                        indices[2] = 0;
+                    }
+                    else if(linear_depth < 1.05 / 21)
+                    {
+                        indices[0] = 1;
+                        indices[1] = 1;
+                        indices[2] = 0;
                     }
                     else if(linear_depth < 5.0 / 21)
                     {
-                        index = 1;
+                        indices[0] = 0;
+                        indices[1] = 1;
+                        indices[2] = 0;
                     }
                     else
                     {
-                        index = 2;
+                        indices[0] = 0;
+                        indices[1] = 0;
+                        indices[2] = 1;
                     }
                 }
-
-                float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
-                float3 pos_light = pos_light_4.xyz / pos_light_4.w;
-                pos_light.z = min(1, pos_light.z);
-
-                float2 uv_shadow = 0;
-                uv_shadow.x = 0.5 + pos_light.x * 0.5;
-                uv_shadow.y = 0.5 - pos_light.y * 0.5;
-
-                float tex_witdh = 1.0;
-                float tex_height = 1.0;
-                if((int) ShadowParam.z == 1)
+                else
                 {
-                    float left[3] = {0, 0.67, 0.67};
-                    float top[3] = {0, 0, 0.75};
-                    float width[3] = {0.67, 0.33, 0.33};
-                    float height[3] = {1, 0.75, 0.25};
-                    tex_witdh = width[index];
-                    tex_height = height[index];
-
-                    uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
-                    uv_shadow.y = top[index] + uv_shadow.y * tex_height;;
+                    indices[0] = 1;
+                    indices[1] = 0;
+                    indices[2] = 0;
                 }
 
-                float bias = ShadowParam.x;
-                float strength = ShadowParam.y;
-                float shadow_weak = clamp(1 - strength, 0, 1);
                 float shadow = 0;
-                for(int i=-2;i<=2;i++)
+                int blend_count = 0;
+                for(int i=0; i<3; i++)
                 {
-                    for(int j=-2;j<=2;j++)
+                    if(indices[i] > 0)
                     {
-                        float2 off = float2(i * tex_witdh, j * tex_height) * ShadowMapTexel.xy;
-                        float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow + off).r;
-                        
-                        if(pos_light.z > depth + bias)
+                        int index = i;
+                        float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
+                        float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                        pos_light.z = min(1, pos_light.z);
+                        blend_count += 1;
+
+                        float2 uv_shadow = 0;
+                        uv_shadow.x = 0.5 + pos_light.x * 0.5;
+                        uv_shadow.y = 0.5 - pos_light.y * 0.5;
+
+                        float tex_witdh = 1.0;
+                        float tex_height = 1.0;
+                        if(cascade)
                         {
-                            shadow += shadow_weak;
+                            float left[3] = {0, 0.67, 0.67};
+                            float top[3] = {0, 0, 0.75};
+                            float width[3] = {0.67, 0.33, 0.33};
+                            float height[3] = {1, 0.75, 0.25};
+                            tex_witdh = width[index];
+                            tex_height = height[index];
+
+                            uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
+                            uv_shadow.y = top[index] + uv_shadow.y * tex_height;
                         }
-                        else
-                        {
-                            shadow += 1;
-                        }
+
+                        shadow += PCF(uv_shadow, ShadowMapTexel.xy * float2(tex_witdh, tex_height), pos_light.z);
                     }
                 }
-                shadow /= 25.0;
+                shadow /= blend_count;
 
                 intensity *= shadow;
             }
