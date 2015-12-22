@@ -178,6 +178,11 @@ DeferredShading
             float4 _ZBufferParams;
         };
 
+        cbuffer cbuffer8 : register(b8)
+        {
+            float4 ShadowMapTexel;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -194,6 +199,20 @@ DeferredShading
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
         };
+
+        float PCF(float2 uv, float2 size)
+        {
+            float result = 0;
+            for(int x=-2; x<=2; x++)
+            {
+                for(int y=-2; y<=2; y++)
+                {
+                    float2 off = float2(x, y) / size;
+                    result += _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv + off).r;
+                }
+            }
+            return result / 25;
+        }
 
         float4 main(PS_INPUT input) : SV_Target
         {
@@ -239,19 +258,22 @@ DeferredShading
             float intensity = 1;
             if((int) ShadowParam.w == 1)
             {
-                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
                 int index = 0;
-                if(linear_depth < 1.0 / 21)
+                if((int) ShadowParam.z == 1)
                 {
-                    index = 0;
-                }
-                else if(linear_depth < 5.0 / 21)
-                {
-                    index = 1;
-                }
-                else
-                {
-                    index = 2;
+                    float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+                    if(linear_depth < 1.0 / 21)
+                    {
+                        index = 0;
+                    }
+                    else if(linear_depth < 5.0 / 21)
+                    {
+                        index = 1;
+                    }
+                    else
+                    {
+                        index = 2;
+                    }
                 }
 
                 float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
@@ -262,22 +284,44 @@ DeferredShading
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
 
-                float left[3] = {0, 0.67f, 0.67f};
-                float top[3] = {0, 0, 0.75f};
-                float width[3] = {0.67f, 0.33f, 0.33f};
-                float height[3] = {1, 0.75f, 0.25f};
-                uv_shadow.x = left[index] + uv_shadow.x * width[index];
-                uv_shadow.y = top[index] + uv_shadow.y * height[index];
+                float tex_witdh = 1.0;
+                float tex_height = 1.0;
+                if((int) ShadowParam.z == 1)
+                {
+                    float left[3] = {0, 0.67, 0.67};
+                    float top[3] = {0, 0, 0.75};
+                    float width[3] = {0.67, 0.33, 0.33};
+                    float height[3] = {1, 0.75, 0.25};
+                    tex_witdh = width[index];
+                    tex_height = height[index];
 
-                float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
+                    uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
+                    uv_shadow.y = top[index] + uv_shadow.y * tex_height;;
+                }
 
-                float shadow = 1;
                 float bias = ShadowParam.x;
                 float strength = ShadowParam.y;
-                if(pos_light.z > shadow_depth + bias)
+                float shadow_weak = clamp(1 - strength, 0, 1);
+                float shadow = 0;
+                for(int i=-2;i<=2;i++)
                 {
-                    shadow = clamp(1 - strength, 0, 1);
+                    for(int j=-2;j<=2;j++)
+                    {
+                        float2 off = float2(i * tex_witdh, j * tex_height) * ShadowMapTexel.xy;
+                        float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow + off).r;
+                        
+                        if(pos_light.z > depth + bias)
+                        {
+                            shadow += shadow_weak;
+                        }
+                        else
+                        {
+                            shadow += 1;
+                        }
+                    }
                 }
+                shadow /= 25.0;
+
                 intensity *= shadow;
             }
 

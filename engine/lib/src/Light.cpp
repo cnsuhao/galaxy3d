@@ -42,7 +42,7 @@ namespace Galaxy3D
         {
             if(!m_shadow_map)
             {
-                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE_W, SHADOW_MAP_SIZE_H, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Point);
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE_W, SHADOW_MAP_SIZE_H, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Bilinear);
             }
         }
 
@@ -228,7 +228,8 @@ namespace Galaxy3D
 
         // shading global directional light first with blend off
         auto global_dir = RenderSettings::GetGlobalDirectionalLight();
-        material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, 0, global_dir->IsShadowEnable() ? 1.0f : 0));
+        material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, global_dir->m_cascade ? 1.0f : 0, global_dir->IsShadowEnable() ? 1.0f : 0));
+        material->SetVector("ShadowMapTexel", Vector4(1.0f / SHADOW_MAP_SIZE_W, 1.0f / SHADOW_MAP_SIZE_H));
         if(global_dir->IsShadowEnable())
         {
             material->SetTexture("_ShadowMapTexture", global_dir->GetShadowMap());
@@ -246,7 +247,7 @@ namespace Galaxy3D
                 continue;
             }
 
-            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, 0, i->IsShadowEnable() ? 1.0f : 0));
+            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, i->m_cascade ? 1.0f : 0, i->IsShadowEnable() ? 1.0f : 0));
             if(i->IsShadowEnable())
             {
                 material->SetTexture("_ShadowMapTexture", i->GetShadowMap());
