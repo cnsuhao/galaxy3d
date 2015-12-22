@@ -278,48 +278,48 @@ DeferredShading
             {
                 bool cascade = ((int) ShadowParam.z) == 1;
 
-                int indices[3];
+                float weights[3];
 
                 if(cascade)
                 {
                     float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
                     if(linear_depth < 0.95 / 21)
                     {
-                        indices[0] = 1;
-                        indices[1] = 0;
-                        indices[2] = 0;
+                        weights[0] = 1;
+                        weights[1] = 0;
+                        weights[2] = 0;
                     }
                     else if(linear_depth < 1.05 / 21)
                     {
-                        indices[0] = 1;
-                        indices[1] = 1;
-                        indices[2] = 0;
+                        weights[0] = 0.5;
+                        weights[1] = 0.5;
+                        weights[2] = 0;
                     }
                     else if(linear_depth < 5.0 / 21)
                     {
-                        indices[0] = 0;
-                        indices[1] = 1;
-                        indices[2] = 0;
+                        weights[0] = 0;
+                        weights[1] = 1;
+                        weights[2] = 0;
                     }
                     else
                     {
-                        indices[0] = 0;
-                        indices[1] = 0;
-                        indices[2] = 1;
+                        weights[0] = 0;
+                        weights[1] = 0;
+                        weights[2] = 1;
                     }
                 }
                 else
                 {
-                    indices[0] = 1;
-                    indices[1] = 0;
-                    indices[2] = 0;
+                    weights[0] = 1;
+                    weights[1] = 0;
+                    weights[2] = 0;
                 }
 
                 float shadow = 0;
                 int blend_count = 0;
                 for(int i=0; i<3; i++)
                 {
-                    if(indices[i] > 0)
+                    if(weights[i] > 0)
                     {
                         int index = i;
                         float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
@@ -346,10 +346,9 @@ DeferredShading
                             uv_shadow.y = top[index] + uv_shadow.y * tex_height;
                         }
 
-                        shadow += PCF(uv_shadow, ShadowMapTexel.xy * float2(tex_witdh, tex_height), pos_light.z);
+                        shadow += PCF(uv_shadow, ShadowMapTexel.xy * float2(tex_witdh, tex_height), pos_light.z) * weights[i];
                     }
                 }
-                shadow /= blend_count;
 
                 intensity *= shadow;
             }
