@@ -262,8 +262,11 @@ DeferredShading
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
 
-                float top[3] = {0, 0.6f, 0.9f};
-                float height[3] = {0.6f, 0.3f, 0.1f};
+                float left[3] = {0, 0.67f, 0.67f};
+                float top[3] = {0, 0, 0.75f};
+                float width[3] = {0.67f, 0.33f, 0.33f};
+                float height[3] = {1, 0.75f, 0.25f};
+                uv_shadow.x = left[index] + uv_shadow.x * width[index];
                 uv_shadow.y = top[index] + uv_shadow.y * height[index];
 
                 float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
