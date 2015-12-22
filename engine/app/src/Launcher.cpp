@@ -44,7 +44,7 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->SetDepth(0);
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 6, -30));
+    cam3d->GetTransform()->SetPosition(Vector3(-1, 6, -30));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, 0, 0));
     cam3d->SetClipPlane(0.3f, 500);
     cam3d->EnableDeferredShading(true);
@@ -62,13 +62,16 @@ void Launcher::Start()
     sphere->GetTransform()->SetPosition(Vector3(10, 2, 50));
     sphere->GetTransform()->SetScale(Vector3(4, 4, 4));
 
-    cube = GameObject::Instantiate(cube);
-    cube->GetTransform()->SetPosition(Vector3(0, 2, -1));
-    cube->GetTransform()->SetScale(Vector3(4, 4, 4));
+    for(int i=0; i<20; i++)
+    {
+        cube = GameObject::Instantiate(cube);
+        cube->GetTransform()->SetPosition(Vector3(-3, 1, -20.f + i * 4));
+        cube->GetTransform()->SetScale(Vector3(2, 2, 2));
+    }
 
     sphere = GameObject::Instantiate(sphere);
-    sphere->GetTransform()->SetPosition(Vector3(-3, 2, -20));
-    sphere->GetTransform()->SetScale(Vector3(4, 4, 4));
+    sphere->GetTransform()->SetPosition(Vector3(-7, 1, -20));
+    sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
