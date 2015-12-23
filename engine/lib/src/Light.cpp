@@ -207,13 +207,13 @@ namespace Galaxy3D
         return lights;
     }
 
-    void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add)
+    void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material)
     {
         auto camera = Camera::GetCurrent();
 
         material->SetVector("LightDirection", Vector4(light->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
         material->SetColor("LightColor", light->GetColor() * light->GetIntensity());
-        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, add ? 1 : 0);
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 1);
     }
 
     void Light::DeferredShadingLights(std::shared_ptr<Material> &material)
@@ -224,21 +224,12 @@ namespace Galaxy3D
         auto vp = camera->GetViewProjectionMatrix();
         FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
+        // shading global ambient first with blend off
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
+        
         material->SetZBufferParams(camera);
-
-        // shading global directional light first with blend off
-        auto global_dir = RenderSettings::GetGlobalDirectionalLight();
-        material->SetVector("ShadowParam", Vector4(global_dir->m_shadow_bias, global_dir->m_shadow_strength, global_dir->m_cascade ? 1.0f : 0, global_dir->IsShadowEnable() ? 1.0f : 0));
         material->SetVector("ShadowMapTexel", Vector4(1.0f / SHADOW_MAP_SIZE_W, 1.0f / SHADOW_MAP_SIZE_H));
-        if(global_dir->IsShadowEnable())
-        {
-            material->SetTexture("_ShadowMapTexture", global_dir->GetShadowMap());
-            std::vector<Matrix4x4> mats(3);
-            memcpy(&mats[0], global_dir->m_view_projection_matrices, sizeof(Matrix4x4) * 3);
-            material->SetMatrixArray("ViewProjectionLight", mats);
-        }
-        ShadingDirectionalLight(global_dir.get(), material, false);
- 
+
         // shading other lights with blend add
         for(auto i : m_lights)
         {
@@ -247,11 +238,13 @@ namespace Galaxy3D
                 continue;
             }
 
-            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, i->m_cascade ? 1.0f : 0, i->IsShadowEnable() ? 1.0f : 0));
+            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, i->m_cascade ? 1.0f : 0, i->m_shadow_enable ? 1.0f : 0));
             if(i->IsShadowEnable())
             {
                 material->SetTexture("_ShadowMapTexture", i->GetShadowMap());
-                material->SetMatrix("ViewProjectionLight", i->GetViewProjectionMatrix());
+                std::vector<Matrix4x4> mats(3);
+                memcpy(&mats[0], i->m_view_projection_matrices, sizeof(Matrix4x4) * 3);
+                material->SetMatrixArray("ViewProjectionLight", mats);
             }
 
             material->SetVector("LightRange", Vector4(i->m_range));
@@ -318,10 +311,7 @@ namespace Galaxy3D
             }
             else if(i->m_type == LightType::Directional)
             {
-                if(i != RenderSettings::GetGlobalDirectionalLight().get())
-                {
-                    ShadingDirectionalLight(i, material, true);
-                }
+                ShadingDirectionalLight(i, material);
             }
         }
     }

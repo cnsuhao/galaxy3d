@@ -8,14 +8,14 @@ DeferredShading
     Pass 0
     {
         VS vs_light_quad
-        PS ps_light_dir
+        PS ps_light_base
         RenderStates rs_light_quad
     }
 
     Pass 1
     {
         VS vs_light_quad
-        PS ps_light_dir_add
+        PS ps_light_dir
         RenderStates rs_light_quad_add
     }
 
@@ -133,6 +133,35 @@ DeferredShading
             output.v_pos_proj.w = 1;
 
             return output;
+        }
+    }
+
+    HLPS ps_light_base
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 GlobalAmbient;
+        };
+
+        Texture2D _MainTex : register(t0);
+        SamplerState _MainTex_Sampler : register(s0);
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float4 v_pos_proj : TEXCOORD0;
+        };
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            float2 uv = 0;
+            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
+            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
+
+            float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
+            c.rgb = GlobalAmbient.rgb * c.rgb;
+
+            return c;
         }
     }
 
@@ -361,123 +390,6 @@ DeferredShading
         }
     }
 
-    HLPS ps_light_dir_add
-    {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 LightColor;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            float4 LightDirection;
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
-            float4 EyePosition;
-        };
-
-        cbuffer cbuffer3 : register(b3)
-        {
-            matrix InvViewProjection;
-        };
-
-        cbuffer cbuffer4 : register(b4)
-        {
-            matrix ViewProjectionLight;
-        };
-
-        cbuffer cbuffer5 : register(b5)
-        {
-            float4 ShadowParam;
-        };
-
-        Texture2D _MainTex : register(t0);
-        SamplerState _MainTex_Sampler : register(s0);
-        Texture2D _GBuffer1 : register(t1);
-        SamplerState _GBuffer1_Sampler : register(s1);
-        Texture2D _GBuffer2 : register(t2);
-        SamplerState _GBuffer2_Sampler : register(s2);
-        Texture2D _GBuffer3 : register(t3);
-        SamplerState _GBuffer3_Sampler : register(s3);
-        Texture2D _ShadowMapTexture : register(t4);
-        SamplerState _ShadowMapTexture_Sampler : register(s4);
-
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float4 v_pos_proj : TEXCOORD0;
-        };
-
-        float4 main(PS_INPUT input) : SV_Target
-        {
-            float2 uv = 0;
-            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
-            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
-
-            float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
-            float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
-            float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
-            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
-
-            float3 normal = 0;
-
-            // decode normal2 to normal3
-            if(length(normal_2) > 1)
-            {
-                normal = float3(0, 0, sign(normal_2.x));
-            }
-            else
-            {
-                float len = length(normal_2);
-                normal.z = len*len*2-1;
-                normal.xy = normalize(normal_2.xy)*sqrt(1-normal.z*normal.z);
-            }
-            //
-
-            // get world position from depth and pos proj
-            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
-            pos_world /= pos_world.w;
-            //
-
-            float3 eye_dir = normalize(EyePosition - pos_world.xyz);
-            float3 light_dir = normalize(-LightDirection);
-
-            float diff = max(0, dot(normal, light_dir));
-            float3 h = normalize(light_dir + eye_dir);
-            float nh = max(0, dot(normal, h));
-            float spec = pow(nh, 128 * specular.x) * specular.y;
-
-            // shadow
-            float intensity = 1;
-            if((int) ShadowParam.w == 1)
-            {
-                float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
-                float3 pos_light = pos_light_4.xyz / pos_light_4.w;
-                pos_light.z = min(1, pos_light.z);
-
-                float2 uv_shadow = 0;
-                uv_shadow.x = 0.5 + pos_light.x * 0.5;
-                uv_shadow.y = 0.5 - pos_light.y * 0.5;
-                float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
-                float shadow = 1;
-                float bias = ShadowParam.x;
-                float strength = ShadowParam.y;
-                if(pos_light.z > shadow_depth + bias)
-                {
-                    shadow = clamp(1 - strength, 0, 1);
-                }
-                intensity *= shadow;
-            }
-
-            c.rgb = (diff * c.rgb * LightColor.rgb +
-                    spec * LightColor.rgb) * intensity;
-
-            return c;
-        }
-    }
-
     HLVS vs_light_volume_cull
     {
         cbuffer cbuffer0 : register(b0)
@@ -681,12 +593,17 @@ DeferredShading
 
         cbuffer cbuffer6 : register(b6)
         {
-            matrix ViewProjectionLight;
+            matrix ViewProjectionLight[3];
         };
 
         cbuffer cbuffer7 : register(b7)
         {
             float4 ShadowParam;
+        };
+
+        cbuffer cbuffer8 : register(b8)
+        {
+            float4 ShadowMapTexel;
         };
 
         Texture2D _MainTex : register(t0);
@@ -705,6 +622,38 @@ DeferredShading
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
         };
+
+        float texture2DCompare(float2 uv, float compare)
+        {
+            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+            return step(compare, depth);
+        }
+
+        float PCF(float2 uv, float2 size, float z)
+        {
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            float shadow_weak = clamp(1 - strength, 0, 1);
+            float shadow = 0;
+            for(int i=-2;i<=2;i++)
+            {
+                for(int j=-2;j<=2;j++)
+                {
+                    float2 off = float2(i, j) * size;
+                    float compare = texture2DCompare(uv + off, z - bias);
+
+                    if(compare < 1)
+                    {
+                        shadow += shadow_weak;
+                    }
+                    else
+                    {
+                        shadow += 1;
+                    }
+                }
+            }
+            return shadow / 25;
+        }
 
         float4 main(PS_INPUT input) : SV_Target
         {
@@ -750,7 +699,7 @@ DeferredShading
                 spec * LightColor.rgb;
 
             float range = (LightRange.x - length(dis)) / LightRange.x;
-            float intensity = range * range;
+            float intensity = range;
 
             // spot factor
             float rho = dot(SpotParam.xyz, -light_dir);
@@ -771,22 +720,15 @@ DeferredShading
             // shadow
             if((int) ShadowParam.w == 1)
             {
-                float4 pos_light_4 = mul(pos_world, ViewProjectionLight);
+                float4 pos_light_4 = mul(pos_world, ViewProjectionLight[0]);
                 float3 pos_light = pos_light_4.xyz / pos_light_4.w;
                 pos_light.z = min(1, pos_light.z);
 
                 float2 uv_shadow = 0;
                 uv_shadow.x = 0.5 + pos_light.x * 0.5;
                 uv_shadow.y = 0.5 - pos_light.y * 0.5;
-                float shadow_depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv_shadow).r;
 
-                float shadow = 1;
-                float bias = ShadowParam.x;
-                float strength = ShadowParam.y;
-                if(pos_light.z > shadow_depth + bias)
-                {
-                    shadow = clamp(1 - strength, 0, 1);
-                }
+                float shadow = PCF(uv_shadow, ShadowMapTexel.xy, pos_light.z);
                 intensity *= shadow;
             }
 
