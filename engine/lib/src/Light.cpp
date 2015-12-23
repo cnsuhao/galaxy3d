@@ -152,6 +152,8 @@ namespace Galaxy3D
                         GetTransform()->GetRotation() * Vector3(0, 1, 0));
 
                     m_view_projection_matrices[i] = projection_matrix * view_matrix;
+                    m_projection_matrices[i] = projection_matrix;
+                    m_world_to_local_matrices[i] = GetTransform()->GetLocalToWorldMatrix();
                 }
             }
             else
@@ -164,6 +166,8 @@ namespace Galaxy3D
                     GetTransform()->GetRotation() * Vector3(0, 1, 0));
 
                 m_view_projection_matrices[0] = projection_matrix * view_matrix;
+                m_projection_matrices[0] = projection_matrix;
+                m_world_to_local_matrices[0] = GetTransform()->GetLocalToWorldMatrix();
             }
         }
         else if(m_type == LightType::Spot)
@@ -176,6 +180,8 @@ namespace Galaxy3D
                 GetTransform()->GetRotation() * Vector3(0, 1, 0));
 
             m_view_projection_matrices[0] = projection_matrix * view_matrix;
+            m_projection_matrices[0] = projection_matrix;
+            m_world_to_local_matrices[0] = GetTransform()->GetLocalToWorldMatrix();
         }
     }
 
@@ -259,7 +265,7 @@ namespace Galaxy3D
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
 
-                    float distance = frustum.TestPlane(pos, 5);
+                    float distance = frustum.DistanceToPlane(pos, 5);
                     if(fabs(distance) < radius)
                     {
                         // bound sphere cross with far plane, stencil test will get error result
@@ -292,7 +298,7 @@ namespace Galaxy3D
                     material->SetVector("LightPositon", Vector4(i->GetTransform()->GetPosition()));
                     material->SetColor("LightColor", i->m_color * i->m_intensity);
 
-                    float distance = frustum.TestPlane(pos, 5);
+                    float distance = frustum.DistanceToPlane(pos, 5);
                     if(fabs(distance) < radius)
                     {
                         // bound sphere cross with far plane, stencil test will get error result

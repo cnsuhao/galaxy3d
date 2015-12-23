@@ -5,6 +5,7 @@
 #include "FrustumBounds.h"
 #include "Debug.h"
 #include "MeshRenderer.h"
+#include "RenderSettings.h"
 
 namespace Galaxy3D
 {
@@ -328,7 +329,69 @@ namespace Galaxy3D
 
     void Renderer::RenderOpaqueGeometry()
     {
-        RenderBatches(m_batches_renderable_opaque);
+        auto shadow_light = RenderSettings::GetLightRenderingShadowMap();
+        if(shadow_light)
+        {
+            std::list<RenderBatch> batches;
+
+            if(shadow_light->GetType() == LightType::Spot)
+            {
+                FrustumBounds frustum(shadow_light->GetViewProjectionMatrix());
+
+                for(auto &i : m_batches_renderable_opaque)
+                {
+                    auto bounds = i.renderer->GetBounds();
+                    if(frustum.ContainsBounds(bounds.center, bounds.extents))
+                    {
+                        batches.push_back(i);
+                    }
+                }
+            }
+            else
+            {
+                auto &m = shadow_light->GetProjectionMatrix();
+                float right = (1 - m.m03) / m.m00;
+                float left = (-1 - m.m03) / m.m00;
+                float top = (1 - m.m13) / m.m11;
+                float bottom = (-1 - m.m13) / m.m11;
+                float z_near = m.m23 / m.m22;
+                float z_far = (m.m23 - 1) / m.m22;
+
+                auto frustum = FrustumBounds::FrustumBoundsOrtho(left, right, bottom, top, z_near, z_far);
+                auto &world_to_light = shadow_light->GetWorldToLocalMatrix();
+
+                for(auto &i : m_batches_renderable_opaque)
+                {
+                    auto bounds = i.renderer->GetBounds();
+
+                    int j = 0;
+                    std::vector<Vector3> corners(8);
+                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+                    corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
+
+                    int contains = frustum.ContainsPoints(corners, &world_to_light);
+
+                    if(contains != ContainsResult::Out)
+                    {
+                        batches.push_back(i);
+                    }
+                }
+
+                //batches = m_batches_renderable_opaque;
+            }
+            
+            RenderBatches(batches);
+        }
+        else
+        {
+            RenderBatches(m_batches_renderable_opaque);
+        }
     }
 
     void Renderer::RenderTransparentGeometry()

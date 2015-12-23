@@ -57,21 +57,42 @@ void Launcher::Start()
     auto cube = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh");
     cube->GetTransform()->SetPosition(Vector3(0, -1, 0));
     cube->GetTransform()->SetScale(Vector3(200, 2, 1000));
+    auto rs = cube->GetComponentsInChildren<MeshRenderer>();
+    for(auto i : rs)
+    {
+        i->CalculateBounds();
+    }
 
     auto sphere = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Sphere.mesh");
     sphere->GetTransform()->SetPosition(Vector3(10, 2, 50));
     sphere->GetTransform()->SetScale(Vector3(4, 4, 4));
+    rs = sphere->GetComponentsInChildren<MeshRenderer>();
+    for(auto i : rs)
+    {
+        i->CalculateBounds();
+    }
 
     for(int i=0; i<20; i++)
     {
         cube = GameObject::Instantiate(cube);
-        cube->GetTransform()->SetPosition(Vector3(-3, 1, -20.f + i * 4));
+        cube->GetTransform()->SetPosition(Vector3(-3, 1, 0.0f + i * 4));
         cube->GetTransform()->SetScale(Vector3(2, 2, 2));
+        
+        rs = cube->GetComponentsInChildren<MeshRenderer>();
+        for(auto j : rs)
+        {
+            j->CalculateBounds();
+        }
     }
 
     sphere = GameObject::Instantiate(sphere);
-    sphere->GetTransform()->SetPosition(Vector3(-7, 1, -20));
+    sphere->GetTransform()->SetPosition(Vector3(-7, 1, 0));
     sphere->GetTransform()->SetScale(Vector3(2, 2, 2));
+    rs = sphere->GetComponentsInChildren<MeshRenderer>();
+    for(auto i : rs)
+    {
+        i->CalculateBounds();
+    }
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
@@ -81,7 +102,7 @@ void Launcher::Start()
     light->EnableCascade(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
-    
+    /*
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(0, 4, -10));
     light->GetTransform()->SetRotation(Quaternion::Euler(45, -90, 0));
@@ -89,19 +110,19 @@ void Launcher::Start()
     light->SetSpotAngle(120);
     light->SetRange(20);
     light->EnableShadow(true);
-    light->SetColor(Color(1, 1, 1, 1) * 0.6f);
-    /*
+    light->SetColor(Color(1, 1, 1, 1));
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(-3, 1, 3));
     light->SetRange(10);
     light->SetColor(Color(1, 0, 0, 1));
-    */
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(30, 150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
-    light->EnableCascade(true);
+    light->EnableCascade(true);*/
 #endif
 
 #if DEMO_SCENE
