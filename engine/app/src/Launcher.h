@@ -33,6 +33,7 @@
 #include "ImageEffectToneMapping.h"
 #include "ImageEffectGlobalFog.h"
 #include "Light.h"
+#include "MeshRenderer.h"
 
 namespace Galaxy3D
 {

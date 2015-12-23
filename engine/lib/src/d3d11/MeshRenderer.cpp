@@ -6,6 +6,26 @@ namespace Galaxy3D
 {
     DEFINE_COM_CLASS(MeshRenderer);
 
+    void MeshRenderer::CalculateBounds()
+    {
+        auto &vertices = m_mesh->GetVertices();
+        auto &tran = GetTransform();
+
+        Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
+        Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
+        for(size_t j=0; j<vertices.size(); j++)
+        {
+            auto &v = vertices[j].POSITION;
+            auto v_world = tran->TransformPoint(v);
+
+            box_max = Vector3::Max(box_max, v_world);
+            box_min = Vector3::Min(box_min, v_world);
+        }
+        Bounds bounds((box_max + box_min) * 0.5f, (box_max - box_min) * 0.5f);
+
+        SetBounds(bounds);
+    }
+
     void MeshRenderer::DeepCopy(std::shared_ptr<Object> &source)
     {
         auto src_renderer = std::dynamic_pointer_cast<MeshRenderer>(source);
