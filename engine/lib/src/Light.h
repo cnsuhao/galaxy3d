@@ -69,7 +69,7 @@ namespace Galaxy3D
         Matrix4x4 m_view_projection_matrices[CASCADE_SHADOW_COUNT];
 
         static void CreateVolumeMeshIfNeeded();
-        static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material, bool add);
+        static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material);
         void BuildViewProjectionMatrix();
         Matrix4x4 BuildDirectionalMatrix(float clip_near, float clip_far);
     };
