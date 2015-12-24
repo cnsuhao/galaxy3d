@@ -317,19 +317,19 @@ DeferredShading
                 if(cascade)
                 {
                     float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
-                    if(linear_depth < 0.95 / 21)
+                    if(linear_depth < CascadeSplits.x - 0.005)
                     {
                         weights[0] = 1;
                         weights[1] = 0;
                         weights[2] = 0;
                     }
-                    else if(linear_depth < 1.05 / 21)
+                    else if(linear_depth < CascadeSplits.x + 0.005)
                     {
-                        weights[0] = 0.5;
-                        weights[1] = 0.5;
+                        weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
+                        weights[1] = 1 - weights[0];
                         weights[2] = 0;
                     }
-                    else if(linear_depth < 5.0 / 21)
+                    else if(linear_depth < CascadeSplits.y)
                     {
                         weights[0] = 0;
                         weights[1] = 1;
