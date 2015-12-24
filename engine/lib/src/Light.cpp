@@ -132,10 +132,10 @@ namespace Galaxy3D
 
         auto shadow_map = GetShadowMap();
 
-        float left[3] = {0, 0.67f, 0.67f};
-        float top[3] = {0, 0, 0.75f};
-        float width[3] = {0.67f, 0.33f, 0.33f};
-        float height[3] = {1, 0.75f, 0.25f};
+        float left[3] = {0, 0.5f, 0.5f};
+        float top[3] = {0, 0, 0.5f};
+        float width[3] = {0.5f, 0.5f, 0.5f};
+        float height[3] = {1, 0.5f, 0.5f};
 
         Rect rect;
         rect.left = left[index] * shadow_map->GetWidth();
@@ -333,6 +333,8 @@ namespace Galaxy3D
                         if(i->IsShadowEnable())
                         {
                             GraphicsDevice::GetInstance()->Blit(std::shared_ptr<Texture>(), m_shadow_blur_buffer, material, 7);
+                            BlurShadow(material);
+                            
                             material->SetTexture("ShadowScreen", m_shadow_blur_buffer);
 
                             front->MarkKeepBuffer(true);
@@ -357,6 +359,8 @@ namespace Galaxy3D
 
                             GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
                             GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 8);
+                            BlurShadow(material);
+
                             material->SetTexture("ShadowScreen", m_shadow_blur_buffer);
 
                             front->MarkKeepBuffer(true);
@@ -374,6 +378,8 @@ namespace Galaxy3D
                 if(i->IsShadowEnable())
                 {
                     GraphicsDevice::GetInstance()->Blit(std::shared_ptr<Texture>(), m_shadow_blur_buffer, material, 7);
+                    //BlurShadow(material);
+
                     material->SetTexture("ShadowScreen", m_shadow_blur_buffer);
 
                     front->MarkKeepBuffer(true);
@@ -384,5 +390,45 @@ namespace Galaxy3D
                 ShadingDirectionalLight(i, material);
             }
         }
+    }
+
+    void Light::BlurShadow(std::shared_ptr<Material> &material)
+    {
+        auto main_texture = material->GetMainTexture();
+
+        int width = m_shadow_blur_buffer->GetWidth()/2;
+        int height = m_shadow_blur_buffer->GetHeight()/2;
+        RenderTextureFormat::Enum fmt = RenderTextureFormat::RGBA32;
+        auto downsample = RenderTexture::GetTemporary(
+            width, height,
+            fmt,
+            DepthBuffer::Depth_0);
+        GraphicsDevice::GetInstance()->Blit(m_shadow_blur_buffer, downsample, std::shared_ptr<Material>(), 0);
+        
+        int blur_iter = 1;
+        float blur_spread = 0.5f;
+        for(int i=0; i<blur_iter; i++)
+        {
+            float spreadForPass = (1 + i * 0.25f) * blur_spread;
+
+            // vertical blur
+            auto blur4 = RenderTexture::GetTemporary(width, height, fmt, DepthBuffer::Depth_0);
+            material->SetVector("_Offsets", Vector4(0, spreadForPass / height, 0, 0));
+            GraphicsDevice::GetInstance()->Blit(downsample, blur4, material, 9);
+            RenderTexture::ReleaseTemporary(downsample);
+            downsample = blur4;
+
+            // horizontal blur
+            blur4 = RenderTexture::GetTemporary(width, height, fmt, DepthBuffer::Depth_0);
+            material->SetVector("_Offsets", Vector4(spreadForPass / width, 0, 0, 0));
+            GraphicsDevice::GetInstance()->Blit(downsample, blur4, material, 9);
+            RenderTexture::ReleaseTemporary(downsample);
+            downsample = blur4;
+        }
+
+        GraphicsDevice::GetInstance()->Blit(downsample, m_shadow_blur_buffer, std::shared_ptr<Material>(), 0);
+        RenderTexture::ReleaseTemporary(downsample);
+
+        material->SetMainTexture(main_texture);
     }
 }

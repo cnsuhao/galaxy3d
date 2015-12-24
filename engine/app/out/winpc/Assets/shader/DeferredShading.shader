@@ -68,6 +68,13 @@ DeferredShading
         RenderStates rs_light_volume_shadow
     }
 
+    Pass 9
+    {
+        VS vs_blur
+        PS ps_blur
+        RenderStates rs_light_quad
+    }
+
     RenderStates rs_light_quad
     {
         Cull Off
@@ -627,9 +634,9 @@ DeferredShading
             float strength = ShadowParam.y;
             float shadow_weak = clamp(1 - strength, 0, 1);
             float shadow = 0;
-            for(int i=-2;i<=2;i++)
+            for(int i=-0;i<=0;i++)
             {
-                for(int j=-2;j<=2;j++)
+                for(int j=-0;j<=0;j++)
                 {
                     float2 off = float2(i, j) * size;
                     float compare = texture2DCompare(uv + off, z - bias);
@@ -644,7 +651,7 @@ DeferredShading
                     }
                 }
             }
-            return shadow / 25;
+            return shadow / 1;
         }
 
         float4 main(PS_INPUT input) : SV_Target
@@ -720,10 +727,10 @@ DeferredShading
                     float tex_height = 1.0;
                     if(cascade)
                     {
-                        float left[3] = {0, 0.67, 0.67};
-                        float top[3] = {0, 0, 0.75};
-                        float width[3] = {0.67, 0.33, 0.33};
-                        float height[3] = {1, 0.75, 0.25};
+                        float left[3] = {0, 0.5f, 0.5f};
+                        float top[3] = {0, 0, 0.5f};
+                        float width[3] = {0.5f, 0.5f, 0.5f};
+                        float height[3] = {1, 0.5f, 0.5f};
                         tex_witdh = width[index];
                         tex_height = height[index];
 
@@ -738,6 +745,83 @@ DeferredShading
             }
 
             return shadow;
+        }
+    }
+
+    HLVS vs_blur
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 _Offsets;
+        };
+
+        struct VS_INPUT
+        {
+            float4 Position : POSITION;
+            float3 Normal : NORMAL;
+            float4 Tangent : TANGENT;
+            float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord1 : TEXCOORD1;
+        };
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+            float4 v_uv01 : TEXCOORD1;
+            float4 v_uv23 : TEXCOORD2;
+            float4 v_uv45 : TEXCOORD3;
+            float4 v_uv67 : TEXCOORD4;
+        };
+
+        PS_INPUT main(VS_INPUT input)
+        {
+            PS_INPUT output = (PS_INPUT) 0;
+
+            output.v_pos = input.Position;
+            output.v_uv = input.Texcoord0;
+            output.v_uv01 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1);
+            output.v_uv23 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 2.0;
+            output.v_uv45 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 3.0;
+            output.v_uv67 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 4.0;
+
+            return output;
+        }
+    }
+
+    HLPS ps_blur
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 _Threshhold;
+        };
+
+        Texture2D _MainTex : register(t0);
+        SamplerState _MainTex_Sampler : register(s0);
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+            float4 v_uv01 : TEXCOORD1;
+            float4 v_uv23 : TEXCOORD2;
+            float4 v_uv45 : TEXCOORD3;
+            float4 v_uv67 : TEXCOORD4;
+        };
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            float4 color = float4(0, 0, 0, 0);
+            color += 0.225 * _MainTex.Sample(_MainTex_Sampler, input.v_uv);
+            color += 0.150 * _MainTex.Sample(_MainTex_Sampler, input.v_uv01.xy);
+            color += 0.150 * _MainTex.Sample(_MainTex_Sampler, input.v_uv01.zw);
+            color += 0.110 * _MainTex.Sample(_MainTex_Sampler, input.v_uv23.xy);
+            color += 0.110 * _MainTex.Sample(_MainTex_Sampler, input.v_uv23.zw);
+            color += 0.075 * _MainTex.Sample(_MainTex_Sampler, input.v_uv45.xy);
+            color += 0.075 * _MainTex.Sample(_MainTex_Sampler, input.v_uv45.zw);	
+            color += 0.0525 * _MainTex.Sample(_MainTex_Sampler, input.v_uv67.xy);
+            color += 0.0525 * _MainTex.Sample(_MainTex_Sampler, input.v_uv67.zw);
+            return color;
         }
     }
 }
