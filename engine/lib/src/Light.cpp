@@ -241,8 +241,6 @@ namespace Galaxy3D
 
     void Light::DeferredShadingLights(std::shared_ptr<Material> &material)
     {
-        //GraphicsDevice::GetInstance()->Blit(m_shadow_blur_buffer, Camera::GetCurrent()->GetRenderTarget(), std::shared_ptr<Material>(), 0);
-        //return;
         CreateVolumeMeshIfNeeded();
 
         auto camera = Camera::GetCurrent();
@@ -332,6 +330,16 @@ namespace Galaxy3D
                     {
                         // bound sphere cross with far plane, stencil test will get error result
                         // so draw full screen quad like directional light
+                        if(i->IsShadowEnable())
+                        {
+                            GraphicsDevice::GetInstance()->Blit(std::shared_ptr<Texture>(), m_shadow_blur_buffer, material, 7);
+                            material->SetTexture("ShadowScreen", m_shadow_blur_buffer);
+
+                            front->MarkKeepBuffer(true);
+                            camera->SetRenderTarget(front, true);
+                            front->MarkKeepBuffer(false);
+                        }
+
                         GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 6);
                     }
                     else
@@ -339,6 +347,23 @@ namespace Galaxy3D
                         float scale_xy = i->m_range * tg;
                         auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
                         material->SetMatrix("WorldViewProjection", wvp);
+
+                        if(i->IsShadowEnable())
+                        {
+                            auto old_clear_color = camera->GetClearColor();
+                            camera->SetClearColor(Color(0, 0, 0, 0));
+                            camera->SetRenderTarget(m_shadow_blur_buffer, true);
+                            camera->SetClearColor(old_clear_color);
+
+                            GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
+                            GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 8);
+                            material->SetTexture("ShadowScreen", m_shadow_blur_buffer);
+
+                            front->MarkKeepBuffer(true);
+                            camera->SetRenderTarget(front, true);
+                            front->MarkKeepBuffer(false);
+                        }
+
                         GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
                         GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 4);
                     }
@@ -360,81 +385,4 @@ namespace Galaxy3D
             }
         }
     }
-    /*
-    void Light::DeferredShadingShadows(std::shared_ptr<Material> &material)
-    {
-        CreateVolumeMeshIfNeeded();
-
-        auto camera = Camera::GetCurrent();
-        auto vp = camera->GetViewProjectionMatrix();
-        FrustumBounds frustum(camera->GetViewProjectionMatrix());
-
-        material->SetZBufferParams(camera);
-        material->SetVector("ShadowMapTexel", Vector4(1.0f / SHADOW_MAP_SIZE_W, 1.0f / SHADOW_MAP_SIZE_H));
-
-        int width = camera->GetRenderTarget()->GetWidth();
-        int height = camera->GetRenderTarget()->GetHeight();
-        CreateShadowBlurBufferIfNeeded(width, height);
-
-        auto old_clear_color = camera->GetClearColor();
-        camera->SetClearColor(Color(0, 0, 0, 0));
-
-        camera->SetRenderTarget(m_shadow_blur_buffer, true);
-
-        // shading other lights with blend add
-        for(auto i : m_lights)
-        {
-            if(camera->IsCulling(i->GetGameObject()))
-            {
-                continue;
-            }
-
-            material->SetVector("ShadowParam", Vector4(i->m_shadow_bias, i->m_shadow_strength, i->m_cascade ? 1.0f : 0, i->m_shadow_enable ? 1.0f : 0));
-            if(i->IsShadowEnable())
-            {
-                material->SetTexture("_ShadowMapTexture", i->GetShadowMap());
-                std::vector<Matrix4x4> mats(3);
-                memcpy(&mats[0], i->m_view_projection_matrices, sizeof(Matrix4x4) * 3);
-                material->SetMatrixArray("ViewProjectionLight", mats);
-
-                if(i->IsCascade())
-                {
-                    material->SetVector("CascadeSplits", Vector4(CASCADE_SPLITS[0], CASCADE_SPLITS[1], CASCADE_SPLITS[2]));
-                }
-            }
-
-            if(i->m_type == LightType::Spot)
-            {
-                // 使用圆锥的外接球进行视锥剔除
-                float tg = tanf(i->m_spot_angle * 0.5f * Mathf::Deg2Rad);
-                float radius = i->m_range * 0.5f * (1 + tg * tg);
-                Vector3 pos = i->GetTransform()->GetRotation() * (i->GetTransform()->GetPosition() + Vector3(0, 0, radius));
-
-                if(frustum.ContainsSphere(pos, radius) != ContainsResult::Out)
-                {
-                    float distance = frustum.DistanceToPlane(pos, 5);
-                    if(fabs(distance) < radius)
-                    {
-                        // bound sphere cross with far plane, stencil test will get error result
-                        // so draw full screen quad like directional light
-                        GraphicsDevice::GetInstance()->Blit(std::shared_ptr<Texture>(), m_shadow_blur_buffer, material, 7);
-                    }
-                    else
-                    {
-                        float scale_xy = i->m_range * tg;
-                        auto wvp = vp * Matrix4x4::TRS(i->GetTransform()->GetPosition(), i->GetTransform()->GetRotation(), Vector3(scale_xy, scale_xy, i->m_range));
-                        material->SetMatrix("WorldViewProjection", wvp);
-                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 2);
-                        GraphicsDevice::GetInstance()->DrawMeshNow(m_volume_cone, 0, material, 8);
-                    }
-                }
-            }
-            else if(i->m_type == LightType::Directional)
-            {
-                GraphicsDevice::GetInstance()->Blit(std::shared_ptr<Texture>(), m_shadow_blur_buffer, material, 7);
-            }
-        }
-
-        camera->SetClearColor(old_clear_color);
-    }*/
 }
