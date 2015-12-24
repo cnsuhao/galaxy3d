@@ -109,13 +109,13 @@ void Launcher::Start()
     Light::SetCascadeSplits(cascade_splits);
     
     light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetPosition(Vector3(0, 4, -18));
+    light->GetTransform()->SetPosition(Vector3(0, 4, 0));
     light->GetTransform()->SetRotation(Quaternion::Euler(45, -90, 0));
     light->SetType(LightType::Spot);
     light->SetSpotAngle(120);
     light->SetRange(100);
     light->EnableShadow(true);
-    light->SetColor(Color(0, 1, 0, 1));/*
+    light->SetColor(Color(1, 1, 1, 1));/*
     auto tp = light->GetGameObject()->AddComponent<TweenPosition>();
     tp->from = Vector3(0, 4, -18);
     tp->to = Vector3(0, 4, 50);
