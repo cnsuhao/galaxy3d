@@ -9,15 +9,19 @@ namespace Galaxy3D
     class TweenRotation : public Tweenner
     {
     public:
-        TweenRotation() {}
+        TweenRotation():
+            is_world(false),
+            quaternion_slerp(false)
+        {}
 
     protected:
         virtual void SetValue(float t);
 
     public:
-        Quaternion from;
-        Quaternion to;
+        Vector3 from;
+        Vector3 to;
         bool is_world;
+        bool quaternion_slerp;
     };
 }
 

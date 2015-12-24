@@ -20,12 +20,19 @@ namespace Galaxy3D
         {
             SetValue(1);
 
-            if(on_finished != NULL)
+            if(loop)
             {
-                on_finished(this, target);
+                Reset();
             }
+            else
+            {
+                if(on_finished != NULL)
+                {
+                    on_finished(this, target);
+                }
 
-            Component::Destroy(GetComponentPtr());
+                Component::Destroy(GetComponentPtr());
+            }
         }
         else if(now - m_time_start >= delay)
         {
