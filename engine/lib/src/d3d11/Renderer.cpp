@@ -333,21 +333,23 @@ namespace Galaxy3D
         if(shadow_light)
         {
             std::list<RenderBatch> batches;
+            auto type = shadow_light->GetType();
 
-            if(shadow_light->GetType() == LightType::Spot)
+            if(type == LightType::Spot)
             {
                 FrustumBounds frustum(shadow_light->GetViewProjectionMatrix());
 
                 for(auto &i : m_batches_renderable_opaque)
                 {
                     auto bounds = i.renderer->GetBounds();
-                    if(frustum.ContainsBounds(bounds.center, bounds.extents))
+                    int contains = frustum.ContainsBounds(bounds.center, bounds.extents);
+                    if(contains != ContainsResult::Out)
                     {
                         batches.push_back(i);
                     }
                 }
             }
-            else
+            else if(type == LightType::Directional)
             {
                 auto &m = shadow_light->GetProjectionMatrix();
                 float right = (1 - m.m03) / m.m00;
@@ -358,7 +360,7 @@ namespace Galaxy3D
                 float z_far = (m.m23 - 1) / m.m22;
 
                 auto frustum = FrustumBounds::FrustumBoundsOrtho(left, right, bottom, top, z_near, z_far);
-                auto &world_to_light = shadow_light->GetWorldToLocalMatrix();
+                auto &world_to_view = shadow_light->GetViewMatrix();
 
                 for(auto &i : m_batches_renderable_opaque)
                 {
@@ -375,15 +377,12 @@ namespace Galaxy3D
                     corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
                     corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
 
-                    int contains = frustum.ContainsPoints(corners, &world_to_light);
-
+                    int contains = frustum.ContainsPoints(corners, &world_to_view);
                     if(contains != ContainsResult::Out)
                     {
                         batches.push_back(i);
                     }
                 }
-
-                //batches = m_batches_renderable_opaque;
             }
             
             RenderBatches(batches);

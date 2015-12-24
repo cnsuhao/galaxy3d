@@ -7,7 +7,16 @@ namespace Galaxy3D
     {
         float value = curve.Evaluate(t);
 
-        Quaternion rot = Quaternion::Lerp(from, to, value);
+        Quaternion rot;
+        if(quaternion_slerp)
+        {
+            rot = Quaternion::SLerp(Quaternion::Euler(from), Quaternion::Euler(to), value);
+        }
+        else
+        {
+            rot = Quaternion::Euler(Vector3::Lerp(from, to, value));
+        }
+
         if(on_set_value != NULL)
         {
             on_set_value(this, target, &rot);

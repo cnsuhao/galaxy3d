@@ -10,6 +10,7 @@ namespace Galaxy3D
     std::list<Light *> Light::m_lights;
     std::shared_ptr<Mesh> Light::m_volume_sphere;
     std::shared_ptr<Mesh> Light::m_volume_cone;
+    float Light::CASCADE_SPLITS[CASCADE_SHADOW_COUNT];
 
     Light::Light():
         m_type(LightType::Point),
@@ -108,6 +109,14 @@ namespace Galaxy3D
         return Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
     }
 
+    void Light::SetCascadeSplits(const std::vector<float> &splits)
+    {
+        for(size_t i=0; i<CASCADE_SHADOW_COUNT && i < splits.size(); i++)
+        {
+            CASCADE_SPLITS[i] = splits[i];
+        }
+    }
+
     void Light::SetCascadeViewport(int index)
     {
         m_cascade_rendering_index = index;
@@ -136,14 +145,13 @@ namespace Galaxy3D
         {
             if(m_cascade)
             {
-                const int nears[] = {0, 1, 5};
-                const int fars[] = {1, 5, 21};
-                const float full = 21.0f;
+                const float nears[] = {0, CASCADE_SPLITS[0], CASCADE_SPLITS[0] + CASCADE_SPLITS[1]};
+                const float fars[] = {CASCADE_SPLITS[0], CASCADE_SPLITS[0] + CASCADE_SPLITS[1], CASCADE_SPLITS[0] + CASCADE_SPLITS[2]};
 
                 for(int i=0; i<CASCADE_SHADOW_COUNT; i++)
                 {
-                    float clip_near = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), nears[i] / full, false);
-                    float clip_far = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), fars[i] / full, false);
+                    float clip_near = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), nears[i], false);
+                    float clip_far = Mathf::Lerp(camera->GetClipNear(), camera->GetClipFar(), fars[i], false);
                     auto projection_matrix = BuildDirectionalMatrix(clip_near, clip_far);
 
                     auto view_matrix = Matrix4x4::LookTo(
@@ -153,7 +161,7 @@ namespace Galaxy3D
 
                     m_view_projection_matrices[i] = projection_matrix * view_matrix;
                     m_projection_matrices[i] = projection_matrix;
-                    m_world_to_local_matrices[i] = GetTransform()->GetLocalToWorldMatrix();
+                    m_view_matrices[i] = view_matrix;
                 }
             }
             else
@@ -167,7 +175,7 @@ namespace Galaxy3D
 
                 m_view_projection_matrices[0] = projection_matrix * view_matrix;
                 m_projection_matrices[0] = projection_matrix;
-                m_world_to_local_matrices[0] = GetTransform()->GetLocalToWorldMatrix();
+                m_view_matrices[0] = view_matrix;
             }
         }
         else if(m_type == LightType::Spot)
@@ -181,7 +189,7 @@ namespace Galaxy3D
 
             m_view_projection_matrices[0] = projection_matrix * view_matrix;
             m_projection_matrices[0] = projection_matrix;
-            m_world_to_local_matrices[0] = GetTransform()->GetLocalToWorldMatrix();
+            m_view_matrices[0] = view_matrix;
         }
     }
 
@@ -204,7 +212,7 @@ namespace Galaxy3D
 
         for(auto i : m_lights)
         {
-            if(i->m_shadow_enable)
+            if(i->m_shadow_enable && i->m_type != LightType::Point)
             {
                 lights.push_back(i);
             }

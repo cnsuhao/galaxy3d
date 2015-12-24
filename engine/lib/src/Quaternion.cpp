@@ -91,14 +91,69 @@ namespace Galaxy3D
 
     Quaternion Quaternion::Lerp(const Quaternion &from, const Quaternion &to, float t)
     {
+        Quaternion to_;
+        
+        if(Mathf::Sign(from.w) * Mathf::Sign(to.w) < 0)
+        {
+            to_.x = -to.x;
+            to_.y = -to.y;
+            to_.z = -to.z;
+            to_.w = -to.w;
+        }
+        else
+        {
+            to_ = to;
+        }
+
         Quaternion lerp = Quaternion(
-            Mathf::Lerp(from.x, to.x, t, false),
-            Mathf::Lerp(from.y, to.y, t, false),
-            Mathf::Lerp(from.z, to.z, t, false),
-            Mathf::Lerp(from.w, to.w, t, false));
+            Mathf::Lerp(from.x, to_.x, t, false),
+            Mathf::Lerp(from.y, to_.y, t, false),
+            Mathf::Lerp(from.z, to_.z, t, false),
+            Mathf::Lerp(from.w, to_.w, t, false));
         lerp.Normalize();
 
         return lerp;
+    }
+
+    Quaternion Quaternion::SLerp(const Quaternion &from, const Quaternion &to, float t)
+    {
+        Quaternion to_;
+
+        if(Mathf::Sign(from.w) * Mathf::Sign(to.w) < 0)
+        {
+            to_.x = -to.x;
+            to_.y = -to.y;
+            to_.z = -to.z;
+            to_.w = -to.w;
+        }
+        else
+        {
+            to_ = to;
+        }
+
+        Quaternion slerp;
+        float t_ = 1 - t;
+        float Wa, Wb;
+        float theta = acos(from.x * to_.x + from.y * to_.y + from.z * to_.z + from.w * to_.w);
+        float sn = sin(theta);
+        if(!Mathf::FloatEqual(sn, 0))
+        {
+            float inv_sin = 1 / sn;
+            Wa = sin(t_ * theta);
+            Wb = sin(t * theta);
+            slerp.x = (Wa * from.x + Wb * to_.x) * inv_sin;
+            slerp.y = (Wa * from.y + Wb * to_.y) * inv_sin;
+            slerp.z = (Wa * from.z + Wb * to_.z) * inv_sin;
+            slerp.w = (Wa * from.w + Wb * to_.w) * inv_sin;
+        }
+        else
+        {
+            slerp = from;
+        }
+        
+        slerp.Normalize();
+
+        return slerp;
     }
 
     Quaternion Quaternion::FromToRotation(const Vector3 &from_direction, const Vector3 &to_direction)

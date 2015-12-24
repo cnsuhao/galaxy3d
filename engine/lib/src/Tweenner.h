@@ -15,6 +15,7 @@ namespace Galaxy3D
         Tweenner():
             delay(0),
             duration(0),
+            loop(false),
             on_set_value(NULL),
             on_finished(NULL)
         {}
@@ -29,6 +30,7 @@ namespace Galaxy3D
         float delay;
         float duration;
         AnimationCurve curve;
+        bool loop;
         std::weak_ptr<Component> target;
         OnTweenSetValue on_set_value;
         OnTweenFinished on_finished;

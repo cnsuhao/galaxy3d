@@ -9,7 +9,9 @@ namespace Galaxy3D
     class TweenPosition : public Tweenner
     {
     public:
-        TweenPosition() {}
+        TweenPosition():
+            is_world(false)
+        {}
 
     protected:
         virtual void SetValue(float t);

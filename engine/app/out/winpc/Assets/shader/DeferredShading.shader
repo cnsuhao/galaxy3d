@@ -212,6 +212,11 @@ DeferredShading
             float4 ShadowMapTexel;
         };
 
+        cbuffer cbuffer9 : register(b9)
+        {
+            float4 CascadeSplits;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -698,8 +703,8 @@ DeferredShading
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
 
-            float range = (LightRange.x - length(dis)) / LightRange.x;
-            float intensity = range;
+            float range = max((LightRange.x - length(dis)) / LightRange.x, 0);
+            float intensity = range * range;
 
             // spot factor
             float rho = dot(SpotParam.xyz, -light_dir);
