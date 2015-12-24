@@ -259,6 +259,11 @@ namespace Galaxy3D
                 std::vector<Matrix4x4> mats(3);
                 memcpy(&mats[0], i->m_view_projection_matrices, sizeof(Matrix4x4) * 3);
                 material->SetMatrixArray("ViewProjectionLight", mats);
+
+                if(i->IsCascade())
+                {
+                    material->SetVector("CascadeSplits", Vector4(CASCADE_SPLITS[0], CASCADE_SPLITS[1], CASCADE_SPLITS[2]));
+                }
             }
 
             material->SetVector("LightRange", Vector4(i->m_range));

@@ -103,9 +103,9 @@ void Launcher::Start()
 
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
-    cascade_splits.push_back(0.05f);
-    cascade_splits.push_back(0.25f);
-    cascade_splits.push_back(0.7f);
+    cascade_splits.push_back(0.08f);
+    cascade_splits.push_back(0.28f);
+    cascade_splits.push_back(0.64f);
     Light::SetCascadeSplits(cascade_splits);
     
     light = GameObject::Create("light")->AddComponent<Light>();
@@ -141,7 +141,7 @@ void Launcher::Start()
     tp->loop = true;
     
     light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetRotation(Quaternion::Euler(30, 0, 0));
+    light->GetTransform()->SetRotation(Quaternion::Euler(30, -150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
