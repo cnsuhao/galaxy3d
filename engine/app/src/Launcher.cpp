@@ -115,7 +115,7 @@ void Launcher::Start()
     light->SetSpotAngle(120);
     light->SetRange(100);
     light->EnableShadow(true);
-    light->SetColor(Color(0, 1, 0, 1));
+    light->SetColor(Color(0, 1, 0, 1));/*
     auto tp = light->GetGameObject()->AddComponent<TweenPosition>();
     tp->from = Vector3(0, 4, -18);
     tp->to = Vector3(0, 4, 50);
@@ -125,7 +125,7 @@ void Launcher::Start()
     tp->curve.keys.push_back(Keyframe(0.5, 1, 1, -1));
     tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
     tp->loop = true;
-
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(3, 1, -18));
     light->SetRange(10);
@@ -139,13 +139,14 @@ void Launcher::Start()
     tp->curve.keys.push_back(Keyframe(0.5, 1, 1, -1));
     tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
     tp->loop = true;
-    
+    */
     light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetRotation(Quaternion::Euler(30, -150, 0));
+    light->GetTransform()->SetRotation(Quaternion::Euler(30, 150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
     light->EnableCascade(true);
+    /*
     auto tro = light->GetGameObject()->AddComponent<TweenRotation>();
     tro->from = Vector3(30, 0, 0);
     tro->to = Vector3(30, 360, 0);
@@ -153,7 +154,7 @@ void Launcher::Start()
     tro->curve = AnimationCurve();
     tro->curve.keys.push_back(Keyframe(0, 0, 1, 1));
     tro->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-    tro->loop = true;
+    tro->loop = true;*/
 #endif
 
 #if DEMO_SCENE

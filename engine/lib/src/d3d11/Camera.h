@@ -24,6 +24,7 @@ namespace Galaxy3D
 		virtual ~Camera();
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
 		void SetClearColor(const Color &color) {m_clear_color = color;}
+        Color GetClearColor() const {return m_clear_color;}
 		void SetDepth(int depth);
 		void SetCullingMask(int mask) {m_culling_mask = mask;}
         bool IsCulling(std::shared_ptr<GameObject> &obj) const;

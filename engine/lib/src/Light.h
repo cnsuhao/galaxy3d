@@ -59,6 +59,7 @@ namespace Galaxy3D
         static std::list<Light *> m_lights;
         static std::shared_ptr<Mesh> m_volume_sphere;
         static std::shared_ptr<Mesh> m_volume_cone;
+        static std::shared_ptr<RenderTexture> m_shadow_blur_buffer;
         LightType::Enum m_type;
         float m_spot_angle;
         float m_range;
@@ -76,6 +77,7 @@ namespace Galaxy3D
 
         static void CreateVolumeMeshIfNeeded();
         static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material);
+        static void CreateShadowBlurBufferIfNeeded(int width, int height);
         void BuildViewProjectionMatrix();
         Matrix4x4 BuildDirectionalMatrix(float clip_near, float clip_far);
     };

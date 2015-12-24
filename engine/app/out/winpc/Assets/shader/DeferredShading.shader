@@ -54,6 +54,20 @@ DeferredShading
         RenderStates rs_light_quad_add
     }
 
+    Pass 7
+    {
+        VS vs_light_quad
+        PS ps_light_shadow
+        RenderStates rs_light_quad
+    }
+
+    Pass 8
+    {
+        VS vs_light_volume
+        PS ps_light_shadow
+        RenderStates rs_light_volume
+    }
+
     RenderStates rs_light_quad
     {
         Cull Off
@@ -199,20 +213,15 @@ DeferredShading
 
         cbuffer cbuffer6 : register(b6)
         {
-            float4 GlobalAmbient;
+            float4 _ZBufferParams;
         };
 
         cbuffer cbuffer7 : register(b7)
         {
-            float4 _ZBufferParams;
-        };
-
-        cbuffer cbuffer8 : register(b8)
-        {
             float4 ShadowMapTexel;
         };
 
-        cbuffer cbuffer9 : register(b9)
+        cbuffer cbuffer8 : register(b8)
         {
             float4 CascadeSplits;
         };
@@ -227,6 +236,8 @@ DeferredShading
         SamplerState _GBuffer3_Sampler : register(s3);
         Texture2D _ShadowMapTexture : register(t4);
         SamplerState _ShadowMapTexture_Sampler : register(s4);
+        Texture2D ShadowScreen : register(t5);
+        SamplerState ShadowScreen_Sampler : register(s5);
 
         struct PS_INPUT
         {
@@ -272,8 +283,6 @@ DeferredShading
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
 
-            //return _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
-
             float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
@@ -306,8 +315,9 @@ DeferredShading
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
 
-            // shadow
             float intensity = 1;
+            /*
+            // shadow
             if((int) ShadowParam.w == 1)
             {
                 bool cascade = ((int) ShadowParam.z) == 1;
@@ -379,16 +389,20 @@ DeferredShading
                             uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
                             uv_shadow.y = top[index] + uv_shadow.y * tex_height;
                         }
+                        float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
 
-                        shadow += PCF(uv_shadow, ShadowMapTexel.xy * float2(tex_witdh, tex_height), pos_light.z) * weights[i];
+                        float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
+                        shadow += c;
                     }
                 }
 
                 intensity *= shadow;
             }
+            */
+            float shadow = ShadowScreen.Sample(ShadowScreen_Sampler, uv).r;
+            intensity *= shadow;
 
-            c.rgb = GlobalAmbient.rgb * c.rgb +
-                (diff * c.rgb * LightColor.rgb +
+            c.rgb = (diff * c.rgb * LightColor.rgb +
                 spec * LightColor.rgb) * intensity;
 
             return c;
@@ -721,7 +735,7 @@ DeferredShading
                 factor = pow(p, 1);
             }
             intensity *= factor;
-
+            /*
             // shadow
             if((int) ShadowParam.w == 1)
             {
@@ -736,8 +750,177 @@ DeferredShading
                 float shadow = PCF(uv_shadow, ShadowMapTexel.xy, pos_light.z);
                 intensity *= shadow;
             }
-
+            */
             return float4(c * intensity, 1);
+        }
+    }
+
+    HLPS ps_light_shadow
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix InvViewProjection;
+        };
+
+        cbuffer cbuffer1 : register(b1)
+        {
+            matrix ViewProjectionLight[3];
+        };
+
+        cbuffer cbuffer2 : register(b2)
+        {
+            float4 ShadowParam;
+        };
+
+        cbuffer cbuffer3 : register(b3)
+        {
+            float4 _ZBufferParams;
+        };
+
+        cbuffer cbuffer4 : register(b4)
+        {
+            float4 ShadowMapTexel;
+        };
+
+        cbuffer cbuffer5 : register(b5)
+        {
+            float4 CascadeSplits;
+        };
+
+        Texture2D _GBuffer3 : register(t0);
+        SamplerState _GBuffer3_Sampler : register(s0);
+        Texture2D _ShadowMapTexture : register(t1);
+        SamplerState _ShadowMapTexture_Sampler : register(s1);
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float4 v_pos_proj : TEXCOORD0;
+        };
+
+        float texture2DCompare(float2 uv, float compare)
+        {
+            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+            return step(compare, depth);
+        }
+
+        float PCF(float2 uv, float2 size, float z)
+        {
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            float shadow_weak = clamp(1 - strength, 0, 1);
+            float shadow = 0;
+            for(int i=-2;i<=2;i++)
+            {
+                for(int j=-2;j<=2;j++)
+                {
+                    float2 off = float2(i, j) * size;
+                    float compare = texture2DCompare(uv + off, z - bias);
+
+                    if(compare < 1)
+                    {
+                        shadow += shadow_weak;
+                    }
+                    else
+                    {
+                        shadow += 1;
+                    }
+                }
+            }
+            return shadow / 25;
+        }
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            float2 uv = 0;
+            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
+            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
+
+            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
+            
+            // get world position from depth and pos proj
+            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
+            pos_world /= pos_world.w;
+            //
+            
+            // shadow
+            bool cascade = ((int) ShadowParam.z) == 1;
+
+            float weights[3];
+            
+            if(cascade)
+            {
+                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+                if(linear_depth < CascadeSplits.x - 0.005)
+                {
+                    weights[0] = 1;
+                    weights[1] = 0;
+                    weights[2] = 0;
+                }
+                else if(linear_depth < CascadeSplits.x + 0.005)
+                {
+                    weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
+                    weights[1] = 1 - weights[0];
+                    weights[2] = 0;
+                }
+                else if(linear_depth < CascadeSplits.y)
+                {
+                    weights[0] = 0;
+                    weights[1] = 1;
+                    weights[2] = 0;
+                }
+                else
+                {
+                    weights[0] = 0;
+                    weights[1] = 0;
+                    weights[2] = 1;
+                }
+            }
+            else
+            {
+                weights[0] = 1;
+                weights[1] = 0;
+                weights[2] = 0;
+            }
+
+            float shadow = 0;
+            int blend_count = 0;
+            for(int i=0; i<3; i++)
+            {
+                if(weights[i] > 0)
+                {
+                    int index = i;
+                    float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
+                    float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                    pos_light.z = min(1, pos_light.z);
+                    blend_count += 1;
+                    
+                    float2 uv_shadow = 0;
+                    uv_shadow.x = 0.5 + pos_light.x * 0.5;
+                    uv_shadow.y = 0.5 - pos_light.y * 0.5;
+
+                    float tex_witdh = 1.0;
+                    float tex_height = 1.0;
+                    if(cascade)
+                    {
+                        float left[3] = {0, 0.67, 0.67};
+                        float top[3] = {0, 0, 0.75};
+                        float width[3] = {0.67, 0.33, 0.33};
+                        float height[3] = {1, 0.75, 0.25};
+                        tex_witdh = width[index];
+                        tex_height = height[index];
+
+                        uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
+                        uv_shadow.y = top[index] + uv_shadow.y * tex_height;
+                    }
+                    float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
+
+                    float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
+                    shadow += c;
+                }
+            }
+
+            return shadow;
         }
     }
 }

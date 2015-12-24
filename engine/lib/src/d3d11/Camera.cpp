@@ -476,11 +476,6 @@ namespace Galaxy3D
         // swap diffuse buffer to back
         RenderTexture::SwapColorBuffer(front, back);
 
-        // set target to front force
-        front->MarkKeepBuffer(true);
-        SetRenderTarget(front, true);
-        front->MarkKeepBuffer(false);
-
         // now target is front, and diffuse is in back,
         // add all lights colors to front buffer
         m_deferred_shading_mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
@@ -490,6 +485,12 @@ namespace Galaxy3D
         m_deferred_shading_mat->SetTexture("_GBuffer3", m_g_buffer[2]);
         m_deferred_shading_mat->SetVector("EyePosition", Vector4(GetTransform()->GetPosition()));
         m_deferred_shading_mat->SetMatrix("InvViewProjection", GetViewProjectionMatrix().Inverse());
+
+        // set target to front force
+        front->MarkKeepBuffer(true);
+        SetRenderTarget(front, true);
+        front->MarkKeepBuffer(false);
+
         Light::DeferredShadingLights(m_deferred_shading_mat);
     }
 
