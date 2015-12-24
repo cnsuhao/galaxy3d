@@ -46,7 +46,7 @@ void Launcher::Start()
     cam3d->SetClearColor(Color(12, 29, 54, 255) * (1.0f / 255));
     cam3d->GetTransform()->SetPosition(Vector3(-1, 6, -30));
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, 0, 0));
-    cam3d->SetClipPlane(0.3f, 500);
+    cam3d->SetClipPlane(0.3f, 100);
     cam3d->EnableDeferredShading(true);
     //cam3d->EnableHDR(true);
     //cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
@@ -95,27 +95,27 @@ void Launcher::Start()
     }
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetRotation(Quaternion::Euler(50, 50, 0));
+    light->GetTransform()->SetRotation(Quaternion::Euler(45, 50, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(1, 1, 1, 1) * 0.2f);
+    light->SetColor(Color(1, 1, 1, 1) * 0.7f);
     light->EnableShadow(true);
     light->EnableCascade(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
     cascade_splits.push_back(0.08f);
-    cascade_splits.push_back(0.28f);
-    cascade_splits.push_back(0.64f);
+    cascade_splits.push_back(0.2f);
+    cascade_splits.push_back(0.72f);
     Light::SetCascadeSplits(cascade_splits);
-    
+    /*
     light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetPosition(Vector3(0, 4, 0));
+    light->GetTransform()->SetPosition(Vector3(0, 4, -15));
     light->GetTransform()->SetRotation(Quaternion::Euler(45, -90, 0));
     light->SetType(LightType::Spot);
     light->SetSpotAngle(120);
     light->SetRange(100);
     light->EnableShadow(true);
-    light->SetColor(Color(1, 1, 1, 1));/*
+    light->SetColor(Color(1, 1, 1, 1));
     auto tp = light->GetGameObject()->AddComponent<TweenPosition>();
     tp->from = Vector3(0, 4, -18);
     tp->to = Vector3(0, 4, 50);
@@ -139,14 +139,13 @@ void Launcher::Start()
     tp->curve.keys.push_back(Keyframe(0.5, 1, 1, -1));
     tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
     tp->loop = true;
-    */
+    
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(30, 150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
-    light->EnableCascade(true);
-    /*
+    light->EnableCascade(true)
     auto tro = light->GetGameObject()->AddComponent<TweenRotation>();
     tro->from = Vector3(30, 0, 0);
     tro->to = Vector3(30, 360, 0);

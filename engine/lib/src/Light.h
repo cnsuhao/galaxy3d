@@ -52,7 +52,7 @@ namespace Galaxy3D
         void SetCascadeViewport(int index);
 
     private:
-        static const int SHADOW_MAP_SIZE_W = 1024;
+        static const int SHADOW_MAP_SIZE_W = 2048;
         static const int SHADOW_MAP_SIZE_H = 1024;
         static float CASCADE_SPLITS[CASCADE_SHADOW_COUNT];
         static const float SPOT_NEAR;
@@ -78,6 +78,7 @@ namespace Galaxy3D
         static void CreateVolumeMeshIfNeeded();
         static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material);
         static void CreateShadowBlurBufferIfNeeded(int width, int height);
+        static void BlurShadow(std::shared_ptr<Material> &material);
         void BuildViewProjectionMatrix();
         Matrix4x4 BuildDirectionalMatrix(float clip_near, float clip_far);
     };
