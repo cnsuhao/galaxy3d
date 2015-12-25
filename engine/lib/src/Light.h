@@ -52,8 +52,7 @@ namespace Galaxy3D
         void SetCascadeViewport(int index);
 
     private:
-        static const int SHADOW_MAP_SIZE_W = 2048;
-        static const int SHADOW_MAP_SIZE_H = 1024;
+        static const int SHADOW_MAP_SIZE = 1024;
         static float CASCADE_SPLITS[CASCADE_SHADOW_COUNT];
         static const float SPOT_NEAR;
         static std::list<Light *> m_lights;
