@@ -48,9 +48,9 @@ void Launcher::Start()
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, 0, 0));
     cam3d->SetClipPlane(0.05f, 300);
     cam3d->EnableDeferredShading(true);
-    //cam3d->EnableHDR(true);
-    //cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
-    //cam3d->GetGameObject()->AddComponent<ImageEffectToneMapping>();
+    cam3d->EnableHDR(true);
+    cam3d->GetGameObject()->AddComponent<ImageEffectBloom>();
+    cam3d->GetGameObject()->AddComponent<ImageEffectToneMapping>();
 
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.0f;
 
@@ -107,7 +107,7 @@ void Launcher::Start()
     cascade_splits.push_back(0.15f);
     cascade_splits.push_back(0.35f);
     Light::SetCascadeSplits(cascade_splits);
-    
+
     light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetPosition(Vector3(0, 4, -15));
     light->GetTransform()->SetRotation(Quaternion::Euler(45, -90, 0));
@@ -115,7 +115,7 @@ void Launcher::Start()
     light->SetSpotAngle(120);
     light->SetRange(100);
     light->EnableShadow(true);
-    light->SetColor(Color(1, 1, 1, 1));
+    light->SetColor(Color(0, 1, 0, 1));
     auto tp = light->GetGameObject()->AddComponent<TweenPosition>();
     tp->from = Vector3(0, 4, -18);
     tp->to = Vector3(0, 4, 50);
@@ -145,7 +145,7 @@ void Launcher::Start()
     light->SetType(LightType::Directional);
     light->SetColor(Color(1, 1, 1, 1) * 0.2f);
     light->EnableShadow(true);
-    light->EnableCascade(true);/*
+    light->EnableCascade(true);
     auto tro = light->GetGameObject()->AddComponent<TweenRotation>();
     tro->from = Vector3(30, 0, 0);
     tro->to = Vector3(30, 360, 0);
@@ -153,7 +153,7 @@ void Launcher::Start()
     tro->curve = AnimationCurve();
     tro->curve.keys.push_back(Keyframe(0, 0, 1, 1));
     tro->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-    tro->loop = true;*/
+    tro->loop = true;
 #endif
 
 #if DEMO_SCENE
