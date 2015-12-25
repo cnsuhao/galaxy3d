@@ -44,7 +44,7 @@ namespace Galaxy3D
         {
             if(!m_shadow_map)
             {
-                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE_W, SHADOW_MAP_SIZE_H, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Bilinear);
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT, SHADOW_MAP_SIZE, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Point);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Galaxy3D
     {
         if(!m_shadow_blur_buffer)
         {
-            m_shadow_blur_buffer = RenderTexture::Create(width, height, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Bilinear);
+            m_shadow_blur_buffer = RenderTexture::Create(width, height, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Point);
         }
     }
 
@@ -132,16 +132,11 @@ namespace Galaxy3D
 
         auto shadow_map = GetShadowMap();
 
-        float left[3] = {0, 0.5f, 0.5f};
-        float top[3] = {0, 0, 0.5f};
-        float width[3] = {0.5f, 0.5f, 0.5f};
-        float height[3] = {1, 0.5f, 0.5f};
-
         Rect rect;
-        rect.left = left[index] * shadow_map->GetWidth();
-        rect.top = top[index] * shadow_map->GetHeight();
-        rect.width = width[index] * shadow_map->GetWidth();
-        rect.height = height[index] * shadow_map->GetHeight();
+        rect.left = index * shadow_map->GetWidth() / (float) CASCADE_SHADOW_COUNT;
+        rect.top = 0;
+        rect.width = shadow_map->GetWidth() / (float) CASCADE_SHADOW_COUNT;
+        rect.height = (float) shadow_map->GetHeight();
         Camera::SetViewport(rect);
     }
 
@@ -154,8 +149,8 @@ namespace Galaxy3D
         {
             if(m_cascade)
             {
-                const float nears[] = {0, CASCADE_SPLITS[0], CASCADE_SPLITS[0] + CASCADE_SPLITS[1]};
-                const float fars[] = {CASCADE_SPLITS[0], CASCADE_SPLITS[0] + CASCADE_SPLITS[1], CASCADE_SPLITS[0] + CASCADE_SPLITS[2]};
+                const float nears[] = {0, CASCADE_SPLITS[0], CASCADE_SPLITS[1]};
+                const float fars[] = {CASCADE_SPLITS[0], CASCADE_SPLITS[1], CASCADE_SPLITS[2]};
 
                 for(int i=0; i<CASCADE_SHADOW_COUNT; i++)
                 {
@@ -256,7 +251,7 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
         
         material->SetZBufferParams(camera);
-        material->SetVector("ShadowMapTexel", Vector4(1.0f / SHADOW_MAP_SIZE_W, 1.0f / SHADOW_MAP_SIZE_H));
+        material->SetVector("ShadowMapTexel", Vector4(1.0f / (SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT), 1.0f / SHADOW_MAP_SIZE));
 
         // shading other lights with blend add
         for(auto i : m_lights)

@@ -248,7 +248,7 @@ DeferredShading
             float2 uv = 0;
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
-
+//return ShadowScreen.Sample(ShadowScreen_Sampler, uv).r;
             float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
@@ -634,9 +634,9 @@ DeferredShading
             float strength = ShadowParam.y;
             float shadow_weak = clamp(1 - strength, 0, 1);
             float shadow = 0;
-            for(int i=-0;i<=0;i++)
+            for(int i=-1;i<=1;i++)
             {
-                for(int j=-0;j<=0;j++)
+                for(int j=-1;j<=1;j++)
                 {
                     float2 off = float2(i, j) * size;
                     float compare = texture2DCompare(uv + off, z - bias);
@@ -651,7 +651,7 @@ DeferredShading
                     }
                 }
             }
-            return shadow / 1;
+            return shadow / 9;
         }
 
         float4 main(PS_INPUT input) : SV_Target
@@ -659,9 +659,9 @@ DeferredShading
             float2 uv = 0;
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
-
+//return _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
             float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
-            
+
             // get world position from depth and pos proj
             float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
             pos_world /= pos_world.w;
@@ -675,29 +675,33 @@ DeferredShading
             if(cascade)
             {
                 float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
-                if(linear_depth < CascadeSplits.x - 0.005)
+                if(linear_depth < CascadeSplits.x)
                 {
                     weights[0] = 1;
                     weights[1] = 0;
                     weights[2] = 0;
-                }
+                }/*
                 else if(linear_depth < CascadeSplits.x + 0.005)
                 {
                     weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
                     weights[1] = 1 - weights[0];
                     weights[2] = 0;
-                }
+                }*/
                 else if(linear_depth < CascadeSplits.y)
                 {
                     weights[0] = 0;
                     weights[1] = 1;
                     weights[2] = 0;
                 }
-                else
+                else if(linear_depth < CascadeSplits.z)
                 {
                     weights[0] = 0;
                     weights[1] = 0;
                     weights[2] = 1;
+                }
+                else
+                {
+                    return 1;
                 }
             }
             else
@@ -727,16 +731,10 @@ DeferredShading
                     float tex_height = 1.0;
                     if(cascade)
                     {
-                        float left[3] = {0, 0.5f, 0.5f};
-                        float top[3] = {0, 0, 0.5f};
-                        float width[3] = {0.5f, 0.5f, 0.5f};
-                        float height[3] = {1, 0.5f, 0.5f};
-                        tex_witdh = width[index];
-                        tex_height = height[index];
-
-                        uv_shadow.x = left[index] + uv_shadow.x * tex_witdh;
-                        uv_shadow.y = top[index] + uv_shadow.y * tex_height;
+                        tex_witdh = 1.0 / 3;
+                        uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
                     }
+
                     float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
 
                     float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
