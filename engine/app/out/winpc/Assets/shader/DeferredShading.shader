@@ -54,27 +54,6 @@ DeferredShading
         RenderStates rs_light_quad_add
     }
 
-    Pass 7
-    {
-        VS vs_light_quad
-        PS ps_light_shadow
-        RenderStates rs_light_quad
-    }
-
-    Pass 8
-    {
-        VS vs_light_volume
-        PS ps_light_shadow
-        RenderStates rs_light_volume_shadow
-    }
-
-    Pass 9
-    {
-        VS vs_blur
-        PS ps_blur
-        RenderStates rs_light_quad
-    }
-
     RenderStates rs_light_quad
     {
         Cull Off
@@ -116,24 +95,6 @@ DeferredShading
         ZWrite Off
         ZTest GEqual
         Blend One, One
-        Stencil
-        {
-            Ref 0
-            ReadMask 255
-            WriteMask 255
-            Comp Equal
-            Pass Replace
-            Fail Replace
-            ZFail Replace
-        }
-    }
-
-    RenderStates rs_light_volume_shadow
-    {
-        Cull Front
-        ZWrite Off
-        ZTest GEqual
-        Blend Off
         Stencil
         {
             Ref 0
@@ -226,6 +187,31 @@ DeferredShading
             matrix InvViewProjection;
         };
 
+        cbuffer cbuffer4 : register(b4)
+        {
+            matrix ViewProjectionLight[3];
+        };
+
+        cbuffer cbuffer5 : register(b5)
+        {
+            float4 ShadowParam;
+        };
+
+        cbuffer cbuffer6 : register(b6)
+        {
+            float4 _ZBufferParams;
+        };
+
+        cbuffer cbuffer7 : register(b7)
+        {
+            float4 ShadowMapTexel;
+        };
+
+        cbuffer cbuffer8 : register(b8)
+        {
+            float4 CascadeSplits;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -234,8 +220,8 @@ DeferredShading
         SamplerState _GBuffer2_Sampler : register(s2);
         Texture2D _GBuffer3 : register(t3);
         SamplerState _GBuffer3_Sampler : register(s3);
-        Texture2D ShadowScreen : register(t4);
-        SamplerState ShadowScreen_Sampler : register(s4);
+        Texture2D _ShadowMapTexture : register(t4);
+        SamplerState _ShadowMapTexture_Sampler : register(s4);
 
         struct PS_INPUT
         {
@@ -243,12 +229,126 @@ DeferredShading
             float4 v_pos_proj : TEXCOORD0;
         };
 
+        float texture2DCompare(float2 uv, float compare)
+        {
+            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+            return step(compare, depth);
+        }
+
+        float PCF(float2 uv, float2 size, float z)
+        {
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            float shadow_weak = clamp(1 - strength, 0, 1);
+            float shadow = 0;
+            int pcf_size = 2;
+
+            for(int i=-pcf_size;i<=pcf_size;i++)
+            {
+                for(int j=-pcf_size;j<=pcf_size;j++)
+                {
+                    float2 off = float2(i, j) * size;
+                    float compare = texture2DCompare(uv + off, z - bias);
+
+                    if(compare < 1)
+                    {
+                        shadow += shadow_weak;
+                    }
+                    else
+                    {
+                        shadow += 1;
+                    }
+                }
+            }
+            return shadow / ((pcf_size*2+1) * (pcf_size*2+1));
+        }
+
+        float sample_shadow(float2 uv, float depth, float4 pos_world)
+        {
+            // shadow
+            bool cascade = ((int) ShadowParam.z) == 1;
+
+            float weights[3];
+
+            if(cascade)
+            {
+                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+                if(linear_depth < CascadeSplits.x)
+                {
+                    weights[0] = 1;
+                    weights[1] = 0;
+                    weights[2] = 0;
+                }/*
+                 else if(linear_depth < CascadeSplits.x + 0.005)
+                 {
+                 weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
+                 weights[1] = 1 - weights[0];
+                 weights[2] = 0;
+                 }*/
+                else if(linear_depth < CascadeSplits.y)
+                {
+                    weights[0] = 0;
+                    weights[1] = 1;
+                    weights[2] = 0;
+                }
+                else if(linear_depth < CascadeSplits.z)
+                {
+                    weights[0] = 0;
+                    weights[1] = 0;
+                    weights[2] = 1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                weights[0] = 1;
+                weights[1] = 0;
+                weights[2] = 0;
+            }
+
+            float shadow = 0;
+            int blend_count = 0;
+            for(int i=0; i<3; i++)
+            {
+                if(weights[i] > 0)
+                {
+                    int index = i;
+                    float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
+                    float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                    pos_light.z = min(1, pos_light.z);
+                    blend_count += 1;
+
+                    float2 uv_shadow = 0;
+                    uv_shadow.x = 0.5 + pos_light.x * 0.5;
+                    uv_shadow.y = 0.5 - pos_light.y * 0.5;
+
+                    float tex_witdh = 1.0;
+                    float tex_height = 1.0;
+                    if(cascade)
+                    {
+                        tex_witdh = 1.0 / 3;
+                        uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
+                    }
+
+                    float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
+
+                    float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
+                    shadow += c;
+                }
+            }
+
+            return shadow;
+        }
+
         float4 main(PS_INPUT input) : SV_Target
         {
             float2 uv = 0;
             uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
             uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
-//return ShadowScreen.Sample(ShadowScreen_Sampler, uv).r;
+//return _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
             float4 c = _MainTex.Sample(_MainTex_Sampler, uv);
             float2 normal_2 = _GBuffer1.Sample(_GBuffer1_Sampler, uv).rg;
             float2 specular = _GBuffer2.Sample(_GBuffer2_Sampler, uv).zw;
@@ -282,7 +382,8 @@ DeferredShading
             float spec = pow(nh, 128 * specular.x) * specular.y;
 
             float intensity = 1;
-            float shadow = ShadowScreen.Sample(ShadowScreen_Sampler, uv).r;
+
+            float shadow = sample_shadow(uv, depth, pos_world);
             intensity *= shadow;
 
             c.rgb = (diff * c.rgb * LightColor.rgb +
@@ -493,6 +594,31 @@ DeferredShading
             float4 SpotParam;
         };
 
+        cbuffer cbuffer6 : register(b6)
+        {
+            matrix ViewProjectionLight[3];
+        };
+
+        cbuffer cbuffer7 : register(b7)
+        {
+            float4 ShadowParam;
+        };
+
+        cbuffer cbuffer8 : register(b8)
+        {
+            float4 _ZBufferParams;
+        };
+
+        cbuffer cbuffer9 : register(b9)
+        {
+            float4 ShadowMapTexel;
+        };
+
+        cbuffer cbuffer10 : register(b10)
+        {
+            float4 CascadeSplits;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _GBuffer1 : register(t1);
@@ -501,14 +627,128 @@ DeferredShading
         SamplerState _GBuffer2_Sampler : register(s2);
         Texture2D _GBuffer3 : register(t3);
         SamplerState _GBuffer3_Sampler : register(s3);
-        Texture2D ShadowScreen : register(t4);
-        SamplerState ShadowScreen_Sampler : register(s4);
+        Texture2D _ShadowMapTexture : register(t4);
+        SamplerState _ShadowMapTexture_Sampler : register(s4);
 
         struct PS_INPUT
         {
             float4 v_pos : SV_POSITION;
             float4 v_pos_proj : TEXCOORD0;
         };
+
+        float texture2DCompare(float2 uv, float compare)
+        {
+            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
+            return step(compare, depth);
+        }
+
+        float PCF(float2 uv, float2 size, float z)
+        {
+            float bias = ShadowParam.x;
+            float strength = ShadowParam.y;
+            float shadow_weak = clamp(1 - strength, 0, 1);
+            float shadow = 0;
+            int pcf_size = 2;
+
+            for(int i=-pcf_size;i<=pcf_size;i++)
+            {
+                for(int j=-pcf_size;j<=pcf_size;j++)
+                {
+                    float2 off = float2(i, j) * size;
+                    float compare = texture2DCompare(uv + off, z - bias);
+
+                    if(compare < 1)
+                    {
+                        shadow += shadow_weak;
+                    }
+                    else
+                    {
+                        shadow += 1;
+                    }
+                }
+            }
+            return shadow / ((pcf_size*2+1) * (pcf_size*2+1));
+        }
+
+        float sample_shadow(float2 uv, float depth, float4 pos_world)
+        {
+            // shadow
+            bool cascade = ((int) ShadowParam.z) == 1;
+
+            float weights[3];
+
+            if(cascade)
+            {
+                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+                if(linear_depth < CascadeSplits.x)
+                {
+                    weights[0] = 1;
+                    weights[1] = 0;
+                    weights[2] = 0;
+                }/*
+                 else if(linear_depth < CascadeSplits.x + 0.005)
+                 {
+                 weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
+                 weights[1] = 1 - weights[0];
+                 weights[2] = 0;
+                 }*/
+                else if(linear_depth < CascadeSplits.y)
+                {
+                    weights[0] = 0;
+                    weights[1] = 1;
+                    weights[2] = 0;
+                }
+                else if(linear_depth < CascadeSplits.z)
+                {
+                    weights[0] = 0;
+                    weights[1] = 0;
+                    weights[2] = 1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                weights[0] = 1;
+                weights[1] = 0;
+                weights[2] = 0;
+            }
+
+            float shadow = 0;
+            int blend_count = 0;
+            for(int i=0; i<3; i++)
+            {
+                if(weights[i] > 0)
+                {
+                    int index = i;
+                    float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
+                    float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+                    pos_light.z = min(1, pos_light.z);
+                    blend_count += 1;
+
+                    float2 uv_shadow = 0;
+                    uv_shadow.x = 0.5 + pos_light.x * 0.5;
+                    uv_shadow.y = 0.5 - pos_light.y * 0.5;
+
+                    float tex_witdh = 1.0;
+                    float tex_height = 1.0;
+                    if(cascade)
+                    {
+                        tex_witdh = 1.0 / 3;
+                        uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
+                    }
+
+                    float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
+
+                    float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
+                    shadow += c;
+                }
+            }
+
+            return shadow;
+        }
 
         float4 main(PS_INPUT input) : SV_Target
         {
@@ -572,254 +812,10 @@ DeferredShading
             }
             intensity *= factor;
             
-            float shadow = ShadowScreen.Sample(ShadowScreen_Sampler, uv).r;
+            float shadow = sample_shadow(uv, depth, pos_world);
             intensity *= shadow;
 
             return float4(c * intensity, 1);
-        }
-    }
-
-    HLPS ps_light_shadow
-    {
-        cbuffer cbuffer0 : register(b0)
-        {
-            matrix InvViewProjection;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            matrix ViewProjectionLight[3];
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
-            float4 ShadowParam;
-        };
-
-        cbuffer cbuffer3 : register(b3)
-        {
-            float4 _ZBufferParams;
-        };
-
-        cbuffer cbuffer4 : register(b4)
-        {
-            float4 ShadowMapTexel;
-        };
-
-        cbuffer cbuffer5 : register(b5)
-        {
-            float4 CascadeSplits;
-        };
-
-        Texture2D _GBuffer3 : register(t0);
-        SamplerState _GBuffer3_Sampler : register(s0);
-        Texture2D _ShadowMapTexture : register(t1);
-        SamplerState _ShadowMapTexture_Sampler : register(s1);
-
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float4 v_pos_proj : TEXCOORD0;
-        };
-
-        float texture2DCompare(float2 uv, float compare)
-        {
-            float depth = _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
-            return step(compare, depth);
-        }
-
-        float PCF(float2 uv, float2 size, float z)
-        {
-            float bias = ShadowParam.x;
-            float strength = ShadowParam.y;
-            float shadow_weak = clamp(1 - strength, 0, 1);
-            float shadow = 0;
-            for(int i=-1;i<=1;i++)
-            {
-                for(int j=-1;j<=1;j++)
-                {
-                    float2 off = float2(i, j) * size;
-                    float compare = texture2DCompare(uv + off, z - bias);
-
-                    if(compare < 1)
-                    {
-                        shadow += shadow_weak;
-                    }
-                    else
-                    {
-                        shadow += 1;
-                    }
-                }
-            }
-            return shadow / 9;
-        }
-
-        float4 main(PS_INPUT input) : SV_Target
-        {
-            float2 uv = 0;
-            uv.x = input.v_pos_proj.x / input.v_pos_proj.w * 0.5 + 0.5;
-            uv.y = 1 - (input.v_pos_proj.y / input.v_pos_proj.w * 0.5 + 0.5);
-//return _ShadowMapTexture.Sample(_ShadowMapTexture_Sampler, uv).r;
-            float depth = _GBuffer3.Sample(_GBuffer3_Sampler, uv).r;
-
-            // get world position from depth and pos proj
-            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
-            pos_world /= pos_world.w;
-            //
-            
-            // shadow
-            bool cascade = ((int) ShadowParam.z) == 1;
-
-            float weights[3];
-            
-            if(cascade)
-            {
-                float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
-                if(linear_depth < CascadeSplits.x)
-                {
-                    weights[0] = 1;
-                    weights[1] = 0;
-                    weights[2] = 0;
-                }/*
-                else if(linear_depth < CascadeSplits.x + 0.005)
-                {
-                    weights[0] = 1 - (linear_depth - (CascadeSplits.x - 0.005)) / 0.01;
-                    weights[1] = 1 - weights[0];
-                    weights[2] = 0;
-                }*/
-                else if(linear_depth < CascadeSplits.y)
-                {
-                    weights[0] = 0;
-                    weights[1] = 1;
-                    weights[2] = 0;
-                }
-                else if(linear_depth < CascadeSplits.z)
-                {
-                    weights[0] = 0;
-                    weights[1] = 0;
-                    weights[2] = 1;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            else
-            {
-                weights[0] = 1;
-                weights[1] = 0;
-                weights[2] = 0;
-            }
-
-            float shadow = 0;
-            int blend_count = 0;
-            for(int i=0; i<3; i++)
-            {
-                if(weights[i] > 0)
-                {
-                    int index = i;
-                    float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
-                    float3 pos_light = pos_light_4.xyz / pos_light_4.w;
-                    pos_light.z = min(1, pos_light.z);
-                    blend_count += 1;
-                    
-                    float2 uv_shadow = 0;
-                    uv_shadow.x = 0.5 + pos_light.x * 0.5;
-                    uv_shadow.y = 0.5 - pos_light.y * 0.5;
-
-                    float tex_witdh = 1.0;
-                    float tex_height = 1.0;
-                    if(cascade)
-                    {
-                        tex_witdh = 1.0 / 3;
-                        uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
-                    }
-
-                    float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
-
-                    float c = PCF(uv_shadow, size, pos_light.z) * weights[i];
-                    shadow += c;
-                }
-            }
-
-            return shadow;
-        }
-    }
-
-    HLVS vs_blur
-    {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 _Offsets;
-        };
-
-        struct VS_INPUT
-        {
-            float4 Position : POSITION;
-            float3 Normal : NORMAL;
-            float4 Tangent : TANGENT;
-            float2 Texcoord0 : TEXCOORD0;
-            float2 Texcoord1 : TEXCOORD1;
-        };
-
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float2 v_uv : TEXCOORD0;
-            float4 v_uv01 : TEXCOORD1;
-            float4 v_uv23 : TEXCOORD2;
-            float4 v_uv45 : TEXCOORD3;
-            float4 v_uv67 : TEXCOORD4;
-        };
-
-        PS_INPUT main(VS_INPUT input)
-        {
-            PS_INPUT output = (PS_INPUT) 0;
-
-            output.v_pos = input.Position;
-            output.v_uv = input.Texcoord0;
-            output.v_uv01 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1);
-            output.v_uv23 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 2.0;
-            output.v_uv45 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 3.0;
-            output.v_uv67 =  input.Texcoord0.xyxy + _Offsets.xyxy * float4(1, 1, -1, -1) * 4.0;
-
-            return output;
-        }
-    }
-
-    HLPS ps_blur
-    {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 _Threshhold;
-        };
-
-        Texture2D _MainTex : register(t0);
-        SamplerState _MainTex_Sampler : register(s0);
-
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float2 v_uv : TEXCOORD0;
-            float4 v_uv01 : TEXCOORD1;
-            float4 v_uv23 : TEXCOORD2;
-            float4 v_uv45 : TEXCOORD3;
-            float4 v_uv67 : TEXCOORD4;
-        };
-
-        float4 main(PS_INPUT input) : SV_Target
-        {
-            float4 color = float4(0, 0, 0, 0);
-            color += 0.225 * _MainTex.Sample(_MainTex_Sampler, input.v_uv);
-            color += 0.150 * _MainTex.Sample(_MainTex_Sampler, input.v_uv01.xy);
-            color += 0.150 * _MainTex.Sample(_MainTex_Sampler, input.v_uv01.zw);
-            color += 0.110 * _MainTex.Sample(_MainTex_Sampler, input.v_uv23.xy);
-            color += 0.110 * _MainTex.Sample(_MainTex_Sampler, input.v_uv23.zw);
-            color += 0.075 * _MainTex.Sample(_MainTex_Sampler, input.v_uv45.xy);
-            color += 0.075 * _MainTex.Sample(_MainTex_Sampler, input.v_uv45.zw);	
-            color += 0.0525 * _MainTex.Sample(_MainTex_Sampler, input.v_uv67.xy);
-            color += 0.0525 * _MainTex.Sample(_MainTex_Sampler, input.v_uv67.zw);
-            return color;
         }
     }
 }
