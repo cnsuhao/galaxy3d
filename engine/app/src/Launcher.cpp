@@ -1,8 +1,8 @@
 #include "Launcher.h"
 
-#define DEMO_TERRAIN 0
+#define DEMO_TERRAIN 1
 #define DEMO_SCENE 0
-#define DEMO_DEFERRED_SHADING 1
+#define DEMO_DEFERRED_SHADING 0
 
 using namespace Galaxy3D;
 
@@ -227,7 +227,6 @@ void Launcher::Start()
 
     auto ter = terrain_obj->AddComponent<Terrain>();
     ter->SetCamera(cam3d);
-
     ter->LoadData(
         513,
         200.0f, 600.0f,
@@ -235,20 +234,19 @@ void Launcher::Start()
         Application::GetDataPath() + "/Assets/terrain/Terrain.png",
         terrain_texs, 3);
     auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
-    renderer->SetTerrain(ter);
     
-    auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/LightmapFar-1.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
 
-    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Objects/LightmapFar-0.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.push_back(lightmap);
-    
+
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
-    mesh->SetLayerRecursive(Layer::Default);
+    mesh->SetLayerRecursively(Layer::Default);
     Renderer::BuildOctree(mesh);
-    
+
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Arthas.anim");
-    anim_obj->SetLayerRecursive(Layer::Default);
+    anim_obj->SetLayerRecursively(Layer::Default);
     anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
     anim_obj->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
@@ -260,14 +258,17 @@ void Launcher::Start()
     anim->GetAnimationState(clip_move)->wrap_mode = WrapMode::Loop;
     anim->Play(clip_idle);
     
+    auto light = GameObject::Create("light")->AddComponent<Light>();
+    light->GetTransform()->SetRotation(Quaternion::Euler(135, 0, 0));
+    light->SetType(LightType::Directional);
+    light->SetColor(Color(1, 1, 1, 1) * 0.6f);
+
+    RenderSettings::SetGlobalDirectionalLight(light);
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
-    RenderSettings::light_directional_color = Color(1, 1, 1, 1) * 0.6f;
-    RenderSettings::light_directional_intensity = 1;
-    RenderSettings::light_directional_direction = Vector3(0, -1, -1);
 
     Physics::Init();
     Physics::CreateTerrainRigidBody(ter.get());
-
+    
     //set anim to ground
     Vector3 anim_pos = anim->GetTransform()->GetPosition();
     Vector3 hit;
@@ -383,7 +384,7 @@ void Launcher::Update()
                         {
                             rot = Quaternion::AngleAxis(deg, axis);
                         }
-
+                        /*
                         auto tr = anim->GetGameObject()->GetComponent<TweenRotation>();
                         if(tr)
                         {
@@ -399,10 +400,10 @@ void Launcher::Update()
                         }
 
                         Quaternion rot_now = anim->GetTransform()->GetRotation();
-
+                        
                         tr->from = rot_now;
                         tr->to = rot * rot_now;
-                        tr->duration = rot_time;
+                        tr->duration = rot_time;*/
                     }
                 }
             }
