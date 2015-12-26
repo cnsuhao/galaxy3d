@@ -14,6 +14,7 @@ Transparent/Diffuse
 
 	RenderStates rs
 	{
+        ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha
 	}
 

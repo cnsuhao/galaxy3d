@@ -14,21 +14,6 @@ Lightmap/Diffuse
 
 	RenderStates rs
 	{
-        Cull Back
-		ZWrite On
-		ZTest LEqual
-		Offset 0, 0
-		Blend Off
-		Stencil
-		{
-			Ref referenceValue
-			ReadMask readMask
-			WriteMask writeMask
-			Comp comparisonFunction
-			Pass stencilOperation
-			Fail stencilOperation
-			ZFail stencilOperation
-		}
 	}
 
 	HLVS vs

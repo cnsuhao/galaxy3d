@@ -111,11 +111,11 @@ namespace Galaxy3D
                     
                     if(dis1 < dis2)
                     {
-                        compare = -1;
+                        compare = 1;
                     }
                     else if(dis1 > dis2)
                     {
-                        compare = 1;
+                        compare = -1;
                     }
                 }
             }

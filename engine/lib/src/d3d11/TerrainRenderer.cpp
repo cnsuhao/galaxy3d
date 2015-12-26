@@ -1,7 +1,18 @@
 #include "TerrainRenderer.h"
+#include "GameObject.h"
 
 namespace Galaxy3D
 {
+    void TerrainRenderer::Start()
+    {
+        auto terrain = GetGameObject()->GetComponent<Terrain>();
+        if(terrain)
+        {
+            m_terrain = terrain;
+            SetSharedMaterial(m_terrain->GetSharedMaterial());
+        }
+    }
+
     void TerrainRenderer::Render(int material_index)
     {
         if(!m_terrain)

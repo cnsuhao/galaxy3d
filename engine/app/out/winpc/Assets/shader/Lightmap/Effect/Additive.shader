@@ -1,4 +1,4 @@
-Lightmap/Particles/Additive
+Lightmap/Effect/Additive
 {
 	Tags
 	{
@@ -16,8 +16,6 @@ Lightmap/Particles/Additive
 	{
         Cull Off
 		ZWrite Off
-		ZTest LEqual
-		Offset 0, 0
         Blend SrcAlpha One
 	}
 

@@ -1,4 +1,4 @@
-Lightmap/Transparent/Diffuse
+Effect/Additive
 {
 	Tags
 	{
@@ -14,8 +14,9 @@ Lightmap/Transparent/Diffuse
 
 	RenderStates rs
 	{
-        ZWrite Off
-        Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+		ZWrite Off
+        Blend SrcAlpha One
 	}
 
 	HLVS vs
@@ -25,31 +26,19 @@ Lightmap/Transparent/Diffuse
 			matrix WorldViewProjection;
 		};
 
-        cbuffer cbuffer1 : register( b1 )
-        {
-            float4 _Color;
-        };
-
-        cbuffer cbuffer2 : register( b2 )
-        {
-            float4 _LightmapST;
-        };
-
 		struct VS_INPUT
 		{
-			float4 Position : POSITION;
+            float4 Position : POSITION;
             float3 Normal : NORMAL;
             float4 Tangent : TANGENT;
-			float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord0 : TEXCOORD0;
             float2 Texcoord1 : TEXCOORD1;
 		};
 
 		struct PS_INPUT
 		{
-			float4 v_pos : SV_POSITION;
-			float2 v_uv : TEXCOORD0;
-            float2 v_uv_2 : TEXCOORD1;
-            float4 v_color : COLOR;
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
 		};
 
 		PS_INPUT main( VS_INPUT input )
@@ -58,9 +47,6 @@ Lightmap/Transparent/Diffuse
 
 			output.v_pos = mul( input.Position, WorldViewProjection );
 			output.v_uv = input.Texcoord0;
-            output.v_uv_2 = input.Texcoord1 * _LightmapST.xy + _LightmapST.zw;
-            output.v_uv_2.y = 1.0 - output.v_uv_2.y;
-            output.v_color = _Color;
 
 			return output;
 		}
@@ -68,23 +54,23 @@ Lightmap/Transparent/Diffuse
 
 	HLPS ps
 	{
+        cbuffer cbuffer0 : register( b0 )
+        {
+            float4 _TintColor;
+        };
+        
 		Texture2D _MainTex : register( t0 );
 		SamplerState _MainTex_Sampler : register( s0 );
-        Texture2D _Lightmap : register(t1);
-        SamplerState _Lightmap_Sampler : register(s1);
 
 		struct PS_INPUT
 		{
-			float4 v_pos : SV_POSITION;
-			float2 v_uv : TEXCOORD0;
-            float2 v_uv_2 : TEXCOORD1;
-            float4 v_color : COLOR;
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
 		};
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
-            c.rgb = c.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _TintColor * 2;
 			return c;
 		}
 	}
