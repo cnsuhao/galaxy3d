@@ -9,6 +9,7 @@ using namespace Galaxy3D;
 #if DEMO_TERRAIN
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
+Vector3 anim_rot(0, 0, 0);
 #endif
 
 #if DEMO_SCENE
@@ -248,7 +249,7 @@ void Launcher::Start()
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Arthas.anim");
     anim_obj->SetLayerRecursively(Layer::Default);
     anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
-    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 0, 0));
+    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(anim_rot));
     anim_obj->GetTransform()->SetScale(Vector3(1, 1, 1) * 0.5f);
 
     cam_offset = cam3d->GetTransform()->GetPosition() - anim_obj->GetTransform()->GetPosition();
@@ -282,29 +283,45 @@ void Launcher::Start()
 }
 
 #if DEMO_TERRAIN
-void Launcher::OnTweenSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
+void Launcher::OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
 {
     if(!target.expired())
     {
         auto thiz = std::dynamic_pointer_cast<Launcher>(target.lock());
         Vector3 *pos = (Vector3 *) value;
+        TweenPosition *tp = (TweenPosition *) tween;
 
         Vector3 hit;
         Vector3 nor;
         if(Physics::RarCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit, nor))
         {
             hit.y += 0.05f;
+
             thiz->anim->GetTransform()->SetPosition(hit);
         }
     }
 }
 
-void Launcher::OnTweenFinished(Component *tween, std::weak_ptr<Component> &target)
+void Launcher::OnTweenPositionFinished(Component *tween, std::weak_ptr<Component> &target)
 {
     if(!target.expired())
     {
         auto thiz = std::dynamic_pointer_cast<Launcher>(target.lock());
         thiz->anim->CrossFade(clip_idle);
+    }
+}
+
+void Launcher::OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component> &target, void *value)
+{
+    if(!target.expired())
+    {
+        auto thiz = std::dynamic_pointer_cast<Launcher>(target.lock());
+        Vector3 *rot = (Vector3 *) value;
+        TweenRotation *tr = (TweenRotation *) tween;
+        auto quat = Quaternion::Euler(*rot);
+
+        thiz->anim->GetTransform()->SetRotation(quat);
+        anim_rot = *rot;
     }
 }
 #endif
@@ -348,13 +365,12 @@ void Launcher::Update()
                     else
                     {
                         tp = anim->GetGameObject()->AddComponent<TweenPosition>();
-                        tp->delay = 0;
                         tp->is_world = true;
                         tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
                         tp->curve.keys.push_back(Keyframe(1, 1, 1, 1));
                         tp->target = GetComponentPtr();
-                        tp->on_set_value = OnTweenSetValue;
-                        tp->on_finished = OnTweenFinished;
+                        tp->on_set_value = OnTweenPositionSetValue;
+                        tp->on_finished = OnTweenPositionFinished;
                     }
 
                     tp->from = pos_old;
@@ -363,9 +379,59 @@ void Launcher::Update()
                 }
 
                 {
+                    float deg = atan2f(dir.x, dir.z) * Mathf::Rad2Deg;
+                    if(deg < 0)
+                    {
+                        deg += 360;
+                    }
+                    if(deg > 360)
+                    {
+                        deg -= 360;
+                    }
+                    if(anim_rot.y < 0)
+                    {
+                        anim_rot.y += 360;
+                    }
+                    if(anim_rot.y > 360)
+                    {
+                        anim_rot.y -= 360;
+                    }
+                    if(fabs(anim_rot.y - deg) > 180)
+                    {
+                        if(anim_rot.y > deg)
+                        {
+                            anim_rot.y -= 360;
+                        }
+                        else
+                        {
+                            anim_rot.y += 360;
+                        }
+                    }
+                    float rot_speed = 270.0f;
+                    float rot_time = fabs(anim_rot.y - deg) / rot_speed;
+
+                    auto tr = anim->GetGameObject()->GetComponent<TweenRotation>();
+                    if(tr)
+                    {
+                        tr->Reset();
+                    }
+                    else
+                    {
+                        tr = anim->GetGameObject()->AddComponent<TweenRotation>();
+                        tr->is_world = true;
+                        tr->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+                        tr->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+                        tr->target = GetComponentPtr();
+                        tr->on_set_value = OnTweenRotationSetValue;
+                    }
+
+                    tr->from = anim_rot;
+                    tr->to = Vector3(0, deg, 0);
+                    tr->duration = rot_time;
+
+                    /*
                     Vector3 origin = anim->GetTransform()->GetForward();
                     Vector3 fn = Vector3::Normalize(dir);
-                    
                     if(!Mathf::FloatEqual(fn.SqrMagnitude(), 0) && fn != origin)
                     {
                         // tween rotation
@@ -384,7 +450,7 @@ void Launcher::Update()
                         {
                             rot = Quaternion::AngleAxis(deg, axis);
                         }
-                        /*
+                        
                         auto tr = anim->GetGameObject()->GetComponent<TweenRotation>();
                         if(tr)
                         {
@@ -403,8 +469,8 @@ void Launcher::Update()
                         
                         tr->from = rot_now;
                         tr->to = rot * rot_now;
-                        tr->duration = rot_time;*/
-                    }
+                        tr->duration = rot_time;
+                    }*/
                 }
             }
 		}
