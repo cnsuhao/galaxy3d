@@ -10,7 +10,7 @@ namespace Galaxy3D
     std::list<Light *> Light::m_lights;
     std::shared_ptr<Mesh> Light::m_volume_sphere;
     std::shared_ptr<Mesh> Light::m_volume_cone;
-    float Light::CASCADE_SPLITS[CASCADE_SHADOW_COUNT];
+    float Light::CASCADE_SPLITS[CASCADE_SHADOW_COUNT] = {0.05f, 0.15f, 0.35f};
 
     Light::Light():
         m_type(LightType::Point),

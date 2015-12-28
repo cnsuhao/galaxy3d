@@ -3,6 +3,38 @@
 
 namespace Galaxy3D
 {
+    DEFINE_COM_CLASS(SkinnedMeshRenderer);
+
+    void SkinnedMeshRenderer::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        auto src_renderer = std::dynamic_pointer_cast<SkinnedMeshRenderer>(source);
+
+        Renderer::DeepCopy(source);
+
+        m_mesh = src_renderer->m_mesh;
+        m_bones = src_renderer->m_bones;
+    }
+
+    void SkinnedMeshRenderer::CalculateBounds()
+    {
+        auto &vertices = m_mesh->GetVerticesSkinned();
+        auto &tran = GetTransform();
+
+        Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
+        Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
+        for(size_t j=0; j<vertices.size(); j++)
+        {
+            auto &v = vertices[j].POSITION;
+            auto v_world = tran->TransformPoint(v);
+
+            box_max = Vector3::Max(box_max, v_world);
+            box_min = Vector3::Min(box_min, v_world);
+        }
+        Bounds bounds((box_max + box_min) * 0.5f, (box_max - box_min) * 0.5f);
+
+        SetBounds(bounds);
+    }
+
     void SkinnedMeshRenderer::Render(int material_index)
     {
         if(!m_mesh)
@@ -54,6 +86,8 @@ namespace Galaxy3D
             mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
             mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
 
+            auto shadow_light = RenderSettings::GetLightRenderingShadowMap();
+
             auto pass_count = shader->GetPassCount();
             for(int j=0; j<pass_count; j++)
             {
@@ -68,11 +102,43 @@ namespace Galaxy3D
                     context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
                 }
 
-                mat->ReadyPass(j);
-                pass->rs->Apply();
-                mat->ApplyPass(j);
+                bool right_pass = false;
+                if(shadow_light)
+                {
+                    if(pass->name == "depth")
+                    {
+                        view_projection = shadow_light->GetViewProjectionMatrix();
+                        mat->SetMatrix("ViewProjection", view_projection);
+                        right_pass = true;
+                    }
+                }
+                else
+                {
+                    if(camera->IsDeferredShading())
+                    {
+                        if(pass->name == "deferred")
+                        {
+                            right_pass = true;
+                        }
+                    }
+                    else
+                    {
+                        if( pass->name != "depth" &&
+                            pass->name != "deferred")
+                        {
+                            right_pass = true;
+                        }
+                    }
+                }
 
-                DrawIndexed(index_count, index_offset);
+                if(right_pass)
+                {
+                    mat->ReadyPass(j);
+                    pass->rs->Apply();
+                    mat->ApplyPass(j);
+
+                    DrawIndexed(index_count, index_offset);
+                }
             }
         }while(false);
 

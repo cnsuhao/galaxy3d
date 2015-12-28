@@ -34,6 +34,7 @@
 #include "ImageEffectGlobalFog.h"
 #include "Light.h"
 #include "MeshRenderer.h"
+#include "SkinnedMeshRenderer.h"
 
 namespace Galaxy3D
 {

@@ -1,10 +1,51 @@
 #include "Animation.h"
 #include "GTTime.h"
+#include "GameObject.h"
+#include "SkinnedMeshRenderer.h"
 #include <map>
 #include "Debug.h"
 
 namespace Galaxy3D
 {
+    DEFINE_COM_CLASS(Animation);
+
+    void Animation::DeepCopy(std::shared_ptr<Object> &source)
+    {
+        auto src_anim = std::dynamic_pointer_cast<Animation>(source);
+
+        Component::DeepCopy(source);
+
+        m_states = src_anim->m_states;
+        m_bones = src_anim->m_bones;
+
+        // make sure bones are matching copy,
+        // include animation and all skinned mesh renderer
+        auto renderers = GetGameObject()->GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        for(auto &i : m_bones)
+        {
+            auto path = i.first;
+            auto bone = GetTransform()->Find(path);
+            auto src_bone = i.second;
+            i.second = bone;
+
+            for(auto &j : renderers)
+            {
+                auto &renderer_bones = j->GetBones();
+
+                for(size_t k=0; k<renderer_bones.size(); k++)
+                {
+                    if(renderer_bones[k] == src_bone)
+                    {
+                        renderer_bones[k] = bone;
+                    }
+                }
+            }
+        }
+
+        Stop();
+    }
+
     void Animation::Start()
     {
     }
@@ -16,14 +57,14 @@ namespace Galaxy3D
         for(auto i = m_states.begin(); i != m_states.end(); i++)
         {
             AnimationState *state = &i->second;
-            AnimationClip *c = &state->clip;
+            AnimationClip *c = state->clip.get();
 
             if(!state->enabled)
             {
                 continue;
             }
 
-            float now = GTTime::GetRealTimeSinceStartup();
+            float now = GTTime::GetTime();
             float time = now - state->time_start;
             state->time += time * state->play_dir;
             state->time_start = now;
@@ -176,8 +217,8 @@ namespace Galaxy3D
                 auto state = j->state;
                 float weight = j->weight;
 
-                auto find = state->clip.curves.find(i->first);
-                if(find != state->clip.curves.end())
+                auto find = state->clip->curves.find(i->first);
+                if(find != state->clip->curves.end())
                 {
                     Vector3 pos;
                     Quaternion rot;
@@ -289,6 +330,14 @@ namespace Galaxy3D
         return NULL;
     }
 
+    void Animation::Stop()
+    {
+        for(auto &i : m_states)
+        {
+            Stop(i.second);
+        }
+    }
+
     void Animation::Stop(AnimationState &state)
     {
         state.enabled = false;
@@ -298,7 +347,7 @@ namespace Galaxy3D
 
     void Animation::Play(AnimationState &state)
     {
-        state.time_start = GTTime::GetRealTimeSinceStartup();
+        state.time_start = GTTime::GetTime();
         state.enabled = true;
     }
 
