@@ -1,8 +1,9 @@
 #include "Launcher.h"
 
-#define DEMO_TERRAIN 1
+#define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
+#define DEMO_DEF 1
 
 using namespace Galaxy3D;
 
@@ -246,7 +247,7 @@ void Launcher::Start()
     mesh->SetLayerRecursively(Layer::Default);
     Renderer::BuildOctree(mesh);
 
-    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Arthas.anim");
+    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Arthas/Arthas.anim");
     anim_obj->SetLayerRecursively(Layer::Default);
     anim_obj->GetTransform()->SetPosition(Vector3(91, 0.05f, 103));
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(anim_rot));
@@ -279,6 +280,26 @@ void Launcher::Start()
         hit.y += 0.05f;
         anim->GetTransform()->SetPosition(hit);
     }
+#endif
+
+#if DEMO_DEF
+    cam3d = GameObject::Create("camera")->AddComponent<Camera>();
+    cam3d->SetFieldOfView(30);
+    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->SetDepth(0);
+    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam3d->GetTransform()->SetPosition(Vector3(0, 5, -15));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(15, 0, 0));
+
+    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
+    anim_obj->SetLayerRecursively(Layer::Default);
+    anim_obj->GetTransform()->SetPosition(Vector3(0, 0, 0));
+    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
+    anim = anim_obj->GetComponent<Animation>();
+    anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
+    anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
+    anim->Play("idle");
 #endif
 }
 
