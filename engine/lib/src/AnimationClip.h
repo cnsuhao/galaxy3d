@@ -36,8 +36,9 @@ namespace Galaxy3D
         std::vector<AnimationCurve> curves;
     };
 
-    struct AnimationClip : public Object
+    class AnimationClip : public Object
     {
+    public:
         float frame_rate;
         float length;
         WrapMode::Enum wrap_mode;

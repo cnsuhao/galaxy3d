@@ -28,20 +28,6 @@ Diffuse
 	RenderStates rs
 	{
         Cull Back
-		ZWrite On
-		ZTest LEqual
-		Offset 0, 0
-		Blend Off
-		Stencil
-		{
-			Ref 0
-			ReadMask 255
-			WriteMask 255
-			Comp Always
-			Pass Keep
-			Fail Keep
-			ZFail Keep
-		}
 	}
 
 	HLVS vs
@@ -199,8 +185,8 @@ Diffuse
             output.v_pos = mul(input.Position, WorldViewProjection);
             output.v_uv = input.Texcoord0;
             output.v_color = _Color;
-            output.v_normal_world = mul(input.Normal, World);
             output.v_pos_proj = output.v_pos;
+            output.v_normal_world = mul(input.Normal, World);
 
             return output;
         }
@@ -208,11 +194,6 @@ Diffuse
 
     HLPS ps_deferred
     {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 GlobalAmbient;
-        };
-
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
 

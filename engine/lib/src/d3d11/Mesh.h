@@ -20,6 +20,7 @@ namespace Galaxy3D
         ~Mesh();
         void SetVertices(const std::vector<VertexMesh> &vertices) {m_vertices = vertices;}
         std::vector<VertexMesh> &GetVertices() {return m_vertices;}
+        std::vector<VertexSkinned> &GetVerticesSkinned() {return m_vertices_skinned;}
         void SetIndices(const std::vector<std::vector<unsigned short>> indices) {m_sub_indices = indices;}
         std::vector<std::vector<unsigned short>> &GetIndices() {return m_sub_indices;}
         ID3D11Buffer *GetVertexBuffer();

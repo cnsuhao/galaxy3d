@@ -48,14 +48,14 @@ namespace Galaxy3D
     struct AnimationState
     {
         AnimationState(){}
-        AnimationState(AnimationClip &clip):
+        AnimationState(std::shared_ptr<AnimationClip> &clip):
             clip(clip),
-            name(clip.GetName()),
+            name(clip->GetName()),
             blend_mode(AnimationBlendMode::Blend),
             enabled(false),
             layer(0),
-            length(clip.length),
-            normalized_speed(1 / clip.length),
+            length(clip->length),
+            normalized_speed(1 / clip->length),
             normalized_time(0),
             speed(1),
             time(0),
@@ -67,7 +67,7 @@ namespace Galaxy3D
         }
 
         std::string name;
-        AnimationClip clip;
+        std::shared_ptr<AnimationClip> clip;
         AnimationBlendMode::Enum blend_mode;
         bool enabled;
         int layer;

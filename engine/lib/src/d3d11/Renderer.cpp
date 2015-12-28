@@ -34,7 +34,7 @@ namespace Galaxy3D
 		m_lightmap_tiling_offset(),
 		m_sorting_layer(0),
 		m_sorting_order(0),
-        m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1) * Mathf::MaxFloatValue)
+        m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1))
 	{
 	}
 

@@ -284,30 +284,67 @@ void Launcher::Start()
 
 #if DEMO_DEF
     auto light = GameObject::Create("light")->AddComponent<Light>();
-    light->GetTransform()->SetRotation(Quaternion::Euler(50, 0, 0));
+    light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(1, 1, 1, 1) * 0.6f);
+    light->SetColor(Color(1, 1, 1, 1) * 1.0f);
+    light->EnableShadow(true);
+    light->EnableCascade(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
-    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.5f;
 
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam3d->SetFieldOfView(30);
-    cam3d->SetClipPlane(0.3f, 1000.0f);
+    cam3d->SetFieldOfView(45);
+    cam3d->SetClipPlane(1.0f, 100.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
-    cam3d->SetDepth(0);
-    cam3d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam3d->GetTransform()->SetPosition(Vector3(0, 5, -15));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(15, 0, 0));
+    cam3d->GetTransform()->SetPosition(Vector3(0, 3.695f, 10.3f));
+    cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, -180, 0));
+    cam3d->EnableDeferredShading(true);
+    auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
+    fog->EnableHeight(false);
+    fog->SetFogMode(FogMode::ExponentialSquared);
+    fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
+    fog->SetFogDensity(0.02f);
+
+    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
-    anim_obj->SetLayerRecursively(Layer::Default);
-    anim_obj->GetTransform()->SetPosition(Vector3(0, 0, 0));
+    anim_obj->GetTransform()->SetPosition(Vector3(0, 0.695f, 0));
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
-    anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
+    auto renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+    for(auto i : renderers)
+    {
+        i->CalculateBounds();
+    }
+
+    // anim copy
+    anim_obj = GameObject::Instantiate(anim_obj);
+    anim_obj->GetTransform()->SetPosition(Vector3(2, 0.695f, 0));
+    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
+    anim = anim_obj->GetComponent<Animation>();
+    anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
+    anim->Play("run");
+    renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+    for(auto i : renderers)
+    {
+        i->CalculateBounds();
+    }
+
+    anim_obj = GameObject::Instantiate(anim_obj);
+    anim_obj->GetTransform()->SetPosition(Vector3(-2, 0.695f, 0));
+    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
+    anim = anim_obj->GetComponent<Animation>();
+    anim->GetAnimationState("run_fast")->wrap_mode = WrapMode::Loop;
+    anim->Play("run_fast");
+    renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+    for(auto i : renderers)
+    {
+        i->CalculateBounds();
+    }
+
 #endif
 }
 

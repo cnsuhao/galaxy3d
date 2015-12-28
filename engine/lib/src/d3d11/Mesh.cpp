@@ -364,12 +364,12 @@ namespace Galaxy3D
                 BUFFER_READ(length, p, 4);
                 char wrap_mode;
                 BUFFER_READ(wrap_mode, p, 1);
-
-                AnimationClip clip;
-                clip.SetName(clip_name);
-                clip.frame_rate = frame_rate;
-                clip.length = length;
-                clip.wrap_mode = (WrapMode::Enum) wrap_mode;
+                
+                auto clip = std::shared_ptr<AnimationClip>(new AnimationClip());
+                clip->SetName(clip_name);
+                clip->frame_rate = frame_rate;
+                clip->length = length;
+                clip->wrap_mode = (WrapMode::Enum) wrap_mode;
 
                 int path_count;
                 BUFFER_READ(path_count, p, 4);
@@ -404,7 +404,7 @@ namespace Galaxy3D
                         }
                     }
 
-                    clip.curves[path] = cb;
+                    clip->curves[path] = cb;
                 }
 
                 AnimationState state(clip);
