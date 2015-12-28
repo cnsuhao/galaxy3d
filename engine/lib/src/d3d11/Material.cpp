@@ -132,7 +132,19 @@ namespace Galaxy3D
 		auto find = pass->vs->cbuffers.find(name);
 		if(find != pass->vs->cbuffers.end())
 		{
-			context->UpdateSubresource(find->second.buffer, 0, NULL, data, size, 0);
+            void *p;
+
+            if(size < find->second.size)
+            {
+                find->second.FillCPUBuffer(data, size);
+                p = find->second.cpu_buffer;
+            }
+            else
+            {
+                p = data;
+            }
+
+			context->UpdateSubresource(find->second.buffer, 0, NULL, p, find->second.size, 0);
 		}
 
         if(pass->ps != NULL)
@@ -140,7 +152,19 @@ namespace Galaxy3D
             find = pass->ps->cbuffers.find(name);
             if(find != pass->ps->cbuffers.end())
             {
-                context->UpdateSubresource(find->second.buffer, 0, NULL, data, size, 0);
+                void *p;
+
+                if(size < find->second.size)
+                {
+                    find->second.FillCPUBuffer(data, size);
+                    p = find->second.cpu_buffer;
+                }
+                else
+                {
+                    p = data;
+                }
+
+                context->UpdateSubresource(find->second.buffer, 0, NULL, p, find->second.size, 0);
             }
         }
 	}
