@@ -283,6 +283,14 @@ void Launcher::Start()
 #endif
 
 #if DEMO_DEF
+    auto light = GameObject::Create("light")->AddComponent<Light>();
+    light->GetTransform()->SetRotation(Quaternion::Euler(50, 0, 0));
+    light->SetType(LightType::Directional);
+    light->SetColor(Color(1, 1, 1, 1) * 0.6f);
+
+    RenderSettings::SetGlobalDirectionalLight(light);
+    RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
+
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(30);
     cam3d->SetClipPlane(0.3f, 1000.0f);
