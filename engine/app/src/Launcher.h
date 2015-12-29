@@ -35,6 +35,7 @@
 #include "Light.h"
 #include "MeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
+#include "NavMesh.h"
 
 namespace Galaxy3D
 {

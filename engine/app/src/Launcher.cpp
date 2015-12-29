@@ -308,8 +308,17 @@ void Launcher::Start()
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
+    // navmesh
+    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
+    Vector3 anim_pos(0, 0, 0);
+    int tri_index = NavMesh::FindTriangle(anim_pos);
+    if(tri_index >= 0)
+    {
+        anim_pos = NavMesh::GetPosition(tri_index, 0, 0);
+    }
+
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
-    anim_obj->GetTransform()->SetPosition(Vector3(0, 0.695f, 0));
+    anim_obj->GetTransform()->SetPosition(anim_pos);
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
@@ -319,32 +328,6 @@ void Launcher::Start()
     {
         i->CalculateBounds();
     }
-
-    // anim copy
-    anim_obj = GameObject::Instantiate(anim_obj);
-    anim_obj->GetTransform()->SetPosition(Vector3(2, 0.695f, 0));
-    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
-    anim = anim_obj->GetComponent<Animation>();
-    anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
-    anim->Play("run");
-    renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-    for(auto i : renderers)
-    {
-        i->CalculateBounds();
-    }
-
-    anim_obj = GameObject::Instantiate(anim_obj);
-    anim_obj->GetTransform()->SetPosition(Vector3(-2, 0.695f, 0));
-    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
-    anim = anim_obj->GetComponent<Animation>();
-    anim->GetAnimationState("run_fast")->wrap_mode = WrapMode::Loop;
-    anim->Play("run_fast");
-    renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-    for(auto i : renderers)
-    {
-        i->CalculateBounds();
-    }
-
 #endif
 }
 
