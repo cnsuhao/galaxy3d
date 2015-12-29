@@ -12,8 +12,6 @@
 #include "Debug.h"
 #include <unordered_map>
 
-#define BUFFER_READ(dest, p, size) if(size > 0){memcpy(&dest, p, size);p += size;}
-
 namespace Galaxy3D
 {
     static std::string read_string(char *&p)
