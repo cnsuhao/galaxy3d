@@ -110,11 +110,80 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 extern std::vector<Touch> g_input_touches;
 extern std::list<Touch> g_input_touch_buffer;
 bool g_input_down = false;
+extern bool g_key_down[KeyCode::COUNT];
+extern bool g_key[KeyCode::COUNT];
+extern bool g_key_up[KeyCode::COUNT];
+extern bool g_key_held[KeyCode::COUNT];
+
+static int get_key_code(int wParam)
+{
+    int key = -1;
+
+    if(wParam >= 48 && wParam < 48 + 10)
+    {
+        key = KeyCode::Alpha0 + wParam - 48;
+    }
+    else if(wParam >= 96 && wParam < 96 + 10)
+    {
+        key = KeyCode::Keypad0 + wParam - 96;
+    }
+    else if(wParam >= 65 && wParam < 65 + 'z' - 'a')
+    {
+        key = KeyCode::A + wParam - 65;
+    }
+    else if(wParam == VK_BACK)
+    {
+        key = KeyCode::Backspace;
+    }
+    else if(wParam == VK_SPACE)
+    {
+        key = KeyCode::Space;
+    }
+    else if(wParam == VK_ESCAPE)
+    {
+        key = KeyCode::Escape;
+    }
+    else if(wParam == VK_RETURN)
+    {
+        key = KeyCode::Return;
+    }
+
+    return key;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
+    case WM_KEYDOWN:
+        {
+            int key = get_key_code(wParam);
+
+            if(key >= 0)
+            {
+                if(!g_key_held[key])
+                {
+                    g_key_down[key] = true;
+                    g_key_held[key] = true;
+                    g_key[key] = true;
+                }
+            }
+        }
+        break;
+
+    case WM_KEYUP:
+        {
+            int key = get_key_code(wParam);
+
+            if(key >= 0)
+            {
+                g_key_up[key] = true;
+                g_key_held[key] = false;
+                g_key[key] = false;
+            }
+        }
+        break;
+
 	case WM_LBUTTONDOWN:
 		{
 			int x = GET_X_LPARAM(lParam);

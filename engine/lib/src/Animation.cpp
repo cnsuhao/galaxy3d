@@ -310,6 +310,7 @@ namespace Galaxy3D
 
             if(in_effect_count > 0)
             {
+                rot_final.Normalize();
                 i->second->SetLocalPositionDirect(pos_final);
                 i->second->SetLocalRotationDirect(rot_final);
                 i->second->SetLocalScaleDirect(sca_final);

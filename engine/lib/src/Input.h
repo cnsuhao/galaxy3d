@@ -282,21 +282,17 @@ namespace Galaxy3D
 	class Input
 	{
 	public:
-		static bool GetKeyDown(KeyCode key);
-		static bool GetKey(KeyCode key);
-		static bool GetKeyUp(KeyCode key);
         static bool IsMultiTouchEnabled() { return m_multi_touch_enabled; }
         static void EnableMultiTouch(bool value);
         static int GetTouchCount();
         static const Touch *GetTouch(int index);
+        static void Update();
+        static bool GetKeyDown(KeyCode::Enum key);
+        static bool GetKey(KeyCode::Enum key);
+        static bool GetKeyUp(KeyCode::Enum key);
 		static void ResetInputAxes();
-		static void Update();
         
 	private:
-		static bool m_key_down[KeyCode::COUNT];
-		static bool m_key[KeyCode::COUNT];
-		static bool m_key_up[KeyCode::COUNT];
-		static bool m_key_held[KeyCode::COUNT];
         static bool m_multi_touch_enabled;
 	};
 }

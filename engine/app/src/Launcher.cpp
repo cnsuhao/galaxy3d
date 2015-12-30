@@ -322,6 +322,7 @@ void Launcher::Start()
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
+    anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
     auto renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
     for(auto i : renderers)
@@ -380,6 +381,18 @@ void Launcher::Update()
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
+
+#if DEMO_DEF
+    if(Input::GetKeyDown(KeyCode::W))
+    {
+        anim->CrossFade("run");
+    }
+
+    if(Input::GetKeyUp(KeyCode::W))
+    {
+        anim->CrossFade("idle");
+    }
+#endif
 
 #if DEMO_TERRAIN
 	if(Input::GetTouchCount() > 0)
@@ -477,49 +490,6 @@ void Launcher::Update()
                     tr->from = anim_rot;
                     tr->to = Vector3(0, deg, 0);
                     tr->duration = rot_time;
-
-                    /*
-                    Vector3 origin = anim->GetTransform()->GetForward();
-                    Vector3 fn = Vector3::Normalize(dir);
-                    if(!Mathf::FloatEqual(fn.SqrMagnitude(), 0) && fn != origin)
-                    {
-                        // tween rotation
-                        float deg = Vector3::Angle(origin, fn);
-                        Vector3 axis = origin * fn;
-                        Quaternion rot;
-
-                        float rot_speed = 270.0f;
-                        float rot_time = deg / rot_speed;
-
-                        if(axis == Vector3(0, 0, 0))
-                        {
-                            rot = Quaternion::AngleAxis(deg, anim->GetTransform()->GetUp());
-                        }
-                        else
-                        {
-                            rot = Quaternion::AngleAxis(deg, axis);
-                        }
-                        
-                        auto tr = anim->GetGameObject()->GetComponent<TweenRotation>();
-                        if(tr)
-                        {
-                            tr->Reset();
-                        }
-                        else
-                        {
-                            tr = anim->GetGameObject()->AddComponent<TweenRotation>();
-                            tr->delay = 0;
-                            tr->is_world = true;
-                            tr->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-                            tr->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-                        }
-
-                        Quaternion rot_now = anim->GetTransform()->GetRotation();
-                        
-                        tr->from = rot_now;
-                        tr->to = rot * rot_now;
-                        tr->duration = rot_time;
-                    }*/
                 }
             }
 		}
