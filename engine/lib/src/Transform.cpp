@@ -151,9 +151,12 @@ namespace Galaxy3D
 
 	void Transform::SetLocalRotation(const Quaternion &rot)
 	{
-		if(m_local_rotation != rot)
+        Quaternion r = rot;
+        r.Normalize();
+
+		if(m_local_rotation != r)
 		{
-			m_local_rotation = rot;
+			m_local_rotation = r;
 			Changed();
 		}
 	}
