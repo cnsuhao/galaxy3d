@@ -28,13 +28,20 @@ namespace Galaxy3D
         NavEdge edges[3];
     };
 
+    struct NavMeshPath
+    {
+        std::vector<Vector3> corners;
+    };
+
     class NavMesh
     {
     public:
         static void LoadFromFile(const std::string &file);
         // 根据x, y找到navmesh内对应三角形, 返回三角形索引
         static int FindTriangle(const Vector3 &pos);
+        static bool IsInTriangle(const Vector3 &pos, int index);
         static Vector3 GetPosition(int index, float x, float z);
+        static bool CalculatePath(const Vector3 &source, int source_triangle_index, const Vector3 &target, NavMeshPath &path);
 
     private:
         static std::vector<NavTriangle> m_triangles;

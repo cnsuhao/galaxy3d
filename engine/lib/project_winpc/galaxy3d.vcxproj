@@ -55,6 +55,7 @@
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\NavMesh.cpp" />
+    <ClCompile Include="..\src\NavMeshAgent.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
     <ClCompile Include="..\src\Octree.cpp" />
     <ClCompile Include="..\src\Physics.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\NavMesh.h" />
+    <ClInclude Include="..\src\NavMeshAgent.h" />
     <ClInclude Include="..\src\Object.h" />
     <ClInclude Include="..\src\Octree.h" />
     <ClInclude Include="..\src\Physics.h" />

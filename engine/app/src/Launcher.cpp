@@ -308,17 +308,8 @@ void Launcher::Start()
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
-    // navmesh
-    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
-    Vector3 anim_pos(0, 0, 0);
-    int tri_index = NavMesh::FindTriangle(anim_pos);
-    if(tri_index >= 0)
-    {
-        anim_pos = NavMesh::GetPosition(tri_index, 0, 0);
-    }
-
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
-    anim_obj->GetTransform()->SetPosition(anim_pos);
+    anim_obj->GetTransform()->SetPosition(Vector3(0, 0, 0));
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
@@ -329,6 +320,10 @@ void Launcher::Start()
     {
         i->CalculateBounds();
     }
+
+    // navmesh
+    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
+    anim_obj->AddComponent<NavMeshAgent>();
 #endif
 }
 
@@ -391,6 +386,18 @@ void Launcher::Update()
     if(Input::GetKeyUp(KeyCode::W))
     {
         anim->CrossFade("idle");
+    }
+
+    if(Input::GetKey(KeyCode::W))
+    {
+        auto foward = anim->GetTransform()->GetForward();
+        foward.y = 0;
+        foward.Normalize();
+        float speed = 6.0f;
+        Vector3 offset = foward * speed * GTTime::GetDeltaTime();
+
+        auto agent = anim->GetGameObject()->GetComponent<NavMeshAgent>();
+        agent->Move(foward);
     }
 #endif
 

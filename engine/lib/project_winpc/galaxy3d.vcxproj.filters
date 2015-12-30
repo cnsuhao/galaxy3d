@@ -189,6 +189,9 @@
     <ClCompile Include="..\src\NavMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\NavMeshAgent.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -438,6 +441,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\NavMesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NavMeshAgent.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
