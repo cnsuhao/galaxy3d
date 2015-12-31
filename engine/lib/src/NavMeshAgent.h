@@ -12,6 +12,7 @@ namespace Galaxy3D
         NavMeshAgent():
             m_navmesh_triangle_index(-1)
         {}
+        void SamplePosition();
         void Move(const Vector3 &offset);
 
     protected:

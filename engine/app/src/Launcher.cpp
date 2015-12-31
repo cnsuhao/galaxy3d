@@ -308,9 +308,12 @@ void Launcher::Start()
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
+    auto anim_parent = GameObject::Create("anim_parent");
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
     anim_obj->GetTransform()->SetPosition(Vector3(0, 0, 0));
     anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
+    anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
+    cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
@@ -323,7 +326,10 @@ void Launcher::Start()
 
     // navmesh
     NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
-    anim_obj->AddComponent<NavMeshAgent>();
+    anim_parent->GetTransform()->SetPosition(Vector3(0, 0, 0));
+    auto agent = anim_parent->AddComponent<NavMeshAgent>();
+    agent->SamplePosition();
+    cam3d->UpdateMatrix();
 #endif
 }
 
@@ -378,26 +384,31 @@ void Launcher::Update()
 	fps->UpdateLabel();
 
 #if DEMO_DEF
-    if(Input::GetKeyDown(KeyCode::W))
+    if(Input::GetKeyDown(KeyCode::W) || Input::GetKeyDown(KeyCode::S))
     {
         anim->CrossFade("run");
     }
 
-    if(Input::GetKeyUp(KeyCode::W))
+    if(Input::GetKeyUp(KeyCode::W) || Input::GetKeyUp(KeyCode::S))
     {
         anim->CrossFade("idle");
     }
 
-    if(Input::GetKey(KeyCode::W))
+    if(Input::GetKey(KeyCode::W) || Input::GetKey(KeyCode::S))
     {
         auto foward = anim->GetTransform()->GetForward();
+        if(Input::GetKey(KeyCode::S))
+        {
+            foward = -foward;
+        }
         foward.y = 0;
         foward.Normalize();
         float speed = 6.0f;
         Vector3 offset = foward * speed * GTTime::GetDeltaTime();
 
-        auto agent = anim->GetGameObject()->GetComponent<NavMeshAgent>();
-        agent->Move(foward);
+        auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();
+        agent->Move(offset);
+        cam3d->UpdateMatrix();
     }
 #endif
 

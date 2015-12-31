@@ -6,11 +6,16 @@ namespace Galaxy3D
 {
     void NavMeshAgent::Start()
     {
+        SamplePosition();
+    }
+
+    void NavMeshAgent::SamplePosition()
+    {
         Vector3 pos = GetTransform()->GetPosition();
         int tri_index = NavMesh::FindTriangle(pos);
         if(tri_index >= 0)
         {
-            pos = NavMesh::GetPosition(tri_index, 0, 0);
+            pos = NavMesh::GetPosition(tri_index, pos.x, pos.z);
             GetTransform()->SetPosition(pos);
             m_navmesh_triangle_index = tri_index;
         }
@@ -23,9 +28,13 @@ namespace Galaxy3D
             return;
         }
 
-        Vector3 target = GetTransform()->GetPosition() + offset;
-
-        NavMeshPath path;
-        bool result = NavMesh::CalculatePath(GetTransform()->GetPosition(), m_navmesh_triangle_index, target, path);
+        Vector3 pos;
+        int result_index = NavMesh::Move(GetTransform()->GetPosition(), m_navmesh_triangle_index, offset, pos);
+        
+        if(result_index >= 0)
+        {
+            m_navmesh_triangle_index = result_index;
+            GetTransform()->SetPosition(pos);
+        }
     }
 }

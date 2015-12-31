@@ -42,6 +42,7 @@ namespace Galaxy3D
         static bool IsInTriangle(const Vector3 &pos, int index);
         static Vector3 GetPosition(int index, float x, float z);
         static bool CalculatePath(const Vector3 &source, int source_triangle_index, const Vector3 &target, NavMeshPath &path);
+        static int Move(const Vector3 &source, int source_triangle_index, const Vector3 &offset, Vector3 &out_pos);
 
     private:
         static std::vector<NavTriangle> m_triangles;
