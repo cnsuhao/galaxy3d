@@ -257,4 +257,121 @@ namespace Galaxy3D
 
         return false;
     }
+
+    static float triangle_area2(const Vector3 &a, const Vector3 &b, const Vector3 &c)
+    {
+        return (a.x - c.x) * (b.z - c.z) - (a.z - c.z) * (b.x - c.x);
+    }
+
+    static bool line_intersect(const Vector3 &a_l, const Vector3 &a_r, const Vector3 &b_l, const Vector3 &b_r, Vector3 &intersect)
+    {
+        float dot = Vector3::Normalize(a_l - a_r).Dot(Vector3::Normalize(b_l - b_r));
+        if(dot > -1.0f && dot < 1.0f)
+        {
+            float sabc = triangle_area2(a_l, a_r, b_l);
+            float sabd = triangle_area2(a_l, a_r, b_r);
+
+            if(sabc * sabd < 0)
+            {
+                float inv = 1.0f / (sabd - sabc);
+                float x = (sabd * b_l.x - sabc * b_r.x) * inv;
+                float z = (sabd * b_l.z - sabc * b_r.z) * inv;
+                intersect.x = x;
+                intersect.y = 0;
+                intersect.z = z;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    int NavMesh::Move(const Vector3 &source, int source_triangle_index, const Vector3 &offset, Vector3 &out_pos)
+    {
+        int result_index = -1;
+
+        Vector3 src = source;
+        src.y = 0;
+        Vector3 dir = offset;
+        dir.y = 0;
+
+        Vector3 src_next = src;
+        Vector3 offset_next = dir;
+        int triangle_next = source_triangle_index;
+
+        while(triangle_next >= 0)
+        {
+            Vector3 target = src_next + offset_next;
+            bool in_node = IsInTriangle(target, triangle_next);
+            if(in_node)
+            {
+                result_index = triangle_next;
+                out_pos = GetPosition(triangle_next, target.x, target.z);
+                return result_index;
+            }
+
+            Vector3 intersect[3] = {0};
+            bool have_intersect[3] = {false};
+
+            for(int i=0; i<3; i++)
+            {
+                auto &edge = m_triangles[triangle_next].edges[i];
+                Vector3 left = m_vertices[edge.vertex_left];
+                left.y = 0;
+                Vector3 right = m_vertices[edge.vertex_right];
+                right.y = 0;
+
+                if(src_next == left || src_next == right)
+                {
+                    intersect[i] = src_next;
+                    intersect[i].y = 0;
+                    have_intersect[i] = true;
+                }
+                else
+                {
+                    bool result = line_intersect(left, right, src_next, target, intersect[i]);
+                    have_intersect[i] = result;
+                }
+            }
+
+            for(int i=0; i<3; i++)
+            {
+                if(have_intersect[i])
+                {
+                    auto &edge = m_triangles[triangle_next].edges[i];
+                    Vector3 left = m_vertices[edge.vertex_left];
+                    left.y = 0;
+                    Vector3 right = m_vertices[edge.vertex_right];
+                    right.y = 0;
+                    Vector3 edge_normal = Vector3(left.z - right.z, 0, right.x - left.x);
+                    float dot = edge_normal.Dot(offset_next);
+
+                    if(!(dot < 0))
+                    {
+                        if(edge.neighbor >= 0)
+                        {
+                            offset_next = offset_next - (intersect[i] - src_next);
+                            src_next = intersect[i];
+                            triangle_next = edge.neighbor;
+                        }
+                        else
+                        {
+                            triangle_next = -1;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result_index;
+    }
 }
