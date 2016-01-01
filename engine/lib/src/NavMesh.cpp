@@ -271,6 +271,23 @@ namespace Galaxy3D
             float sabc = triangle_area2(a_l, a_r, b_l);
             float sabd = triangle_area2(a_l, a_r, b_r);
 
+            if(Mathf::FloatEqual(sabc, 0))
+            {
+                intersect.x = b_l.x;
+                intersect.y = 0;
+                intersect.z = b_l.z;
+
+                return true;
+            }
+            else if(Mathf::FloatEqual(sabd, 0))
+            {
+                intersect.x = b_r.x;
+                intersect.y = 0;
+                intersect.z = b_r.z;
+
+                return true;
+            }
+
             if(sabc * sabd < 0)
             {
                 float inv = 1.0f / (sabd - sabc);
@@ -306,8 +323,11 @@ namespace Galaxy3D
         Vector3 offset_next = dir;
         int triangle_next = source_triangle_index;
 
+        int old;
         while(triangle_next >= 0)
         {
+            old = triangle_next;
+
             Vector3 target = src_next + offset_next;
             bool in_node = IsInTriangle(target, triangle_next);
             if(in_node)
@@ -369,6 +389,11 @@ namespace Galaxy3D
                         break;
                     }
                 }
+            }
+
+            if(old == triangle_next)
+            {
+                old = old;
             }
         }
 
