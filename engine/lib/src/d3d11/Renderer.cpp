@@ -34,7 +34,7 @@ namespace Galaxy3D
 		m_lightmap_tiling_offset(),
 		m_sorting_layer(0),
 		m_sorting_order(0),
-        m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1))
+        m_bounds(Vector3(0, 0, 0), Vector3(1, 1, 1) * Mathf::MaxFloatValue)
 	{
 	}
 
@@ -366,18 +366,30 @@ namespace Galaxy3D
                 {
                     auto bounds = i.renderer->GetBounds();
 
-                    int j = 0;
-                    std::vector<Vector3> corners(8);
-                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, -bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
-                    corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
+                    int contains;
+                    
+                    if( Mathf::FloatEqual(bounds.extents.x, Mathf::MaxFloatValue) ||
+                        Mathf::FloatEqual(bounds.extents.y, Mathf::MaxFloatValue) ||
+                        Mathf::FloatEqual(bounds.extents.z, Mathf::MaxFloatValue))
+                    {
+                        contains = ContainsResult::Cross;
+                    }
+                    else
+                    {
+                        int j = 0;
+                        std::vector<Vector3> corners(8);
+                        corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+                        corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
 
-                    int contains = frustum.ContainsPoints(corners, &world_to_view);
+                        contains = frustum.ContainsPoints(corners, &world_to_view);
+                    }
+                    
                     if(contains != ContainsResult::Out)
                     {
                         batches.push_back(i);

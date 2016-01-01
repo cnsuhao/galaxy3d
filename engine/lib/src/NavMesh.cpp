@@ -265,66 +265,43 @@ namespace Galaxy3D
 
     static bool line_intersect(const Vector3 &a_l, const Vector3 &a_r, const Vector3 &b_l, const Vector3 &b_r, Vector3 &intersect)
     {
-        float dot = Vector3::Normalize(a_l - a_r).Dot(Vector3::Normalize(b_l - b_r));
-        if(dot > -1.0f && dot < 1.0f)
+        float sabc = triangle_area2(a_l, a_r, b_l);
+        float sabd = triangle_area2(a_l, a_r, b_r);
+
+        if(Mathf::FloatEqual(sabc, 0))
         {
-            // 必定相交
-            float sabc = triangle_area2(a_l, a_r, b_l);
-            float sabd = triangle_area2(a_l, a_r, b_r);
+            // c在ab上
+            intersect.x = b_l.x;
+            intersect.y = 0;
+            intersect.z = b_l.z;
 
-            if(Mathf::FloatEqual(sabc, 0))
-            {
-                // c在ab上
-                intersect.x = b_l.x;
-                intersect.y = 0;
-                intersect.z = b_l.z;
+            return true;
+        }
+        else if(Mathf::FloatEqual(sabd, 0))
+        {
+            // d在ab上
+            intersect.x = b_r.x;
+            intersect.y = 0;
+            intersect.z = b_r.z;
 
-                return true;
-            }
-            else if(Mathf::FloatEqual(sabd, 0))
-            {
-                // d在ab上
-                intersect.x = b_r.x;
-                intersect.y = 0;
-                intersect.z = b_r.z;
+            return true;
+        }
 
-                return true;
-            }
+        if(sabc * sabd < 0)
+        {
+            // cd位于ab两端
+            float inv = 1.0f / (sabd - sabc);
+            float x = (sabd * b_l.x - sabc * b_r.x) * inv;
+            float z = (sabd * b_l.z - sabc * b_r.z) * inv;
+            intersect.x = x;
+            intersect.y = 0;
+            intersect.z = z;
 
-            if(sabc * sabd < 0)
-            {
-                // cd位于ab两端
-                float inv = 1.0f / (sabd - sabc);
-                float x = (sabd * b_l.x - sabc * b_r.x) * inv;
-                float z = (sabd * b_l.z - sabc * b_r.z) * inv;
-                intersect.x = x;
-                intersect.y = 0;
-                intersect.z = z;
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
         else
         {
-            // cd与ab平行
-            float sabc = triangle_area2(a_l, a_r, b_l);
-            if(Mathf::FloatEqual(sabc, 0))
-            {
-                // c在ab上
-                intersect.x = b_l.x;
-                intersect.y = 0;
-                intersect.z = b_l.z;
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 
