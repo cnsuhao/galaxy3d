@@ -2,7 +2,7 @@
 
 namespace Galaxy3D
 {
-	const float Mathf::Epsilon = 0.000001f;
+	const float Mathf::Epsilon = FLT_EPSILON;
 	const float Mathf::PI = 3.1415926f;
 	const float Mathf::Deg2Rad = 0.0174533f;
 	const float Mathf::Rad2Deg = 57.2958f;
