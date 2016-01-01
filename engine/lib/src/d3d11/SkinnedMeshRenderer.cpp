@@ -15,26 +15,6 @@ namespace Galaxy3D
         m_bones = src_renderer->m_bones;
     }
 
-    void SkinnedMeshRenderer::CalculateBounds()
-    {
-        auto &vertices = m_mesh->GetVerticesSkinned();
-        auto &tran = GetTransform();
-
-        Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
-        Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
-        for(size_t j=0; j<vertices.size(); j++)
-        {
-            auto &v = vertices[j].POSITION;
-            auto v_world = tran->TransformPoint(v);
-
-            box_max = Vector3::Max(box_max, v_world);
-            box_min = Vector3::Min(box_min, v_world);
-        }
-        Bounds bounds((box_max + box_min) * 0.5f, (box_max - box_min) * 0.5f);
-
-        SetBounds(bounds);
-    }
-
     void SkinnedMeshRenderer::Render(int material_index)
     {
         if(!m_mesh)

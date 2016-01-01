@@ -318,11 +318,6 @@ void Launcher::Start()
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
-    auto renderers = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-    for(auto i : renderers)
-    {
-        i->CalculateBounds();
-    }
 
     // navmesh
     NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
