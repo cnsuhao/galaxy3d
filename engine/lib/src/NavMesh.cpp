@@ -36,32 +36,6 @@ namespace Galaxy3D
         }
     }
 
-    bool NavMesh::IsInTriangle(const Vector3 &pos, int index)
-    {
-        Vector3 v = pos;
-        v.y = 0;
-
-        Vector3 v0 = m_vertices[m_triangles[index].edges[0].vertex_left];
-        Vector3 v1 = m_vertices[m_triangles[index].edges[1].vertex_left];
-        Vector3 v2 = m_vertices[m_triangles[index].edges[2].vertex_left];
-
-        v0.y = 0;
-        v1.y = 0;
-        v2.y = 0;
-
-        Vector3 c0 = (v1 - v0) * (v - v0);
-        Vector3 c1 = (v2 - v1) * (v - v1);
-        Vector3 c2 = (v0 - v2) * (v - v2);
-        if( !(c0.y * c1.y < 0 ||
-            c1.y * c2.y < 0 ||
-            c2.y * c0.y < 0))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     int NavMesh::FindTriangle(const Vector3 &pos)
     {
         int index = -1;
@@ -297,12 +271,63 @@ namespace Galaxy3D
             intersect.y = 0;
             intersect.z = z;
 
+            if(fabs(a_r.x - a_l.x) > fabs(a_r.z - a_l.z))
+            {
+                float t = (intersect.x - a_l.x) / (a_r.x - a_l.x);
+
+                if(t < 0 || t > 1)
+                {
+                    return false;
+                }
+
+                intersect = Vector3::Lerp(a_l, a_r, t);
+                intersect.y = 0;
+            }
+            else
+            {
+                float t = (intersect.z - a_l.z) / (a_r.z - a_l.z);
+
+                if(t < 0 || t > 1)
+                {
+                    return false;
+                }
+
+                intersect = Vector3::Lerp(a_l, a_r, t);
+                intersect.y = 0;
+            }
+
             return true;
         }
         else
         {
             return false;
         }
+    }
+
+    bool NavMesh::IsInTriangle(const Vector3 &pos, int index)
+    {
+        Vector3 v = pos;
+        v.y = 0;
+
+        Vector3 v0 = m_vertices[m_triangles[index].edges[0].vertex_left];
+        Vector3 v1 = m_vertices[m_triangles[index].edges[1].vertex_left];
+        Vector3 v2 = m_vertices[m_triangles[index].edges[2].vertex_left];
+
+        v0.y = 0;
+        v1.y = 0;
+        v2.y = 0;
+
+        Vector3 c0 = (v1 - v0) * (v - v0);
+        Vector3 c1 = (v2 - v1) * (v - v1);
+        Vector3 c2 = (v0 - v2) * (v - v2);
+        if( !(c0.y * c1.y < -Mathf::Epsilon ||
+            c1.y * c2.y < -Mathf::Epsilon ||
+            c2.y * c0.y < -Mathf::Epsilon))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     int NavMesh::Move(const Vector3 &source, int source_triangle_index, const Vector3 &offset, Vector3 &out_pos)
@@ -353,25 +378,6 @@ namespace Galaxy3D
                 {
                     bool result = line_intersect(left, right, src_next, target, intersect[i]);
                     have_intersect[i] = result;
-
-                    // keep intersect in edge
-                    if(result)
-                    {
-                        if(fabs(right.x - left.x) > fabs(right.z - left.z))
-                        {
-                            float t = (intersect[i].x - left.x) / (right.x - left.x);
-
-                            intersect[i] = Vector3::Lerp(left, right, t);
-                            intersect[i].y = 0;
-                        }
-                        else
-                        {
-                            float t = (intersect[i].z - left.z) / (right.z - left.z);
-
-                            intersect[i] = Vector3::Lerp(left, right, t);
-                            intersect[i].y = 0;
-                        }
-                    }
                 }
             }
 
@@ -394,13 +400,37 @@ namespace Galaxy3D
                             offset_next = offset_next - (intersect[i] - src_next);
                             src_next = intersect[i];
                             triangle_next = edge.neighbor;
+
+                            break;
                         }
                         else
                         {
-                            triangle_next = -1;
-                        }
+                            Vector3 edge_dir = left - right;
+                            Vector3 offset_dir = offset_next - (intersect[i] - src_next);
+                            Vector3 offset_in_edge = edge_dir * (offset_dir.Dot(edge_dir) / edge_dir.SqrMagnitude());
 
-                        break;
+                            offset_next = offset_in_edge;
+                            src_next = intersect[i];
+
+                            target = src_next + offset_next;
+                            if(fabs(right.x - left.x) > fabs(right.z - left.z))
+                            {
+                                float t = (target.x - left.x) / (right.x - left.x);
+                                target = Vector3::Lerp(left, right, t);
+                            }
+                            else
+                            {
+                                float t = (target.z - left.z) / (right.z - left.z);
+                                target = Vector3::Lerp(left, right, t);
+                            }
+
+                            // 注意：理论上target是在边上的，可能会由于精度问题，导致计算结果位于三角形外部
+                            // 使Mathf::Epsilon = 0.00001f可以容纳这个精度误差
+
+                            result_index = triangle_next;
+                            out_pos = GetPosition(triangle_next, target.x, target.z);
+                            return result_index;
+                        }
                     }
                 }
             }
