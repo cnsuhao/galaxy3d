@@ -321,7 +321,7 @@ void Launcher::Start()
 
     // navmesh
     NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
-    anim_parent->GetTransform()->SetPosition(Vector3(2, 0, 0));
+    anim_parent->GetTransform()->SetPosition(Vector3(1, 0, 0));
     auto agent = anim_parent->AddComponent<NavMeshAgent>();
     agent->SamplePosition();
     cam3d->UpdateMatrix();
