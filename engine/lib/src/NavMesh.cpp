@@ -268,11 +268,13 @@ namespace Galaxy3D
         float dot = Vector3::Normalize(a_l - a_r).Dot(Vector3::Normalize(b_l - b_r));
         if(dot > -1.0f && dot < 1.0f)
         {
+            // 必定相交
             float sabc = triangle_area2(a_l, a_r, b_l);
             float sabd = triangle_area2(a_l, a_r, b_r);
 
             if(Mathf::FloatEqual(sabc, 0))
             {
+                // c在ab上
                 intersect.x = b_l.x;
                 intersect.y = 0;
                 intersect.z = b_l.z;
@@ -281,6 +283,7 @@ namespace Galaxy3D
             }
             else if(Mathf::FloatEqual(sabd, 0))
             {
+                // d在ab上
                 intersect.x = b_r.x;
                 intersect.y = 0;
                 intersect.z = b_r.z;
@@ -290,6 +293,7 @@ namespace Galaxy3D
 
             if(sabc * sabd < 0)
             {
+                // cd位于ab两端
                 float inv = 1.0f / (sabd - sabc);
                 float x = (sabd * b_l.x - sabc * b_r.x) * inv;
                 float z = (sabd * b_l.z - sabc * b_r.z) * inv;
@@ -306,7 +310,21 @@ namespace Galaxy3D
         }
         else
         {
-            return false;
+            // cd与ab平行
+            float sabc = triangle_area2(a_l, a_r, b_l);
+            if(Mathf::FloatEqual(sabc, 0))
+            {
+                // c在ab上
+                intersect.x = b_l.x;
+                intersect.y = 0;
+                intersect.z = b_l.z;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -358,6 +376,25 @@ namespace Galaxy3D
                 {
                     bool result = line_intersect(left, right, src_next, target, intersect[i]);
                     have_intersect[i] = result;
+
+                    // keep intersect in edge
+                    if(result)
+                    {
+                        if(fabs(right.x - left.x) > fabs(right.z - left.z))
+                        {
+                            float t = (intersect[i].x - left.x) / (right.x - left.x);
+
+                            intersect[i] = Vector3::Lerp(left, right, t);
+                            intersect[i].y = 0;
+                        }
+                        else
+                        {
+                            float t = (intersect[i].z - left.z) / (right.z - left.z);
+
+                            intersect[i] = Vector3::Lerp(left, right, t);
+                            intersect[i].y = 0;
+                        }
+                    }
                 }
             }
 
@@ -391,6 +428,8 @@ namespace Galaxy3D
                 }
             }
 
+            // will loop infinite.
+            // for debug break
             if(old == triangle_next)
             {
                 old = old;
