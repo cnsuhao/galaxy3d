@@ -275,7 +275,7 @@ namespace Galaxy3D
             {
                 float t = (intersect.x - a_l.x) / (a_r.x - a_l.x);
 
-                if(t < 0 || t > 1)
+                if(t < -Mathf::Epsilon || t > 1 + Mathf::Epsilon)
                 {
                     return false;
                 }
@@ -287,7 +287,7 @@ namespace Galaxy3D
             {
                 float t = (intersect.z - a_l.z) / (a_r.z - a_l.z);
 
-                if(t < 0 || t > 1)
+                if(t < -Mathf::Epsilon || t > 1 + Mathf::Epsilon)
                 {
                     return false;
                 }
