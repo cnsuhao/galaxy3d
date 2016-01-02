@@ -106,6 +106,7 @@ namespace Galaxy3D
         float plane_near = - size.z / 2;
         float plane_far = size.z / 2;
 
+        // 把near扩展到最小，把光锥内能投影的物体都要包进去
         auto world_to_view = Matrix4x4::LookTo(
             GetTransform()->GetPosition(),
             GetTransform()->GetRotation() * Vector3(0, 0, 1),
