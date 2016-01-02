@@ -291,6 +291,11 @@ void Launcher::Start()
     light->EnableCascade(true);
 
     RenderSettings::SetGlobalDirectionalLight(light);
+    std::vector<float> cascade_splits;
+    cascade_splits.push_back(0.25f);
+    cascade_splits.push_back(0.55f);
+    cascade_splits.push_back(0.90f);
+    Light::SetCascadeSplits(cascade_splits);
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.5f;
 
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();

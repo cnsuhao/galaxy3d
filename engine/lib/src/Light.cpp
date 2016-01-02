@@ -99,14 +99,56 @@ namespace Galaxy3D
 
         GetTransform()->SetPosition(GetTransform()->TransformPoint(center));
 
-        //build light orthographic matrix
         float top = size.y / 2;
         float bottom = - size.y / 2;
         float plane_h = size.y;
         float plane_w = size.x;
         float plane_near = - size.z / 2;
         float plane_far = size.z / 2;
-        return Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
+
+        auto world_to_view = Matrix4x4::LookTo(
+            GetTransform()->GetPosition(),
+            GetTransform()->GetRotation() * Vector3(0, 0, 1),
+            GetTransform()->GetRotation() * Vector3(0, 1, 0));
+        auto &batches = Renderer::GetOpaqueGeometryRenderBatches();
+        float min_z = Mathf::MaxFloatValue;
+        auto frustum = FrustumBounds::FrustumBoundsOrtho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
+        for(auto &i : batches)
+        {
+            auto bounds = i.renderer->GetBounds();
+
+            if( Mathf::FloatEqual(bounds.extents.x, Mathf::MaxFloatValue) ||
+                Mathf::FloatEqual(bounds.extents.y, Mathf::MaxFloatValue) ||
+                Mathf::FloatEqual(bounds.extents.z, Mathf::MaxFloatValue))
+            {
+                continue;
+            }
+
+            int j = 0;
+            std::vector<Vector3> corners(8);
+            corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, -bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(-bounds.extents.x, bounds.extents.y, bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(-bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
+            corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
+
+            int contains = frustum.ContainsPoints(corners, &world_to_view);
+            if(contains != ContainsResult::Out)
+            {
+                for(j=0; j<8; j++)
+                {
+                    auto c = world_to_view.MultiplyPoint3x4(corners[j]);
+                    min_z = Mathf::Min(min_z, c.z);
+                }
+            }
+        }
+
+        // build light orthographic matrix
+        min_z = Mathf::Min(min_z, plane_near);
+        return Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, min_z, plane_far);
     }
 
     void Light::SetCascadeSplits(const std::vector<float> &splits)

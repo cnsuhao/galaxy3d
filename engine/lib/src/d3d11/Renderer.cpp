@@ -327,6 +327,11 @@ namespace Galaxy3D
         }
     }
 
+    const std::list<RenderBatch> &Renderer::GetOpaqueGeometryRenderBatches()
+    {
+        return m_batches_renderable_opaque;
+    }
+
     void Renderer::RenderOpaqueGeometry()
     {
         auto shadow_light = RenderSettings::GetLightRenderingShadowMap();
