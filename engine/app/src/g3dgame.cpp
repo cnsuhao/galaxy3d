@@ -114,6 +114,10 @@ extern bool g_key_down[KeyCode::COUNT];
 extern bool g_key[KeyCode::COUNT];
 extern bool g_key_up[KeyCode::COUNT];
 extern bool g_key_held[KeyCode::COUNT];
+extern bool g_mouse_button_down[3];
+extern bool g_mouse_button_up[3];
+extern Galaxy3D::Vector3 g_mouse_position;
+extern bool g_mouse_button_held[3];
 
 static int get_key_code(int wParam)
 {
@@ -211,8 +215,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				g_input_down = true;
 			}
+
+            g_mouse_button_down[0] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[0] = true;
 		}
 		break;
+
+    case WM_RBUTTONDOWN:
+        {
+            int x = GET_X_LPARAM(lParam);
+            int y = GET_Y_LPARAM(lParam);
+
+            g_mouse_button_down[1] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[1] = true;
+        }
+        break;
+
+    case WM_MBUTTONDOWN:
+        {
+            int x = GET_X_LPARAM(lParam);
+            int y = GET_Y_LPARAM(lParam);
+
+            g_mouse_button_down[2] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[2] = true;
+        }
+        break;
 
 	case WM_MOUSEMOVE:
 		{
@@ -253,6 +286,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					g_input_touches.push_back(t);
 				}
 			}
+
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
 		}
 		break;
 
@@ -283,8 +319,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				g_input_down = false;
 			}
+
+            g_mouse_button_up[0] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[0] = false;
 		}
 		break;
+
+    case WM_RBUTTONUP:
+        {
+            int x = GET_X_LPARAM(lParam);
+            int y = GET_Y_LPARAM(lParam);
+
+            g_mouse_button_up[1] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[1] = false;
+        }
+        break;
+
+    case WM_MBUTTONUP:
+        {
+            int x = GET_X_LPARAM(lParam);
+            int y = GET_Y_LPARAM(lParam);
+
+            g_mouse_button_up[2] = true;
+            g_mouse_position.x = (float) x;
+            g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+            g_mouse_button_held[2] = false;
+        }
+        break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);

@@ -1,7 +1,8 @@
 #ifndef __Input_h__
 #define __Input_h__
 
-#include <Vector2.h>
+#include "Vector2.h"
+#include "Vector3.h"
 #include <vector>
 
 namespace Galaxy3D
@@ -290,6 +291,10 @@ namespace Galaxy3D
         static bool GetKeyDown(KeyCode::Enum key);
         static bool GetKey(KeyCode::Enum key);
         static bool GetKeyUp(KeyCode::Enum key);
+        static bool GetMouseButtonDown(int index);
+        static bool GetMouseButton(int index);
+        static bool GetMouseButtonUp(int index);
+        static Vector3 GetMousePosition();
 		static void ResetInputAxes();
         
 	private:

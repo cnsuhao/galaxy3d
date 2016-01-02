@@ -460,6 +460,21 @@ void Launcher::Update()
 
         anim->GetTransform()->SetForward(move_dir);
     }
+
+    if(Input::GetMouseButtonDown(0))
+    {
+        Debug::Log("down");
+    }
+    
+    if(Input::GetMouseButton(0))
+    {
+        Debug::Log("GetMouseButton");
+    }
+
+    if(Input::GetMouseButtonUp(0))
+    {
+        Debug::Log("up");
+    }
 #endif
 
 #if DEMO_TERRAIN
