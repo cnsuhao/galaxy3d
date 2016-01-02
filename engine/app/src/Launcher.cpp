@@ -377,6 +377,28 @@ void Launcher::OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component
 }
 #endif
 
+int g_key_down_count = 0;
+
+static void move_key_down(std::shared_ptr<Animation> &anim)
+{
+    g_key_down_count++;
+
+    if(g_key_down_count == 1)
+    {
+        anim->CrossFade("run");
+    }
+}
+
+static void move_key_up(std::shared_ptr<Animation> &anim)
+{
+    g_key_down_count--;
+
+    if(g_key_down_count == 0)
+    {
+        anim->CrossFade("idle");
+    }
+}
+
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
@@ -384,31 +406,59 @@ void Launcher::Update()
 	fps->UpdateLabel();
 
 #if DEMO_DEF
-    if(Input::GetKeyDown(KeyCode::W) || Input::GetKeyDown(KeyCode::S))
+    int key_down_count_old = g_key_down_count;
+
+    if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim);
+    if(Input::GetKeyDown(KeyCode::S)) move_key_down(anim);
+    if(Input::GetKeyDown(KeyCode::A)) move_key_down(anim);
+    if(Input::GetKeyDown(KeyCode::D)) move_key_down(anim);
+
+    if(Input::GetKeyUp(KeyCode::W)) move_key_up(anim);
+    if(Input::GetKeyUp(KeyCode::S)) move_key_up(anim);
+    if(Input::GetKeyUp(KeyCode::A)) move_key_up(anim);
+    if(Input::GetKeyUp(KeyCode::D)) move_key_up(anim);
+
+    Vector3 move_dir(0, 0, 0);
+    if(Input::GetKey(KeyCode::W))
     {
-        anim->CrossFade("run");
+        auto dir = cam3d->GetTransform()->GetForward();
+        dir.y = 0;
+        dir.Normalize();
+        move_dir += dir;
+    }
+    if(Input::GetKey(KeyCode::S))
+    {
+        auto dir = -cam3d->GetTransform()->GetForward();
+        dir.y = 0;
+        dir.Normalize();
+        move_dir += dir;
+    }
+    if(Input::GetKey(KeyCode::A))
+    {
+        auto dir = -cam3d->GetTransform()->GetRight();
+        dir.y = 0;
+        dir.Normalize();
+        move_dir += dir;
+    }
+    if(Input::GetKey(KeyCode::D))
+    {
+        auto dir = cam3d->GetTransform()->GetRight();
+        dir.y = 0;
+        dir.Normalize();
+        move_dir += dir;
     }
 
-    if(Input::GetKeyUp(KeyCode::W) || Input::GetKeyUp(KeyCode::S))
+    if(move_dir != Vector3(0, 0, 0))
     {
-        anim->CrossFade("idle");
-    }
-
-    if(Input::GetKey(KeyCode::W) || Input::GetKey(KeyCode::S))
-    {
-        auto foward = anim->GetTransform()->GetForward();
-        if(Input::GetKey(KeyCode::S))
-        {
-            foward = -foward;
-        }
-        foward.y = 0;
-        foward.Normalize();
+        move_dir.Normalize();
         float speed = 6.0f;
-        Vector3 offset = foward * speed * GTTime::GetDeltaTime();
+        Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();
         agent->Move(offset);
         cam3d->UpdateMatrix();
+
+        anim->GetTransform()->SetForward(move_dir);
     }
 #endif
 
