@@ -40,6 +40,7 @@ namespace Galaxy3D
 	public:
 		static void SortAllBatches();
         static void Prepare();
+        static const std::list<RenderBatch> &GetOpaqueGeometryRenderBatches();
 		static void RenderOpaqueGeometry();
         static void RenderTransparentGeometry();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
