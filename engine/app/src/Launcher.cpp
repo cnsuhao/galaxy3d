@@ -312,11 +312,13 @@ void Launcher::Start()
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->EnableDeferredShading(true);
 
+    /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
     fog->EnableHeight(false);
     fog->SetFogMode(FogMode::ExponentialSquared);
     fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
     fog->SetFogDensity(0.02f);
+    */
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
@@ -409,6 +411,24 @@ static void move_key_up(std::shared_ptr<Animation> &anim)
     }
 }
 
+static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
+{
+    Vector3 mouse_pos = Input::GetMousePosition();
+    Vector3 offset = mouse_pos - g_mouse_down_pos;
+    Vector2 rot_scal(0.3f, 0.3f);
+    Vector3 rot_offset = Vector3(-offset.y * rot_scal.x, offset.x * rot_scal.y, 0);
+    Vector3 rot = g_cam_rot + rot_offset;
+    rot.x = Mathf::Clamp(rot.x, -85.0f, 85.0f);
+    rot_offset = rot - g_cam_rot;
+    offset.y = - rot_offset.x / rot_scal.x;
+    g_mouse_down_pos.y = mouse_pos.y - offset.y;
+
+    cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(rot));
+    cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+
+    return rot_offset;
+}
+
 void Launcher::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
@@ -481,23 +501,13 @@ void Launcher::Update()
     
     if(Input::GetMouseButton(1))
     {
-        Vector3 mouse_pos = Input::GetMousePosition();
-        Vector3 offset = mouse_pos - g_mouse_down_pos;
-        Vector2 rot_scal(0.5f, 0.5f);
-        Vector3 rot_offset = Vector3(-offset.y * rot_scal.x, offset.x * rot_scal.y, 0);
-        cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot + rot_offset));
-        cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+        drag_cam_rot(cam3d);
         update_cam = true;
     }
 
     if(Input::GetMouseButtonUp(1))
     {
-        Vector3 mouse_pos = Input::GetMousePosition();
-        Vector3 offset = mouse_pos - g_mouse_down_pos;
-        Vector2 rot_scal(0.5f, 0.5f);
-        Vector3 rot_offset = Vector3(-offset.y * rot_scal.x, offset.x * rot_scal.y, 0);
-        cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot + rot_offset));
-        cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+        auto rot_offset = drag_cam_rot(cam3d);
         update_cam = true;
 
         g_cam_rot = g_cam_rot + rot_offset;
