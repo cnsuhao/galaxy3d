@@ -7,6 +7,14 @@
 
 using namespace Galaxy3D;
 
+#if DEMO_DEF
+int g_key_down_count = 0;
+Vector3 g_mouse_down_pos;
+bool g_mouse_down = false;
+Vector3 g_cam_rot;
+float g_cam_dis;
+#endif
+
 #if DEMO_TERRAIN
 std::string clip_idle = "Idle_Arthas_36896b399471f50409feff906777c5af.1.clip";
 std::string clip_move = "Move_Arthas_1586e0d40a0ba4545bd97991164aec42.1.clip";
@@ -302,9 +310,8 @@ void Launcher::Start()
     cam3d->SetFieldOfView(45);
     cam3d->SetClipPlane(1.0f, 100.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
-    cam3d->GetTransform()->SetPosition(Vector3(0, 3.695f, 10.3f));
-    cam3d->GetTransform()->SetRotation(Quaternion::Euler(10, -180, 0));
     cam3d->EnableDeferredShading(true);
+
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
     fog->EnableHeight(false);
     fog->SetFogMode(FogMode::ExponentialSquared);
@@ -315,14 +322,19 @@ void Launcher::Start()
 
     auto anim_parent = GameObject::Create("anim_parent");
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
-    anim_obj->GetTransform()->SetPosition(Vector3(0, 0, 0));
-    anim_obj->GetTransform()->SetRotation(Quaternion::Euler(0, 180, 0));
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
-    cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
+    anim_obj->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+    anim_obj->GetTransform()->SetLocalRotation(Quaternion::Euler(Vector3(0, 180, 0)));
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
+
+    cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
+    g_cam_rot = Vector3(10, -180, 0);
+    cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot));
+    g_cam_dis = 12;
+    cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
 
     // navmesh
     NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
@@ -377,8 +389,6 @@ void Launcher::OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component
 }
 #endif
 
-int g_key_down_count = 0;
-
 static void move_key_down(std::shared_ptr<Animation> &anim)
 {
     g_key_down_count++;
@@ -406,6 +416,8 @@ void Launcher::Update()
 	fps->UpdateLabel();
 
 #if DEMO_DEF
+    bool update_cam = false;
+
     int key_down_count_old = g_key_down_count;
 
     if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim);
@@ -456,24 +468,45 @@ void Launcher::Update()
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();
         agent->Move(offset);
-        cam3d->UpdateMatrix();
+        update_cam = true;
 
         anim->GetTransform()->SetForward(move_dir);
     }
 
-    if(Input::GetMouseButtonDown(0))
+    if(Input::GetMouseButtonDown(1))
     {
-        Debug::Log("down");
+        g_mouse_down = true;
+        g_mouse_down_pos = Input::GetMousePosition();
     }
     
-    if(Input::GetMouseButton(0))
+    if(Input::GetMouseButton(1))
     {
-        Debug::Log("GetMouseButton");
+        Vector3 mouse_pos = Input::GetMousePosition();
+        Vector3 offset = mouse_pos - g_mouse_down_pos;
+        Vector2 rot_scal(0.5f, 0.5f);
+        Vector3 rot_offset = Vector3(-offset.y * rot_scal.x, offset.x * rot_scal.y, 0);
+        cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot + rot_offset));
+        cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+        update_cam = true;
     }
 
-    if(Input::GetMouseButtonUp(0))
+    if(Input::GetMouseButtonUp(1))
     {
-        Debug::Log("up");
+        Vector3 mouse_pos = Input::GetMousePosition();
+        Vector3 offset = mouse_pos - g_mouse_down_pos;
+        Vector2 rot_scal(0.5f, 0.5f);
+        Vector3 rot_offset = Vector3(-offset.y * rot_scal.x, offset.x * rot_scal.y, 0);
+        cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot + rot_offset));
+        cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+        update_cam = true;
+
+        g_cam_rot = g_cam_rot + rot_offset;
+        g_mouse_down = false;
+    }
+
+    if(update_cam)
+    {
+        cam3d->UpdateMatrix();
     }
 #endif
 
