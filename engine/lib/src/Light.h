@@ -28,6 +28,7 @@ namespace Galaxy3D
         static void DeferredShadingLights(std::shared_ptr<Material> &material);
         static std::list<Light *> GetLightsHasShadow();
         static void SetCascadeSplits(const std::vector<float> &splits);
+        static void Done();
         Light();
         ~Light();
         void SetType(LightType::Enum type) {m_type = type;}

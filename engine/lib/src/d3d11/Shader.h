@@ -15,6 +15,7 @@ namespace Galaxy3D
 	{
 	public:
 		static std::shared_ptr<Shader> Find(const std::string &name);
+        static void Done() {m_shaders.clear();}
 		~Shader();
 		int GetRenderQueue() const {return m_render_queue;}
 		int GetPassCount() const {return m_passes.size();}

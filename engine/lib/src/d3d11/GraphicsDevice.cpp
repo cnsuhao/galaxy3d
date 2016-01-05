@@ -5,11 +5,26 @@
 
 namespace Galaxy3D
 {
+    static GraphicsDevice *g_device = NULL;
+
 	GraphicsDevice *GraphicsDevice::GetInstance()
 	{
-		static GraphicsDevice device;
-		return &device;
+        if(g_device == NULL)
+        {
+            g_device = new GraphicsDevice();
+        }
+
+		return g_device;
 	}
+
+    void GraphicsDevice::Done()
+    {
+        if(g_device != NULL)
+        {
+            delete g_device;
+            g_device = NULL;
+        }
+    }
 
 	GraphicsDevice::GraphicsDevice():
 		m_d3d_device(NULL),
@@ -23,12 +38,48 @@ namespace Galaxy3D
 
 	GraphicsDevice::~GraphicsDevice()
 	{
-		SAFE_RELEASE(m_depth_stencil_view);
-		SAFE_RELEASE(m_depth_stencil_texture);
-		SAFE_RELEASE(m_render_target_view);
-		SAFE_RELEASE(m_immediate_context);
-		SAFE_RELEASE(m_swap_chain);
-		SAFE_RELEASE(m_d3d_device);
+        m_screen_buffer.reset();
+        m_blit_mesh.reset();
+        m_blit_mat.reset();
+
+        ClearShaderResources();
+        m_immediate_context->VSSetShader(NULL, NULL, 0);
+        ID3D11Buffer *cb[D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT] = {NULL};
+        m_immediate_context->VSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, cb);
+        m_immediate_context->PSSetShader(NULL, NULL, 0);
+        m_immediate_context->PSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, cb);
+        m_immediate_context->IASetInputLayout(NULL);
+        ID3D11Buffer *vb = NULL;
+        UINT zero = 0;
+        m_immediate_context->IASetVertexBuffers(0, 1, &vb, &zero, &zero);
+        m_immediate_context->IASetIndexBuffer(NULL, DXGI_FORMAT_UNKNOWN, 0);
+        m_immediate_context->RSSetState(NULL);
+        m_immediate_context->OMSetBlendState(NULL, 0, 0xffffffff);
+        m_immediate_context->OMSetDepthStencilState(NULL, 0);
+        ID3D11RenderTargetView *view[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {NULL};
+        m_immediate_context->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, view, NULL);
+        m_immediate_context->Flush();
+        m_immediate_context->ClearState();
+
+        SAFE_RELEASE(m_depth_stencil_view);
+        SAFE_RELEASE(m_depth_stencil_texture);
+        SAFE_RELEASE(m_render_target_view);
+        SAFE_RELEASE(m_immediate_context);
+        SAFE_RELEASE(m_swap_chain);
+        
+#if _DEBUG
+        ID3D11Debug *debug;
+        HRESULT hr = m_d3d_device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
+        SAFE_RELEASE(m_d3d_device);
+
+        if(SUCCEEDED(hr))
+        {
+            hr = debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
+        }
+        SAFE_RELEASE(debug);
+#else
+        SAFE_RELEASE(m_d3d_device);
+#endif
 	}
 
 	void GraphicsDevice::Init(void *param)
@@ -126,8 +177,8 @@ namespace Galaxy3D
 
 	void GraphicsDevice::ClearShaderResources()
 	{
-		ID3D11ShaderResourceView *empty[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-		m_immediate_context->PSSetShaderResources(0, 8, empty);
+		ID3D11ShaderResourceView *empty[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {NULL};
+		m_immediate_context->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, empty);
 	}
 
     void GraphicsDevice::CreateBlitMeshIfNeeded()

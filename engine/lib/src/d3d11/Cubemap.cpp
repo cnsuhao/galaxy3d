@@ -104,31 +104,25 @@ namespace Galaxy3D
             }
         }
 
-        if(m_texture_res == NULL)
-        {
-            D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
-            memset(&srvd, 0, sizeof(srvd));
-            srvd.Format = TEXTURE_FORMATS[m_format];
-            srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-            srvd.Texture2D.MipLevels = -1;
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
+        memset(&srvd, 0, sizeof(srvd));
+        srvd.Format = TEXTURE_FORMATS[m_format];
+        srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srvd.Texture2D.MipLevels = -1;
 
-            device->CreateShaderResourceView(tex, &srvd, &m_texture_res);
-            tex->Release();
-        }
+        device->CreateShaderResourceView(tex, &srvd, &m_texture_res);
+        tex->Release();
 
-        if(m_sampler == NULL)
-        {
-            D3D11_SAMPLER_DESC sampDesc;
-            ZeroMemory(&sampDesc, sizeof(sampDesc));
-            sampDesc.Filter = FILTER_MODES[m_filter_mode];
-            sampDesc.AddressU = ADDRESS_MODES[m_wrap_mode];
-            sampDesc.AddressV = ADDRESS_MODES[m_wrap_mode];
-            sampDesc.AddressW = ADDRESS_MODES[m_wrap_mode];
-            sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-            sampDesc.MinLOD = 0;
-            sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-            sampDesc.MipLODBias = 0;
-            device->CreateSamplerState(&sampDesc, &m_sampler);
-        }
+        D3D11_SAMPLER_DESC sampDesc;
+        ZeroMemory(&sampDesc, sizeof(sampDesc));
+        sampDesc.Filter = FILTER_MODES[m_filter_mode];
+        sampDesc.AddressU = ADDRESS_MODES[m_wrap_mode];
+        sampDesc.AddressV = ADDRESS_MODES[m_wrap_mode];
+        sampDesc.AddressW = ADDRESS_MODES[m_wrap_mode];
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampDesc.MinLOD = 0;
+        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        sampDesc.MipLODBias = 0;
+        device->CreateSamplerState(&sampDesc, &m_sampler);
     }
 }

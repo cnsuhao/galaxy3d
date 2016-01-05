@@ -20,6 +20,7 @@ namespace Galaxy3D
 		static std::shared_ptr<Camera> GetCurrent() {return m_current;}
         static std::shared_ptr<RenderTexture> GetGBuffer(int index) {return m_g_buffer[index];}
         static void SetViewport(const Rect &rect);
+        static void Done();
         Camera();
 		virtual ~Camera();
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
