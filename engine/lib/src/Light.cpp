@@ -16,6 +16,7 @@ namespace Galaxy3D
     {
         m_volume_sphere.reset();
         m_volume_cone.reset();
+        RenderSettings::SetGlobalDirectionalLight(std::shared_ptr<Light>());
     }
 
     Light::Light():
