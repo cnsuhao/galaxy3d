@@ -18,6 +18,7 @@
     <ClCompile Include="..\src\Color.cpp" />
     <ClCompile Include="..\src\Component.cpp" />
     <ClCompile Include="..\src\d3d11\Camera.cpp" />
+    <ClCompile Include="..\src\d3d11\Cubemap.cpp" />
     <ClCompile Include="..\src\d3d11\GraphicsDevice.cpp" />
     <ClCompile Include="..\src\d3d11\Material.cpp" />
     <ClCompile Include="..\src\d3d11\Mesh.cpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="..\src\Rect.cpp" />
     <ClCompile Include="..\src\RenderSettings.cpp" />
     <ClCompile Include="..\src\Screen.cpp" />
+    <ClCompile Include="..\src\SkyBox.cpp" />
     <ClCompile Include="..\src\Sprite.cpp" />
     <ClCompile Include="..\src\Thread.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
@@ -86,6 +88,7 @@
     <ClInclude Include="..\src\ColorGradient.h" />
     <ClInclude Include="..\src\Component.h" />
     <ClInclude Include="..\src\d3d11\Camera.h" />
+    <ClInclude Include="..\src\d3d11\Cubemap.h" />
     <ClInclude Include="..\src\d3d11\GraphicsDevice.h" />
     <ClInclude Include="..\src\d3d11\Material.h" />
     <ClInclude Include="..\src\d3d11\Mesh.h" />
@@ -143,6 +146,7 @@
     <ClInclude Include="..\src\Screen.h" />
     <ClInclude Include="..\src\ShaderNode.h" />
     <ClInclude Include="..\src\ShaderPropertyType.h" />
+    <ClInclude Include="..\src\SkyBox.h" />
     <ClInclude Include="..\src\Sprite.h" />
     <ClInclude Include="..\src\SpriteNode.h" />
     <ClInclude Include="..\src\Texture.h" />

@@ -14,6 +14,7 @@ namespace Galaxy3D
         static const DXGI_FORMAT *TEXTURE_FORMATS;
         static const D3D11_FILTER *FILTER_MODES;
         static const D3D11_TEXTURE_ADDRESS_MODE *ADDRESS_MODES;
+        static const int PIXEL_BITS_SIZE[20];
 
 		virtual ~Texture() {}
 		int GetWidth() const {return m_width;}

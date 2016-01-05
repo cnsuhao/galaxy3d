@@ -23,6 +23,8 @@ namespace Galaxy3D
 		void SetPixels(int x, int y, int w, int h, const char *colors);
 		void Apply();
 		const char *GetPixels() const {return m_colors;}
+        int GetColorBufferSize() const {return m_color_buffer_size;}
+        TextureFormat::Enum GetFormat() const {return m_format;}
 		void EncodeToPNG(const std::string &file);
 		ID3D11ShaderResourceView *GetTexture() const {return m_texture_res;}
 		ID3D11SamplerState *GetSampler() const {return m_sampler;}
