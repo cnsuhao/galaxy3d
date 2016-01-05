@@ -28,11 +28,11 @@ namespace Galaxy3D
         m_hdr_render_target_back.reset();
         m_image_effect_buffer.reset();
         m_image_effect_buffer_back.reset();
-        for(auto i : m_g_buffer)
+        m_deferred_shading_mat.reset();
+        for(auto &i : m_g_buffer)
         {
             i.reset();
         }
-        m_deferred_shading_mat.reset();
     }
 
 	Camera::Camera():
