@@ -292,8 +292,6 @@ namespace Galaxy3D
 				s->CreateRenderStates();
 				s->CreatePass();
 
-                Debug::Log("new shader %s", name.c_str());
-
 				if(s->GetPassCount() > 0)
 				{
 					m_shaders[name] = s;
@@ -319,8 +317,6 @@ namespace Galaxy3D
 
 	Shader::~Shader()
 	{
-        Debug::Log("del shader %s", m_name.c_str());
-
 		for(auto i : m_vertex_shaders)
 		{
 			i.second.Release();

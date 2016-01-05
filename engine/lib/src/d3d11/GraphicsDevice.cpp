@@ -177,8 +177,11 @@ namespace Galaxy3D
 
 	void GraphicsDevice::ClearShaderResources()
 	{
-		ID3D11ShaderResourceView *empty[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {NULL};
-		m_immediate_context->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, empty);
+		ID3D11ShaderResourceView *sr[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {NULL};
+		m_immediate_context->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, sr);
+
+        ID3D11SamplerState *s[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {NULL};
+        m_immediate_context->PSSetSamplers(0, D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT, s);
 	}
 
     void GraphicsDevice::CreateBlitMeshIfNeeded()

@@ -76,6 +76,7 @@ namespace Galaxy3D
 	Texture2D::~Texture2D()
 	{
 		SAFE_RELEASE(m_texture);
+        SAFE_RELEASE(m_texture_res);
 		SAFE_RELEASE(m_sampler);
 
 		if(m_colors != NULL)
