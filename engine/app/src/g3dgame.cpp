@@ -64,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	World::Done();
+    GraphicsDevice::Done();
 
 	if(fstdout != 0)
 	{

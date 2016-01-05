@@ -146,6 +146,40 @@ namespace Galaxy3D
         return mesh;
     }
 
+    std::shared_ptr<Mesh> Mesh::CreateMeshCube()
+    {
+        auto mesh = Mesh::Create();
+
+        std::vector<VertexMesh> vertices;
+        std::vector<unsigned short> indices;
+
+        vertices.push_back({Vector3(-1, 1, -1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(-1, -1, -1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(1, -1, -1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(1, 1, -1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(-1, 1, 1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(-1, -1, 1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(1, -1, 1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+        vertices.push_back({Vector3(1, 1, 1) * 0.5f, Vector3(), Vector4(), Vector2(), Vector2()});
+
+        unsigned short indices_[36] =
+        {
+            3, 6, 2, 3, 7, 6,//right
+            4, 1, 5, 4, 0, 1,//left
+            4, 3, 0, 4, 7, 3,//up
+            1, 6, 5, 1, 2, 6,//down
+            7, 5, 6, 7, 4, 5,//front
+            0, 2, 1, 0, 3, 2,//back
+        };
+        indices.resize(36);
+        memcpy(&indices[0], indices_, sizeof(indices_));
+
+        mesh->SetVertices(vertices);
+        mesh->SetIndices(std::vector<std::vector<unsigned short>>(1, indices));
+
+        return mesh;
+    }
+
     std::shared_ptr<Mesh> Mesh::CreateMeshSphere()
     {
         auto mesh = Mesh::Create();

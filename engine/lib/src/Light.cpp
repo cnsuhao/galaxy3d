@@ -12,6 +12,12 @@ namespace Galaxy3D
     std::shared_ptr<Mesh> Light::m_volume_cone;
     float Light::CASCADE_SPLITS[CASCADE_SHADOW_COUNT] = {0.05f, 0.15f, 0.35f};
 
+    void Light::Done()
+    {
+        m_volume_sphere.reset();
+        m_volume_cone.reset();
+    }
+
     Light::Light():
         m_type(LightType::Point),
         m_spot_angle(30),

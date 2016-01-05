@@ -22,6 +22,19 @@ namespace Galaxy3D
     std::shared_ptr<RenderTexture> Camera::m_g_buffer[G_BUFFER_MRT_COUNT];
     std::shared_ptr<Material> Camera::m_deferred_shading_mat;
 
+    void Camera::Done()
+    {
+        m_hdr_render_target.reset();
+        m_hdr_render_target_back.reset();
+        m_image_effect_buffer.reset();
+        m_image_effect_buffer_back.reset();
+        for(auto i : m_g_buffer)
+        {
+            i.reset();
+        }
+        m_deferred_shading_mat.reset();
+    }
+
 	Camera::Camera():
 		m_clear_flags(CameraClearFlags::SolidColor),
 		m_clear_color(0, 0, 1, 1),

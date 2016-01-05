@@ -3,6 +3,7 @@
 #include "Label.h"
 #include "Input.h"
 #include "Renderer.h"
+#include "Light.h"
 
 namespace Galaxy3D
 {
@@ -110,6 +111,9 @@ namespace Galaxy3D
         Renderer::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
+        Camera::Done();
+        Shader::Done();
+        Light::Done();
         Object::ClearAllCachedObjects();
 		Label::DoneFontLib();
 	}

@@ -16,7 +16,7 @@ namespace Galaxy3D
 	{
 	public:
 		static GraphicsDevice *GetInstance();
-		GraphicsDevice();
+        static void Done();
 		~GraphicsDevice();
 		void Init(void *param);
 		void ClearShaderResources();
@@ -38,6 +38,7 @@ namespace Galaxy3D
         std::shared_ptr<Mesh> m_blit_mesh;
         std::shared_ptr<Material> m_blit_mat;
 
+        GraphicsDevice();
         void CreateBlitMeshIfNeeded();
         void CreateBlitMaterialIfNeeded();
 	};
