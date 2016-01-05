@@ -9,7 +9,7 @@ namespace Galaxy3D
 	static const unsigned char JPG_HEAD[] = {0xff, 0xd8, 0xff};
 	static const unsigned char PNG_HEAD[] = {0x89, 0x50, 0x4e, 0x47};
 
-	static const int PIXEL_BITS_SIZE[20] =
+    const int Texture::PIXEL_BITS_SIZE[20] =
 	{
 		8,
 		16,
@@ -76,7 +76,6 @@ namespace Galaxy3D
 	Texture2D::~Texture2D()
 	{
 		SAFE_RELEASE(m_texture);
-		SAFE_RELEASE(m_texture_res);
 		SAFE_RELEASE(m_sampler);
 
 		if(m_colors != NULL)

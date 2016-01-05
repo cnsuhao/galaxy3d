@@ -320,6 +320,16 @@ void Launcher::Start()
     fog->SetFogDensity(0.02f);
     */
 
+    auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();
+    std::vector<std::string> sky_textures;
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/right.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/left.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/up.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/down.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/front.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/back.png");
+    sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
+
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
 
     auto anim_parent = GameObject::Create("anim_parent");

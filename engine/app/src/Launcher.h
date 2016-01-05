@@ -37,6 +37,7 @@
 #include "SkinnedMeshRenderer.h"
 #include "NavMesh.h"
 #include "NavMeshAgent.h"
+#include "SkyBox.h"
 
 namespace Galaxy3D
 {

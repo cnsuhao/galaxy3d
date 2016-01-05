@@ -192,6 +192,12 @@
     <ClCompile Include="..\src\NavMeshAgent.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SkyBox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Cubemap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -444,6 +450,12 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\NavMeshAgent.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SkyBox.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Cubemap.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
