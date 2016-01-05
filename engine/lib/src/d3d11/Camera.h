@@ -90,6 +90,7 @@ namespace Galaxy3D
         static void CreateDeferredShadingResourcesIfNeeded(int w, int h);
         void RenderShadowMaps();
 		void Render();
+        void RenderSkyBox();
 		void SetViewport(int w, int h) const;
         void Clear();
         //

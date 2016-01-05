@@ -322,8 +322,8 @@ void Launcher::Start()
 
     auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();
     std::vector<std::string> sky_textures;
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/right.png");
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/left.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/right.png");
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/up.png");
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/down.png");
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/front.png");

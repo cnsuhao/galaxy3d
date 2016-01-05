@@ -10,6 +10,7 @@
 #include "RenderSettings.h"
 #include "Light.h"
 #include "LayerMask.h"
+#include "SkyBox.h"
 
 namespace Galaxy3D
 {
@@ -465,10 +466,21 @@ namespace Galaxy3D
             DeferredShading();
         }
 
+        RenderSkyBox();
+
         ImageEffectsOpaque();
         Renderer::RenderTransparentGeometry();
         ImageEffectsDefault();
 	}
+
+    void Camera::RenderSkyBox()
+    {
+        auto sky = GetGameObject()->GetComponent<SkyBox>();
+        if(sky)
+        {
+            sky->Render();
+        }
+    }
 
     void Camera::DeferredShading()
     {
