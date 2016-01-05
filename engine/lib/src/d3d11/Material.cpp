@@ -5,6 +5,7 @@
 #include "Guid.h"
 #include "RenderTexture.h"
 #include "Camera.h"
+#include "Cubemap.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
 static const std::string MAIN_COLOR_NAME = "_MainColor";
@@ -291,6 +292,8 @@ namespace Galaxy3D
 					{
 						find_sampler->second.sampler = tex->GetSampler();
 					}
+
+                    continue;
 				}
 
                 auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
@@ -310,6 +313,22 @@ namespace Galaxy3D
                     {
                         find_sampler->second.sampler = render_texture->GetSamplerState();
                     }
+
+                    continue;
+                }
+
+                auto cubemap = std::dynamic_pointer_cast<Cubemap>(i.second);
+                if(cubemap)
+                {
+                    find->second.texture = cubemap->GetTexture();
+
+                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+                    if(find_sampler != shader_pass->ps->samplers.end())
+                    {
+                        find_sampler->second.sampler = cubemap->GetSampler();
+                    }
+
+                    continue;
                 }
 			}
 		}

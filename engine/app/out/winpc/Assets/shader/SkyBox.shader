@@ -46,7 +46,7 @@ SkyBox
         {
             PS_INPUT output = (PS_INPUT) 0;
 
-            output.v_pos = mul(input.Position, WorldViewProjection);
+            output.v_pos = mul(input.Position, WorldViewProjection).xyww;
             output.v_uv = input.Position.xyz;
 
             return output;

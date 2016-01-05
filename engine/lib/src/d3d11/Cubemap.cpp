@@ -54,7 +54,7 @@ namespace Galaxy3D
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
         desc.CPUAccessFlags = 0;
-        desc.MiscFlags = 0;
+        desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
         D3D11_SUBRESOURCE_DATA init_data[6];
         ZeroMemory(init_data, sizeof(init_data));
@@ -63,7 +63,7 @@ namespace Galaxy3D
         for(int k=0; k<6; k++)
         {
             int bpp = Texture::PIXEL_BITS_SIZE[m_format];
-            if(m_colors != 0 && bpp > 0)
+            if(m_colors[k] != 0 && bpp > 0)
             {
                 int bytes = bpp / 8;
                 if(m_format == TextureFormat::RGB24)
@@ -107,8 +107,9 @@ namespace Galaxy3D
         D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
         memset(&srvd, 0, sizeof(srvd));
         srvd.Format = TEXTURE_FORMATS[m_format];
-        srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvd.Texture2D.MipLevels = -1;
+        srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+        srvd.TextureCube.MipLevels = -1;
+        srvd.TextureCube.MostDetailedMip = 0;
 
         device->CreateShaderResourceView(tex, &srvd, &m_texture_res);
         tex->Release();
