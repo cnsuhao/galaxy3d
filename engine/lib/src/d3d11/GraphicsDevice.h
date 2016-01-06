@@ -1,8 +1,11 @@
 #ifndef __GraphicsDevice_h__
 #define __GraphicsDevice_h__
 
+#include "CameraClearFlags.h"
+#include "Color.h"
 #include <d3d11.h>
 #include <memory>
+#include <vector>
 
 namespace Galaxy3D
 {
@@ -28,6 +31,8 @@ namespace Galaxy3D
         void DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index);
         void SetViewport(int left, int top, int width, int height);
         void Present();
+        void SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer);
+        void ClearRenderTarget(CameraClearFlags::Enum clear_flags, const Color &color, float depth, int stencil);
 
 	private:
 		ID3D11Device *m_d3d_device;
@@ -39,6 +44,8 @@ namespace Galaxy3D
         std::shared_ptr<RenderTexture> m_screen_buffer;
         std::shared_ptr<Mesh> m_blit_mesh;
         std::shared_ptr<Material> m_blit_mat;
+        std::vector<std::weak_ptr<RenderTexture>> m_color_buffers_ref;
+        std::weak_ptr<RenderTexture> m_depth_stencil_buffer_ref;
 
         GraphicsDevice();
         void CreateBlitMeshIfNeeded();
