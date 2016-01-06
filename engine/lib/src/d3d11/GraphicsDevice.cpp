@@ -333,4 +333,59 @@ namespace Galaxy3D
     {
         m_swap_chain->Present(0, 0);
     }
+
+    void GraphicsDevice::SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer)
+    {
+        int color_count = color_buffers.size();
+        m_color_buffers_ref.resize(color_count);
+        m_depth_stencil_buffer_ref = depth_stencil_buffer;
+        std::vector<ID3D11RenderTargetView *> colors(color_count);
+        for(int i=0; i<color_count; i++)
+        {
+            colors[i] = color_buffers[i]->GetRenderTargetView();
+            m_color_buffers_ref[i] = color_buffers[i];
+        }
+        auto depth_stencil = depth_stencil_buffer->GetDepthStencilView();
+
+        if(color_count > 0)
+        {
+            m_immediate_context->OMSetRenderTargets(color_count, &colors[0], depth_stencil);
+        }
+        else
+        {
+            m_immediate_context->OMSetRenderTargets(0, NULL, depth_stencil);
+        }
+    }
+
+    void GraphicsDevice::ClearRenderTarget(CameraClearFlags::Enum clear_flags, const Color &color, float depth, int stencil)
+    {
+        if(clear_flags == CameraClearFlags::SolidColor)
+        {
+            for(size_t i=0; i<m_color_buffers_ref.size(); i++)
+            {
+                auto color_buffer = m_color_buffers_ref[i].lock()->GetRenderTargetView();
+
+                if(color_buffer != NULL)
+                {
+                    m_immediate_context->ClearRenderTargetView(color_buffer, (const float *) &color);
+                }
+            }
+
+            auto depth_buffer = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();
+
+            if(depth_buffer != NULL)
+            {
+                m_immediate_context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+            }
+        }
+        else if(clear_flags == CameraClearFlags::Depth)
+        {
+            auto depth_buffer = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();
+
+            if(depth_buffer != NULL)
+            {
+                m_immediate_context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+            }
+        }
+    }
 }

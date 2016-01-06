@@ -503,25 +503,18 @@ namespace Galaxy3D
         int width = render_texture->GetWidth();
         int height = render_texture->GetHeight();
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-        auto color_buffer = render_texture->GetRenderTargetView();
-        auto depth_buffer = render_texture->GetDepthStencilView();
+        std::vector<std::shared_ptr<RenderTexture>> color_buffers(G_BUFFER_MRT_COUNT + 1);
+        color_buffers[0] = render_texture;
+        color_buffers[1] = m_g_buffer[0];
+        color_buffers[2] = m_g_buffer[1];
+        color_buffers[3] = m_g_buffer[2];
 
-        ID3D11RenderTargetView *views[G_BUFFER_MRT_COUNT + 1];
-        views[0] = color_buffer;
-        views[1] = m_g_buffer[0]->GetRenderTargetView();
-        views[2] = m_g_buffer[1]->GetRenderTargetView();
-        views[3] = m_g_buffer[2]->GetRenderTargetView();
-
-        context->OMSetRenderTargets(G_BUFFER_MRT_COUNT + 1, views, depth_buffer);
+        GraphicsDevice::GetInstance()->SetRenderTargets(color_buffers, render_texture);
         SetViewport(width, height);
 
         m_render_target_binding = render_texture;
 
-        context->ClearRenderTargetView(views[0], (const float *) &m_clear_color);
-        context->ClearRenderTargetView(views[1], (const float *) &m_clear_color);
-        context->ClearRenderTargetView(views[2], (const float *) &m_clear_color);
-        context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        GraphicsDevice::GetInstance()->ClearRenderTarget(CameraClearFlags::SolidColor, m_clear_color, 1.0f, 0);
     }
 
     void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force)
@@ -534,19 +527,10 @@ namespace Galaxy3D
         int width = render_texture->GetWidth();
         int height = render_texture->GetHeight();
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-        auto color_buffer = render_texture->GetRenderTargetView();
-        auto depth_buffer = render_texture->GetDepthStencilView();
+        std::vector<std::shared_ptr<RenderTexture>> color_buffers(1);
+        color_buffers[0] = render_texture;
 
-        if(color_buffer != NULL)
-        {
-            context->OMSetRenderTargets(1, &color_buffer, depth_buffer);
-        }
-        else
-        {
-            context->OMSetRenderTargets(0, NULL, depth_buffer);
-        }
-        
+        GraphicsDevice::GetInstance()->SetRenderTargets(color_buffers, render_texture);
         SetViewport(width, height);
 
         m_render_target_binding = render_texture;
@@ -561,28 +545,9 @@ namespace Galaxy3D
             return;
         }
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-        auto color_buffer = m_render_target_binding->GetRenderTargetView();
-        auto depth_buffer = m_render_target_binding->GetDepthStencilView();
-
-        if(m_clear_flags == CameraClearFlags::SolidColor)
+        if(m_clear_flags == CameraClearFlags::SolidColor || m_clear_flags == CameraClearFlags::Depth)
         {
-            if(color_buffer != NULL)
-            {
-                context->ClearRenderTargetView(color_buffer, (const float *) &m_clear_color);
-            }
-
-            if(depth_buffer != NULL)
-            {
-                context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-            }
-        }
-        else if(m_clear_flags == CameraClearFlags::Depth)
-        {
-            if(depth_buffer != NULL)
-            {
-                context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-            }
+            GraphicsDevice::GetInstance()->ClearRenderTarget(m_clear_flags, m_clear_color, 1.0f, 0);
         }
     }
 
