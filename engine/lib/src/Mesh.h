@@ -24,8 +24,8 @@ namespace Galaxy3D
         std::vector<VertexSkinned> &GetVerticesSkinned() {return m_vertices_skinned;}
         void SetIndices(const std::vector<std::vector<unsigned short>> indices) {m_sub_indices = indices;}
         std::vector<std::vector<unsigned short>> &GetIndices() {return m_sub_indices;}
-        ID3D11Buffer *GetVertexBuffer();
-        ID3D11Buffer *GetIndexBuffer();
+        BufferObject GetVertexBuffer();
+        BufferObject GetIndexBuffer();
         int GetIndexCount(int submesh) {return m_sub_indices[submesh].size();}
         const std::vector<Matrix4x4> &GetBindPoses() const {return m_bind_poses;}
         void SetGuid(const std::string &guid) {m_guid = guid;}
@@ -36,8 +36,8 @@ namespace Galaxy3D
         std::vector<VertexSkinned> m_vertices_skinned;
         std::vector<std::vector<unsigned short>> m_sub_indices;
         std::vector<Matrix4x4> m_bind_poses;
-        ID3D11Buffer *m_vertex_buffer;
-        ID3D11Buffer *m_index_buffer;
+        BufferObject m_vertex_buffer;
+        BufferObject m_index_buffer;
 
         static std::shared_ptr<Mesh> ReadMesh(char *&p, Renderer *renderer, const std::string &dir, bool skin);
         static std::shared_ptr<Material> ReadMaterial(char *&p, const std::string &dir, bool skin);

@@ -14,6 +14,40 @@ namespace Galaxy3D
     class Material;
     class Mesh;
     class Matrix4x4;
+    struct VertexShader;
+
+    struct BufferUsage
+    {
+        enum Enum
+        {
+            StaticDraw,
+        };
+    };
+
+    struct BufferType
+    {
+        enum Enum
+        {
+            Vertex,
+            Index
+        };
+    };
+
+    struct IndexType
+    {
+        enum Enum
+        {
+            UShort,
+            UInt
+        };
+    };
+
+    struct BufferObject
+    {
+        void *buffer;
+
+        BufferObject():buffer(NULL) {}
+    };
 
 	class GraphicsDevice
 	{
@@ -33,6 +67,12 @@ namespace Galaxy3D
         void Present();
         void SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer);
         void ClearRenderTarget(CameraClearFlags::Enum clear_flags, const Color &color, float depth, int stencil);
+        BufferObject CreateBufferObject(void *data, int size, BufferUsage::Enum usage, BufferType::Enum type);
+        void ReleaseBufferObject(BufferObject &bo);
+        void SetInputLayout(VertexShader *shader);
+        void SetVertexBuffer(BufferObject &bo, int stride, int offset);
+        void SetIndexBuffer(BufferObject &bo, IndexType::Enum bits);
+        void DrawIndexed(int count, int offset);
 
 	private:
 		ID3D11Device *m_d3d_device;

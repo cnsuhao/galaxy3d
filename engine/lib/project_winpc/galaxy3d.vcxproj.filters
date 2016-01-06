@@ -105,12 +105,6 @@
     <ClCompile Include="..\src\Input.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\d3d11\Mesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\SkinnedMeshRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Animation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -127,9 +121,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\RenderSettings.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\MeshRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Physics.cpp">
@@ -157,9 +148,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Guid.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Thread.cpp">
@@ -196,6 +184,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SkinnedMeshRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MeshRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -350,13 +350,7 @@
     <ClInclude Include="..\src\Input.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\Mesh.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ShaderPropertyType.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\SkinnedMeshRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Animation.h">
@@ -384,9 +378,6 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\RenderSettings.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\MeshRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Physics.h">
@@ -417,9 +408,6 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Guid.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\Renderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Thread.h">
@@ -456,6 +444,18 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Camera.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SkinnedMeshRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Renderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

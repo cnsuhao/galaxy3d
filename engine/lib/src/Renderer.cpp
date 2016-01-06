@@ -14,8 +14,8 @@ namespace Galaxy3D
     std::list<RenderBatch> Renderer::m_batches_renderable_opaque;
     std::list<RenderBatch> Renderer::m_batches_renderable_transparent;
     std::shared_ptr<Octree> Renderer::m_octree;
-    ID3D11Buffer *Renderer::m_static_batching_vertex_buffer = NULL;
-    ID3D11Buffer *Renderer::m_static_batching_index_buffer = NULL;
+    BufferObject Renderer::m_static_batching_vertex_buffer;
+    BufferObject Renderer::m_static_batching_index_buffer;
 
     bool RenderBatch::IsStaticSinglePassMeshRenderer() const
     {
@@ -428,8 +428,8 @@ namespace Galaxy3D
                 auto mesh_renderer = dynamic_cast<MeshRenderer *>(i->renderer);
 
                 if( i->IsStaticSinglePassMeshRenderer() &&
-                    m_static_batching_vertex_buffer != NULL &&
-                    m_static_batching_index_buffer != NULL)
+                    m_static_batching_vertex_buffer.buffer != NULL &&
+                    m_static_batching_index_buffer.buffer != NULL)
                 {
                     mesh_renderer->RenderStaticBatch(&(*i), last_batch);
                 }
@@ -445,8 +445,7 @@ namespace Galaxy3D
 
     void Renderer::DrawIndexed(int count, int offset)
     {
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-        context->DrawIndexed(count, offset, 0);
+        GraphicsDevice::GetInstance()->DrawIndexed(count, offset);
 
         GTTime::m_draw_call++;
     }
@@ -462,8 +461,8 @@ namespace Galaxy3D
 
     void Renderer::Done()
     {
-        SAFE_RELEASE(m_static_batching_vertex_buffer);
-        SAFE_RELEASE(m_static_batching_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_static_batching_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_static_batching_index_buffer);
 
         m_octree.reset();
     }
@@ -512,34 +511,13 @@ namespace Galaxy3D
             }
         }
 
-        SAFE_RELEASE(m_static_batching_vertex_buffer);
-        SAFE_RELEASE(m_static_batching_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_static_batching_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_static_batching_index_buffer);
 
         if(!vertices->empty() && !indices->empty())
         {
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            bd.ByteWidth = sizeof(VertexMesh) * vertices->size();
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = &(*vertices)[0];
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_static_batching_vertex_buffer);
-
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-            bd.ByteWidth = sizeof(unsigned int) * indices->size();
-
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = &(*indices)[0];
-            hr = device->CreateBuffer(&bd, &data, &m_static_batching_index_buffer);
+            m_static_batching_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(&(*vertices)[0], sizeof(VertexMesh) * vertices->size(), BufferUsage::StaticDraw, BufferType::Vertex);
+            m_static_batching_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(&(*indices)[0], sizeof(unsigned int) * indices->size(), BufferUsage::StaticDraw, BufferType::Index);
         }
 
         delete vertices;

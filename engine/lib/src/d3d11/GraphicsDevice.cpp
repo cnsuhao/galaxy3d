@@ -266,11 +266,9 @@ namespace Galaxy3D
 
             if(i == pass_begin)
             {
-                m_immediate_context->IASetInputLayout(pass->vs->input_layout);
-                UINT stride = pass->vs->vertex_stride;
-                UINT offset = 0;
-                m_immediate_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-                m_immediate_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+                SetInputLayout(pass->vs);
+                SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+                SetIndexBuffer(index_buffer, IndexType::UShort);
             }
 
             mat->ReadyPass(i);
@@ -302,11 +300,9 @@ namespace Galaxy3D
             auto pass_count = shader->GetPassCount();
             auto pass = shader->GetPass(pass_index);
 
-            UINT stride = pass->vs->vertex_stride;
-            UINT offset = 0;
-            m_immediate_context->IASetInputLayout(pass->vs->input_layout);
-            m_immediate_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-            m_immediate_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+            SetInputLayout(pass->vs);
+            SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+            SetIndexBuffer(index_buffer, IndexType::UShort);
 
             material->ReadyPass(pass_index);
             pass->rs->Apply();
@@ -387,5 +383,79 @@ namespace Galaxy3D
                 m_immediate_context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
             }
         }
+    }
+
+    BufferObject GraphicsDevice::CreateBufferObject(void *data, int size, BufferUsage::Enum usage, BufferType::Enum type)
+    {
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.ByteWidth = size;
+
+        if(type == BufferType::Vertex)
+        {
+            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        }
+        else if(type == BufferType::Index)
+        {
+            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        }
+
+        if(usage == BufferUsage::StaticDraw)
+        {
+            bd.Usage = D3D11_USAGE_IMMUTABLE;
+            bd.CPUAccessFlags = 0;
+        }
+
+        D3D11_SUBRESOURCE_DATA init_data;
+        ZeroMemory(&init_data, sizeof(init_data));
+        init_data.pSysMem = data;
+
+        ID3D11Buffer *buffer = NULL;
+        m_d3d_device->CreateBuffer(&bd, &init_data, &buffer);
+
+        BufferObject bo;
+        bo.buffer = buffer;
+        return bo;
+    }
+
+    void GraphicsDevice::ReleaseBufferObject(BufferObject &bo)
+    {
+        ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
+        SAFE_RELEASE(buffer);
+        bo.buffer = 0;
+    }
+
+    void GraphicsDevice::SetInputLayout(VertexShader *shader)
+    {
+        m_immediate_context->IASetInputLayout(shader->input_layout);
+    }
+
+    void GraphicsDevice::SetVertexBuffer(BufferObject &bo, int stride, int offset)
+    {
+        UINT strides[1] = {stride};
+        UINT offsets[1] = {offset};
+        ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
+        m_immediate_context->IASetVertexBuffers(0, 1, &buffer, strides, offsets);
+    }
+
+    void GraphicsDevice::SetIndexBuffer(BufferObject &bo, IndexType::Enum bits)
+    {
+        ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
+        DXGI_FORMAT format;
+        if(bits == IndexType::UInt)
+        {
+            format = DXGI_FORMAT_R32_UINT;
+        }
+        else
+        {
+            format = DXGI_FORMAT_R16_UINT;
+        }
+
+        m_immediate_context->IASetIndexBuffer(buffer, format, 0);
+    }
+
+    void GraphicsDevice::DrawIndexed(int count, int offset)
+    {
+        m_immediate_context->DrawIndexed(count, offset, 0);
     }
 }
