@@ -9,6 +9,7 @@ using namespace Galaxy3D;
 
 #if DEMO_DEF
 int g_key_down_count = 0;
+static bool g_key_down[4] = {false};
 Vector3 g_mouse_down_pos;
 bool g_mouse_down = false;
 Vector3 g_cam_rot;
@@ -402,8 +403,10 @@ void Launcher::OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component
 }
 #endif
 
-static void move_key_down(std::shared_ptr<Animation> &anim)
+#if DEMO_DEF
+static void move_key_down(std::shared_ptr<Animation> &anim, int index)
 {
+    g_key_down[index] = true;
     g_key_down_count++;
 
     if(g_key_down_count == 1)
@@ -412,13 +415,17 @@ static void move_key_down(std::shared_ptr<Animation> &anim)
     }
 }
 
-static void move_key_up(std::shared_ptr<Animation> &anim)
+static void move_key_up(std::shared_ptr<Animation> &anim, int index)
 {
-    g_key_down_count--;
-
-    if(g_key_down_count == 0)
+    if(g_key_down[index])
     {
-        anim->CrossFade("idle");
+        g_key_down[index] = false;
+        g_key_down_count--;
+
+        if(g_key_down_count == 0)
+        {
+            anim->CrossFade("idle");
+        }
     }
 }
 
@@ -439,6 +446,7 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
     return rot_offset;
 }
+#endif
 
 void Launcher::Update()
 {
@@ -451,15 +459,15 @@ void Launcher::Update()
 
     int key_down_count_old = g_key_down_count;
 
-    if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim);
-    if(Input::GetKeyDown(KeyCode::S)) move_key_down(anim);
-    if(Input::GetKeyDown(KeyCode::A)) move_key_down(anim);
-    if(Input::GetKeyDown(KeyCode::D)) move_key_down(anim);
+    if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim, 0);
+    if(Input::GetKeyDown(KeyCode::S)) move_key_down(anim, 1);
+    if(Input::GetKeyDown(KeyCode::A)) move_key_down(anim, 2);
+    if(Input::GetKeyDown(KeyCode::D)) move_key_down(anim, 3);
 
-    if(Input::GetKeyUp(KeyCode::W)) move_key_up(anim);
-    if(Input::GetKeyUp(KeyCode::S)) move_key_up(anim);
-    if(Input::GetKeyUp(KeyCode::A)) move_key_up(anim);
-    if(Input::GetKeyUp(KeyCode::D)) move_key_up(anim);
+    if(Input::GetKeyUp(KeyCode::W)) move_key_up(anim, 0);
+    if(Input::GetKeyUp(KeyCode::S)) move_key_up(anim, 1);
+    if(Input::GetKeyUp(KeyCode::A)) move_key_up(anim, 2);
+    if(Input::GetKeyUp(KeyCode::D)) move_key_up(anim, 3);
 
     Vector3 move_dir(0, 0, 0);
     if(Input::GetKey(KeyCode::W))

@@ -430,7 +430,7 @@ namespace Galaxy3D
         D3D11_MAPPED_SUBRESOURCE dms;
         ZeroMemory(&dms, sizeof(dms));
         m_immediate_context->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
-        memcpy(dms.pData, buffer, size);
+        memcpy(dms.pData, data, size);
         m_immediate_context->Unmap(buffer, 0);
     }
 
