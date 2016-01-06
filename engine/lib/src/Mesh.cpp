@@ -127,16 +127,14 @@ namespace Galaxy3D
         return mat;
     }
 
-    Mesh::Mesh():
-        m_vertex_buffer(NULL),
-        m_index_buffer(NULL)
+    Mesh::Mesh()
     {
     }
 
     Mesh::~Mesh()
     {
-        SAFE_RELEASE(m_vertex_buffer);
-        SAFE_RELEASE(m_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
     }
 
     std::shared_ptr<Mesh> Mesh::Create()
@@ -670,9 +668,9 @@ namespace Galaxy3D
         return mesh;
     }
 
-    ID3D11Buffer *Mesh::GetVertexBuffer()
+    BufferObject Mesh::GetVertexBuffer()
     {
-        if(m_vertex_buffer == NULL)
+        if(m_vertex_buffer.buffer == NULL)
         {
             int buffer_size;
             char *buffer;
@@ -687,32 +685,16 @@ namespace Galaxy3D
                 buffer_size = sizeof(VertexSkinned) * m_vertices_skinned.size();
                 buffer = (char *) &m_vertices_skinned[0];
             }
-            else
-            {
-                return NULL;
-            }
 
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
+            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Vertex);
         }
 
         return m_vertex_buffer;
     }
 
-    ID3D11Buffer *Mesh::GetIndexBuffer()
+    BufferObject Mesh::GetIndexBuffer()
     {
-        if(m_index_buffer == NULL && !m_sub_indices.empty())
+        if(m_index_buffer.buffer == NULL && !m_sub_indices.empty())
         {
             std::vector<unsigned short> uv;
             for(size_t i=0; i<m_sub_indices.size(); i++)
@@ -726,19 +708,7 @@ namespace Galaxy3D
             int buffer_size = sizeof(unsigned short) * uv.size();
             char *buffer = (char *) &uv[0];
 
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
+            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
         }
         
         return m_index_buffer;

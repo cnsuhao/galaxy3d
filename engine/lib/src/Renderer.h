@@ -66,8 +66,8 @@ namespace Galaxy3D
         Bounds GetBounds() const {return m_bounds;}
 
 	protected:
-        static ID3D11Buffer *m_static_batching_vertex_buffer;
-        static ID3D11Buffer *m_static_batching_index_buffer;
+        static BufferObject m_static_batching_vertex_buffer;
+        static BufferObject m_static_batching_index_buffer;
 		bool m_cast_shadow;
 		bool m_receive_shadow;
 		bool m_visible;

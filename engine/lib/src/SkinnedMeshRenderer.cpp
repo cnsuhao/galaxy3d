@@ -25,12 +25,11 @@ namespace Galaxy3D
         auto vertex_buffer = m_mesh->GetVertexBuffer();
         auto index_buffer = m_mesh->GetIndexBuffer();
 
-        if(vertex_buffer == NULL || index_buffer == NULL)
+        if(vertex_buffer.buffer == NULL || index_buffer.buffer == NULL)
         {
             return;
         }
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto camera = Camera::GetCurrent();
 
         //bones
@@ -75,11 +74,9 @@ namespace Galaxy3D
 
                 if(j == 0)
                 {
-                    context->IASetInputLayout(pass->vs->input_layout);
-                    UINT stride = pass->vs->vertex_stride;
-                    UINT offset = 0;
-                    context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-                    context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+                    GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
+                    GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+                    GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UShort);
                 }
 
                 bool right_pass = false;
