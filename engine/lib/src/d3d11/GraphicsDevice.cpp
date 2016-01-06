@@ -6,10 +6,11 @@
 namespace Galaxy3D
 {
     static GraphicsDevice *g_device = NULL;
+    static bool g_done = false;
 
 	GraphicsDevice *GraphicsDevice::GetInstance()
 	{
-        if(g_device == NULL)
+        if(g_device == NULL && !g_done)
         {
             g_device = new GraphicsDevice();
         }
@@ -24,6 +25,8 @@ namespace Galaxy3D
             delete g_device;
             g_device = NULL;
         }
+
+        g_done = true;
     }
 
 	GraphicsDevice::GraphicsDevice():
@@ -240,7 +243,6 @@ namespace Galaxy3D
         }
         mat->SetMainTexture(source);
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto vertex_buffer = m_blit_mesh->GetVertexBuffer();
         auto index_buffer = m_blit_mesh->GetIndexBuffer();
         auto shader = mat->GetShader();
@@ -264,11 +266,11 @@ namespace Galaxy3D
 
             if(i == pass_begin)
             {
-                context->IASetInputLayout(pass->vs->input_layout);
+                m_immediate_context->IASetInputLayout(pass->vs->input_layout);
                 UINT stride = pass->vs->vertex_stride;
                 UINT offset = 0;
-                context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-                context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+                m_immediate_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+                m_immediate_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
             }
 
             mat->ReadyPass(i);
@@ -286,8 +288,6 @@ namespace Galaxy3D
         auto vertex_buffer = mesh->GetVertexBuffer();
         auto index_buffer = mesh->GetIndexBuffer();
 
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
         int index_offset = 0;
         for(int i=0; i<sub_mesh_index; i++)
         {
@@ -304,9 +304,9 @@ namespace Galaxy3D
 
             UINT stride = pass->vs->vertex_stride;
             UINT offset = 0;
-            context->IASetInputLayout(pass->vs->input_layout);
-            context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-            context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+            m_immediate_context->IASetInputLayout(pass->vs->input_layout);
+            m_immediate_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+            m_immediate_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
 
             material->ReadyPass(pass_index);
             pass->rs->Apply();
@@ -314,5 +314,23 @@ namespace Galaxy3D
 
             Renderer::DrawIndexed(index_count, index_offset);
         }while(false);
+    }
+
+    void GraphicsDevice::SetViewport(int left, int top, int width, int height)
+    {
+        D3D11_VIEWPORT vp;
+        vp.Width = (float) width;
+        vp.Height = (float) height;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        vp.TopLeftX = (float) left;
+        vp.TopLeftY = (float) top;
+
+        m_immediate_context->RSSetViewports(1, &vp);
+    }
+
+    void GraphicsDevice::Present()
+    {
+        m_swap_chain->Present(0, 0);
     }
 }

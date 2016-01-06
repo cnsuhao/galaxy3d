@@ -26,6 +26,8 @@ namespace Galaxy3D
         std::shared_ptr<RenderTexture> GetScreenBuffer() const {return m_screen_buffer;}
         void Blit(const std::shared_ptr<Texture> &source, const std::shared_ptr<RenderTexture> &destination, const std::shared_ptr<Material> &material, int pass);
         void DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index);
+        void SetViewport(int left, int top, int width, int height);
+        void Present();
 
 	private:
 		ID3D11Device *m_d3d_device;

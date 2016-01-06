@@ -104,32 +104,12 @@ namespace Galaxy3D
 
     void Camera::SetViewport(const Rect &rect)
     {
-        auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-        D3D11_VIEWPORT vp;
-        vp.Width = rect.width;
-        vp.Height = rect.height;
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
-        vp.TopLeftX = rect.left;
-        vp.TopLeftY = rect.top;
-
-        context->RSSetViewports(1, &vp);
+        GraphicsDevice::GetInstance()->SetViewport((int) rect.left, (int) rect.top, (int) rect.width, (int) rect.height);
     }
 
 	void Camera::SetViewport(int w, int h) const
 	{
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-		D3D11_VIEWPORT vp;
-		vp.Width = m_rect.width * w;
-		vp.Height = m_rect.height * h;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		vp.TopLeftX = m_rect.left * w;
-		vp.TopLeftY = m_rect.top * h;
-
-		context->RSSetViewports(1, &vp);
+        GraphicsDevice::GetInstance()->SetViewport((int) (m_rect.left * w), (int) (m_rect.top * h), (int) (m_rect.width * w), (int) (m_rect.height * h));
 	}
 
 	void Camera::UpdateTime()
@@ -367,7 +347,7 @@ namespace Galaxy3D
             }
         }
 
-		GraphicsDevice::GetInstance()->GetSwapChain()->Present(0, 0);
+		GraphicsDevice::GetInstance()->Present();
 
 		GTTime::m_render_time = GTTime::GetRealTimeSinceStartup() - time;
 
@@ -412,7 +392,6 @@ namespace Galaxy3D
 
 	void Camera::Render()
 	{
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
         auto effects = GetGameObject()->GetComponents<ImageEffect>();
         std::shared_ptr<RenderTexture> render_target;
         int width, height;
