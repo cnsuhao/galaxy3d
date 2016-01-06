@@ -318,6 +318,7 @@ void Launcher::Start()
     fog->SetFogMode(FogMode::ExponentialSquared);
     fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
     fog->SetFogDensity(0.02f);
+    fog->ExcludeFarPixels(true);
     */
 
     auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();

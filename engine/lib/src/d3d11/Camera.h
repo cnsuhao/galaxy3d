@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "Matrix4x4.h"
 #include "Rect.h"
-#include "GraphicsDevice.h"
+#include "Material.h"
 #include <list>
 
 namespace Galaxy3D
