@@ -28,8 +28,8 @@ namespace Galaxy3D
 		std::list<std::shared_ptr<SpriteNode>> m_sprites;
 		std::list<std::shared_ptr<SpriteNode>> m_sprites_cache;
 		Color m_color;
-		ID3D11Buffer *m_vertex_buffer;
-		ID3D11Buffer *m_index_buffer;
+		BufferObject m_vertex_buffer;
+        BufferObject m_index_buffer;
 
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();

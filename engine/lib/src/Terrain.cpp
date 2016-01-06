@@ -12,8 +12,6 @@
 namespace Galaxy3D
 {
 	Terrain::Terrain():
-		m_vertex_buffer(0),
-		m_index_buffer(0),
         m_geo_patches(0),
         m_geo_patch_count_per_side(0),
         m_use_geo(false)
@@ -462,51 +460,27 @@ namespace Galaxy3D
 		delete [] face_normals;
 	}
 
-    ID3D11Buffer *Terrain::GetVertexBuffer()
+    BufferObject Terrain::GetVertexBuffer()
 	{
-		if(m_vertex_buffer == 0)
+		if(m_vertex_buffer.buffer == 0)
 		{
             int vertex_size = sizeof(VertexMesh);
             int buffer_size = vertex_size * m_vertices.size();
             char *buffer = (char *) &m_vertices[0];
 
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC dbd;
-            ZeroMemory(&dbd, sizeof(dbd));
-            dbd.Usage = D3D11_USAGE_IMMUTABLE;
-            dbd.ByteWidth = buffer_size;
-            dbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            dbd.CPUAccessFlags = 0;
-
-            D3D11_SUBRESOURCE_DATA dsd;
-            ZeroMemory(&dsd, sizeof(dsd));
-            dsd.pSysMem = buffer;
-            device->CreateBuffer(&dbd, &dsd, &m_vertex_buffer);
+            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Vertex);
 		}
 
 		return m_vertex_buffer;
 	}
 
-    ID3D11Buffer *Terrain::GetIndexBuffer()
+    BufferObject Terrain::GetIndexBuffer()
 	{
-		if(m_index_buffer == 0)
+		if(m_index_buffer.buffer == 0)
 		{
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
             int buffer_size = m_indices.size() * sizeof(int);
 
-            D3D11_BUFFER_DESC dbd;
-            ZeroMemory(&dbd, sizeof(dbd));
-            dbd.Usage = D3D11_USAGE_DYNAMIC;
-            dbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-            dbd.ByteWidth = buffer_size;
-            dbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-            D3D11_SUBRESOURCE_DATA dsd;
-            ZeroMemory(&dsd, sizeof(dsd));
-            dsd.pSysMem = &m_indices[0];
-            device->CreateBuffer(&dbd, &dsd, &m_index_buffer);
+            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(&m_indices[0], buffer_size, BufferUsage::DynamicDraw, BufferType::Index);
 		}
 
         if(m_use_geo)
@@ -531,96 +505,12 @@ namespace Galaxy3D
 		buffer = (void *) &m_geo_indices[0];
 		buffer_size = m_geo_indices.size() * sizeof(int);
 
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-		D3D11_MAPPED_SUBRESOURCE dms;
-		ZeroMemory(&dms, sizeof(dms));
-		context->Map(m_index_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
-		memcpy(dms.pData, buffer, buffer_size);
-        context->Unmap(m_index_buffer, 0);
+        GraphicsDevice::GetInstance()->UpdateBufferObject(m_index_buffer, buffer, buffer_size);
 	}
 
 	void Terrain::DeleteBuffers()
     {
-        SAFE_RELEASE(m_vertex_buffer);
-        SAFE_RELEASE(m_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
 	}
 }
-
-/*
-	void Terrain::CreateVertexBuffer()
-	{
-		if(vertices.empty() || triangles.empty())
-		{
-			return;
-		}
-        
-		int vertex_size = sizeof(VertexTerrain);
-		int buffer_size = vertex_size * vertices.size();
-		std::vector<char> buffer(buffer_size);
-		char *p = &buffer[0];
-        
-        fill_vertex_buffer(this, p);
-        
-        GLuint vertex_buffer;
-        
-        glGenBuffers(1, &vertex_buffer);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(GL_ARRAY_BUFFER, buffer_size, &buffer[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        m_vertex_buffer = (void *) vertex_buffer;
-	}
-
-	void Terrain::CreateIndexBuffer()
-	{
-		int buffer_size = triangles.size() * sizeof(int);
-		
-        GLuint index_buffer;
-        glGenBuffers(1, &index_buffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer_size, &triangles[0], GL_DYNAMIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-            
-        m_index_buffer = (void *) index_buffer;
-	}
-
-	void Terrain::UpdateIndexBuffer()
-	{
-		void *buffer = 0;
-		int buffer_size = 0;
-
-		if(geo_indices.empty())
-		{
-			return;
-		}
-
-		buffer = (void *) &geo_indices[0];
-		buffer_size = geo_indices.size() * sizeof(int);
-
-		GLuint index_buffer = (GLuint) m_index_buffer;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer_size, buffer, GL_DYNAMIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
-	void Terrain::DeleteBuffers()
-	{
-		if(m_vertex_buffer != 0)
-		{
-			GLuint vertex_buffer = (GLuint) m_vertex_buffer;
-            glDeleteBuffers(1, &vertex_buffer);
-			m_vertex_buffer = 0;
-		}
-        
-        if(m_index_buffer != 0)
-		{
-			GLuint index_buffer = (GLuint) m_index_buffer;
-            glDeleteBuffers(1, &index_buffer);
-			m_index_buffer = 0;
-		}
-	}
-    */

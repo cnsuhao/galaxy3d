@@ -3,9 +3,7 @@
 namespace Galaxy3D
 {
 	SpriteBatchRenderer::SpriteBatchRenderer():
-		m_color(1, 1, 1, 1),
-		m_vertex_buffer(NULL),
-		m_index_buffer(NULL)
+		m_color(1, 1, 1, 1)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
@@ -47,22 +45,18 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer == NULL || m_index_buffer == NULL)
+		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
 			return;
 		}
 
 		auto mat = GetSharedMaterial();
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
 		auto shader = mat->GetShader();
 		auto pass = shader->GetPass(0);
 
-		context->IASetInputLayout(pass->vs->input_layout);
-
-		UINT stride = pass->vs->vertex_stride;
-		UINT offset = 0;
-		context->IASetVertexBuffers(0, 1, &m_vertex_buffer, &stride, &offset);
-		context->IASetIndexBuffer(m_index_buffer, DXGI_FORMAT_R16_UINT, 0);
+        GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
 		
 		auto camera = Camera::GetCurrent();
 		Matrix4x4 wvp = camera->GetViewProjectionMatrix() * Matrix4x4::Identity();
@@ -86,7 +80,7 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer == NULL || m_index_buffer == NULL)
+		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
 			CreateVertexBuffer();
 			CreateIndexBuffer();
@@ -111,8 +105,8 @@ namespace Galaxy3D
 
 	void SpriteBatchRenderer::Release()
 	{
-		SAFE_RELEASE(m_vertex_buffer);
-		SAFE_RELEASE(m_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
 	}
 
 	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite, const Color &color)
@@ -152,22 +146,8 @@ namespace Galaxy3D
 			j++;
 		}
 
-		bool dynamic = true;
+        m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
-		auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-		D3D11_BUFFER_DESC bd;
-		ZeroMemory(&bd, sizeof(bd));
-		bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-		bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bd.ByteWidth = buffer_size;
-
-		D3D11_SUBRESOURCE_DATA data;
-		ZeroMemory(&data, sizeof(data));
-		data.pSysMem = buffer;
-		HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
-		
 		free(buffer);
 	}
 
@@ -184,13 +164,7 @@ namespace Galaxy3D
 			j++;
 		}
 
-		auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-		D3D11_MAPPED_SUBRESOURCE dms;
-		ZeroMemory(&dms, sizeof(dms));
-		context->Map(m_vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
-		memcpy(dms.pData, buffer, buffer_size);
-		context->Unmap(m_vertex_buffer, 0);
+        GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
 
 		free(buffer);
 	}
@@ -214,19 +188,7 @@ namespace Galaxy3D
 			j++;
 		}
 		
-		auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-		D3D11_BUFFER_DESC bd;
-		ZeroMemory(&bd, sizeof(bd));
-		bd.Usage = D3D11_USAGE_IMMUTABLE;
-		bd.CPUAccessFlags = 0;
-		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		bd.ByteWidth = buffer_size;
-
-		D3D11_SUBRESOURCE_DATA data;
-		ZeroMemory(&data, sizeof(data));
-		data.pSysMem = buffer;
-		HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
+        m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 
 		free(buffer);
 	}

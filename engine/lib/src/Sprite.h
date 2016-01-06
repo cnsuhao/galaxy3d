@@ -26,8 +26,8 @@ namespace Galaxy3D
 			float pixels_per_unit,
 			const Vector4 &border);
         ~Sprite();
-        ID3D11Buffer *GetVertexBuffer();
-        ID3D11Buffer *GetIndexBuffer();
+        BufferObject GetVertexBuffer();
+        BufferObject GetIndexBuffer();
         Vector2 *GetVertices() {return m_vertices;}
 		Vector2 *GetUV() {return m_uv;}
 		unsigned short *GetIndices() {return m_triangles;}
@@ -42,8 +42,8 @@ namespace Galaxy3D
 		Vector2 m_vertices[4];
 		Vector2 m_uv[4];
 		unsigned short m_triangles[6];
-        ID3D11Buffer *m_vertex_buffer;
-        ID3D11Buffer *m_index_buffer;
+        BufferObject m_vertex_buffer;
+        BufferObject m_index_buffer;
 
 		Sprite();
 	};

@@ -21,6 +21,7 @@ namespace Galaxy3D
         enum Enum
         {
             StaticDraw,
+            DynamicDraw
         };
     };
 
@@ -68,6 +69,7 @@ namespace Galaxy3D
         void SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer);
         void ClearRenderTarget(CameraClearFlags::Enum clear_flags, const Color &color, float depth, int stencil);
         BufferObject CreateBufferObject(void *data, int size, BufferUsage::Enum usage, BufferType::Enum type);
+        void UpdateBufferObject(BufferObject &bo, void *data, int size);
         void ReleaseBufferObject(BufferObject &bo);
         void SetInputLayout(VertexShader *shader);
         void SetVertexBuffer(BufferObject &bo, int stride, int offset);
