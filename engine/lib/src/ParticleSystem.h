@@ -138,13 +138,11 @@ namespace Galaxy3D
             force_type(ValueType::Disable),
             angular_velocity(0),
             enable_texture_sheet_animation(false),
-            m_time_emit(-1),
-            m_vertex_buffer(NULL),
-            m_index_buffer(NULL)
+            m_time_emit(-1)
         {}
         virtual ~ParticleSystem();
-        ID3D11Buffer *GetVertexBuffer();
-        ID3D11Buffer *GetIndexBuffer();
+        BufferObject GetVertexBuffer();
+        BufferObject GetIndexBuffer();
         int GetParticleCount() const {return m_particles.size();}
         int GetParticleCountMax() const;
         void SetTargetCamera(const std::shared_ptr<Camera> &camera) {m_target_camera = camera;}
@@ -156,8 +154,8 @@ namespace Galaxy3D
     private:
         std::list<Particle> m_particles;
         float m_time_emit;
-        ID3D11Buffer *m_vertex_buffer;
-        ID3D11Buffer *m_index_buffer;
+        BufferObject m_vertex_buffer;
+        BufferObject m_index_buffer;
         std::shared_ptr<Camera> m_target_camera;
         std::weak_ptr<ParticleSystemRenderer> m_renderer;
 

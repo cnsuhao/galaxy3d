@@ -90,15 +90,6 @@
     <ClCompile Include="..\src\d3d11\Material.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\d3d11\SpriteRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\SpriteBatchRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\TextRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Label.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -109,12 +100,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\AnimationCurve.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\Terrain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\TerrainRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LightmapSettings.cpp">
@@ -139,12 +124,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Octree.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\ParticleSystem.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\d3d11\ParticleSystemRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Guid.cpp">
@@ -196,6 +175,27 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ParticleSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ParticleSystemRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SpriteBatchRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SpriteRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TerrainRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TextRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Terrain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -323,25 +323,13 @@
     <ClInclude Include="..\src\d3d11\RenderStates.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\ShaderPass.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\d3d11\Material.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\LayerMask.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\SpriteRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\SpriteNode.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\SpriteBatchRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\TextRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Label.h">
@@ -368,12 +356,6 @@
     <ClInclude Include="..\src\WrapMode.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\Terrain.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\TerrainRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\LightmapSettings.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -396,12 +378,6 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Octree.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\ParticleSystem.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\d3d11\ParticleSystemRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ColorGradient.h">
@@ -456,6 +432,30 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Renderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ParticleSystem.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ParticleSystemRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ShaderPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SpriteBatchRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SpriteRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Terrain.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TerrainRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TextRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,11 +20,11 @@ namespace Galaxy3D
 
 	private:
 		std::shared_ptr<Label> m_label;
-		ID3D11Buffer *m_vertex_buffer;
-		ID3D11Buffer *m_index_buffer;
+		BufferObject m_vertex_buffer;
+        BufferObject m_index_buffer;
 		int m_vertex_count;
-		std::vector<ID3D11Buffer *> m_vertex_buffer_img;
-		std::vector<ID3D11Buffer *> m_index_buffer_img;
+		std::vector<BufferObject> m_vertex_buffer_img;
+		std::vector<BufferObject> m_index_buffer_img;
 		std::shared_ptr<Material> m_material_img;
 
 		void CreateVertexBuffer();

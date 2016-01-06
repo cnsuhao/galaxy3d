@@ -405,6 +405,11 @@ namespace Galaxy3D
             bd.Usage = D3D11_USAGE_IMMUTABLE;
             bd.CPUAccessFlags = 0;
         }
+        else if(usage == BufferUsage::DynamicDraw)
+        {
+            bd.Usage = D3D11_USAGE_DYNAMIC;
+            bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        }
 
         D3D11_SUBRESOURCE_DATA init_data;
         ZeroMemory(&init_data, sizeof(init_data));
@@ -416,6 +421,17 @@ namespace Galaxy3D
         BufferObject bo;
         bo.buffer = buffer;
         return bo;
+    }
+
+    void GraphicsDevice::UpdateBufferObject(BufferObject &bo, void *data, int size)
+    {
+        ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
+
+        D3D11_MAPPED_SUBRESOURCE dms;
+        ZeroMemory(&dms, sizeof(dms));
+        m_immediate_context->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
+        memcpy(dms.pData, buffer, size);
+        m_immediate_context->Unmap(buffer, 0);
     }
 
     void GraphicsDevice::ReleaseBufferObject(BufferObject &bo)

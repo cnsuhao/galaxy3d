@@ -9,8 +9,8 @@ namespace Galaxy3D
 {
     ParticleSystem::~ParticleSystem()
     {
-        SAFE_RELEASE(m_vertex_buffer);
-        SAFE_RELEASE(m_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
     }
 
     void ParticleSystem::Awake()
@@ -42,7 +42,7 @@ namespace Galaxy3D
 
         int particle_count = GetParticleCount();
 
-        if(m_vertex_buffer != NULL && particle_count > 0)
+        if(m_vertex_buffer.buffer != NULL && particle_count > 0)
         {
             int buffer_size = sizeof(VertexUI) * 4 * particle_count;
             char *buffer = (char *) malloc(buffer_size);
@@ -171,42 +171,22 @@ namespace Galaxy3D
                 j++;
             }
 
-            auto context = GraphicsDevice::GetInstance()->GetDeviceContext();
-
-            D3D11_MAPPED_SUBRESOURCE dms;
-            ZeroMemory(&dms, sizeof(dms));
-            context->Map(m_vertex_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &dms);
-            memcpy(dms.pData, buffer, buffer_size);
-            context->Unmap(m_vertex_buffer, 0);
+            GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
 
             free(buffer);
         }
     }
 
-    ID3D11Buffer *ParticleSystem::GetVertexBuffer()
+    BufferObject ParticleSystem::GetVertexBuffer()
     {
-        if(m_vertex_buffer == NULL)
+        if(m_vertex_buffer.buffer == NULL)
         {
             int particle_max = GetParticleCountMax();
 
             int buffer_size = sizeof(VertexUI) * 4 * particle_max;
             char *buffer = (char *) malloc(buffer_size);
 
-            bool dynamic = true;
-
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-            bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
-            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
+            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
             free(buffer);
         }
@@ -214,9 +194,9 @@ namespace Galaxy3D
         return m_vertex_buffer;
     }
 
-    ID3D11Buffer *ParticleSystem::GetIndexBuffer()
+    BufferObject ParticleSystem::GetIndexBuffer()
     {
-        if(m_index_buffer == NULL)
+        if(m_index_buffer.buffer == NULL)
         {
             int particle_max = GetParticleCountMax();
 
@@ -234,20 +214,8 @@ namespace Galaxy3D
                 p[i*6+5] = i*4+3;
             }
 
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
-
+            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
+           
             free(buffer);
         }
 

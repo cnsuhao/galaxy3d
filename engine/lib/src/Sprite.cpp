@@ -72,16 +72,14 @@ namespace Galaxy3D
 		return sprite;
 	}
 
-	Sprite::Sprite():
-        m_vertex_buffer(NULL),
-        m_index_buffer(NULL)
+	Sprite::Sprite()
 	{
 	}
 
     Sprite::~Sprite()
     {
-        SAFE_RELEASE(m_vertex_buffer);
-        SAFE_RELEASE(m_index_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+        GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
     }
 
     static void fill_vertex_buffer(char *buffer, Sprite *sprite)
@@ -106,30 +104,16 @@ namespace Galaxy3D
         }
     }
 
-    ID3D11Buffer *Sprite::GetVertexBuffer()
+    BufferObject Sprite::GetVertexBuffer()
     {
-        if(m_vertex_buffer == NULL)
+        if(m_vertex_buffer.buffer == NULL)
         {
             int buffer_size = sizeof(VertexUI) * 4;
             char *buffer = (char *) malloc(buffer_size);
 
             fill_vertex_buffer(buffer, this);
 
-            bool dynamic = true;
-
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
-            bd.CPUAccessFlags = dynamic ? D3D11_CPU_ACCESS_WRITE : 0;
-            bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_vertex_buffer);
+            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
             free(buffer);
         }
@@ -137,9 +121,9 @@ namespace Galaxy3D
         return m_vertex_buffer;
     }
 
-    ID3D11Buffer *Sprite::GetIndexBuffer()
+    BufferObject Sprite::GetIndexBuffer()
     {
-        if(m_index_buffer == NULL)
+        if(m_index_buffer.buffer == NULL)
         {
             unsigned short *uv = this->GetIndices();
             int buffer_size = sizeof(unsigned short) * 6;
@@ -148,19 +132,7 @@ namespace Galaxy3D
 
             memcpy(p, uv, buffer_size);
 
-            auto device = GraphicsDevice::GetInstance()->GetDevice();
-
-            D3D11_BUFFER_DESC bd;
-            ZeroMemory(&bd, sizeof(bd));
-            bd.Usage = D3D11_USAGE_IMMUTABLE;
-            bd.CPUAccessFlags = 0;
-            bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-            bd.ByteWidth = buffer_size;
-
-            D3D11_SUBRESOURCE_DATA data;
-            ZeroMemory(&data, sizeof(data));
-            data.pSysMem = buffer;
-            HRESULT hr = device->CreateBuffer(&bd, &data, &m_index_buffer);
+            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 
             free(buffer);
         }
