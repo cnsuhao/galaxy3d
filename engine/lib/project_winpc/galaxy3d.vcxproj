@@ -66,6 +66,7 @@
     <ClCompile Include="..\src\SpriteBatchRenderer.cpp" />
     <ClCompile Include="..\src\SpriteRenderer.cpp" />
     <ClCompile Include="..\src\Terrain.cpp" />
+    <ClCompile Include="..\src\TerrainCollider.cpp" />
     <ClCompile Include="..\src\TerrainRenderer.cpp" />
     <ClCompile Include="..\src\TextRenderer.cpp" />
     <ClCompile Include="..\src\Thread.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="..\src\SpriteNode.h" />
     <ClInclude Include="..\src\SpriteRenderer.h" />
     <ClInclude Include="..\src\Terrain.h" />
+    <ClInclude Include="..\src\TerrainCollider.h" />
     <ClInclude Include="..\src\TerrainRenderer.h" />
     <ClInclude Include="..\src\TextRenderer.h" />
     <ClInclude Include="..\src\Texture.h" />

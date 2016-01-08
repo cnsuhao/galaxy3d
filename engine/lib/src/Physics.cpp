@@ -8,13 +8,12 @@
 
 namespace Galaxy3D
 {
-    btDefaultCollisionConfiguration *g_config = NULL;
-    btCollisionDispatcher *g_dispatcher = NULL;
-    btDbvtBroadphase *g_broadphase = NULL;
-    btSequentialImpulseConstraintSolver *g_solver = NULL;
-    btDiscreteDynamicsWorld *g_dynamics_world = NULL;
-    btAlignedObjectArray<btCollisionShape *> g_collision_shapes;
-    btTriangleIndexVertexArray *g_terrain_mesh_data = NULL;
+    static btDefaultCollisionConfiguration *g_config = NULL;
+    static btCollisionDispatcher *g_dispatcher = NULL;
+    static btDbvtBroadphase *g_broadphase = NULL;
+    static btSequentialImpulseConstraintSolver *g_solver = NULL;
+    static btDiscreteDynamicsWorld *g_dynamics_world = NULL;
+    static btAlignedObjectArray<btCollisionShape *> g_collision_shapes;
 
     void Physics::Init()
     {
@@ -29,39 +28,6 @@ namespace Galaxy3D
         g_solver = new btSequentialImpulseConstraintSolver();
         g_dynamics_world = new btDiscreteDynamicsWorld(g_dispatcher, g_broadphase, g_solver, g_config);
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
-    }
-
-    void Physics::CreateTerrainRigidBody(const std::shared_ptr<Terrain> &terrain)
-    {
-        auto &vertices = terrain->GetVertices();
-        auto &indices = terrain->GetIndices();
-
-        g_terrain_mesh_data = new btTriangleIndexVertexArray(  
-            indices.size() / 3,
-            (int *) &indices[0],
-            3 * sizeof(int),
-            vertices.size(),
-            (btScalar *) &vertices[0],
-            sizeof(VertexMesh));
-
-        btBvhTriangleMeshShape *mesh = new btBvhTriangleMeshShape(g_terrain_mesh_data, true);
-        g_collision_shapes.push_back(mesh);
-
-        btTransform ground_transform;
-        ground_transform.setIdentity();
-        ground_transform.setOrigin(btVector3(0, 0, 0));
-
-        btScalar mass(0);
-        btVector3 local_inertia(0, 0, 0);
-
-        //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-        btDefaultMotionState* motion_state = new btDefaultMotionState(ground_transform);
-        btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, mesh, local_inertia);
-        btRigidBody* body = new btRigidBody(rbInfo);
-        body->setRollingFriction(1);
-        body->setFriction(1);
-
-        g_dynamics_world->addRigidBody(body);
     }
 
     void Physics::AddRigidBody(void *shape, void *body)
@@ -126,10 +92,5 @@ namespace Galaxy3D
         delete g_broadphase;
         delete g_dispatcher;
         delete g_config;
-
-        if(g_terrain_mesh_data != NULL)
-        {
-            delete [] g_terrain_mesh_data;
-        }
     }
 }

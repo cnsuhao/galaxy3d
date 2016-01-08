@@ -244,7 +244,9 @@ void Launcher::Start()
         Application::GetDataPath() + "/Assets/terrain/Terrain.raw",
         Application::GetDataPath() + "/Assets/terrain/Terrain.png",
         terrain_texs, 3);
-    auto renderer = terrain_obj->AddComponent<TerrainRenderer>();
+    terrain_obj->AddComponent<TerrainRenderer>();
+    auto tc = terrain_obj->AddComponent<TerrainCollider>();
+    tc->SetTerrain(ter);
     
     auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
@@ -276,8 +278,6 @@ void Launcher::Start()
 
     RenderSettings::SetGlobalDirectionalLight(light);
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
-
-    Physics::CreateTerrainRigidBody(ter);
     
     //set anim to ground
     Vector3 anim_pos = anim->GetTransform()->GetPosition();
@@ -543,13 +543,10 @@ void Launcher::Update()
     if(update_cam)
     {
         Vector3 cam_target = anim->GetTransform()->GetPosition() + Vector3(0, 1.5f, 0);
-        //Vector3 cam_pos = cam_target - cam3d->GetTransform()->GetForward() * g_cam_dis;
 
         Vector3 hit, nor;
         if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit, nor))
         {
-            Debug::Log("%s", hit.ToString().c_str());
-
             cam3d->GetTransform()->SetPosition(hit);
         }
 
