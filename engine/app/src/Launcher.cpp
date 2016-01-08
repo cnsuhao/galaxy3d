@@ -447,9 +447,17 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
     rot_offset = rot - g_cam_rot;
     offset.y = - rot_offset.x / rot_scal.x;
     g_mouse_down_pos.y = mouse_pos.y - offset.y;
-
+    
     cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(rot));
     cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
+
+    Vector3 cam_target = cam3d->GetTransform()->GetPosition() + cam3d->GetTransform()->GetForward() * g_cam_dis;
+
+    Vector3 hit, nor;
+    if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit, nor))
+    {
+        cam3d->GetTransform()->SetPosition(Vector3::Lerp(hit, cam_target, 0.1f / 1.5f));
+    }
 
     return rot_offset;
 }
@@ -542,14 +550,6 @@ void Launcher::Update()
 
     if(update_cam)
     {
-        Vector3 cam_target = anim->GetTransform()->GetPosition() + Vector3(0, 1.5f, 0);
-
-        Vector3 hit, nor;
-        if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit, nor))
-        {
-            cam3d->GetTransform()->SetPosition(hit);
-        }
-
         cam3d->UpdateMatrix();
     }
 #endif
