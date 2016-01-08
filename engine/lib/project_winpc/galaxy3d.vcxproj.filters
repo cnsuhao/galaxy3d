@@ -198,6 +198,9 @@
     <ClCompile Include="..\src\Terrain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MeshCollider.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -456,6 +459,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\TextRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshCollider.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

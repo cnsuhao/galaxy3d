@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include "Terrain.h"
 #include "Debug.h"
 #include "GTTime.h"
 #include "btBulletDynamicsCommon.h"
@@ -30,7 +31,7 @@ namespace Galaxy3D
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
     }
 
-    void Physics::CreateTerrainRigidBody(const Terrain *terrain)
+    void Physics::CreateTerrainRigidBody(const std::shared_ptr<Terrain> &terrain)
     {
         auto &vertices = terrain->GetVertices();
         auto &indices = terrain->GetIndices();
@@ -63,7 +64,13 @@ namespace Galaxy3D
         g_dynamics_world->addRigidBody(body);
     }
 
-    bool Physics::RarCast(const Vector3 &from, const Vector3 &dir, float length, Vector3 &hit, Vector3 &normal)
+    void Physics::AddRigidBody(void *shape, void *body)
+    {
+        g_collision_shapes.push_back((btCollisionShape *) shape);
+        g_dynamics_world->addRigidBody((btRigidBody *) body);
+    }
+
+    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, Vector3 &hit, Vector3 &normal)
     {
         Vector3 to = from + Vector3::Normalize(dir) * length;
         btVector3 from_(from.x, from.y, from.z);

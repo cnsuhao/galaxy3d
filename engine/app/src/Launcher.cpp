@@ -277,14 +277,13 @@ void Launcher::Start()
     RenderSettings::SetGlobalDirectionalLight(light);
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
 
-    Physics::Init();
-    Physics::CreateTerrainRigidBody(ter.get());
+    Physics::CreateTerrainRigidBody(ter);
     
     //set anim to ground
     Vector3 anim_pos = anim->GetTransform()->GetPosition();
     Vector3 hit;
     Vector3 nor;
-    if(Physics::RarCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit, nor))
+    if(Physics::RayCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit, nor))
     {
         hit.y += 0.05f;
         anim->GetTransform()->SetPosition(hit);
@@ -309,7 +308,7 @@ void Launcher::Start()
 
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(45);
-    cam3d->SetClipPlane(1.0f, 100.0f);
+    cam3d->SetClipPlane(0.1f, 100.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->EnableDeferredShading(true);
 
@@ -356,6 +355,14 @@ void Launcher::Start()
     auto agent = anim_parent->AddComponent<NavMeshAgent>();
     agent->SamplePosition();
     cam3d->UpdateMatrix();
+
+    // collider
+    auto rs = mesh->GetComponentsInChildren<MeshRenderer>();
+    for(auto i : rs)
+    {
+        auto c = i->GetGameObject()->AddComponent<MeshCollider>();
+        c->SetMesh(i->GetMesh());
+    }
 #endif
 }
 
@@ -370,7 +377,7 @@ void Launcher::OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component
 
         Vector3 hit;
         Vector3 nor;
-        if(Physics::RarCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit, nor))
+        if(Physics::RayCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit, nor))
         {
             hit.y += 0.05f;
 
@@ -535,6 +542,17 @@ void Launcher::Update()
 
     if(update_cam)
     {
+        Vector3 cam_target = anim->GetTransform()->GetPosition() + Vector3(0, 1.5f, 0);
+        //Vector3 cam_pos = cam_target - cam3d->GetTransform()->GetForward() * g_cam_dis;
+
+        Vector3 hit, nor;
+        if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit, nor))
+        {
+            Debug::Log("%s", hit.ToString().c_str());
+
+            cam3d->GetTransform()->SetPosition(hit);
+        }
+
         cam3d->UpdateMatrix();
     }
 #endif
@@ -551,7 +569,7 @@ void Launcher::Update()
 
             Vector3 hit;
             Vector3 nor;
-            if(Physics::RarCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
+            if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
             {
                 Vector3 pos_old = anim->GetTransform()->GetPosition();
                 Vector3 pos_new = hit + Vector3(0, 0.05f, 0);
@@ -648,8 +666,6 @@ void Launcher::Update()
             Vector3 pos = t->position;
 		}
 	}
-
-    Physics::Step();
 #endif
 }
 
@@ -664,9 +680,6 @@ void Launcher::LateUpdate()
 
 Launcher::~Launcher()
 {
-#if DEMO_TERRAIN
-    Physics::Done();
-#endif
 }
 
 #if DEMO_SCENE

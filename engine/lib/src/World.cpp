@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Renderer.h"
 #include "Light.h"
+#include "Physics.h"
 
 namespace Galaxy3D
 {
@@ -95,6 +96,7 @@ namespace Galaxy3D
 		}
 
 		Input::Update();
+        Physics::Step();
 
 		GTTime::m_update_time = GTTime::GetRealTimeSinceStartup() - time;
 	}
@@ -104,10 +106,12 @@ namespace Galaxy3D
         srand((unsigned int) GTTime::GetTimeMS());
 		Label::InitFontLib();
         Renderer::Init();
+        Physics::Init();
 	}
 
 	void World::Done()
 	{
+        Physics::Done();
         Renderer::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
