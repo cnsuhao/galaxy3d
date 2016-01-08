@@ -45,6 +45,7 @@
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\Mesh.cpp" />
+    <ClCompile Include="..\src\MeshCollider.cpp" />
     <ClCompile Include="..\src\MeshRenderer.cpp" />
     <ClCompile Include="..\src\NavMesh.cpp" />
     <ClCompile Include="..\src\NavMeshAgent.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\Mesh.h" />
+    <ClInclude Include="..\src\MeshCollider.h" />
     <ClInclude Include="..\src\MeshRenderer.h" />
     <ClInclude Include="..\src\NavMesh.h" />
     <ClInclude Include="..\src\NavMeshAgent.h" />

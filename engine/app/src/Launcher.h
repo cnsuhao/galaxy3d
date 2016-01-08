@@ -38,6 +38,7 @@
 #include "NavMesh.h"
 #include "NavMeshAgent.h"
 #include "SkyBox.h"
+#include "MeshCollider.h"
 
 namespace Galaxy3D
 {
