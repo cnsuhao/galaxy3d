@@ -27,6 +27,7 @@ static const int g_screen_w = 1280;
 static const int g_screen_h = 720;
 HINSTANCE g_hinst;
 HWND g_hwnd;
+HCURSOR g_hcursor;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -62,6 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             Camera::RenderAll();
 		}
 	}
+    DestroyCursor(g_hcursor);
 
 	World::Done();
     GraphicsDevice::Done();
@@ -104,6 +106,11 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 		return E_FAIL;
 
 	ShowWindow(g_hwnd, nCmdShow);
+
+    g_hcursor = (HCURSOR) LoadImageA(
+        NULL,
+        (Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur").c_str(),
+        IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);
 
 	return S_OK;
 }
@@ -350,6 +357,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
             g_mouse_button_held[2] = false;
         }
+        break;
+
+    case WM_SETCURSOR:
+        SetCursor(g_hcursor);
         break;
 
 	case WM_DESTROY:
