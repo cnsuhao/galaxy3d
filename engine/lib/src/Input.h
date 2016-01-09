@@ -278,6 +278,8 @@ namespace Galaxy3D
         TouchPhase::Enum phase;
         Vector2 position;
         int tapCount;
+
+        Touch() {}
     };
 
 	class Input

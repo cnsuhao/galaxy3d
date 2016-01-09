@@ -317,19 +317,19 @@ namespace Galaxy3D
 
 	Shader::~Shader()
 	{
-		for(auto i : m_vertex_shaders)
+		for(auto &i : m_vertex_shaders)
 		{
 			i.second.Release();
 		}
 		m_vertex_shaders.clear();
 
-		for(auto i : m_pixel_shaders)
+		for(auto &i : m_pixel_shaders)
 		{
 			i.second.Release();
 		}
 		m_pixel_shaders.clear();
 
-		for(auto i : m_render_states)
+		for(auto &i : m_render_states)
 		{
 			i.second.Release();
 		}

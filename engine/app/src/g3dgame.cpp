@@ -27,7 +27,7 @@ static const int g_screen_w = 1280;
 static const int g_screen_h = 720;
 HINSTANCE g_hinst;
 HWND g_hwnd;
-HCURSOR g_hcursor;
+HCURSOR g_cursor_default;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -63,7 +63,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             Camera::RenderAll();
 		}
 	}
-    DestroyCursor(g_hcursor);
 
 	World::Done();
     GraphicsDevice::Done();
@@ -78,6 +77,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 {
+    g_cursor_default = LoadCursor(0, IDC_ARROW);
+
 	// Register class
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -87,7 +88,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
 	wcex.hIcon = NULL;
-	wcex.hCursor = LoadCursor(0, IDC_ARROW);
+	wcex.hCursor = g_cursor_default;
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = g_title;
@@ -106,11 +107,6 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 		return E_FAIL;
 
 	ShowWindow(g_hwnd, nCmdShow);
-
-    g_hcursor = (HCURSOR) LoadImageA(
-        NULL,
-        (Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur").c_str(),
-        IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);
 
 	return S_OK;
 }
@@ -360,7 +356,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_SETCURSOR:
-        SetCursor(g_hcursor);
+        {
+            auto cursor = (HCURSOR) Cursor::GetCurent();
+            if(cursor == NULL)
+            {
+                cursor = g_cursor_default;
+            }
+
+            SetCursor(cursor);
+        }
         break;
 
 	case WM_DESTROY:
