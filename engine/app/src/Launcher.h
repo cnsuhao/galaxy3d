@@ -42,6 +42,7 @@
 #include "TerrainCollider.h"
 #include "BoxCollider.h"
 #include "Cursor.h"
+#include "ImageEffectHighlighting.h"
 
 namespace Galaxy3D
 {

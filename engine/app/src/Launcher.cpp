@@ -310,6 +310,7 @@ void Launcher::Start()
     cam3d->SetClipPlane(0.1f, 100.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
     cam3d->EnableDeferredShading(true);
+    auto high_lihgting = cam3d->GetGameObject()->AddComponent<ImageEffectHighlighting>();
 
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
