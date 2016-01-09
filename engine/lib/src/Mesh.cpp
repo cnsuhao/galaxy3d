@@ -668,6 +668,20 @@ namespace Galaxy3D
         return mesh;
     }
 
+    void Mesh::CalculateBounds()
+    {
+        Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
+        Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
+        for(size_t j=0; j<m_vertices.size(); j++)
+        {
+            auto &v = m_vertices[j].POSITION;
+
+            box_max = Vector3::Max(box_max, v);
+            box_min = Vector3::Min(box_min, v);
+        }
+        m_bounds = Bounds((box_max + box_min) * 0.5f, (box_max - box_min) * 0.5f);
+    }
+
     BufferObject Mesh::GetVertexBuffer()
     {
         if(m_vertex_buffer.buffer == NULL)
