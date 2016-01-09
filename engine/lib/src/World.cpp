@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Light.h"
 #include "Physics.h"
+#include "Cursor.h"
 
 namespace Galaxy3D
 {
@@ -120,5 +121,6 @@ namespace Galaxy3D
         Light::Done();
         Object::ClearAllCachedObjects();
 		Label::DoneFontLib();
+        Cursor::Done();
 	}
 }

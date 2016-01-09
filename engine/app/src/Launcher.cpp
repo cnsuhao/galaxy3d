@@ -363,6 +363,9 @@ void Launcher::Start()
         auto c = i->GetGameObject()->AddComponent<MeshCollider>();
         c->SetMesh(i->GetMesh());
     }
+
+    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);
+    Cursor::SetCursor(0);
 #endif
 }
 
