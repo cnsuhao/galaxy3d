@@ -281,11 +281,10 @@ void Launcher::Start()
     
     //set anim to ground
     Vector3 anim_pos = anim->GetTransform()->GetPosition();
-    Vector3 hit;
-    Vector3 nor;
-    if(Physics::RayCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit, nor))
+    RaycastHit hit;
+    if(Physics::RayCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit))
     {
-        hit.y += 0.05f;
+        hit.point.y += 0.05f;
         anim->GetTransform()->SetPosition(hit);
     }
 #endif
@@ -364,7 +363,13 @@ void Launcher::Start()
         c->SetMesh(i->GetMesh());
     }
 
+    auto bc = anim_obj->AddComponent<BoxCollider>();
+    bc->SetCenter(Vector3(0, 1, 0));
+    bc->SetSize(Vector3(1, 2, 1));
+
+    // cursor
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);
+    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);
     Cursor::SetCursor(0);
 #endif
 }
@@ -378,13 +383,12 @@ void Launcher::OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component
         Vector3 *pos = (Vector3 *) value;
         TweenPosition *tp = (TweenPosition *) tween;
 
-        Vector3 hit;
-        Vector3 nor;
-        if(Physics::RayCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit, nor))
+        RaycastHit hit;
+        if(Physics::RayCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit))
         {
-            hit.y += 0.05f;
+            hit.point.y += 0.05f;
 
-            thiz->anim->GetTransform()->SetPosition(hit);
+            thiz->anim->GetTransform()->SetPosition(hit.point);
         }
     }
 }
@@ -456,10 +460,10 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
     Vector3 cam_target = cam3d->GetTransform()->GetPosition() + cam3d->GetTransform()->GetForward() * g_cam_dis;
 
-    Vector3 hit, nor;
-    if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit, nor))
+    RaycastHit hit;
+    if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit))
     {
-        cam3d->GetTransform()->SetPosition(Vector3::Lerp(hit, cam_target, 0.1f / 1.5f));
+        cam3d->GetTransform()->SetPosition(Vector3::Lerp(hit.point, cam_target, 0.1f / 1.5f));
     }
 
     return rot_offset;
@@ -555,6 +559,27 @@ void Launcher::Update()
     {
         cam3d->UpdateMatrix();
     }
+
+    bool set_cursor = false;
+    if(!g_mouse_down)
+    {
+        auto ray = cam3d->ScreenPointToRay(Input::GetMousePosition());
+
+        RaycastHit hit;
+        if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit))
+        {
+            if(hit.collider && hit.collider->GetGameObject() == anim->GetGameObject())
+            {
+                Cursor::SetCursor(1);
+                set_cursor = true;
+            }
+        }
+    }
+
+    if(!set_cursor)
+    {
+        Cursor::SetCursor(0);
+    }
 #endif
 
 #if DEMO_TERRAIN
@@ -567,12 +592,11 @@ void Launcher::Update()
             Vector3 pos = t->position;
             Ray ray = cam3d->ScreenPointToRay(pos);
 
-            Vector3 hit;
-            Vector3 nor;
-            if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit, nor))
+            RaycastHit hit;
+            if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit))
             {
                 Vector3 pos_old = anim->GetTransform()->GetPosition();
-                Vector3 pos_new = hit + Vector3(0, 0.05f, 0);
+                Vector3 pos_new = hit.point + Vector3(0, 0.05f, 0);
                 float move_speed = 3.0f;
                 float move_time = (pos_new - pos_old).Magnitude() / move_speed;
                 Vector3 dir = pos_new - pos_old;

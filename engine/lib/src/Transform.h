@@ -68,6 +68,7 @@ namespace Galaxy3D
 		void RemoveChild(std::weak_ptr<Transform> &child);
 		void AddChild(std::weak_ptr<Transform> &child);
 		void ApplyChange();
+        void NotifyChange();
 	};
 }
 

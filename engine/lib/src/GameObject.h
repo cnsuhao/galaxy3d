@@ -53,6 +53,7 @@ namespace Galaxy3D
 		void AddComponent(const std::shared_ptr<Component> &com);
 		void SetActiveInHierarchy(bool active);
         void CopyComponent(std::shared_ptr<Component> &com);
+        void OnTranformChanged();
 	};
 
 	template<class T> std::shared_ptr<T> GameObject::AddComponent()

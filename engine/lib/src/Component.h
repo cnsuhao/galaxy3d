@@ -37,6 +37,7 @@ namespace Galaxy3D
 		virtual void LateUpdate() {}
 		virtual void OnEnable() {}
 		virtual void OnDisable() {}
+        virtual void OnTranformChanged() {}
 
 	private:
 		bool m_deleted;
