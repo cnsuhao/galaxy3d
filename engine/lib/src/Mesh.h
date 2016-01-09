@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "VertexType.h"
 #include "Renderer.h"
+#include "Bounds.h"
 #include <vector>
 
 namespace Galaxy3D
@@ -29,6 +30,7 @@ namespace Galaxy3D
         int GetIndexCount(int submesh) {return m_sub_indices[submesh].size();}
         const std::vector<Matrix4x4> &GetBindPoses() const {return m_bind_poses;}
         void SetGuid(const std::string &guid) {m_guid = guid;}
+        void CalculateBounds();
 
     private:
         std::string m_guid;
@@ -36,6 +38,7 @@ namespace Galaxy3D
         std::vector<VertexSkinned> m_vertices_skinned;
         std::vector<std::vector<unsigned short>> m_sub_indices;
         std::vector<Matrix4x4> m_bind_poses;
+        Bounds m_bounds;// aabb in local space
         BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
 
