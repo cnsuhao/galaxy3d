@@ -40,6 +40,7 @@
     <ClCompile Include="..\src\ImageEffect.cpp" />
     <ClCompile Include="..\src\ImageEffectBloom.cpp" />
     <ClCompile Include="..\src\ImageEffectGlobalFog.cpp" />
+    <ClCompile Include="..\src\ImageEffectHighlighting.cpp" />
     <ClCompile Include="..\src\ImageEffectToneMapping.cpp" />
     <ClCompile Include="..\src\Input.cpp" />
     <ClCompile Include="..\src\Label.cpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\src\ImageEffect.h" />
     <ClInclude Include="..\src\ImageEffectBloom.h" />
     <ClInclude Include="..\src\ImageEffectGlobalFog.h" />
+    <ClInclude Include="..\src\ImageEffectHighlighting.h" />
     <ClInclude Include="..\src\ImageEffectToneMapping.h" />
     <ClInclude Include="..\src\Input.h" />
     <ClInclude Include="..\src\Label.h" />
