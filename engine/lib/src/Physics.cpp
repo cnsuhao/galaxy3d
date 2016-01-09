@@ -1,5 +1,4 @@
 #include "Physics.h"
-#include "Terrain.h"
 #include "Debug.h"
 #include "GTTime.h"
 #include "btBulletDynamicsCommon.h"
@@ -36,7 +35,7 @@ namespace Galaxy3D
         g_dynamics_world->addRigidBody((btRigidBody *) body);
     }
 
-    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, Vector3 &hit, Vector3 &normal)
+    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit)
     {
         Vector3 to = from + Vector3::Normalize(dir) * length;
         btVector3 from_(from.x, from.y, from.z);
@@ -52,8 +51,18 @@ namespace Galaxy3D
             btVector3 pos = from_.lerp(to_, closest.m_closestHitFraction);
             btVector3 nor = closest.m_hitNormalWorld;
 
-            hit = Vector3(pos.x(), pos.y(), pos.z());
-            normal = Vector3(nor.x(), nor.y(), nor.z());
+            hit.point = Vector3(pos.x(), pos.y(), pos.z());
+            hit.normal = Vector3(nor.x(), nor.y(), nor.z());
+
+            if(closest.m_collisionObject != NULL)
+            {
+                void *user_data = closest.m_collisionObject->getUserPointer();
+                if(user_data != NULL)
+                {
+                    Collider *collider = (Collider *) user_data;
+                    hit.collider = std::dynamic_pointer_cast<Collider>(collider->GetComponentPtr());
+                }
+            }
 
             return true;
         }

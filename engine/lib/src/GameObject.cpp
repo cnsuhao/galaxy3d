@@ -280,4 +280,17 @@ namespace Galaxy3D
 
         return std::shared_ptr<Component>();
     }
+
+    void GameObject::OnTranformChanged()
+    {
+        for(auto i=m_components.begin(); i!=m_components.end(); i++)
+        {
+            (*i)->OnTranformChanged();
+        }
+
+        for(auto i=m_components_new.begin(); i!=m_components_new.end(); i++)
+        {
+            (*i)->OnTranformChanged();
+        }
+    }
 }

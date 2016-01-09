@@ -34,20 +34,21 @@ namespace Galaxy3D
 
         btBvhTriangleMeshShape *shape = new btBvhTriangleMeshShape(m_collider_data, true);
 
-        btTransform ground_transform;
-        ground_transform.setIdentity();
+        btTransform transform;
+        transform.setIdentity();
         auto pos = GetTransform()->GetPosition();
-        ground_transform.setOrigin(btVector3(pos.x, pos.y, pos.z));
+        transform.setOrigin(btVector3(pos.x, pos.y, pos.z));
 
         btScalar mass(0);
         btVector3 local_inertia(0, 0, 0);
 
         //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-        btDefaultMotionState* motion_state = new btDefaultMotionState(ground_transform);
+        btDefaultMotionState* motion_state = new btDefaultMotionState(transform);
         btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, shape, local_inertia);
         btRigidBody* body = new btRigidBody(rbInfo);
         body->setRollingFriction(1);
         body->setFriction(1);
+        body->setUserPointer(this);
 
         Physics::AddRigidBody(shape, body);
     }

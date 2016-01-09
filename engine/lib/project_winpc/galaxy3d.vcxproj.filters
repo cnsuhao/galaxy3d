@@ -207,6 +207,12 @@
     <ClCompile Include="..\src\Cursor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BoxCollider.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Collider.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -474,6 +480,12 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Cursor.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BoxCollider.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Collider.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -140,12 +140,23 @@ namespace Galaxy3D
         return find;
     }
 
+    void Transform::NotifyChange()
+    {
+        GetGameObject()->OnTranformChanged();
+
+        for(auto &i : m_children)
+        {
+            i.lock()->NotifyChange();
+        }
+    }
+
 	void Transform::SetLocalPosition(const Vector3 &pos)
 	{
 		if(m_local_position != pos)
 		{
 			m_local_position = pos;
 			Changed();
+            NotifyChange();
 		}
 	}
 
@@ -158,6 +169,7 @@ namespace Galaxy3D
 		{
 			m_local_rotation = r;
 			Changed();
+            NotifyChange();
 		}
 	}
 
@@ -167,6 +179,7 @@ namespace Galaxy3D
 		{
 			m_local_scale = sca;
 			Changed();
+            NotifyChange();
 		}
 	}
 

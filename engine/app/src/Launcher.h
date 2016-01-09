@@ -40,6 +40,7 @@
 #include "SkyBox.h"
 #include "MeshCollider.h"
 #include "TerrainCollider.h"
+#include "BoxCollider.h"
 #include "Cursor.h"
 
 namespace Galaxy3D
