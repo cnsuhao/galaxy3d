@@ -23,7 +23,7 @@ namespace Galaxy3D
         auto quarterRezColor = RenderTexture::GetTemporary(rtW4, rtH4, rtFormat, DepthBuffer::Depth_0);
         GraphicsDevice::GetInstance()->Blit(source, halfRezColorDown, mat_empty, 0);
 
-        SetMainTexTexelSize(halfRezColorDown);
+        m_material->SetMainTexTexelSize(halfRezColorDown);
         GraphicsDevice::GetInstance()->Blit(halfRezColorDown, quarterRezColor, m_material, 0);
         RenderTexture::ReleaseTemporary(halfRezColorDown);
 

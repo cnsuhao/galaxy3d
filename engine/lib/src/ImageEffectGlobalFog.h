@@ -32,7 +32,6 @@ namespace Galaxy3D
             m_fog_density(0.01f),
             m_fog_color(0.6f, 0.6f, 0.6f, 1)
         {}
-        virtual void Start();
         virtual void OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination);
         void EnableDistance(bool enable) {m_distance_fog_enable = enable;}
         void UseRadialDistance(bool use) {m_use_radial_distance = use;}
@@ -46,6 +45,9 @@ namespace Galaxy3D
         void SetLinearEnd(float end) {m_linear_end = end;}
         void SetFogDensity(float density) {m_fog_density = density;}
         void SetFogColor(Color color) {m_fog_color = color;}
+
+    protected:
+        virtual void Start();
 
     private:
         bool m_distance_fog_enable;

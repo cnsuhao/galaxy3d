@@ -435,6 +435,7 @@ namespace Galaxy3D
                 }
                 else
                 {
+                    obj->OnWillRenderObject(i->material_index);
                     i->renderer->Render(i->material_index);
                 }
 

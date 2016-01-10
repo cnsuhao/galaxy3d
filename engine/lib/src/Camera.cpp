@@ -48,16 +48,17 @@ namespace Galaxy3D
 		m_far_clip_plane(1000),
 		m_rect(0, 0, 1, 1),
         m_hdr(false),
-        m_deferred_shading(false)
+        m_deferred_shading(false),
+        m_transform_changed(true)
 	{
 		m_cameras.push_back(this);
 		m_cameras.sort(Less);
 	}
 
-	void Camera::Start()
-	{
-		UpdateMatrix();
-	}
+    void Camera::OnTranformChanged()
+    {
+        m_transform_changed = true;
+    }
 
 	Camera::~Camera()
 	{
@@ -339,6 +340,12 @@ namespace Galaxy3D
             {
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
 
+                if(i->m_transform_changed)
+                {
+                    i->m_transform_changed = false;
+                    i->UpdateMatrix();
+                }
+
                 Renderer::Prepare();
                 i->RenderShadowMaps();
                 i->Render();
@@ -549,6 +556,38 @@ namespace Galaxy3D
         {
             GraphicsDevice::GetInstance()->ClearRenderTarget(m_clear_flags, m_clear_color, 1.0f, 0);
         }
+    }
+
+    int Camera::GetPixelWidth() const
+    {
+        std::shared_ptr<RenderTexture> target;
+
+        if(m_render_texture)
+        {
+            target = m_render_texture;
+        }
+        else
+        {
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+        }
+
+        return target->GetWidth();
+    }
+
+    int Camera::GetPixelHeight() const
+    {
+        std::shared_ptr<RenderTexture> target;
+
+        if(m_render_texture)
+        {
+            target = m_render_texture;
+        }
+        else
+        {
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+        }
+
+        return target->GetHeight();
     }
 
     float Camera::GetAspect() const

@@ -13,6 +13,7 @@ namespace Galaxy3D
 	{
 		friend class World;
 		friend class Transform;
+        friend class Renderer;
 
 	public:
 		static std::shared_ptr<GameObject> Create(const std::string &name);
@@ -54,6 +55,7 @@ namespace Galaxy3D
 		void SetActiveInHierarchy(bool active);
         void CopyComponent(std::shared_ptr<Component> &com);
         void OnTranformChanged();
+        void OnWillRenderObject(int material_index);
 	};
 
 	template<class T> std::shared_ptr<T> GameObject::AddComponent()

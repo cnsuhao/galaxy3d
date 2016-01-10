@@ -27,7 +27,6 @@ namespace Galaxy3D
         std::shared_ptr<Material> m_material;
         bool m_opaque;
 
-        void SetMainTexTexelSize(const std::shared_ptr<Texture> &tex);
         void SetOpaque(bool opaque) {m_opaque = opaque;}
     };
 }
