@@ -27,7 +27,7 @@ namespace Galaxy3D
             div *= 2;
         }
 
-        SetMainTexTexelSize(adaptive_texture);
+        m_material->SetMainTexTexelSize(adaptive_texture);
 
         // log
         GraphicsDevice::GetInstance()->Blit(adaptive_texture, rts[0], m_material, 0);

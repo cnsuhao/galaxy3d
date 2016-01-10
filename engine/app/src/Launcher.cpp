@@ -308,7 +308,7 @@ void Launcher::Start()
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(45);
     cam3d->SetClipPlane(0.1f, 100.0f);
-    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
+    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default) | LayerMask::GetMask(Layer::Highlighting));
     cam3d->EnableDeferredShading(true);
     auto high_lihgting = cam3d->GetGameObject()->AddComponent<ImageEffectHighlighting>();
 
@@ -338,10 +338,28 @@ void Launcher::Start()
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
     anim_obj->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
     anim_obj->GetTransform()->SetLocalRotation(Quaternion::Euler(Vector3(0, 180, 0)));
+    anim_obj->SetLayerRecursively(Layer::Default);
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
+
+    {
+        auto clone_obj = GameObject::Instantiate(anim_obj);
+        clone_obj->GetTransform()->SetPosition(Vector3(-3, 0, 0));
+        clone_obj->SetLayerRecursively(Layer::Highlighting);
+        auto clone_anim = clone_obj->GetComponent<Animation>();
+        clone_anim->Play("idle");
+        clone_obj->AddComponent<NavMeshAgent>();
+    }
+    {
+        auto clone_obj = GameObject::Instantiate(anim_obj);
+        clone_obj->GetTransform()->SetPosition(Vector3(-6, 0, 0));
+        clone_obj->SetLayerRecursively(Layer::Highlighting);
+        auto clone_anim = clone_obj->GetComponent<Animation>();
+        clone_anim->Play("idle");
+        clone_obj->AddComponent<NavMeshAgent>();
+    }
 
     cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
     g_cam_rot = Vector3(10, -180, 0);
@@ -352,9 +370,7 @@ void Launcher::Start()
     // navmesh
     NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
     anim_parent->GetTransform()->SetPosition(Vector3(1, 0, 0));
-    auto agent = anim_parent->AddComponent<NavMeshAgent>();
-    agent->SamplePosition();
-    cam3d->UpdateMatrix();
+    anim_parent->AddComponent<NavMeshAgent>();
 
     // collider
     auto rs = mesh->GetComponentsInChildren<MeshRenderer>();
@@ -478,8 +494,6 @@ void Launcher::Update()
 	fps->UpdateLabel();
 
 #if DEMO_DEF
-    bool update_cam = false;
-
     int key_down_count_old = g_key_down_count;
 
     if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim, 0);
@@ -530,7 +544,6 @@ void Launcher::Update()
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();
         agent->Move(offset);
-        update_cam = true;
 
         anim->GetTransform()->SetForward(move_dir);
     }
@@ -544,21 +557,14 @@ void Launcher::Update()
     if(Input::GetMouseButton(1))
     {
         drag_cam_rot(cam3d);
-        update_cam = true;
     }
 
     if(Input::GetMouseButtonUp(1))
     {
         auto rot_offset = drag_cam_rot(cam3d);
-        update_cam = true;
 
         g_cam_rot = g_cam_rot + rot_offset;
         g_mouse_down = false;
-    }
-
-    if(update_cam)
-    {
-        cam3d->UpdateMatrix();
     }
 
     bool set_cursor = false;
@@ -702,7 +708,6 @@ void Launcher::LateUpdate()
 #if DEMO_TERRAIN
     Vector3 pos = anim->GetTransform()->GetPosition();
     cam3d->GetTransform()->SetPosition(pos + cam_offset);
-    cam3d->UpdateMatrix();
 #endif
 }
 

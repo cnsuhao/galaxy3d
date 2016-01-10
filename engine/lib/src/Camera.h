@@ -27,6 +27,7 @@ namespace Galaxy3D
 		void SetClearColor(const Color &color) {m_clear_color = color;}
         Color GetClearColor() const {return m_clear_color;}
 		void SetDepth(int depth);
+        int GetDepth() const {return m_depth;}
 		void SetCullingMask(int mask) {m_culling_mask = mask;}
         bool IsCulling(std::shared_ptr<GameObject> &obj) const;
 		void SetOrthographic(bool ortho) {m_orthographic = ortho;}
@@ -37,8 +38,10 @@ namespace Galaxy3D
         float GetClipNear() const {return m_near_clip_plane;}
         float GetClipFar() const {return m_far_clip_plane;}
         void SetRect(const Rect &rect) {m_rect = rect;}
+        Rect GetRect() const {return m_rect;}
         float GetAspect() const;
-		void UpdateMatrix();
+        int GetPixelWidth() const;
+        int GetPixelHeight() const;
 		const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
         Vector3 ScreenToViewportPoint(const Vector3 &position);
         Vector3 ViewportToWorldPoint(const Vector3 &position);
@@ -53,7 +56,7 @@ namespace Galaxy3D
         std::shared_ptr<RenderTexture> GetDepthTexture() const;
 
 	protected:
-		virtual void Start();
+        virtual void OnTranformChanged();
 		
 	private:
 		static std::list<Camera *> m_cameras;
@@ -77,6 +80,7 @@ namespace Galaxy3D
 		Rect m_rect;
         bool m_hdr;
         bool m_deferred_shading;
+        bool m_transform_changed;
         std::shared_ptr<RenderTexture> m_render_texture;
         std::shared_ptr<RenderTexture> m_render_target_binding;
 		Matrix4x4 m_view_matrix;
@@ -88,6 +92,7 @@ namespace Galaxy3D
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);
         static void CreateDeferredShadingResourcesIfNeeded(int w, int h);
+        void UpdateMatrix();
         void RenderShadowMaps();
 		void Render();
         void RenderSkyBox();

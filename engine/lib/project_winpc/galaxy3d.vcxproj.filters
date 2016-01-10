@@ -210,9 +210,6 @@
     <ClCompile Include="..\src\BoxCollider.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Collider.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ImageEffectHighlighting.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

@@ -28,12 +28,14 @@ namespace Galaxy3D
             m_adaption_speed(1.5f),
             m_adaptive_texture_size(AdaptiveTextureSize::Square256)
         {}
-        virtual void Start();
         virtual void OnRenderImage(const std::shared_ptr<RenderTexture> &source, const std::shared_ptr<RenderTexture> &destination);
         void SetMiddleGray(float gray) {m_middle_gray = gray;}
         void SetWhite(float white) {m_white = white;}
         void SetAdaptionSpeed(float speed) {m_adaption_speed = speed;}
         void SetAdaptiveTextureSize(AdaptiveTextureSize::Enum size) {m_adaptive_texture_size = size;}
+
+    protected:
+        virtual void Start();
 
     private:
         float m_middle_gray;

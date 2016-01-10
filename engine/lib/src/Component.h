@@ -38,6 +38,7 @@ namespace Galaxy3D
 		virtual void OnEnable() {}
 		virtual void OnDisable() {}
         virtual void OnTranformChanged() {}
+        virtual void OnWillRenderObject(int material_index) {}
 
 	private:
 		bool m_deleted;

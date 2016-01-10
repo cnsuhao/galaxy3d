@@ -454,4 +454,9 @@ namespace Galaxy3D
 
         SetMatrix("_FrustumCornersWS", frustumCorners);
     }
+
+    void Material::SetMainTexTexelSize(const std::shared_ptr<Texture> &tex)
+    {
+        SetVector("_MainTex_TexelSize", Vector4(1.0f / tex->GetWidth(), 1.0f / tex->GetHeight(), (float) tex->GetWidth(), (float) tex->GetHeight()));
+    }
 }
