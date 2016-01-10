@@ -25,9 +25,9 @@ using namespace Galaxy3D;
 static const char g_title[] = "Galaxy3D Engine";
 static const int g_screen_w = 1280;
 static const int g_screen_h = 720;
-HINSTANCE g_hinst;
+static HINSTANCE g_hinst;
+static HCURSOR g_cursor_default;
 HWND g_hwnd;
-HCURSOR g_cursor_default;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -357,7 +357,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_SETCURSOR:
         {
-            auto cursor = (HCURSOR) Cursor::GetCurent();
+            auto cursor = (HCURSOR) Cursor::GetCursor(Cursor::GetCurent());
             if(cursor == NULL)
             {
                 cursor = g_cursor_default;

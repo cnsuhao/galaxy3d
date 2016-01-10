@@ -579,7 +579,10 @@ void Launcher::Update()
 
     if(!set_cursor)
     {
-        Cursor::SetCursor(0);
+        if(Cursor::GetCurent() != 0)
+        {
+            Cursor::SetCursor(0);
+        }
     }
 #endif
 
