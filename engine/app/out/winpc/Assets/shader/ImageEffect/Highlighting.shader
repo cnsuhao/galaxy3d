@@ -8,18 +8,11 @@ ImageEffect/Highlighting
     Pass 0
     {
         VS vs_blur
-        PS ps_downsample
-        RenderStates rs
-    }
-
-    Pass 1
-    {
-        VS vs_blur
         PS ps_blur
         RenderStates rs
     }
 
-    Pass 2
+    Pass 1
     {
         VS vs_compose
         PS ps_compose
@@ -32,59 +25,6 @@ ImageEffect/Highlighting
         ZWrite Off
         ZTest Always
         Blend Off
-    }
-
-    HLPS ps_downsample
-    {
-        cbuffer cbuffer0 : register(b0)
-        {
-            float4 HilightingColor;
-        };
-
-        cbuffer cbuffer1 : register(b1)
-        {
-            float4 Intensity;
-        };
-
-        Texture2D _MainTex : register(t0);
-        SamplerState _MainTex_Sampler : register(s0);
-
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float2 v_uv[4] : TEXCOORD0;
-        };
-
-        float4 main(PS_INPUT input) : SV_Target
-        {
-            float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv[0]);
-            if(any(color))
-            {
-                color = HilightingColor;
-            }
-            float4 color1 = _MainTex.Sample(_MainTex_Sampler, input.v_uv[1]);
-            if(any(color1))
-            {
-                color1 = HilightingColor;
-            }
-            float4 color2 = _MainTex.Sample(_MainTex_Sampler, input.v_uv[2]);
-            if(any(color2))
-            {
-                color2 = HilightingColor;
-            }
-            float4 color3 = _MainTex.Sample(_MainTex_Sampler, input.v_uv[3]);
-            if(any(color3))
-            {
-                color3 = HilightingColor;
-            }
-
-            color.rgb = max(color.rgb, color1.rgb);
-            color.rgb = max(color.rgb, color2.rgb);
-            color.rgb = max(color.rgb, color3.rgb);
-            color.a = (color.a + color1.a + color2.a + color3.a) * Intensity.x;
-
-            return color;
-        }
     }
 
     HLVS vs_blur

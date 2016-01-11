@@ -40,7 +40,6 @@ namespace Galaxy3D
         // downsample
         m_material->SetMainTexTexelSize(m_render_texture_highlighting);
         m_material->SetVector("OffsetScale", 1.0f);
-        m_material->SetColor("HilightingColor", m_highlighting_color);
         m_material->SetVector("Intensity", m_intensity);
         GraphicsDevice::GetInstance()->Blit(m_render_texture_highlighting, rt_quarter, m_material, 0);
   
@@ -53,7 +52,7 @@ namespace Galaxy3D
             m_material->SetVector("OffsetScale", off);
 
             auto blur = RenderTexture::GetTemporary(quarter_w, quarter_h, format, DepthBuffer::Depth_0);
-            GraphicsDevice::GetInstance()->Blit(rt_quarter, blur, m_material, 1);
+            GraphicsDevice::GetInstance()->Blit(rt_quarter, blur, m_material, 0);
             RenderTexture::ReleaseTemporary(rt_quarter);
             rt_quarter = blur;
         }
@@ -62,7 +61,7 @@ namespace Galaxy3D
         m_material->SetTexture("TexHighlight", m_render_texture_highlighting);
         m_material->SetTexture("TexBlur", rt_quarter);
 
-        GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 2);
+        GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 1);
         
         RenderTexture::ReleaseTemporary(rt_quarter);
     }

@@ -35,6 +35,7 @@
     <ClCompile Include="..\src\GTStringUTF32.cpp" />
     <ClCompile Include="..\src\GTTime.cpp" />
     <ClCompile Include="..\src\Guid.cpp" />
+    <ClCompile Include="..\src\HighlightingObject.cpp" />
     <ClCompile Include="..\src\Image.cpp" />
     <ClCompile Include="..\src\ImageEffect.cpp" />
     <ClCompile Include="..\src\ImageEffectBloom.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="..\src\GTStringUTF32.h" />
     <ClInclude Include="..\src\GTTime.h" />
     <ClInclude Include="..\src\Guid.h" />
+    <ClInclude Include="..\src\HighlightingObject.h" />
     <ClInclude Include="..\src\Image.h" />
     <ClInclude Include="..\src\ImageEffect.h" />
     <ClInclude Include="..\src\ImageEffectBloom.h" />
