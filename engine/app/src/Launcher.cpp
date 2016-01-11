@@ -3,7 +3,8 @@
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
-#define DEMO_DEF 1
+#define DEMO_DEF 0
+#define DEMO_REWARD 1
 
 using namespace Galaxy3D;
 
@@ -28,9 +29,22 @@ static void add_lamp_particles(std::shared_ptr<GameObject> &lamp, std::shared_pt
 static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_ptr<Camera> &cam3d, const Vector3 &local_pos);
 #endif
 
+#if DEMO_REWARD
+TextRenderer *g_reward = NULL;
+TextRenderer *g_name = NULL;
+std::vector<GTString> g_reward_name;
+std::vector<int> g_reward_count;
+std::vector<std::string> g_name_txt;
+std::vector<std::string> g_name_temp;
+std::vector<std::string> g_name_rand;
+std::vector<std::vector<std::string>> g_result;
+int g_reward_index = 0;
+bool g_rand = true;
+#endif
+
 void Launcher::Start()
 {
-	Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+	Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/STHeiti-Light.ttc");
     
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
@@ -40,7 +54,7 @@ void Launcher::Start()
     cam2d->SetDepth(1);
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
 
-	auto label = Label::Create("", "consola", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
+	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
 	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
 	tr->SetLabel(label);
@@ -48,6 +62,90 @@ void Launcher::Start()
     tr->GetTransform()->SetParent(cam2d->GetTransform());
     tr->GetGameObject()->SetLayer(Layer::UI);
 	fps = tr;
+
+#if DEMO_REWARD
+    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
+
+    auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/bg.jpg");
+    auto bg_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
+    bg_sr->GetGameObject()->SetLayer(Layer::UI);
+    bg_sr->SetSprite(bg_sprite);
+    float x = Screen::GetWidth() / (float) bg_sprite->GetTexture()->GetWidth();
+    float y = Screen::GetHeight() / (float) bg_sprite->GetTexture()->GetHeight();
+    bg_sr->GetTransform()->SetScale(Vector3(x, y, 1));
+
+    {
+        std::string str;
+        GTFile::ReadAllText(Application::GetDataPath() + "/Assets/text/reward.txt", str);
+        GTString reward = str;
+        reward = reward.Replace("\r\n", "\n");
+        auto lines = reward.Split("\n", true);
+        g_reward_name.resize(lines.size());
+        g_reward_count.resize(lines.size());
+        for(size_t i=0; i<lines.size(); i++)
+        {
+            auto r = lines[i].Split("=", true);
+            if(r.size() == 2)
+            {
+                g_reward_name[i] = r[0];
+                g_reward_count[i] = GTString::ToType<int>(r[1].str);
+            }
+        }
+    }
+
+    {
+        std::string str;
+        GTFile::ReadAllText(Application::GetDataPath() + "/Assets/text/name.txt", str);
+        GTString name = str;
+        name = name.Replace("\r\n", "\n");
+        auto lines = name.Split("\n", true);
+        std::unordered_map<std::string, std::string> name_map;
+        for(size_t i=0; i<lines.size(); i++)
+        {
+            auto n = lines[i].Split("=", true);
+            for(auto i : n)
+            {
+                name_map[i.str] = i.str;
+            }
+        }
+        std::vector<std::string> name_txt;
+        for(auto &i : name_map)
+        {
+            name_txt.push_back(i.first);
+        }
+        while(!name_txt.empty())
+        {
+            int index = (int) (rand() / (float) RAND_MAX * name_txt.size());
+            g_name_txt.push_back(name_txt[index]);
+            name_txt.erase(name_txt.begin() + index);
+        }
+    }
+
+    {
+        auto label = Label::Create("", "heiti", 100, LabelPivot::Center, LabelAlign::Auto, true);
+        auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
+        tr->GetTransform()->SetPosition(Vector3(0, Screen::GetHeight()/2.0f - 100, 0) * 0.01f);
+        tr->SetLabel(label);
+        tr->SetSortingOrder(1, 0);
+        tr->GetTransform()->SetParent(cam2d->GetTransform());
+        tr->GetGameObject()->SetLayer(Layer::UI);
+
+        g_reward = tr.get();
+    }
+
+    {
+        auto label = Label::Create("", "heiti", 100, LabelPivot::Center, LabelAlign::Auto, true);
+        auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
+        tr->GetTransform()->SetPosition(Vector3(0, 50, 0) * 0.01f);
+        tr->SetLabel(label);
+        tr->SetSortingOrder(1, 0);
+        tr->GetTransform()->SetParent(cam2d->GetTransform());
+        tr->GetGameObject()->SetLayer(Layer::UI);
+        label->SetLineSpace(30);
+
+        g_name = tr.get();
+    }
+#endif
 
 #if DEMO_DEFERRED_SHADING
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
@@ -512,9 +610,99 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
 void Launcher::Update()
 {
+#if !DEMO_REWARD
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
+#endif
+
+#if DEMO_REWARD
+    g_reward->GetLabel()->SetText("<shadow=#000000ff>" + g_reward_name[g_reward_index].str + "</shadow>");
+    g_reward->UpdateLabel();
+
+    std::string names;
+
+    if(g_rand)
+    {
+        size_t count = g_reward_count[g_reward_index];
+        g_name_temp = g_name_txt;
+        g_name_rand.clear();
+
+        while(g_name_rand.size() < count)
+        {
+            int index = (int) ((rand() - 1) / (float) RAND_MAX * g_name_temp.size());
+            g_name_rand.push_back(g_name_temp[index]);
+            g_name_temp.erase(g_name_temp.begin() + index);
+        }
+
+        std::string name_text;
+        int index = 0;
+        for(auto i : g_name_rand)
+        {
+            name_text += "<shadow=#000000ff>";
+            name_text += i;
+            name_text += "</shadow>";
+
+            if(index % 3 == 2)
+            {
+                name_text += "\n";
+            }
+            
+            if((int) g_name_rand.size() >= 3)
+            {
+                if(index % 3 != 2)
+                {
+                    name_text += "        ";
+                }
+            }
+            else
+            {
+                if(index + 1 < (int) g_name_rand.size())
+                {
+                    name_text += "        ";
+                }
+            }
+
+            index++;
+        }
+
+        g_name->GetLabel()->SetText(name_text);
+        g_name->UpdateLabel();
+
+        if(Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return))
+        {
+            g_rand = false;
+
+            g_result.push_back(g_name_rand);
+            g_name_txt = g_name_temp;
+
+            std::string result;
+            for(auto &i : g_result)
+            {
+                for(auto &j : i)
+                {
+                    result += j;
+                    result += ",";
+                }
+
+                result += "\r\n";
+            }
+            GTFile::WriteAllBytes(Application::GetDataPath() + "/Assets/text/result.txt", (void *) result.c_str(), result.size());
+        }
+    }
+    else
+    {
+        if(Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return))
+        {
+            if(g_reward_index + 1 < (int) g_reward_name.size())
+            {
+                g_rand = true;
+
+                g_reward_index++;
+            }
+        }
+    }
+#endif
 
 #if DEMO_DEF
     int key_down_count_old = g_key_down_count;
