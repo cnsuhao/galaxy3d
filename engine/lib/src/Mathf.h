@@ -39,6 +39,8 @@ namespace Galaxy3D
 		static void Swap(T &a, T &b) { T temp = a; a = b; b = temp; }
 		static bool RayPlaneIntersection(const Ray &ray, const Vector3 &plane_normal, const Vector3 &plane_point, float &t);
 		static bool RayBoundsIntersection(const Ray &ray, const Bounds &box, float &t);
+        static float RandomRange(float min, float max);
+        static int RandomRange(int min, int max);
 	};
 
 	template<class T>

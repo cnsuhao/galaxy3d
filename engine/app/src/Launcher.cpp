@@ -116,7 +116,7 @@ void Launcher::Start()
         }
         while(!name_txt.empty())
         {
-            int index = (int) (rand() / (float) RAND_MAX * name_txt.size());
+            int index = Mathf::RandomRange(0, name_txt.size());
             g_name_txt.push_back(name_txt[index]);
             name_txt.erase(name_txt.begin() + index);
         }
@@ -647,7 +647,7 @@ void Launcher::Update()
 
         while(g_name_rand.size() < count)
         {
-            int index = (int) ((rand() - 1) / (float) RAND_MAX * g_name_temp.size());
+            int index = Mathf::RandomRange(0, g_name_temp.size());
             g_name_rand.push_back(g_name_temp[index]);
             g_name_temp.erase(g_name_temp.begin() + index);
         }

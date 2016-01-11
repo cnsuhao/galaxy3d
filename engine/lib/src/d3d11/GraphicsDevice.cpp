@@ -160,8 +160,8 @@ namespace Galaxy3D
 		//depth stencil texture
         D3D11_TEXTURE2D_DESC dtd =
         {
-            Screen::GetWidth(),//UINT Width;
-            Screen::GetHeight(),//UINT Height;
+            (UINT) Screen::GetWidth(),//UINT Width;
+            (UINT) Screen::GetHeight(),//UINT Height;
             1,//UINT MipLevels;
             1,//UINT ArraySize;
             DXGI_FORMAT_D24_UNORM_S8_UINT,//DXGI_FORMAT Format;
@@ -460,8 +460,8 @@ namespace Galaxy3D
 
     void GraphicsDevice::SetVertexBuffer(BufferObject &bo, int stride, int offset)
     {
-        UINT strides[1] = {stride};
-        UINT offsets[1] = {offset};
+        UINT strides[1] = {(UINT) stride};
+        UINT offsets[1] = {(UINT) offset};
         ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
         m_immediate_context->IASetVertexBuffers(0, 1, &buffer, strides, offsets);
     }

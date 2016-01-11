@@ -164,4 +164,16 @@ namespace Galaxy3D
 
 		return true;
 	}
+
+    float Mathf::RandomRange(float min, float max)
+    {
+        float rand_01 = rand() / (float) (RAND_MAX + 1);
+        
+        return min + rand_01 * (max - min);
+    }
+
+    int Mathf::RandomRange(int min, int max)
+    {
+        return (int) (min + RandomRange(0.0f, 1.0f) * (max - min));
+    }
 }
