@@ -1001,6 +1001,11 @@ namespace Galaxy3D
 			int x1 = x0 + info.uv_pixel_w;
 			int y1 = y0 - info.uv_pixel_h;
 
+            if(!visible)
+            {
+                x1 = x0;
+            }
+
 			if(x_max < x1)
 			{
 				x_max = x1;

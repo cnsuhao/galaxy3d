@@ -297,7 +297,7 @@ namespace Galaxy3D
 
 		if(m_texture == NULL)
 		{
-			HRESULT hr = device->CreateTexture2D(&desc, (mipmap || init_data.pSysMem == 0) ? 0 : &init_data, &m_texture);
+			HRESULT hr = device->CreateTexture2D(&desc, (mipmap || init_data.pSysMem == NULL) ? NULL : &init_data, &m_texture);
 
 			if(mipmap)
 			{
@@ -306,7 +306,10 @@ namespace Galaxy3D
 		}
 		else
 		{
-			context->UpdateSubresource(m_texture, 0, 0, init_data.pSysMem, init_data.SysMemPitch, 0);
+            if(init_data.pSysMem != NULL)
+            {
+                context->UpdateSubresource(m_texture, 0, 0, init_data.pSysMem, init_data.SysMemPitch, 0);
+            }
 		}
 		
 		if(buffer != 0)

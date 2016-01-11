@@ -23,11 +23,12 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static const int g_screen_w = 1280;
-static const int g_screen_h = 720;
+static int g_screen_w = 1280;
+static int g_screen_h = 720;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;
+bool g_fullscreen = true;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -38,6 +39,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetConsoleTitle("Galaxy3D Console");
 	FILE* fstdout = 0;
 	freopen_s(&fstdout, "CONOUT$", "w", stdout);
+
+    if(g_fullscreen)
+    {
+        g_screen_w = GetSystemMetrics(SM_CXSCREEN);
+        g_screen_h = GetSystemMetrics(SM_CYSCREEN);
+    }
 
 	if(FAILED(InitWindow(hInstance, nCmdShow, g_screen_w, g_screen_h)))
 		return 0;
@@ -99,9 +106,26 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 	// Create window
 	g_hinst = hInstance;
 	RECT rc = {0, 0, width, height};
-	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	g_hwnd = CreateWindow(g_title, g_title, WS_SYSMENU | WS_MINIMIZEBOX,
-		0, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
+	
+    DWORD style;
+    int w;
+    int h;
+    if(g_fullscreen)
+    {
+        style = WS_POPUP;
+        w = width;
+        h = height;
+    }
+    else
+    {
+        style = WS_SYSMENU | WS_MINIMIZEBOX;
+        AdjustWindowRect(&rc, style, FALSE);
+        w = rc.right - rc.left;
+        h = rc.bottom - rc.top;
+    }
+
+	g_hwnd = CreateWindow(g_title, g_title, style,
+		0, 0, w, h, NULL, NULL, hInstance,
 		NULL);
 	if(!g_hwnd)
 		return E_FAIL;

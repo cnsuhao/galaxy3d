@@ -29,6 +29,7 @@ namespace Galaxy3D
         }
 		static GTString Format(const char *format, ...);
 
+        GTString():str(""){}
 		GTString(const std::string &str):str(str){}
 		GTString Replace(const std::string &old, const std::string &replace) const;
 		std::vector<GTString> Split(const std::string &split, bool remove_empty = false) const;
