@@ -524,7 +524,7 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->ClearRenderTarget(CameraClearFlags::SolidColor, m_clear_color, 1.0f, 0);
     }
 
-    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force)
+    void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force, bool bind_depth)
     {
         if(!force && m_render_target_binding == render_texture)
         {
@@ -536,8 +536,13 @@ namespace Galaxy3D
 
         std::vector<std::shared_ptr<RenderTexture>> color_buffers(1);
         color_buffers[0] = render_texture;
+        std::shared_ptr<RenderTexture> depth_texture;
+        if(bind_depth)
+        {
+            depth_texture = render_texture;
+        }
 
-        GraphicsDevice::GetInstance()->SetRenderTargets(color_buffers, render_texture);
+        GraphicsDevice::GetInstance()->SetRenderTargets(color_buffers, depth_texture);
         SetViewport(width, height);
 
         m_render_target_binding = render_texture;

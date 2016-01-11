@@ -98,7 +98,7 @@ ImageEffect/Highlighting
             color.rgb = max(color.rgb, color2.rgb);
             color.rgb = max(color.rgb, color3.rgb);
             color.a = (color.a + color1.a + color2.a + color3.a) * Intensity.x;
-
+            
             return color;
         }
     }
@@ -139,6 +139,10 @@ ImageEffect/Highlighting
         SamplerState TexHighlight_Sampler : register(s1);
         Texture2D TexBlur : register(t2);
         SamplerState TexBlur_Sampler : register(s2);
+        Texture2D _CameraDepthTexture : register(t3);
+        SamplerState _CameraDepthTexture_Sampler : register(s3);
+        Texture2D _HighlightingDepthTexture : register(t4);
+        SamplerState _HighlightingDepthTexture_Sampler : register(s4);
 
         struct PS_INPUT
         {
@@ -150,6 +154,8 @@ ImageEffect/Highlighting
         {
             float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
             float4 highlight = TexHighlight.Sample(TexHighlight_Sampler, input.v_uv);
+            float depth_color = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, input.v_uv).r;
+            float depth_highlight = _HighlightingDepthTexture.Sample(_HighlightingDepthTexture_Sampler, input.v_uv).r;
 
             if(!any(highlight))
             {

@@ -228,7 +228,7 @@ namespace Galaxy3D
         CreateBlitMeshIfNeeded();
 
         auto cam = Camera::GetCurrent();
-        cam->SetRenderTarget(destination, false);
+        cam->SetRenderTarget(destination, false, false);
 
         std::shared_ptr<Material> mat;
         if(material)
@@ -341,7 +341,11 @@ namespace Galaxy3D
             colors[i] = color_buffers[i]->GetRenderTargetView();
             m_color_buffers_ref[i] = color_buffers[i];
         }
-        auto depth_stencil = depth_stencil_buffer->GetDepthStencilView();
+        ID3D11DepthStencilView *depth_stencil = NULL;
+        if(depth_stencil_buffer)
+        {
+            depth_stencil = depth_stencil_buffer->GetDepthStencilView();
+        }
 
         if(color_count > 0)
         {
@@ -367,20 +371,28 @@ namespace Galaxy3D
                 }
             }
 
-            auto depth_buffer = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();
-
-            if(depth_buffer != NULL)
+            ID3D11DepthStencilView *depth_stencil = NULL;
+            if(!m_depth_stencil_buffer_ref.expired())
             {
-                m_immediate_context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+                depth_stencil = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();;
+            }
+
+            if(depth_stencil != NULL)
+            {
+                m_immediate_context->ClearDepthStencilView(depth_stencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
             }
         }
         else if(clear_flags == CameraClearFlags::Depth)
         {
-            auto depth_buffer = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();
-
-            if(depth_buffer != NULL)
+            ID3D11DepthStencilView *depth_stencil = NULL;
+            if(!m_depth_stencil_buffer_ref.expired())
             {
-                m_immediate_context->ClearDepthStencilView(depth_buffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
+                depth_stencil = m_depth_stencil_buffer_ref.lock()->GetDepthStencilView();;
+            }
+
+            if(depth_stencil != NULL)
+            {
+                m_immediate_context->ClearDepthStencilView(depth_stencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
             }
         }
     }

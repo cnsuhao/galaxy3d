@@ -10,7 +10,7 @@ namespace Galaxy3D
     {
         m_camera = GetGameObject()->GetComponent<Camera>();
 
-        m_render_texture_highlighting = RenderTexture::Create(m_camera->GetPixelWidth(), m_camera->GetPixelHeight(), RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Bilinear);
+        m_render_texture_highlighting = RenderTexture::Create(m_camera->GetPixelWidth(), m_camera->GetPixelHeight(), RenderTextureFormat::RGBA32, DepthBuffer::Depth_24, FilterMode::Bilinear);
 
         m_camera_highlighting = GameObject::Create("camera_highlighting")->AddComponent<Camera>();
         m_camera_highlighting->GetTransform()->SetParent(m_camera->GetTransform());
@@ -58,10 +58,15 @@ namespace Galaxy3D
         }
 
         // compose
+        auto depth_texture = m_camera->GetDepthTexture();
+        m_material->SetTexture("_CameraDepthTexture", depth_texture);
+        m_material->SetTexture("_HighlightingDepthTexture", m_render_texture_highlighting);
         m_material->SetTexture("TexHighlight", m_render_texture_highlighting);
         m_material->SetTexture("TexBlur", rt_quarter);
-
+        
         GraphicsDevice::GetInstance()->Blit(source, destination, m_material, 1);
+
+        //GraphicsDevice::GetInstance()->Blit(rt_quarter, destination, std::shared_ptr<Material>(), 0);
         
         RenderTexture::ReleaseTemporary(rt_quarter);
     }
