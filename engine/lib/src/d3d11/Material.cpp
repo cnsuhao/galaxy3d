@@ -299,7 +299,10 @@ namespace Galaxy3D
                 auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
                 if(render_texture)
                 {
-                    if(i.first == "_CameraDepthTexture" || i.first == "_ShadowMapTexture")
+                    if( i.first == "_CameraDepthTexture" ||
+                        i.first == "_ShadowMapTexture" ||
+                        i.first == "_HighlightingDepthTexture"
+                        )
                     {
                         find->second.texture = render_texture->GetShaderResourceViewDepth();
                     }
