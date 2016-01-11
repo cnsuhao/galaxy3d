@@ -58,9 +58,6 @@ namespace Galaxy3D
         }
 
         // compose
-        auto depth_texture = m_camera->GetDepthTexture();
-        m_material->SetTexture("_CameraDepthTexture", depth_texture);
-        m_material->SetTexture("_HighlightingDepthTexture", m_render_texture_highlighting);
         m_material->SetTexture("TexHighlight", m_render_texture_highlighting);
         m_material->SetTexture("TexBlur", rt_quarter);
         
