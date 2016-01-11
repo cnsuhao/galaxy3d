@@ -45,7 +45,7 @@ int g_font_size = 100;
 
 void Launcher::Start()
 {
-	Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/STHeiti-Light.ttc");
+	Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
     
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
@@ -645,7 +645,7 @@ void Launcher::Update()
         g_name_temp = g_name_txt;
         g_name_rand.clear();
 
-        while(g_name_rand.size() < count)
+        while(g_name_rand.size() < count && !g_name_temp.empty())
         {
             int index = Mathf::RandomRange(0, g_name_temp.size());
             g_name_rand.push_back(g_name_temp[index]);
