@@ -23,12 +23,12 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static int g_screen_w = 1280;
-static int g_screen_h = 720;
+static int g_screen_w = 1024;
+static int g_screen_h = 768;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;
-bool g_fullscreen = true;
+bool g_fullscreen = false;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
