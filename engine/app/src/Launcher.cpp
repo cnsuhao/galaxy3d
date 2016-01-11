@@ -351,6 +351,13 @@ void Launcher::Start()
         auto clone_anim = clone_obj->GetComponent<Animation>();
         clone_anim->Play("idle");
         clone_obj->AddComponent<NavMeshAgent>();
+
+        auto rs = clone_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+        for(auto &i : rs)
+        {
+            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
+            ho->SetColor(Color(1, 0, 0, 1));
+        }
     }
     {
         auto clone_obj = GameObject::Instantiate(anim_obj);
@@ -359,6 +366,13 @@ void Launcher::Start()
         auto clone_anim = clone_obj->GetComponent<Animation>();
         clone_anim->Play("idle");
         clone_obj->AddComponent<NavMeshAgent>();
+
+        auto rs = clone_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+        for(auto &i : rs)
+        {
+            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
+            ho->SetColor(Color(0, 1, 0, 1));
+        }
     }
 
     cam3d->GetTransform()->SetParent(anim_parent->GetTransform());

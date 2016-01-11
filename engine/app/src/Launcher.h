@@ -43,6 +43,7 @@
 #include "BoxCollider.h"
 #include "Cursor.h"
 #include "ImageEffectHighlighting.h"
+#include "HighlightingObject.h"
 
 namespace Galaxy3D
 {
