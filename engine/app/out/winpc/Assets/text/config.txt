@@ -1,1 +1,1 @@
-fontsize=70
+fontsize=100
