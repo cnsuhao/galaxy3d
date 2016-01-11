@@ -437,6 +437,7 @@ namespace Galaxy3D
                 {
                     obj->OnWillRenderObject(i->material_index);
                     i->renderer->Render(i->material_index);
+                    obj->OnDidRenderObject(i->material_index);
                 }
 
                 last_batch = &(*i);
