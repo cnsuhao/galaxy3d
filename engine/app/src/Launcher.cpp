@@ -40,6 +40,7 @@ std::vector<std::string> g_name_rand;
 std::vector<std::vector<std::string>> g_result;
 int g_reward_index = 0;
 bool g_rand = true;
+int g_font_size = 100;
 #endif
 
 void Launcher::Start()
@@ -122,7 +123,23 @@ void Launcher::Start()
     }
 
     {
-        auto label = Label::Create("", "heiti", 100, LabelPivot::Center, LabelAlign::Auto, true);
+        std::string str;
+        GTFile::ReadAllText(Application::GetDataPath() + "/Assets/text/config.txt", str);
+        GTString config = str;
+        config = config.Replace("\r\n", "\n");
+        auto lines = config.Split("\n", true);
+        for(size_t i=0; i<lines.size(); i++)
+        {
+            auto n = lines[i].Split("=", true);
+            if(n.size() == 2 && n[0].str == "fontsize")
+            {
+                g_font_size = GTString::ToType<int>(n[1].str);
+            }
+        }
+    }
+
+    {
+        auto label = Label::Create("", "heiti", g_font_size, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
         tr->GetTransform()->SetPosition(Vector3(0, Screen::GetHeight()/2.0f - 100, 0) * 0.01f);
         tr->SetLabel(label);
@@ -134,7 +151,7 @@ void Launcher::Start()
     }
 
     {
-        auto label = Label::Create("", "heiti", 100, LabelPivot::Center, LabelAlign::Auto, true);
+        auto label = Label::Create("", "heiti", g_font_size, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
         tr->GetTransform()->SetPosition(Vector3(0, 50, 0) * 0.01f);
         tr->SetLabel(label);
