@@ -343,7 +343,7 @@ void Launcher::Start()
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
-
+    
     {
         auto clone_obj = GameObject::Instantiate(anim_obj);
         clone_obj->GetTransform()->SetPosition(Vector3(-3, 0, 0));
