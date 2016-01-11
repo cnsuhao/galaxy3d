@@ -56,6 +56,7 @@ namespace Galaxy3D
         void CopyComponent(std::shared_ptr<Component> &com);
         void OnTranformChanged();
         void OnWillRenderObject(int material_index);
+        void OnDidRenderObject(int material_index);
 	};
 
 	template<class T> std::shared_ptr<T> GameObject::AddComponent()

@@ -31,7 +31,13 @@ namespace Galaxy3D
             m_materials[material_index]->SetShader(m_shader_highlighting);
             m_materials[material_index]->SetColor("HighlightingColor", m_color);
         }
-        else
+    }
+
+    void HighlightingObject::OnDidRenderObject(int material_index)
+    {
+        auto camera = Camera::GetCurrent();
+
+        if(camera->GetName() == "camera_highlighting")
         {
             m_materials[material_index]->SetShader(m_shaders_default[material_index]);
         }

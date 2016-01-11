@@ -301,4 +301,12 @@ namespace Galaxy3D
             (*i)->OnWillRenderObject(material_index);
         }
     }
+
+    void GameObject::OnDidRenderObject(int material_index)
+    {
+        for(auto i=m_components.begin(); i!=m_components.end(); i++)
+        {
+            (*i)->OnDidRenderObject(material_index);
+        }
+    }
 }

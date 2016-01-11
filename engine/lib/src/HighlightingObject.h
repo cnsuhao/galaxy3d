@@ -3,7 +3,7 @@
 
 #include "Component.h"
 #include "Color.h"
-#include "Renderer.h"
+#include "Material.h"
 
 namespace Galaxy3D
 {
@@ -15,6 +15,7 @@ namespace Galaxy3D
     protected:
         virtual void Start();
         virtual void OnWillRenderObject(int material_index);
+        virtual void OnDidRenderObject(int material_index);
 
     private:
         Color m_color;
