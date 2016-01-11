@@ -300,9 +300,7 @@ namespace Galaxy3D
                 if(render_texture)
                 {
                     if( i.first == "_CameraDepthTexture" ||
-                        i.first == "_ShadowMapTexture" ||
-                        i.first == "_HighlightingDepthTexture"
-                        )
+                        i.first == "_ShadowMapTexture")
                     {
                         find->second.texture = render_texture->GetShaderResourceViewDepth();
                     }

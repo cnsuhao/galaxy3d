@@ -343,6 +343,15 @@ void Launcher::Start()
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
+    {
+        anim_obj->SetLayerRecursively(Layer::Highlighting);
+        auto rs = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
+        for(auto &i : rs)
+        {
+            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
+            ho->SetColor(Color(0, 0, 0, 0.005f));
+        }
+    }
     
     {
         auto clone_obj = GameObject::Instantiate(anim_obj);
