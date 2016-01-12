@@ -36,13 +36,16 @@ namespace Galaxy3D
 			const Vector2 &pivot,
 			float pixels_per_unit,
 			const Vector4 &border,
-            Type::Enum type);
+            Type::Enum type,
+            Vector2 size);
         ~Sprite();
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
-        Vector2 *GetVertices() {return m_vertices;}
-		Vector2 *GetUV() {return m_uv;}
-		unsigned short *GetIndices() {return m_triangles;}
+        int GetVertexCount() const {return m_vertices.size();}
+        Vector2 *GetVertices() {return &m_vertices[0];}
+		Vector2 *GetUV() {return &m_uv[0];}
+        int GetIndexCount() const {return m_triangles.size();}
+		unsigned short *GetIndices() {return &m_triangles[0];}
 		std::shared_ptr<Texture2D> GetTexture() const {return m_texture;}
 
 	private:
@@ -51,10 +54,11 @@ namespace Galaxy3D
 		Vector2 m_pivot;
 		float m_pixels_per_unit;
 		Vector4 m_border;
-		Vector2 m_vertices[4];
-		Vector2 m_uv[4];
         Type::Enum m_type;
-		unsigned short m_triangles[6];
+        Vector2 m_size;
+        std::vector<Vector2> m_vertices;
+        std::vector<Vector2> m_uv;
+        std::vector<unsigned short> m_triangles;
         BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
 
