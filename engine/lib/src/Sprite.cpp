@@ -25,7 +25,8 @@ namespace Galaxy3D
 			Vector2(0.5f, 0.5f),
 			100,
 			Vector4(0, 0, 0, 0),
-            Type::Simple);
+            Type::Simple,
+            Vector2(0, 0));
 	}
 
 	std::shared_ptr<Sprite> Sprite::Create(
@@ -34,7 +35,8 @@ namespace Galaxy3D
 			const Vector2 &pivot,
 			float pixels_per_unit,
             const Vector4 &border,
-            Type::Enum type)
+            Type::Enum type,
+            Vector2 size)
 	{
 		std::shared_ptr<Sprite> sprite(new Sprite());
 		sprite->m_texture = texture;
@@ -43,6 +45,7 @@ namespace Galaxy3D
 		sprite->m_pixels_per_unit = pixels_per_unit;
 		sprite->m_border = border;
         sprite->m_type = type;
+        sprite->m_size = size;
 
         if(sprite->m_type == Type::Simple)
         {
@@ -70,14 +73,30 @@ namespace Galaxy3D
     {
         float v_ppu = 1 / m_pixels_per_unit;
 
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = (float) m_texture->GetWidth();
+            height = (float) m_texture->GetHeight();
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * m_rect.width;
-        float top = -m_pivot.y * m_rect.height;
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, m_rect.width * v_ppu, m_rect.height * v_ppu);
+        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        m_vertices.resize(4);
+        m_uv.resize(4);
+        m_triangles.resize(6);
 
         m_vertices[0] = Vector2(vertices.left, -vertices.top);
         m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
@@ -111,10 +130,11 @@ namespace Galaxy3D
     static void fill_vertex_buffer(char *buffer, Sprite *sprite)
     {
         char *p = buffer;
+        int vertex_count = sprite->GetVertexCount();
         Vector2 *vertices = sprite->GetVertices();
         Vector2 *uv = sprite->GetUV();
 
-        for(int i=0; i<4; i++)
+        for(int i=0; i<vertex_count; i++)
         {
             Vector3 pos = vertices[i];
             memcpy(p, &pos, sizeof(Vector3));
@@ -134,7 +154,8 @@ namespace Galaxy3D
     {
         if(m_vertex_buffer.buffer == NULL)
         {
-            int buffer_size = sizeof(VertexUI) * 4;
+            int vertex_count = GetVertexCount();
+            int buffer_size = sizeof(VertexUI) * vertex_count;
             char *buffer = (char *) malloc(buffer_size);
 
             fill_vertex_buffer(buffer, this);
@@ -151,12 +172,12 @@ namespace Galaxy3D
     {
         if(m_index_buffer.buffer == NULL)
         {
+            int index_count = this->GetIndexCount();
             unsigned short *uv = this->GetIndices();
-            int buffer_size = sizeof(unsigned short) * 6;
+            int buffer_size = sizeof(unsigned short) * index_count;
             char *buffer = (char *) malloc(buffer_size);
-            char *p = buffer;
 
-            memcpy(p, uv, buffer_size);
+            memcpy(buffer, uv, buffer_size);
 
             m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 

@@ -73,6 +73,28 @@ namespace Galaxy3D
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
 
+    static int get_sprites_vertex_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    {
+        int vertex_count = 0;
+        for(auto &i : list)
+        {
+            vertex_count += i->GetSprite()->GetVertexCount();
+        }
+
+        return vertex_count;
+    }
+
+    static int get_sprites_index_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    {
+        int index_count = 0;
+        for(auto &i : list)
+        {
+            index_count += i->GetSprite()->GetIndexCount();
+        }
+
+        return index_count;
+    }
+
 	void SpriteBatchRenderer::UpdateSprites()
 	{
 		if(m_sprites.empty())
@@ -87,7 +109,8 @@ namespace Galaxy3D
 		}
 		else
 		{
-			if(m_sprites_cache.size() != m_sprites.size())
+            if( m_sprites_cache.size() != m_sprites.size() ||
+                get_sprites_vertex_count(m_sprites_cache) != get_sprites_vertex_count(m_sprites))
 			{
 				Release();
 
@@ -109,16 +132,17 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
 	}
 
-	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite, const Color &color)
+	static int fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite, const Color &color)
 	{
 		char *p = buffer;
 		auto s = sprite->GetSprite();
 		auto mat = sprite->GetTransform()->GetLocalToWorldMatrix();
+        int vertex_count = s->GetVertexCount();
 		Vector2 *vertices = s->GetVertices();
 		Vector2 *uv = s->GetUV();
 		Color c = sprite->GetColor() * color;
 
-		for(int i=0; i<4; i++)
+		for(int i=0; i<vertex_count; i++)
 		{
 			Vector3 pos = mat.MultiplyPoint3x4(vertices[i]);
 			memcpy(p, &pos, sizeof(Vector3));
@@ -131,19 +155,21 @@ namespace Galaxy3D
 			memcpy(p, &v1, sizeof(Vector2));
 			p += sizeof(Vector2);
 		}
+
+        return p - buffer;
 	}
 
 	void SpriteBatchRenderer::CreateVertexBuffer()
 	{
 		int sprite_count = m_sprites.size();
-		int buffer_size = sizeof(VertexUI) * 4 * sprite_count;
+        int vertex_count = get_sprites_vertex_count(m_sprites);
+		int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		auto j = m_sprites.begin();
-		for(int i=0; i<sprite_count; i++)
+		char *p = buffer;
+		for(auto &i : m_sprites)
 		{
-			fill_vertex_buffer(buffer + i * (sizeof(VertexUI) * 4), *j, m_color);
-			j++;
+			p += fill_vertex_buffer(p, i, m_color);
 		}
 
         m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
@@ -154,15 +180,15 @@ namespace Galaxy3D
 	void SpriteBatchRenderer::UpdateVertexBuffer()
 	{
 		int sprite_count = m_sprites.size();
-		int buffer_size = sizeof(VertexUI) * 4 * sprite_count;
+        int vertex_count = get_sprites_vertex_count(m_sprites);
+        int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		auto j = m_sprites.begin();
-		for(int i=0; i<sprite_count; i++)
-		{
-			fill_vertex_buffer(buffer + i * (sizeof(VertexUI) * 4), *j, m_color);
-			j++;
-		}
+        char *p = buffer;
+        for(auto &i : m_sprites)
+        {
+            p += fill_vertex_buffer(p, i, m_color);
+        }
 
         GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
 
@@ -172,20 +198,24 @@ namespace Galaxy3D
 	void SpriteBatchRenderer::CreateIndexBuffer()
 	{
 		int sprite_count = m_sprites.size();
-		int buffer_size = sizeof(unsigned short) * 6 * sprite_count;
+		int buffer_size = sizeof(unsigned short) * get_sprites_index_count(m_sprites);
 		char *buffer = (char *) malloc(buffer_size);
-		unsigned short *p = (unsigned short *) buffer;
+        unsigned short *p = (unsigned short *) buffer;
 
-		auto j = m_sprites.begin();
-		for(int i=0; i<sprite_count; i++)
+        int vertex_count = 0;
+		for(auto &i : m_sprites)
 		{
-			unsigned short *uv = (*j)->GetSprite()->GetIndices();
-			for(int k=0; k<6; k++)
+            int index_count = i->GetSprite()->GetIndexCount();
+			unsigned short *uv = i->GetSprite()->GetIndices();
+
+			for(int j=0; j<index_count; j++)
 			{
-				p[i * 6 + k] = uv[k] + i * 4;
+                unsigned short index = uv[j] + vertex_count;
+                *p = index;
+                p++;
 			}
 
-			j++;
+            vertex_count += i->GetSprite()->GetVertexCount();
 		}
 		
         m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
