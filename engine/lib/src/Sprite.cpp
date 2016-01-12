@@ -24,7 +24,8 @@ namespace Galaxy3D
 			Rect(0, 0, (float) w, (float) h),
 			Vector2(0.5f, 0.5f),
 			100,
-			Vector4(0, 0, 0, 0));
+			Vector4(0, 0, 0, 0),
+            Type::Simple);
 	}
 
 	std::shared_ptr<Sprite> Sprite::Create(
@@ -32,7 +33,8 @@ namespace Galaxy3D
 			const Rect &rect,
 			const Vector2 &pivot,
 			float pixels_per_unit,
-			const Vector4 &border)
+            const Vector4 &border,
+            Type::Enum type)
 	{
 		std::shared_ptr<Sprite> sprite(new Sprite());
 		sprite->m_texture = texture;
@@ -40,46 +42,70 @@ namespace Galaxy3D
 		sprite->m_pivot = pivot;
 		sprite->m_pixels_per_unit = pixels_per_unit;
 		sprite->m_border = border;
+        sprite->m_type = type;
 
-		float v_ppu = 1 / pixels_per_unit;
-
-		float v_w = 1.0f / texture->GetWidth();
-		float v_h = 1.0f / texture->GetHeight();
-
-		float left = -pivot.x * rect.width;
-		float top = -pivot.y * rect.height;
-
-		Rect vertices(left * v_ppu, top * v_ppu, rect.width * v_ppu, rect.height * v_ppu);
-		Rect uv(rect.left * v_w, rect.top * v_h, rect.width * v_w, rect.height * v_h);
-
-		sprite->m_vertices[0] = Vector2(vertices.left, -vertices.top);
-		sprite->m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
-		sprite->m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
-		sprite->m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
-
-		sprite->m_uv[0] = Vector2(uv.left, uv.top);
-		sprite->m_uv[1] = Vector2(uv.left, uv.top + uv.height);
-		sprite->m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
-		sprite->m_uv[3] = Vector2(uv.left + uv.width, uv.top);
-
-		sprite->m_triangles[0] = 0;
-		sprite->m_triangles[1] = 1;
-		sprite->m_triangles[2] = 2;
-		sprite->m_triangles[3] = 0;
-		sprite->m_triangles[4] = 2;
-		sprite->m_triangles[5] = 3;
+        if(sprite->m_type == Type::Simple)
+        {
+            sprite->FillMeshSimple();
+        }
+        else if(sprite->m_type == Type::Sliced)
+        {
+            sprite->FillMeshSliced();
+        }
 
 		return sprite;
 	}
 
-	Sprite::Sprite()
-	{
-	}
+    Sprite::Sprite()
+    {
+    }
 
     Sprite::~Sprite()
     {
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
+    }
+
+    void Sprite::FillMeshSimple()
+    {
+        float v_ppu = 1 / m_pixels_per_unit;
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        float left = -m_pivot.x * m_rect.width;
+        float top = -m_pivot.y * m_rect.height;
+
+        Rect vertices(left * v_ppu, top * v_ppu, m_rect.width * v_ppu, m_rect.height * v_ppu);
+        Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        m_vertices[0] = Vector2(vertices.left, -vertices.top);
+        m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+        m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+        m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
+
+        m_uv[0] = Vector2(uv.left, uv.top);
+        m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+        m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+        m_uv[3] = Vector2(uv.left + uv.width, uv.top);
+
+        m_triangles[0] = 0;
+        m_triangles[1] = 1;
+        m_triangles[2] = 2;
+        m_triangles[3] = 0;
+        m_triangles[4] = 2;
+        m_triangles[5] = 3;
+    }
+
+    void Sprite::FillMeshSliced()
+    {
+        if(m_border == Vector4(0, 0, 0, 0))
+        {
+            FillMeshSimple();
+            return;
+        }
+
+
     }
 
     static void fill_vertex_buffer(char *buffer, Sprite *sprite)

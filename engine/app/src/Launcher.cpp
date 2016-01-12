@@ -3,8 +3,9 @@
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
-#define DEMO_DEF 1
+#define DEMO_DEF 0
 #define DEMO_REWARD 0
+#define DEMO_UI 1
 
 using namespace Galaxy3D;
 
@@ -63,6 +64,22 @@ void Launcher::Start()
     tr->GetTransform()->SetParent(cam2d->GetTransform());
     tr->GetGameObject()->SetLayer(Layer::UI);
 	fps = tr;
+
+#if DEMO_UI
+    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
+
+    auto button_sprite = Sprite::Create(
+        Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/NormalButton_Normal.png"),
+        Rect(0, 0, 126, 50),
+        Vector2(0.5f, 0.5f),
+        100,
+        Vector4(8, 8, 10, 8),
+        Sprite::Type::Simple);
+    auto button_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
+    button_sr->GetGameObject()->SetLayer(Layer::UI);
+    button_sr->SetSprite(button_sprite);
+    button_sr->GetTransform()->SetScale(Vector3(6, 1, 1));
+#endif
 
 #if DEMO_REWARD
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
