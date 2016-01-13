@@ -29,7 +29,7 @@ namespace Galaxy3D
 		//	rect:指定原贴图上的像素矩形区域，左上为起点
 		//	pivot:中心点，相对于sprite rect，(0，0)为左上角，（1，1）为右下角
 		//	pixels_per_unit:The number of pixels in the sprite that correspond to one unit in world space. (Read Only)
-		//	border:the border sizes of the sprite, x y z w : left right top bottom
+		//	border:the border sizes of the sprite, x y z w : left top right bottom
 		static std::shared_ptr<Sprite> Create(
 			const std::shared_ptr<Texture2D> &texture,
 			const Rect &rect,

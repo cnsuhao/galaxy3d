@@ -73,12 +73,15 @@ void Launcher::Start()
         Rect(0, 0, 126, 50),
         Vector2(0.5f, 0.5f),
         100,
-        Vector4(8, 8, 10, 8),
-        Sprite::Type::Simple,
-        Vector2(504, 400));
+        Vector4(8, 10, 8, 8),
+        Sprite::Type::Sliced,
+        Vector2(200, 50));
+
+    
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
+    
     /*
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
     node->SetSprite(button_sprite);

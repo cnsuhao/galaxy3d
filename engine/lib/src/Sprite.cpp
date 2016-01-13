@@ -76,8 +76,8 @@ namespace Galaxy3D
         float width, height;
         if(m_size == Vector2(0, 0))
         {
-            width = (float) m_texture->GetWidth();
-            height = (float) m_texture->GetHeight();
+            width = m_rect.width;
+            height = m_rect.height;
         }
         else
         {
@@ -124,7 +124,152 @@ namespace Galaxy3D
             return;
         }
 
+        float v_ppu = 1 / m_pixels_per_unit;
 
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = m_rect.width;
+            height = m_rect.height;
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        m_vertices.resize(16);
+        m_uv.resize(16);
+        m_triangles.resize(9 * 2 * 3);
+
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
+
+        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        Rect vertices_inside(
+            (left + m_border.x) * v_ppu,
+            (top + m_border.y) * v_ppu,
+            (width - m_border.x - m_border.z) * v_ppu,
+            (height - m_border.y - m_border.w) * v_ppu);
+        Rect uv_inside(
+            (m_rect.left + m_border.x) * v_w,
+            (m_rect.top + m_border.y) * v_h,
+            (m_rect.width - m_border.x - m_border.z) * v_w,
+            (m_rect.height - m_border.y - m_border.w) * v_h);
+
+        int i = 0;
+
+        m_vertices[i++] = Vector2(vertices.left, -vertices.top);
+        m_vertices[i++] = Vector2(vertices.left, -vertices_inside.top);
+        m_vertices[i++] = Vector2(vertices_inside.left, -vertices_inside.top);
+        m_vertices[i++] = Vector2(vertices_inside.left, -vertices.top);
+
+        m_vertices[i++] = Vector2(vertices.left, -(vertices_inside.top + vertices_inside.height));
+        m_vertices[i++] = Vector2(vertices.left, -(vertices.top + vertices.height));
+        m_vertices[i++] = Vector2(vertices_inside.left, -(vertices.top + vertices.height));
+        m_vertices[i++] = Vector2(vertices_inside.left, -(vertices_inside.top + vertices_inside.height));
+
+        m_vertices[i++] = Vector2(vertices_inside.left + vertices_inside.width, -(vertices_inside.top + vertices_inside.height));
+        m_vertices[i++] = Vector2(vertices_inside.left + vertices_inside.width, -(vertices.top + vertices.height));
+        m_vertices[i++] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+        m_vertices[i++] = Vector2(vertices.left + vertices.width, -(vertices_inside.top + vertices_inside.height));
+
+        m_vertices[i++] = Vector2(vertices_inside.left + vertices_inside.width, -vertices.top);
+        m_vertices[i++] = Vector2(vertices_inside.left + vertices_inside.width, -vertices_inside.top);
+        m_vertices[i++] = Vector2(vertices.left + vertices.width, -vertices_inside.top);
+        m_vertices[i++] = Vector2(vertices.left + vertices.width, -vertices.top);
+
+        i = 0;
+        
+        m_uv[i++] = Vector2(uv.left, uv.top);
+        m_uv[i++] = Vector2(uv.left, uv_inside.top);
+        m_uv[i++] = Vector2(uv_inside.left, uv_inside.top);
+        m_uv[i++] = Vector2(uv_inside.left, uv.top);
+
+        m_uv[i++] = Vector2(uv.left, uv_inside.top + uv_inside.height);
+        m_uv[i++] = Vector2(uv.left, uv.top + uv.height);
+        m_uv[i++] = Vector2(uv_inside.left, uv.top + uv.height);
+        m_uv[i++] = Vector2(uv_inside.left, uv_inside.top + uv_inside.height);
+
+        m_uv[i++] = Vector2(uv_inside.left + uv_inside.width, uv_inside.top + uv_inside.height);
+        m_uv[i++] = Vector2(uv_inside.left + uv_inside.width, uv.top + uv.height);
+        m_uv[i++] = Vector2(uv.left + uv.width, uv.top + uv.height);
+        m_uv[i++] = Vector2(uv.left + uv.width, uv_inside.top + uv_inside.height);
+
+        m_uv[i++] = Vector2(uv_inside.left + uv_inside.width, uv.top);
+        m_uv[i++] = Vector2(uv_inside.left + uv_inside.width, uv_inside.top);
+        m_uv[i++] = Vector2(uv.left + uv.width, uv_inside.top);
+        m_uv[i++] = Vector2(uv.left + uv.width, uv.top);
+
+        i = 0;
+
+        m_triangles[i++] = 0;
+        m_triangles[i++] = 1;
+        m_triangles[i++] = 2;
+        m_triangles[i++] = 0;
+        m_triangles[i++] = 2;
+        m_triangles[i++] = 3;
+
+        m_triangles[i++] = 1;
+        m_triangles[i++] = 4;
+        m_triangles[i++] = 7;
+        m_triangles[i++] = 1;
+        m_triangles[i++] = 7;
+        m_triangles[i++] = 2;
+
+        m_triangles[i++] = 4;
+        m_triangles[i++] = 5;
+        m_triangles[i++] = 6;
+        m_triangles[i++] = 4;
+        m_triangles[i++] = 6;
+        m_triangles[i++] = 7;
+
+        m_triangles[i++] = 7;
+        m_triangles[i++] = 6;
+        m_triangles[i++] = 9;
+        m_triangles[i++] = 7;
+        m_triangles[i++] = 9;
+        m_triangles[i++] = 8;
+
+        m_triangles[i++] = 8;
+        m_triangles[i++] = 9;
+        m_triangles[i++] = 10;
+        m_triangles[i++] = 8;
+        m_triangles[i++] = 10;
+        m_triangles[i++] = 11;
+
+        m_triangles[i++] = 13;
+        m_triangles[i++] = 8;
+        m_triangles[i++] = 11;
+        m_triangles[i++] = 13;
+        m_triangles[i++] = 11;
+        m_triangles[i++] = 14;
+
+        m_triangles[i++] = 12;
+        m_triangles[i++] = 13;
+        m_triangles[i++] = 14;
+        m_triangles[i++] = 12;
+        m_triangles[i++] = 14;
+        m_triangles[i++] = 15;
+
+        m_triangles[i++] = 3;
+        m_triangles[i++] = 2;
+        m_triangles[i++] = 13;
+        m_triangles[i++] = 3;
+        m_triangles[i++] = 13;
+        m_triangles[i++] = 12;
+
+        m_triangles[i++] = 2;
+        m_triangles[i++] = 7;
+        m_triangles[i++] = 8;
+        m_triangles[i++] = 2;
+        m_triangles[i++] = 8;
+        m_triangles[i++] = 13;
     }
 
     static void fill_vertex_buffer(char *buffer, Sprite *sprite)

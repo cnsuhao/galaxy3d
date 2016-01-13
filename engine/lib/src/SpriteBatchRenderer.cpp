@@ -2,6 +2,28 @@
 
 namespace Galaxy3D
 {
+    static int get_sprites_vertex_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    {
+        int vertex_count = 0;
+        for(auto &i : list)
+        {
+            vertex_count += i->GetSprite()->GetVertexCount();
+        }
+
+        return vertex_count;
+    }
+
+    static int get_sprites_index_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    {
+        int index_count = 0;
+        for(auto &i : list)
+        {
+            index_count += i->GetSprite()->GetIndexCount();
+        }
+
+        return index_count;
+    }
+
 	SpriteBatchRenderer::SpriteBatchRenderer():
 		m_color(1, 1, 1, 1)
 	{
@@ -68,32 +90,10 @@ namespace Galaxy3D
 		pass->rs->Apply();
 		mat->ApplyPass(0);
 
-        DrawIndexed(6 * m_sprites.size(), 0);
+        DrawIndexed(get_sprites_index_count(m_sprites), 0);
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
-
-    static int get_sprites_vertex_count(std::list<std::shared_ptr<SpriteNode>> &list)
-    {
-        int vertex_count = 0;
-        for(auto &i : list)
-        {
-            vertex_count += i->GetSprite()->GetVertexCount();
-        }
-
-        return vertex_count;
-    }
-
-    static int get_sprites_index_count(std::list<std::shared_ptr<SpriteNode>> &list)
-    {
-        int index_count = 0;
-        for(auto &i : list)
-        {
-            index_count += i->GetSprite()->GetIndexCount();
-        }
-
-        return index_count;
-    }
 
 	void SpriteBatchRenderer::UpdateSprites()
 	{
