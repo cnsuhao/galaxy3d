@@ -49,7 +49,7 @@ namespace Galaxy3D
 		pass->rs->Apply();
 		mat->ApplyPass(0);
 
-        DrawIndexed(6, 0);
+        DrawIndexed(m_sprite->GetIndexCount(), 0);
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
