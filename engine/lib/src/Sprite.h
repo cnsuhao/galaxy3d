@@ -56,6 +56,7 @@ namespace Galaxy3D
 		Vector4 m_border;
         Type::Enum m_type;
         Vector2 m_size;
+        float m_fill_amount;
         std::vector<Vector2> m_vertices;
         std::vector<Vector2> m_uv;
         std::vector<unsigned short> m_triangles;
@@ -65,6 +66,8 @@ namespace Galaxy3D
 		Sprite();
         void FillMeshSimple();
         void FillMeshSliced();
+        void FillMeshTiled();
+        void FillMeshFilled();
 	};
 }
 

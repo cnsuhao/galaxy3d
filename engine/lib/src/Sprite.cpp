@@ -47,19 +47,27 @@ namespace Galaxy3D
         sprite->m_type = type;
         sprite->m_size = size;
 
-        if(sprite->m_type == Type::Simple)
+        switch(sprite->m_type)
         {
-            sprite->FillMeshSimple();
-        }
-        else if(sprite->m_type == Type::Sliced)
-        {
-            sprite->FillMeshSliced();
+            case Type::Simple:
+                sprite->FillMeshSimple();
+                break;
+            case Type::Sliced:
+                sprite->FillMeshSliced();
+                break;
+            case Type::Tiled:
+                sprite->FillMeshTiled();
+                break;
+            case Type::Filled:
+                sprite->FillMeshFilled();
+                break;
         }
 
 		return sprite;
 	}
 
-    Sprite::Sprite()
+    Sprite::Sprite():
+        m_fill_amount(1.0f)
     {
     }
 
@@ -270,6 +278,89 @@ namespace Galaxy3D
         m_triangles[i++] = 2;
         m_triangles[i++] = 8;
         m_triangles[i++] = 13;
+    }
+
+    void Sprite::FillMeshTiled()
+    {
+        float v_ppu = 1 / m_pixels_per_unit;
+
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = m_rect.width;
+            height = m_rect.height;
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
+
+        m_vertices.clear();
+        m_uv.clear();
+        m_triangles.clear();
+
+        float tile_w = m_rect.width - m_border.x - m_border.z;
+        float tile_h = m_rect.height - m_border.y - m_border.w;
+        int tile_count_x = (int) ceil(width / tile_w);
+        int tile_count_y = (int) ceil(height / tile_h);
+        Vector2 left_top_uv = Vector2((m_rect.left + m_border.x) * v_w, (m_rect.top + m_border.y) * v_h);
+        Vector2 left_bottom_uv = Vector2((m_rect.left + m_border.x) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
+        Vector2 right_bottom_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
+        Vector2 right_top_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_border.y) * v_h);
+
+        for(int i=0; i<tile_count_y; i++)
+        {
+            for(int j=0; j<tile_count_x; j++)
+            {
+                Vector2 min_v(Vector2(left + tile_w * j, top + tile_h * i) * v_ppu);
+                Vector2 max_v(Vector2(left + tile_w * (j + 1), top + tile_h * (i + 1)) * v_ppu);
+                Vector2 min_uv(left_top_uv);
+                Vector2 max_uv(right_bottom_uv);
+
+                if(j == tile_count_x - 1)
+                {
+                    float w = width - tile_w * (tile_count_x - 1);
+                    max_v.x = min_v.x + w * v_ppu;
+                    max_uv.x = min_uv.x + w / tile_w;
+                }
+
+                if(i == tile_count_y - 1)
+                {
+                    float h = height - tile_h * (tile_count_y - 1);
+                    max_v.y = min_v.y + h * v_ppu;
+                    max_uv.y = min_uv.y + h / tile_h;
+                }
+
+                m_vertices.push_back(Vector2(min_v.x, -min_v.y));
+                m_vertices.push_back(Vector2(min_v.x, -max_v.y));
+                m_vertices.push_back(Vector2(max_v.x, -max_v.y));
+                m_vertices.push_back(Vector2(max_v.x, -min_v.y));
+
+                m_uv.push_back(min_uv);
+                m_uv.push_back(Vector2(min_uv.x, max_uv.y));
+                m_uv.push_back(max_uv);
+                m_uv.push_back(Vector2(max_uv.x, min_uv.y));
+
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4);
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4 + 1);
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4 + 2);
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4);
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4 + 2);
+                m_triangles.push_back(tile_count_x * 4 * i + j * 4 + 3);
+            }
+        }
+    }
+
+    void Sprite::FillMeshFilled()
+    {
+    
     }
 
     static void fill_vertex_buffer(char *buffer, Sprite *sprite)
