@@ -34,8 +34,13 @@ static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_
 TextRenderer *g_reward = NULL;
 TextRenderer *g_name = NULL;
 SpriteRenderer *g_bg = NULL;
+SpriteRenderer *g_state = NULL;
+SpriteNode *g_stop = NULL;
+SpriteNode *g_next = NULL;
+SpriteRenderer *g_image = NULL;
 std::vector<GTString> g_reward_name;
 std::vector<int> g_reward_count;
+std::vector<std::string> g_reward_image;
 std::vector<std::string> g_name_txt;
 std::vector<std::string> g_name_temp;
 std::vector<std::string> g_name_rand;
@@ -96,14 +101,57 @@ void Launcher::Start()
 #if DEMO_REWARD
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
 
-    auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/start.png");
-    auto bg_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
-    bg_sr->GetGameObject()->SetLayer(Layer::UI);
-    bg_sr->SetSprite(bg_sprite);
-    float x = Screen::GetWidth() / (float) bg_sprite->GetTexture()->GetWidth();
-    float y = Screen::GetHeight() / (float) bg_sprite->GetTexture()->GetHeight();
-    bg_sr->GetTransform()->SetScale(Vector3(x, y, 1));
-    g_bg = bg_sr.get();
+    if(Screen::GetWidth() != 1920 || Screen::GetHeight() != 1080)
+    {
+        auto screen = RenderTexture::Create(1920, 1080, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Trilinear);
+        cam2d->SetRenderTexture(screen);
+        cam2d->SetOrthographicSize(1080 / 200.f);
+
+        auto cam2d_screen = GameObject::Create("")->AddComponent<Camera>();
+        cam2d_screen->SetOrthographic(true);
+        cam2d_screen->SetOrthographicSize(Screen::GetHeight() / 200.f);
+        cam2d_screen->SetClipPlane(-1, 1);
+        cam2d_screen->SetCullingMask(LayerMask::GetMask(Layer::Default));
+        cam2d_screen->SetDepth(2);
+        cam2d_screen->SetClearFlags(CameraClearFlags::SolidColor);
+
+        auto screen_sprite = Sprite::Create(screen);
+        auto screen_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
+        screen_sr->GetGameObject()->SetLayer(Layer::Default);
+        screen_sr->SetSprite(screen_sprite);
+        float x = Screen::GetWidth() / (float) screen_sprite->GetTexture()->GetWidth();
+        float y = Screen::GetHeight() / (float) screen_sprite->GetTexture()->GetHeight();
+        screen_sr->GetTransform()->SetScale(Vector3(x, y, 1));
+    }
+
+    {
+        auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/start.png");
+        auto bg_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
+        bg_sr->GetGameObject()->SetLayer(Layer::UI);
+        bg_sr->SetSprite(bg_sprite);
+        float x = 1920 / (float) bg_sprite->GetTexture()->GetWidth();
+        float y = 1080 / (float) bg_sprite->GetTexture()->GetHeight();
+        bg_sr->GetTransform()->SetScale(Vector3(x, y, 1));
+        g_bg = bg_sr.get();
+    }
+
+    auto state_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/stop.png");
+    auto state_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
+    state_sr->GetGameObject()->SetLayer(Layer::UI);
+    state_sr->SetSprite(state_sprite);
+    state_sr->GetTransform()->SetPosition(Vector3(520, -420, 0) * 0.01f);
+    state_sr->SetSortingOrder(1, 0);
+    g_state = state_sr.get();
+    g_state->Enable(false);
+
+    auto stop = GameObject::Create("")->AddComponent<SpriteNode>();
+    stop->SetSprite(state_sprite);
+    g_stop = stop.get();
+
+    state_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/next.png");
+    auto next = GameObject::Create("")->AddComponent<SpriteNode>();
+    next->SetSprite(state_sprite);
+    g_next = next.get();
 
     {
         std::string str;
@@ -113,16 +161,27 @@ void Launcher::Start()
         auto lines = reward.Split("\n", true);
         g_reward_name.resize(lines.size());
         g_reward_count.resize(lines.size());
+        g_reward_image.resize(lines.size());
         for(size_t i=0; i<lines.size(); i++)
         {
             auto r = lines[i].Split("=", true);
-            if(r.size() == 2)
+            if(r.size() == 3)
             {
                 g_reward_name[i] = r[0];
                 g_reward_count[i] = GTString::ToType<int>(r[1].str);
+                g_reward_image[i] = r[2].str;
             }
         }
     }
+
+    auto image_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/" + g_reward_image[0]);
+    auto image_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
+    image_sr->GetGameObject()->SetLayer(Layer::UI);
+    image_sr->SetSprite(image_sprite);
+    image_sr->GetTransform()->SetPosition(Vector3(-400, -70, 0) * 0.01f);
+    image_sr->SetSortingOrder(1, 0);
+    g_image = image_sr.get();
+    g_image->Enable(false);
 
     {
         std::string str;
@@ -169,9 +228,9 @@ void Launcher::Start()
     }
 
     {
-        auto label = Label::Create("", "heiti", g_font_size, LabelPivot::Center, LabelAlign::Auto, true);
+        auto label = Label::Create("", "heiti", 60, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-        tr->GetTransform()->SetPosition(Vector3(0, Screen::GetHeight()/2.0f - 100, 0) * 0.01f);
+        tr->GetTransform()->SetPosition(Vector3(-300, 260, 0) * 0.01f);
         tr->SetLabel(label);
         tr->SetSortingOrder(1, 0);
         tr->GetTransform()->SetParent(cam2d->GetTransform());
@@ -181,9 +240,9 @@ void Launcher::Start()
     }
 
     {
-        auto label = Label::Create("", "heiti", g_font_size, LabelPivot::Center, LabelAlign::Auto, true);
+        auto label = Label::Create("", "heiti", 120, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-        tr->GetTransform()->SetPosition(Vector3(0, 50, 0) * 0.01f);
+        tr->GetTransform()->SetPosition(Vector3(520, -70, 0) * 0.01f);
         tr->SetLabel(label);
         tr->SetSortingOrder(1, 0);
         tr->GetTransform()->SetParent(cam2d->GetTransform());
@@ -674,6 +733,8 @@ void Launcher::Update()
 
             auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/bg.png");
             g_bg->SetSprite(bg_sprite);
+            g_state->Enable(true);
+            g_image->Enable(true);
         }
         else
         {
@@ -739,6 +800,7 @@ void Launcher::Update()
 
             g_result.push_back(g_name_rand);
             g_name_txt = g_name_temp;
+            g_state->SetSprite(g_next->GetSprite());
 
             std::string result;
             for(auto &i : g_result)
@@ -763,6 +825,10 @@ void Launcher::Update()
                 g_rand = true;
 
                 g_reward_index++;
+
+                g_state->SetSprite(g_stop->GetSprite());
+                auto image_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/" + g_reward_image[g_reward_index]);
+                g_image->SetSprite(image_sprite);
             }
         }
     }

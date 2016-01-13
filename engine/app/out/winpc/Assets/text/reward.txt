@@ -1,6 +1,8 @@
-﻿苹果=5
-香蕉=4
-小米=3
-魅族=2
-华为=1
-桔子=2
+﻿iPhone 6S=1=6s.png
+福特野马跑车=1=car.jpg
+香蕉=1=6s.png
+小米=1=car.jpg
+魅族=1=6s.png
+小米=1=car.jpg
+华为=1=6s.png
+桔子=1=car.jpg

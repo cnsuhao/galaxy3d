@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "VertexType.h"
+#include "Texture2D.h"
 
 namespace Galaxy3D
 {
@@ -14,7 +15,7 @@ namespace Galaxy3D
 		return std::shared_ptr<Sprite>();
 	}
 
-	std::shared_ptr<Sprite> Sprite::Create(const std::shared_ptr<Texture2D> &texture)
+	std::shared_ptr<Sprite> Sprite::Create(const std::shared_ptr<Texture> &texture)
 	{
 		int w = texture->GetWidth();
 		int h = texture->GetHeight();
@@ -30,7 +31,7 @@ namespace Galaxy3D
 	}
 
 	std::shared_ptr<Sprite> Sprite::Create(
-			const std::shared_ptr<Texture2D> &texture,
+			const std::shared_ptr<Texture> &texture,
 			const Rect &rect,
 			const Vector2 &pivot,
 			float pixels_per_unit,
