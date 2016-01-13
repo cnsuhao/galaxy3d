@@ -2,7 +2,7 @@
 #define __Sprite_h__
 
 #include "Object.h"
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Rect.h"
 #include "Vector2.h"
 #include "Vector4.h"
@@ -37,13 +37,13 @@ namespace Galaxy3D
         };
 
 		static std::shared_ptr<Sprite> LoadFromFile(const std::string &file);
-		static std::shared_ptr<Sprite> Create(const std::shared_ptr<Texture2D> &texture);
+		static std::shared_ptr<Sprite> Create(const std::shared_ptr<Texture> &texture);
 		//	rect:指定原贴图上的像素矩形区域，左上为起点
 		//	pivot:中心点，相对于sprite rect，(0，0)为左上角，（1，1）为右下角
 		//	pixels_per_unit:The number of pixels in the sprite that correspond to one unit in world space. (Read Only)
 		//	border:the border sizes of the sprite, x y z w : left top right bottom
 		static std::shared_ptr<Sprite> Create(
-			const std::shared_ptr<Texture2D> &texture,
+			const std::shared_ptr<Texture> &texture,
 			const Rect &rect,
 			const Vector2 &pivot,
 			float pixels_per_unit,
@@ -58,10 +58,10 @@ namespace Galaxy3D
 		Vector2 *GetUV() {if(!m_uv.empty()){return &m_uv[0];}else{return NULL;}}
         int GetIndexCount() const {return m_triangles.size();}
 		unsigned short *GetIndices() {if(!m_triangles.empty()){return &m_triangles[0];}else{return NULL;}}
-		std::shared_ptr<Texture2D> GetTexture() const {return m_texture;}
+		std::shared_ptr<Texture> GetTexture() const {return m_texture;}
 
 	private:
-		std::shared_ptr<Texture2D> m_texture;
+		std::shared_ptr<Texture> m_texture;
 		Rect m_rect;
 		Vector2 m_pivot;
 		float m_pixels_per_unit;
