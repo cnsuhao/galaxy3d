@@ -4,8 +4,8 @@
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
 #define DEMO_DEF 0
-#define DEMO_REWARD 1
-#define DEMO_UI 0
+#define DEMO_REWARD 0
+#define DEMO_UI 1
 
 using namespace Galaxy3D;
 
