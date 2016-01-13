@@ -24,6 +24,18 @@ namespace Galaxy3D
             };
         };
 
+        struct FillDirection
+        {
+            enum Enum
+            {
+                Horizontal,
+                Vertical,
+                Radial_90,
+                Radial_180,
+                Radial_360
+            };
+        };
+
 		static std::shared_ptr<Sprite> LoadFromFile(const std::string &file);
 		static std::shared_ptr<Sprite> Create(const std::shared_ptr<Texture2D> &texture);
 		//	rect:指定原贴图上的像素矩形区域，左上为起点
@@ -38,14 +50,14 @@ namespace Galaxy3D
 			const Vector4 &border,
             Type::Enum type,
             Vector2 size);
-        ~Sprite();
+        virtual ~Sprite();
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
         int GetVertexCount() const {return m_vertices.size();}
-        Vector2 *GetVertices() {return &m_vertices[0];}
-		Vector2 *GetUV() {return &m_uv[0];}
+        Vector2 *GetVertices() {if(!m_vertices.empty()){return &m_vertices[0];}else{return NULL;}}
+		Vector2 *GetUV() {if(!m_uv.empty()){return &m_uv[0];}else{return NULL;}}
         int GetIndexCount() const {return m_triangles.size();}
-		unsigned short *GetIndices() {return &m_triangles[0];}
+		unsigned short *GetIndices() {if(!m_triangles.empty()){return &m_triangles[0];}else{return NULL;}}
 		std::shared_ptr<Texture2D> GetTexture() const {return m_texture;}
 
 	private:
@@ -57,6 +69,7 @@ namespace Galaxy3D
         Type::Enum m_type;
         Vector2 m_size;
         float m_fill_amount;
+        FillDirection::Enum m_fill_direction;
         std::vector<Vector2> m_vertices;
         std::vector<Vector2> m_uv;
         std::vector<unsigned short> m_triangles;

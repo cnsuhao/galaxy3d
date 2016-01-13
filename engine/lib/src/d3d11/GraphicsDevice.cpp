@@ -70,7 +70,7 @@ namespace Galaxy3D
         SAFE_RELEASE(m_immediate_context);
         SAFE_RELEASE(m_swap_chain);
         
-#if _DEBUG
+#if false //_DEBUG
         ID3D11Debug *debug;
         HRESULT hr = m_d3d_device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         SAFE_RELEASE(m_d3d_device);

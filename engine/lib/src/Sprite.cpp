@@ -67,7 +67,8 @@ namespace Galaxy3D
 	}
 
     Sprite::Sprite():
-        m_fill_amount(1.0f)
+        m_fill_amount(1.0f),
+        m_fill_direction(FillDirection::Horizontal)
     {
     }
 
@@ -391,14 +392,17 @@ namespace Galaxy3D
         if(m_vertex_buffer.buffer == NULL)
         {
             int vertex_count = GetVertexCount();
-            int buffer_size = sizeof(VertexUI) * vertex_count;
-            char *buffer = (char *) malloc(buffer_size);
+            if(vertex_count > 0)
+            {
+                int buffer_size = sizeof(VertexUI) * vertex_count;
+                char *buffer = (char *) malloc(buffer_size);
 
-            fill_vertex_buffer(buffer, this);
+                fill_vertex_buffer(buffer, this);
 
-            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
+                m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
-            free(buffer);
+                free(buffer);
+            }
         }
 
         return m_vertex_buffer;
@@ -409,15 +413,18 @@ namespace Galaxy3D
         if(m_index_buffer.buffer == NULL)
         {
             int index_count = this->GetIndexCount();
-            unsigned short *uv = this->GetIndices();
-            int buffer_size = sizeof(unsigned short) * index_count;
-            char *buffer = (char *) malloc(buffer_size);
+            if(index_count > 0)
+            {
+                unsigned short *uv = this->GetIndices();
+                int buffer_size = sizeof(unsigned short) * index_count;
+                char *buffer = (char *) malloc(buffer_size);
 
-            memcpy(buffer, uv, buffer_size);
+                memcpy(buffer, uv, buffer_size);
 
-            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
+                m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 
-            free(buffer);
+                free(buffer);
+            }
         }
 
         return m_index_buffer;

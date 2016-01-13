@@ -4,8 +4,8 @@
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
 #define DEMO_DEF 0
-#define DEMO_REWARD 0
-#define DEMO_UI 1
+#define DEMO_REWARD 1
+#define DEMO_UI 0
 
 using namespace Galaxy3D;
 
@@ -33,6 +33,7 @@ static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_
 #if DEMO_REWARD
 TextRenderer *g_reward = NULL;
 TextRenderer *g_name = NULL;
+SpriteRenderer *g_bg = NULL;
 std::vector<GTString> g_reward_name;
 std::vector<int> g_reward_count;
 std::vector<std::string> g_name_txt;
@@ -42,6 +43,7 @@ std::vector<std::vector<std::string>> g_result;
 int g_reward_index = 0;
 bool g_rand = true;
 int g_font_size = 100;
+bool g_start = false;
 #endif
 
 void Launcher::Start()
@@ -67,7 +69,7 @@ void Launcher::Start()
 
 #if DEMO_UI
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
-
+    
     auto button_sprite = Sprite::Create(
         Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/NormalButton_Normal.png"),
         Rect(0, 0, 126, 50),
@@ -76,7 +78,7 @@ void Launcher::Start()
         Vector4(8, 10, 8, 8),
         Sprite::Type::Filled,
         Vector2(400, 210));
-    
+
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
@@ -94,13 +96,14 @@ void Launcher::Start()
 #if DEMO_REWARD
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
 
-    auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/bg.jpg");
+    auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/start.png");
     auto bg_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
     bg_sr->GetGameObject()->SetLayer(Layer::UI);
     bg_sr->SetSprite(bg_sprite);
     float x = Screen::GetWidth() / (float) bg_sprite->GetTexture()->GetWidth();
     float y = Screen::GetHeight() / (float) bg_sprite->GetTexture()->GetHeight();
     bg_sr->GetTransform()->SetScale(Vector3(x, y, 1));
+    g_bg = bg_sr.get();
 
     {
         std::string str;
@@ -661,6 +664,23 @@ void Launcher::Update()
 #endif
 
 #if DEMO_REWARD
+    bool first_frame = false;
+    if(!g_start)
+    {
+        if(Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return))
+        {
+            g_start = true;
+            first_frame = true;
+
+            auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/bg.png");
+            g_bg->SetSprite(bg_sprite);
+        }
+        else
+        {
+            return;
+        }
+    }
+
     g_reward->GetLabel()->SetText("<shadow=#000000ff>" + g_reward_name[g_reward_index].str + "</shadow>");
     g_reward->UpdateLabel();
 
@@ -713,7 +733,7 @@ void Launcher::Update()
         g_name->GetLabel()->SetText(name_text);
         g_name->UpdateLabel();
 
-        if(Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return))
+        if(!first_frame && (Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return)))
         {
             g_rand = false;
 
@@ -736,7 +756,7 @@ void Launcher::Update()
     }
     else
     {
-        if(Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return))
+        if(!first_frame && (Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return)))
         {
             if(g_reward_index + 1 < (int) g_reward_name.size())
             {
