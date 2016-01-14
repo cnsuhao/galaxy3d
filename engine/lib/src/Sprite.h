@@ -53,12 +53,16 @@ namespace Galaxy3D
         virtual ~Sprite();
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
-        int GetVertexCount() const {return m_vertices.size();}
-        Vector2 *GetVertices() {if(!m_vertices.empty()){return &m_vertices[0];}else{return NULL;}}
-		Vector2 *GetUV() {if(!m_uv.empty()){return &m_uv[0];}else{return NULL;}}
-        int GetIndexCount() const {return m_triangles.size();}
-		unsigned short *GetIndices() {if(!m_triangles.empty()){return &m_triangles[0];}else{return NULL;}}
+        int GetVertexCount() {FillMeshIfNeeded(); return m_vertices.size();}
+        Vector2 *GetVertices() {FillMeshIfNeeded(); if(!m_vertices.empty()) {return &m_vertices[0];}else{return NULL;}}
+		Vector2 *GetUV() {FillMeshIfNeeded(); if(!m_uv.empty()){return &m_uv[0];}else{return NULL;}}
+        int GetIndexCount() {FillMeshIfNeeded(); return m_triangles.size();}
+		unsigned short *GetIndices() {FillMeshIfNeeded(); if(!m_triangles.empty()){return &m_triangles[0];}else{return NULL;}}
 		std::shared_ptr<Texture> GetTexture() const {return m_texture;}
+        void SetFillAmount(float amount);
+        float GetFillAmount() const {return m_fill_amount;}
+        void SetFillDirection(FillDirection::Enum dir);
+        void SetFillInvert(bool invert);
 
 	private:
 		std::shared_ptr<Texture> m_texture;
@@ -70,6 +74,8 @@ namespace Galaxy3D
         Vector2 m_size;
         float m_fill_amount;
         FillDirection::Enum m_fill_direction;
+        bool m_fill_invert;
+        bool m_dirty;
         std::vector<Vector2> m_vertices;
         std::vector<Vector2> m_uv;
         std::vector<unsigned short> m_triangles;
@@ -77,6 +83,7 @@ namespace Galaxy3D
         BufferObject m_index_buffer;
 
 		Sprite();
+        void FillMeshIfNeeded();
         void FillMeshSimple();
         void FillMeshSliced();
         void FillMeshTiled();

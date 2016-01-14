@@ -51,6 +51,11 @@ int g_font_size = 100;
 bool g_start = false;
 #endif
 
+#if DEMO_UI
+Sprite *g_button_sprite = NULL;
+float g_fill_amount = 0;
+#endif
+
 void Launcher::Start()
 {
 	Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
@@ -88,6 +93,10 @@ void Launcher::Start()
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
     
+    g_button_sprite = button_sprite.get();
+    g_button_sprite->SetFillInvert(false);
+    g_button_sprite->SetFillDirection(Sprite::FillDirection::Radial_90);
+
     /*
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
     node->SetSprite(button_sprite);
@@ -720,6 +729,15 @@ void Launcher::Update()
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
+#endif
+
+#if DEMO_UI
+    g_button_sprite->SetFillAmount(g_fill_amount);
+    g_fill_amount += 0.0005f;
+    if(g_fill_amount > 1.0f)
+    {
+        g_fill_amount = 0;
+    }
 #endif
 
 #if DEMO_REWARD
