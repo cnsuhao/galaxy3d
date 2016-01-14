@@ -4,6 +4,29 @@
 
 namespace Galaxy3D
 {
+    static void fill_vertex_buffer(char *buffer, Sprite *sprite)
+    {
+        char *p = buffer;
+        int vertex_count = sprite->GetVertexCount();
+        Vector2 *vertices = sprite->GetVertices();
+        Vector2 *uv = sprite->GetUV();
+
+        for(int i=0; i<vertex_count; i++)
+        {
+            Vector3 pos = vertices[i];
+            memcpy(p, &pos, sizeof(Vector3));
+            p += sizeof(Vector3);
+
+            Color c = Color(1, 1, 1, 1);
+            memcpy(p, &c, sizeof(Color));
+            p += sizeof(Color);
+
+            Vector2 v1 = uv[i];
+            memcpy(p, &v1, sizeof(Vector2));
+            p += sizeof(Vector2);
+        }
+    }
+
 	std::shared_ptr<Sprite> Sprite::LoadFromFile(const std::string &file)
 	{
 		auto tex = Texture2D::LoadFromFile(file);
@@ -48,28 +71,14 @@ namespace Galaxy3D
         sprite->m_type = type;
         sprite->m_size = size;
 
-        switch(sprite->m_type)
-        {
-            case Type::Simple:
-                sprite->FillMeshSimple();
-                break;
-            case Type::Sliced:
-                sprite->FillMeshSliced();
-                break;
-            case Type::Tiled:
-                sprite->FillMeshTiled();
-                break;
-            case Type::Filled:
-                sprite->FillMeshFilled();
-                break;
-        }
-
 		return sprite;
 	}
 
     Sprite::Sprite():
         m_fill_amount(1.0f),
-        m_fill_direction(FillDirection::Horizontal)
+        m_fill_direction(FillDirection::Horizontal),
+        m_fill_invert(false),
+        m_dirty(true)
     {
     }
 
@@ -77,6 +86,61 @@ namespace Galaxy3D
     {
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
+    }
+
+    void Sprite::FillMeshIfNeeded()
+    {
+        if(m_dirty)
+        {
+            m_dirty = false;
+
+            switch(m_type)
+            {
+                case Type::Simple:
+                    FillMeshSimple();
+                    break;
+                case Type::Sliced:
+                    FillMeshSliced();
+                    break;
+                case Type::Tiled:
+                    FillMeshTiled();
+                    break;
+                case Type::Filled:
+                    FillMeshFilled();
+                    break;
+            }
+
+            if(m_vertex_buffer.buffer == NULL)
+            {
+                int vertex_count = GetVertexCount();
+                if(vertex_count > 0)
+                {
+                    int buffer_size = sizeof(VertexUI) * vertex_count;
+                    char *buffer = (char *) malloc(buffer_size);
+
+                    fill_vertex_buffer(buffer, this);
+
+                    m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
+
+                    free(buffer);
+                }
+            }
+            else
+            {
+                int vertex_count = GetVertexCount();
+                if(vertex_count > 0)
+                {
+                    int buffer_size = sizeof(VertexUI) * vertex_count;
+                    char *buffer = (char *) malloc(buffer_size);
+
+                    fill_vertex_buffer(buffer, this);
+
+                    GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
+
+                    free(buffer);
+                }
+            }
+        }
     }
 
     void Sprite::FillMeshSimple()
@@ -362,55 +426,114 @@ namespace Galaxy3D
 
     void Sprite::FillMeshFilled()
     {
-    
+        float v_ppu = 1 / m_pixels_per_unit;
+
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = m_rect.width;
+            height = m_rect.height;
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
+        float right = left + width;
+        float bottom = top + height;
+
+        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        if(m_fill_direction == FillDirection::Horizontal)
+        {
+            vertices.width = width * v_ppu * m_fill_amount;
+            uv.width = m_rect.width * v_w * m_fill_amount;
+
+            if(m_fill_invert)
+            {
+                vertices.left = vertices.left + width * v_ppu - vertices.width;
+                uv.left = uv.left + m_rect.width * v_w - uv.width;
+            }
+        }
+        else if(m_fill_direction == FillDirection::Vertical)
+        {
+            vertices.height = height * v_ppu * m_fill_amount;
+            uv.height = m_rect.height * v_h * m_fill_amount;
+
+            if(!m_fill_invert)
+            {
+                vertices.top = vertices.top + height * v_ppu - vertices.height;
+                uv.top = uv.top + m_rect.height * v_h - uv.height;
+            }
+        }
+
+        m_vertices.resize(4);
+        m_uv.resize(4);
+        m_triangles.resize(6);
+
+        m_vertices[0] = Vector2(vertices.left, -vertices.top);
+        m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+        m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+        m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
+
+        m_uv[0] = Vector2(uv.left, uv.top);
+        m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+        m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+        m_uv[3] = Vector2(uv.left + uv.width, uv.top);
+
+        m_triangles[0] = 0;
+        m_triangles[1] = 1;
+        m_triangles[2] = 2;
+        m_triangles[3] = 0;
+        m_triangles[4] = 2;
+        m_triangles[5] = 3;
     }
 
-    static void fill_vertex_buffer(char *buffer, Sprite *sprite)
+    void Sprite::SetFillAmount(float amount)
     {
-        char *p = buffer;
-        int vertex_count = sprite->GetVertexCount();
-        Vector2 *vertices = sprite->GetVertices();
-        Vector2 *uv = sprite->GetUV();
-
-        for(int i=0; i<vertex_count; i++)
+        if(!Mathf::FloatEqual(m_fill_amount, amount))
         {
-            Vector3 pos = vertices[i];
-            memcpy(p, &pos, sizeof(Vector3));
-            p += sizeof(Vector3);
+            m_fill_amount = amount;
+            m_dirty = true;
+        }
+    }
 
-            Color c = Color(1, 1, 1, 1);
-            memcpy(p, &c, sizeof(Color));
-            p += sizeof(Color);
+    void Sprite::SetFillDirection(FillDirection::Enum dir)
+    {
+        if(m_fill_direction != dir)
+        {
+            m_fill_direction = dir;
+            m_dirty = true;
+        }
+    }
 
-            Vector2 v1 = uv[i];
-            memcpy(p, &v1, sizeof(Vector2));
-            p += sizeof(Vector2);
+    void Sprite::SetFillInvert(bool invert)
+    {
+        if(m_fill_invert != invert)
+        {
+            m_fill_invert = invert;
+            m_dirty = true;
         }
     }
 
     BufferObject Sprite::GetVertexBuffer()
     {
-        if(m_vertex_buffer.buffer == NULL)
-        {
-            int vertex_count = GetVertexCount();
-            if(vertex_count > 0)
-            {
-                int buffer_size = sizeof(VertexUI) * vertex_count;
-                char *buffer = (char *) malloc(buffer_size);
-
-                fill_vertex_buffer(buffer, this);
-
-                m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
-
-                free(buffer);
-            }
-        }
+        FillMeshIfNeeded();
 
         return m_vertex_buffer;
     }
 
     BufferObject Sprite::GetIndexBuffer()
     {
+        FillMeshIfNeeded();
+
         if(m_index_buffer.buffer == NULL)
         {
             int index_count = this->GetIndexCount();
