@@ -76,13 +76,13 @@ void Launcher::Start()
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
     
     auto button_sprite = Sprite::Create(
-        Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/NormalButton_Normal.png"),
-        Rect(0, 0, 126, 50),
+        Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png"),
+        Rect(1343, 1536, 126, 50),
         Vector2(0.5f, 0.5f),
         100,
         Vector4(8, 10, 8, 8),
         Sprite::Type::Simple,
-        Vector2(126, 50));
+        Vector2(0, 0));
 
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);

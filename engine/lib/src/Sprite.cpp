@@ -113,26 +113,29 @@ namespace Galaxy3D
                     break;
             }
 
+            float v_w = 1.0f / m_texture->GetWidth();
+            float v_h = 1.0f / m_texture->GetHeight();
+
             if(m_flip == Flip::Horizontal)
             {
                 for(auto &i : m_uv)
                 {
-                    i.x = 1.0f - i.x;
+                    i.x = (m_rect.left + m_rect.width) * v_w - (i.x - m_rect.left * v_w);
                 }
             }
             else if(m_flip == Flip::Vertical)
             {
                 for(auto &i : m_uv)
                 {
-                    i.y = 1.0f - i.y;
+                    i.y = (m_rect.top + m_rect.height) * v_h - (i.y - m_rect.top * v_h);
                 }
             }
             else if(m_flip == Flip::Both)
             {
                 for(auto &i : m_uv)
                 {
-                    i.x = 1.0f - i.x;
-                    i.y = 1.0f - i.y;
+                    i.x = (m_rect.left + m_rect.width) * v_w - (i.x - m_rect.left * v_w);
+                    i.y = (m_rect.top + m_rect.height) * v_h - (i.y - m_rect.top * v_h);
                 }
             }
 
