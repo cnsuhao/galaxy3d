@@ -78,6 +78,7 @@ namespace Galaxy3D
         m_fill_amount(1.0f),
         m_fill_direction(FillDirection::Horizontal),
         m_fill_invert(false),
+        m_flip(Flip::None),
         m_dirty(true),
         m_vertex_count(0),
         m_index_count(0)
@@ -110,6 +111,29 @@ namespace Galaxy3D
                 case Type::Filled:
                     FillMeshFilled();
                     break;
+            }
+
+            if(m_flip == Flip::Horizontal)
+            {
+                for(auto &i : m_uv)
+                {
+                    i.x = 1.0f - i.x;
+                }
+            }
+            else if(m_flip == Flip::Vertical)
+            {
+                for(auto &i : m_uv)
+                {
+                    i.y = 1.0f - i.y;
+                }
+            }
+            else if(m_flip == Flip::Both)
+            {
+                for(auto &i : m_uv)
+                {
+                    i.x = 1.0f - i.x;
+                    i.y = 1.0f - i.y;
+                }
             }
 
             int vertex_count = GetVertexCount();
@@ -1064,6 +1088,15 @@ namespace Galaxy3D
         if(m_fill_invert != invert)
         {
             m_fill_invert = invert;
+            m_dirty = true;
+        }
+    }
+
+    void Sprite::SetFlip(Flip::Enum flip)
+    {
+        if(m_flip != flip)
+        {
+            m_flip = flip;
             m_dirty = true;
         }
     }
