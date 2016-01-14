@@ -112,7 +112,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
     int h;
     if(g_fullscreen)
     {
-        style = WS_POPUP;
+        style = WS_POPUP | WS_MINIMIZEBOX;
         w = width;
         h = height;
     }
