@@ -11,7 +11,7 @@ namespace Galaxy3D
         Vector2 *vertices = sprite->GetVertices();
         Vector2 *uv = sprite->GetUV();
 
-        for(int i=0; i<vertex_count; i++)
+        for(int i = 0; i < vertex_count; i++)
         {
             Vector3 pos = vertices[i];
             memcpy(p, &pos, sizeof(Vector3));
@@ -27,58 +27,60 @@ namespace Galaxy3D
         }
     }
 
-	std::shared_ptr<Sprite> Sprite::LoadFromFile(const std::string &file)
-	{
-		auto tex = Texture2D::LoadFromFile(file);
-		if(tex)
-		{
-			return Create(tex);
-		}
-		
-		return std::shared_ptr<Sprite>();
-	}
+    std::shared_ptr<Sprite> Sprite::LoadFromFile(const std::string &file)
+    {
+        auto tex = Texture2D::LoadFromFile(file);
+        if(tex)
+        {
+            return Create(tex);
+        }
 
-	std::shared_ptr<Sprite> Sprite::Create(const std::shared_ptr<Texture> &texture)
-	{
-		int w = texture->GetWidth();
-		int h = texture->GetHeight();
+        return std::shared_ptr<Sprite>();
+    }
 
-		return Create(
-			texture,
-			Rect(0, 0, (float) w, (float) h),
-			Vector2(0.5f, 0.5f),
-			100,
-			Vector4(0, 0, 0, 0),
+    std::shared_ptr<Sprite> Sprite::Create(const std::shared_ptr<Texture> &texture)
+    {
+        int w = texture->GetWidth();
+        int h = texture->GetHeight();
+
+        return Create(
+            texture,
+            Rect(0, 0, (float) w, (float) h),
+            Vector2(0.5f, 0.5f),
+            100,
+            Vector4(0, 0, 0, 0),
             Type::Simple,
             Vector2(0, 0));
-	}
+    }
 
-	std::shared_ptr<Sprite> Sprite::Create(
-			const std::shared_ptr<Texture> &texture,
-			const Rect &rect,
-			const Vector2 &pivot,
-			float pixels_per_unit,
-            const Vector4 &border,
-            Type::Enum type,
-            Vector2 size)
-	{
-		std::shared_ptr<Sprite> sprite(new Sprite());
-		sprite->m_texture = texture;
-		sprite->m_rect = rect;
-		sprite->m_pivot = pivot;
-		sprite->m_pixels_per_unit = pixels_per_unit;
-		sprite->m_border = border;
+    std::shared_ptr<Sprite> Sprite::Create(
+        const std::shared_ptr<Texture> &texture,
+        const Rect &rect,
+        const Vector2 &pivot,
+        float pixels_per_unit,
+        const Vector4 &border,
+        Type::Enum type,
+        Vector2 size)
+    {
+        std::shared_ptr<Sprite> sprite(new Sprite());
+        sprite->m_texture = texture;
+        sprite->m_rect = rect;
+        sprite->m_pivot = pivot;
+        sprite->m_pixels_per_unit = pixels_per_unit;
+        sprite->m_border = border;
         sprite->m_type = type;
         sprite->m_size = size;
 
-		return sprite;
-	}
+        return sprite;
+    }
 
-    Sprite::Sprite():
+    Sprite::Sprite() :
         m_fill_amount(1.0f),
         m_fill_direction(FillDirection::Horizontal),
         m_fill_invert(false),
-        m_dirty(true)
+        m_dirty(true),
+        m_vertex_count(0),
+        m_index_count(0)
     {
     }
 
@@ -110,9 +112,19 @@ namespace Galaxy3D
                     break;
             }
 
+            int vertex_count = GetVertexCount();
+            int index_count = GetIndexCount();
+            if(m_vertex_count != vertex_count)
+            {
+                GraphicsDevice::GetInstance()->ReleaseBufferObject(m_vertex_buffer);
+            }
+            if(m_index_count != index_count)
+            {
+                GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
+            }
+
             if(m_vertex_buffer.buffer == NULL)
             {
-                int vertex_count = GetVertexCount();
                 if(vertex_count > 0)
                 {
                     int buffer_size = sizeof(VertexUI) * vertex_count;
@@ -123,6 +135,8 @@ namespace Galaxy3D
                     m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
                     free(buffer);
+
+                    m_vertex_count = vertex_count;
                 }
             }
             else
@@ -136,6 +150,22 @@ namespace Galaxy3D
                     fill_vertex_buffer(buffer, this);
 
                     GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
+
+                    free(buffer);
+                }
+            }
+
+            if(m_index_buffer.buffer == NULL)
+            {
+                if(index_count > 0)
+                {
+                    unsigned short *uv = this->GetIndices();
+                    int buffer_size = sizeof(unsigned short) * index_count;
+                    char *buffer = (char *) malloc(buffer_size);
+
+                    memcpy(buffer, uv, buffer_size);
+
+                    m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 
                     free(buffer);
                 }
@@ -259,7 +289,7 @@ namespace Galaxy3D
         m_vertices[i++] = Vector2(vertices.left + vertices.width, -vertices.top);
 
         i = 0;
-        
+
         m_uv[i++] = Vector2(uv.left, uv.top);
         m_uv[i++] = Vector2(uv.left, uv_inside.top);
         m_uv[i++] = Vector2(uv_inside.left, uv_inside.top);
@@ -381,9 +411,9 @@ namespace Galaxy3D
         Vector2 right_bottom_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
         Vector2 right_top_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_border.y) * v_h);
 
-        for(int i=0; i<tile_count_y; i++)
+        for(int i = 0; i < tile_count_y; i++)
         {
-            for(int j=0; j<tile_count_x; j++)
+            for(int j = 0; j < tile_count_x; j++)
             {
                 Vector2 min_v(Vector2(left + tile_w * j, top + tile_h * i) * v_ppu);
                 Vector2 max_v(Vector2(left + tile_w * (j + 1), top + tile_h * (i + 1)) * v_ppu);
@@ -426,6 +456,14 @@ namespace Galaxy3D
 
     void Sprite::FillMeshFilled()
     {
+        if(m_fill_direction == FillDirection::Radial_90 ||
+            m_fill_direction == FillDirection::Radial_180 ||
+            m_fill_direction == FillDirection::Radial_360)
+        {
+            FillMeshFilledRadial();
+            return;
+        }
+
         float v_ppu = 1 / m_pixels_per_unit;
 
         float width, height;
@@ -496,8 +534,118 @@ namespace Galaxy3D
         m_triangles[5] = 3;
     }
 
+    void Sprite::FillMeshFilledRadial()
+    {
+        float v_ppu = 1 / m_pixels_per_unit;
+
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = m_rect.width;
+            height = m_rect.height;
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
+        float right = left + width;
+        float bottom = top + height;
+
+        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        if(m_fill_direction == FillDirection::Radial_90)
+        {
+            if(m_fill_amount > 0.5f)
+            {
+                m_vertices.resize(4);
+                m_uv.resize(4);
+                m_triangles.resize(6);
+
+                float tg = tanf((1 - m_fill_amount) * 90 * Mathf::Deg2Rad);
+
+                if(m_fill_invert)
+                {
+                    m_vertices[0] = Vector2(vertices.left, -vertices.top);
+                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+
+                    m_uv[0] = Vector2(uv.left, uv.top);
+                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
+                }
+                else
+                {
+                    m_vertices[0] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
+                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+
+                    m_uv[0] = Vector2(uv.left + tg * uv.width, uv.top);
+                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+                }
+                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+                m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
+
+                m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+                m_uv[3] = Vector2(uv.left + uv.width, uv.top);
+
+                m_triangles[0] = 0;
+                m_triangles[1] = 1;
+                m_triangles[2] = 3;
+                m_triangles[3] = 3;
+                m_triangles[4] = 1;
+                m_triangles[5] = 2;
+            }
+            else if(m_fill_amount > 0)
+            {
+                m_vertices.resize(3);
+                m_uv.resize(3);
+                m_triangles.resize(3);
+
+                float tg = tanf(m_fill_amount * 90 * Mathf::Deg2Rad);
+
+                if(m_fill_invert)
+                {
+                    m_vertices[0] = Vector2(vertices.left, -vertices.top);
+                    m_vertices[2] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
+
+                    m_uv[0] = Vector2(uv.left, uv.top);
+                    m_uv[2] = Vector2(uv.left + tg * uv.height, uv.top);
+                }
+                else
+                {
+                    m_vertices[0] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+
+                    m_uv[0] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
+                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+                }
+
+                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+
+                m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+
+                m_triangles[0] = 0;
+                m_triangles[1] = 1;
+                m_triangles[2] = 2;
+            }
+            else
+            {
+                m_vertices.clear();
+                m_uv.clear();
+                m_triangles.clear();
+            }
+        }
+    }
+
     void Sprite::SetFillAmount(float amount)
     {
+        amount = Mathf::Clamp01(amount);
+
         if(!Mathf::FloatEqual(m_fill_amount, amount))
         {
             m_fill_amount = amount;
@@ -533,23 +681,6 @@ namespace Galaxy3D
     BufferObject Sprite::GetIndexBuffer()
     {
         FillMeshIfNeeded();
-
-        if(m_index_buffer.buffer == NULL)
-        {
-            int index_count = this->GetIndexCount();
-            if(index_count > 0)
-            {
-                unsigned short *uv = this->GetIndices();
-                int buffer_size = sizeof(unsigned short) * index_count;
-                char *buffer = (char *) malloc(buffer_size);
-
-                memcpy(buffer, uv, buffer_size);
-
-                m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
-
-                free(buffer);
-            }
-        }
 
         return m_index_buffer;
     }
