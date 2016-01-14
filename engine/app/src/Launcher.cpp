@@ -54,6 +54,7 @@ bool g_start = false;
 #if DEMO_UI
 Sprite *g_button_sprite = NULL;
 float g_fill_amount = 0;
+SpriteBatchRenderer *g_batch = NULL;
 #endif
 
 void Launcher::Start()
@@ -87,15 +88,15 @@ void Launcher::Start()
         100,
         Vector4(8, 10, 8, 8),
         Sprite::Type::Filled,
-        Vector2(400, 210));
+        Vector2(400, 400));
 
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
-    
+
     g_button_sprite = button_sprite.get();
-    g_button_sprite->SetFillInvert(true);
-    g_button_sprite->SetFillDirection(Sprite::FillDirection::Radial_180);
+    g_button_sprite->SetFillInvert(false);
+    g_button_sprite->SetFillDirection(Sprite::FillDirection::Vertical);
 
     /*
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
@@ -104,6 +105,7 @@ void Launcher::Start()
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->AddSprite(node);
     button_sr->UpdateSprites();
+    g_batch = button_sr.get();
     */
 #endif
 
@@ -733,6 +735,10 @@ void Launcher::Update()
 
 #if DEMO_UI
     g_button_sprite->SetFillAmount(g_fill_amount);
+    if(g_batch != NULL)
+    {
+        g_batch->UpdateSprites();
+    }
     g_fill_amount += 0.0005f;
     if(g_fill_amount > 1.0f)
     {
