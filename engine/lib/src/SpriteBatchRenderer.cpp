@@ -110,7 +110,8 @@ namespace Galaxy3D
 		else
 		{
             if( m_sprites_cache.size() != m_sprites.size() ||
-                get_sprites_vertex_count(m_sprites_cache) != get_sprites_vertex_count(m_sprites))
+                get_sprites_vertex_count(m_sprites_cache) != get_sprites_vertex_count(m_sprites) ||
+                get_sprites_index_count(m_sprites_cache) != get_sprites_index_count(m_sprites))
 			{
 				Release();
 
