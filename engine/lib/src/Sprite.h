@@ -90,7 +90,9 @@ namespace Galaxy3D
         void FillMeshSliced();
         void FillMeshTiled();
         void FillMeshFilled();
-        void FillMeshFilledRadial();
+        void FillMeshFilledRadial90();
+        void FillMeshFilledRadial180();
+        void FillMeshFilledRadial360();
 	};
 }
 

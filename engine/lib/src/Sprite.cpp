@@ -456,11 +456,22 @@ namespace Galaxy3D
 
     void Sprite::FillMeshFilled()
     {
-        if(m_fill_direction == FillDirection::Radial_90 ||
+        if( m_fill_direction == FillDirection::Radial_90 ||
             m_fill_direction == FillDirection::Radial_180 ||
             m_fill_direction == FillDirection::Radial_360)
         {
-            FillMeshFilledRadial();
+            switch(m_fill_direction)
+            {
+                case FillDirection::Radial_90:
+                    FillMeshFilledRadial90();
+                    break;
+                case FillDirection::Radial_180:
+                    FillMeshFilledRadial180();
+                    break;
+                case FillDirection::Radial_360:
+                    FillMeshFilledRadial360();
+                    break;
+            }
             return;
         }
 
@@ -534,8 +545,19 @@ namespace Galaxy3D
         m_triangles[5] = 3;
     }
 
-    void Sprite::FillMeshFilledRadial()
+    void Sprite::FillMeshFilledRadial360()
     {
+        m_vertices.clear();
+        m_uv.clear();
+        m_triangles.clear();
+    }
+
+    void Sprite::FillMeshFilledRadial180()
+    {
+        m_vertices.clear();
+        m_uv.clear();
+        m_triangles.clear();
+
         float v_ppu = 1 / m_pixels_per_unit;
 
         float width, height;
@@ -561,84 +583,233 @@ namespace Galaxy3D
         Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
-        if(m_fill_direction == FillDirection::Radial_90)
+        if(m_fill_amount > 0.75f)
         {
-            if(m_fill_amount > 0.5f)
+            m_vertices.resize(5);
+            m_uv.resize(5);
+            m_triangles.resize(9);
+
+            float tg = tanf((1 - m_fill_amount) * 180 * Mathf::Deg2Rad);
+
+            if(m_fill_invert)
             {
-                m_vertices.resize(4);
-                m_uv.resize(4);
-                m_triangles.resize(6);
-
-                float tg = tanf((1 - m_fill_amount) * 90 * Mathf::Deg2Rad);
-
-                if(m_fill_invert)
-                {
-                    m_vertices[0] = Vector2(vertices.left, -vertices.top);
-                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
-
-                    m_uv[0] = Vector2(uv.left, uv.top);
-                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
-                }
-                else
-                {
-                    m_vertices[0] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
-                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
-
-                    m_uv[0] = Vector2(uv.left + tg * uv.width, uv.top);
-                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
-                }
                 m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
-                m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
-
+                m_vertices[3] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+            
                 m_uv[1] = Vector2(uv.left, uv.top + uv.height);
-                m_uv[3] = Vector2(uv.left + uv.width, uv.top);
+                m_uv[3] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
 
                 m_triangles[0] = 0;
                 m_triangles[1] = 1;
-                m_triangles[2] = 3;
-                m_triangles[3] = 3;
+                m_triangles[2] = 4;
+                m_triangles[3] = 4;
                 m_triangles[4] = 1;
                 m_triangles[5] = 2;
+                m_triangles[6] = 4;
+                m_triangles[7] = 2;
+                m_triangles[8] = 3;
             }
-            else if(m_fill_amount > 0)
+            else
             {
-                m_vertices.resize(3);
-                m_uv.resize(3);
-                m_triangles.resize(3);
+                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height) + tg * vertices.height);
+                m_vertices[3] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
 
-                float tg = tanf(m_fill_amount * 90 * Mathf::Deg2Rad);
-
-                if(m_fill_invert)
-                {
-                    m_vertices[0] = Vector2(vertices.left, -vertices.top);
-                    m_vertices[2] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
-
-                    m_uv[0] = Vector2(uv.left, uv.top);
-                    m_uv[2] = Vector2(uv.left + tg * uv.height, uv.top);
-                }
-                else
-                {
-                    m_vertices[0] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
-                    m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
-
-                    m_uv[0] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
-                    m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
-                }
-
-                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
-
-                m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+                m_uv[1] = Vector2(uv.left, uv.top + uv.height - tg * uv.height);
+                m_uv[3] = Vector2(uv.left + uv.width, uv.top + uv.height);
 
                 m_triangles[0] = 0;
                 m_triangles[1] = 1;
                 m_triangles[2] = 2;
+                m_triangles[3] = 0;
+                m_triangles[4] = 2;
+                m_triangles[5] = 3;
+                m_triangles[6] = 0;
+                m_triangles[7] = 3;
+                m_triangles[8] = 4;
+            }
+            m_vertices[0] = Vector2(vertices.left, -vertices.top);
+            m_vertices[2] = Vector2(vertices.left + vertices.width / 2, -(vertices.top + vertices.height));
+            m_vertices[4] = Vector2(vertices.left + vertices.width, -(vertices.top));
+
+            m_uv[0] = Vector2(uv.left, uv.top);
+            m_uv[2] = Vector2(uv.left + uv.width / 2, uv.top + uv.height);
+            m_uv[4] = Vector2(uv.left + uv.width, uv.top);
+        }
+        else if(m_fill_amount > 0.25f)
+        {
+            m_vertices.resize(4);
+            m_uv.resize(4);
+            m_triangles.resize(6);
+
+            float tg = tanf((m_fill_amount - 0.5f) * 180 * Mathf::Deg2Rad);
+
+            if(m_fill_invert)
+            {
+                m_vertices[0] = Vector2(vertices.left, -vertices.top);
+                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+                m_vertices[2] = Vector2(vertices.left + vertices.width / 2, -(vertices.top + vertices.height));
+                m_vertices[3] = Vector2(vertices.left + vertices.width / 2 + tg * vertices.width / 2, -(vertices.top));
+
+                m_uv[0] = Vector2(uv.left, uv.top);
+                m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+                m_uv[2] = Vector2(uv.left + uv.width / 2, uv.top + uv.height);
+                m_uv[3] = Vector2(uv.left + uv.width / 2 + tg * uv.width / 2, uv.top);
             }
             else
             {
-                m_vertices.clear();
-                m_uv.clear();
-                m_triangles.clear();
+                m_vertices[0] = Vector2(vertices.left + vertices.width / 2 - tg * vertices.width / 2, -vertices.top);
+                m_vertices[1] = Vector2(vertices.left + vertices.width / 2, -(vertices.top + vertices.height));
+                m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+                m_vertices[3] = Vector2(vertices.left + vertices.width, -(vertices.top));
+
+                m_uv[0] = Vector2(uv.left + uv.width / 2 - tg * uv.width / 2, uv.top);
+                m_uv[1] = Vector2(uv.left + uv.width / 2, uv.top + uv.height);
+                m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+                m_uv[3] = Vector2(uv.left + uv.width, uv.top);
             }
+
+            m_triangles[0] = 0;
+            m_triangles[1] = 1;
+            m_triangles[2] = 2;
+            m_triangles[3] = 0;
+            m_triangles[4] = 2;
+            m_triangles[5] = 3;
+        }
+        else if(m_fill_amount > 0)
+        {
+            m_vertices.resize(3);
+            m_uv.resize(3);
+            m_triangles.resize(3);
+
+            float tg = tanf(m_fill_amount * 180 * Mathf::Deg2Rad);
+
+            if(m_fill_invert)
+            {
+                m_vertices[0] = Vector2(vertices.left, -(vertices.top + vertices.height) + tg * vertices.height);
+                m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+                m_vertices[2] = Vector2(vertices.left + vertices.width / 2, -(vertices.top + vertices.height));
+
+                m_uv[0] = Vector2(uv.left, uv.top + uv.height - tg * uv.height);
+                m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+                m_uv[2] = Vector2(uv.left + uv.width / 2, uv.top + uv.height);
+            }
+            else
+            {
+                m_vertices[0] = Vector2(vertices.left + vertices.width / 2, -(vertices.top + vertices.height));
+                m_vertices[1] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+                m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+
+                m_uv[0] = Vector2(uv.left + uv.width / 2, uv.top + uv.height);
+                m_uv[1] = Vector2(uv.left + uv.width, uv.top + uv.height);
+                m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
+            }
+
+            m_triangles[0] = 0;
+            m_triangles[1] = 1;
+            m_triangles[2] = 2;
+        }
+    }
+
+    void Sprite::FillMeshFilledRadial90()
+    {
+        m_vertices.clear();
+        m_uv.clear();
+        m_triangles.clear();
+
+        float v_ppu = 1 / m_pixels_per_unit;
+
+        float width, height;
+        if(m_size == Vector2(0, 0))
+        {
+            width = m_rect.width;
+            height = m_rect.height;
+        }
+        else
+        {
+            width = m_size.x;
+            height = m_size.y;
+        }
+
+        float v_w = 1.0f / m_texture->GetWidth();
+        float v_h = 1.0f / m_texture->GetHeight();
+
+        float left = -m_pivot.x * width;
+        float top = -m_pivot.y * height;
+        float right = left + width;
+        float bottom = top + height;
+
+        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
+
+        if(m_fill_amount > 0.5f)
+        {
+            m_vertices.resize(4);
+            m_uv.resize(4);
+            m_triangles.resize(6);
+
+            float tg = tanf((1 - m_fill_amount) * 90 * Mathf::Deg2Rad);
+
+            if(m_fill_invert)
+            {
+                m_vertices[0] = Vector2(vertices.left, -vertices.top);
+                m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+
+                m_uv[0] = Vector2(uv.left, uv.top);
+                m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
+            }
+            else
+            {
+                m_vertices[0] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
+                m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+
+                m_uv[0] = Vector2(uv.left + tg * uv.width, uv.top);
+                m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+            }
+            m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+            m_vertices[3] = Vector2(vertices.left + vertices.width, -vertices.top);
+
+            m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+            m_uv[3] = Vector2(uv.left + uv.width, uv.top);
+
+            m_triangles[0] = 0;
+            m_triangles[1] = 1;
+            m_triangles[2] = 3;
+            m_triangles[3] = 3;
+            m_triangles[4] = 1;
+            m_triangles[5] = 2;
+        }
+        else if(m_fill_amount > 0)
+        {
+            m_vertices.resize(3);
+            m_uv.resize(3);
+            m_triangles.resize(3);
+
+            float tg = tanf(m_fill_amount * 90 * Mathf::Deg2Rad);
+
+            if(m_fill_invert)
+            {
+                m_vertices[0] = Vector2(vertices.left, -vertices.top);
+                m_vertices[2] = Vector2(vertices.left + tg * vertices.width, -vertices.top);
+
+                m_uv[0] = Vector2(uv.left, uv.top);
+                m_uv[2] = Vector2(uv.left + tg * uv.height, uv.top);
+            }
+            else
+            {
+                m_vertices[0] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height) + tg * vertices.height);
+                m_vertices[2] = Vector2(vertices.left + vertices.width, -(vertices.top + vertices.height));
+
+                m_uv[0] = Vector2(uv.left + uv.width, uv.top + uv.height - tg * uv.height);
+                m_uv[2] = Vector2(uv.left + uv.width, uv.top + uv.height);
+            }
+
+            m_vertices[1] = Vector2(vertices.left, -(vertices.top + vertices.height));
+
+            m_uv[1] = Vector2(uv.left, uv.top + uv.height);
+
+            m_triangles[0] = 0;
+            m_triangles[1] = 1;
+            m_triangles[2] = 2;
         }
     }
 

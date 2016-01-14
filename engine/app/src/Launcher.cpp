@@ -94,8 +94,8 @@ void Launcher::Start()
     button_sr->SetSprite(button_sprite);
     
     g_button_sprite = button_sprite.get();
-    g_button_sprite->SetFillInvert(false);
-    g_button_sprite->SetFillDirection(Sprite::FillDirection::Radial_90);
+    g_button_sprite->SetFillInvert(true);
+    g_button_sprite->SetFillDirection(Sprite::FillDirection::Radial_180);
 
     /*
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
