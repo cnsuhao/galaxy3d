@@ -83,19 +83,22 @@ void Launcher::Start()
         Vector4(8, 10, 8, 8),
         Sprite::Type::Simple,
         Vector2(0, 0));
-
+    /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
-
-    /*
-    auto node = GameObject::Create("")->AddComponent<SpriteNode>();
-    node->SetSprite(button_sprite);
+    */
+    
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
     button_sr->GetGameObject()->SetLayer(Layer::UI);
+
+    auto node = GameObject::Create("")->AddComponent<SpriteNode>();
+    node->GetTransform()->SetPosition(Vector3(100, 100, 0) * 0.01f);
+    node->SetSprite(button_sprite);
     button_sr->AddSprite(node);
+    
     button_sr->UpdateSprites();
-    */
+    
 #endif
 
 #if DEMO_REWARD
