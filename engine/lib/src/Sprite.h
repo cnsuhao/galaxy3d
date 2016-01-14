@@ -36,6 +36,17 @@ namespace Galaxy3D
             };
         };
 
+        struct Flip
+        {
+            enum Enum
+            {
+                None,
+                Horizontal,
+                Vertical,
+                Both
+            };
+        };
+
 		static std::shared_ptr<Sprite> LoadFromFile(const std::string &file);
 		static std::shared_ptr<Sprite> Create(const std::shared_ptr<Texture> &texture);
 		//	rect:指定原贴图上的像素矩形区域，左上为起点
@@ -63,6 +74,7 @@ namespace Galaxy3D
         float GetFillAmount() const {return m_fill_amount;}
         void SetFillDirection(FillDirection::Enum dir);
         void SetFillInvert(bool invert);
+        void SetFlip(Flip::Enum flip);
 
 	private:
 		std::shared_ptr<Texture> m_texture;
@@ -75,6 +87,7 @@ namespace Galaxy3D
         float m_fill_amount;
         FillDirection::Enum m_fill_direction;
         bool m_fill_invert;
+        Flip::Enum m_flip;
         bool m_dirty;
         std::vector<Vector2> m_vertices;
         std::vector<Vector2> m_uv;
