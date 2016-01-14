@@ -81,6 +81,8 @@ namespace Galaxy3D
         std::vector<unsigned short> m_triangles;
         BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
+        int m_vertex_count;
+        int m_index_count;
 
 		Sprite();
         void FillMeshIfNeeded();
@@ -88,6 +90,7 @@ namespace Galaxy3D
         void FillMeshSliced();
         void FillMeshTiled();
         void FillMeshFilled();
+        void FillMeshFilledRadial();
 	};
 }
 
