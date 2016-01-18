@@ -235,46 +235,49 @@ namespace Galaxy3D
 			info.advance_x = slot->advance.x >> 6;
 			info.advance_y = slot->advance.y >> 6;
 
-			if(g_texture_y + info.uv_pixel_h <= TEXTURE_SIZE_MAX)
-			{
-				if(g_texture_x + info.uv_pixel_w > TEXTURE_SIZE_MAX)
-				{
-					g_texture_y += g_texture_line_h_max;
-					g_texture_x = 0;
-					g_texture_line_h_max = 0;
-				}
+            if(c != '\n')
+            {
+                if(g_texture_y + info.uv_pixel_h <= TEXTURE_SIZE_MAX)
+                {
+                    if(g_texture_x + info.uv_pixel_w > TEXTURE_SIZE_MAX)
+                    {
+                        g_texture_y += g_texture_line_h_max;
+                        g_texture_x = 0;
+                        g_texture_line_h_max = 0;
+                    }
 
-				if(g_texture_line_h_max < info.uv_pixel_h)
-				{
-					g_texture_line_h_max = info.uv_pixel_h;
-				}
+                    if(g_texture_line_h_max < info.uv_pixel_h)
+                    {
+                        g_texture_line_h_max = info.uv_pixel_h;
+                    }
 
-				//insert one white pixel for underline
-				if(g_texture_x == 0 && g_texture_y == 0)
-				{
-					unsigned char white = 0xff;
-					g_font_texture->SetPixels(
-						0, 0,
-						1, 1,
-						(char *) &white);
-					g_texture_x += 1;
-				}
+                    //insert one white pixel for underline
+                    if(g_texture_x == 0 && g_texture_y == 0)
+                    {
+                        unsigned char white = 0xff;
+                        g_font_texture->SetPixels(
+                            0, 0,
+                            1, 1,
+                            (char *) &white);
+                        g_texture_x += 1;
+                    }
 
-				g_font_texture->SetPixels(
-					g_texture_x,
-					g_texture_y,
-					info.uv_pixel_w,
-					info.uv_pixel_h,
-					(char *) slot->bitmap.buffer);
-				info.uv_pixel_x = g_texture_x;
-				info.uv_pixel_y = g_texture_y;
+                    g_font_texture->SetPixels(
+                        g_texture_x,
+                        g_texture_y,
+                        info.uv_pixel_w,
+                        info.uv_pixel_h,
+                        (char *) slot->bitmap.buffer);
+                    info.uv_pixel_x = g_texture_x;
+                    info.uv_pixel_y = g_texture_y;
 
-				g_texture_x += info.uv_pixel_w;
-			}
-			else
-			{
-				_ASSERT(g_texture_y + info.uv_pixel_h <= TEXTURE_SIZE_MAX);
-			}
+                    g_texture_x += info.uv_pixel_w;
+                }
+                else
+                {
+                    _ASSERT(g_texture_y + info.uv_pixel_h <= TEXTURE_SIZE_MAX);
+                }
+            }
 		}
 
 		g_chars[font][c][size] = info;
@@ -1317,6 +1320,6 @@ namespace Galaxy3D
 
 		g_font_texture->Apply();
 
-        //g_font_texture->EncodeToPNG("font.png");
+        g_font_texture->EncodeToPNG("zfont.png");
 	}
 }

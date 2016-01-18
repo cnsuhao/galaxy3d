@@ -55,7 +55,7 @@ void Launcher::Start()
 {
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
-    cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
+    cam2d->SetOrthographicSize(Screen::GetHeight() / 2 * 0.01f);
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
@@ -84,7 +84,7 @@ void Launcher::Start()
         100,
         Vector4(8, 10, 8, 8),
         Sprite::Type::Simple,
-        Vector2(600, 300));
+        Vector2(1000, 600));
     /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button_sr->SetSprite(button_sprite);
@@ -725,8 +725,9 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 void Launcher::Update()
 {
 #if !DEMO_REWARD
-	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
-		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
+	/*fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
+		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);*/
+    fps->GetLabel()->SetText("abcdefghijklmnopqrstuvwxyz0123456789");
 	fps->UpdateLabel();
 #endif
 
