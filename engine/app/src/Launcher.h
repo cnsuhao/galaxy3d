@@ -44,6 +44,7 @@
 #include "Cursor.h"
 #include "ImageEffectHighlighting.h"
 #include "HighlightingObject.h"
+#include "UICanvas.h"
 
 namespace Galaxy3D
 {

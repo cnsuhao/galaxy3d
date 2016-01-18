@@ -53,8 +53,6 @@ bool g_start = false;
 
 void Launcher::Start()
 {
-	Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
-    
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
     cam2d->SetOrthographicSize(Screen::GetHeight() / 200.f);
@@ -63,13 +61,17 @@ void Launcher::Start()
     cam2d->SetDepth(1);
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
 
+    auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
+    canvas->GetTransform()->SetParent(cam2d->GetTransform());
+
+    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/consola.ttf");
+
 	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-	tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
+	//tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
-    tr->GetTransform()->SetParent(cam2d->GetTransform());
-    tr->GetGameObject()->SetLayer(Layer::UI);
+    tr->GetTransform()->SetParent(canvas->GetTransform());
 	fps = tr;
 
 #if DEMO_UI
@@ -82,23 +84,26 @@ void Launcher::Start()
         100,
         Vector4(8, 10, 8, 8),
         Sprite::Type::Simple,
-        Vector2(0, 0));
+        Vector2(600, 300));
     /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    button_sr->GetGameObject()->SetLayer(Layer::UI);
     button_sr->SetSprite(button_sprite);
     */
     
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
-    button_sr->GetGameObject()->SetLayer(Layer::UI);
 
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
-    node->GetTransform()->SetPosition(Vector3(100, 100, 0) * 0.01f);
+    node->GetTransform()->SetPosition(Vector3(0, 0, 0) * 0.01f);
     node->SetSprite(button_sprite);
+    node->GetTransform()->SetParent(button_sr->GetTransform());
     button_sr->AddSprite(node);
-    
+    button_sr->GetTransform()->SetParent(canvas->GetTransform());
+
+    //canvas->GetTransform()->SetPosition(Vector3(0, -1, 0) * 0.01f);
+
     button_sr->UpdateSprites();
-    
+
+    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
 
 #if DEMO_REWARD

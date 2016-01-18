@@ -1316,5 +1316,7 @@ namespace Galaxy3D
 		m_height_actual = -y_min;
 
 		g_font_texture->Apply();
+
+        //g_font_texture->EncodeToPNG("font.png");
 	}
 }

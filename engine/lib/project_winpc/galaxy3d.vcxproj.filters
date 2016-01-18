@@ -216,6 +216,9 @@
     <ClCompile Include="..\src\HighlightingObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\UICanvas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -495,6 +498,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\HighlightingObject.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UICanvas.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
