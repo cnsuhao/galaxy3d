@@ -78,8 +78,8 @@ namespace Galaxy3D
 
 	void Camera::UpdateMatrix()
 	{
-		int width = Screen::GetWidth();
-		int height = Screen::GetHeight();
+		int width = GetPixelWidth();
+		int height = GetPixelHeight();
 		auto transform = GetTransform();
 
 		m_view_matrix = Matrix4x4::LookTo(
@@ -708,10 +708,10 @@ namespace Galaxy3D
 
     Vector3 Camera::ScreenToViewportPoint(const Vector3 &position)
     {
-        float x = position.x / Screen::GetWidth();
+        float x = position.x / GetPixelWidth();
         x = (x - m_rect.left) / m_rect.width;
 
-        float y = position.y / Screen::GetHeight();
+        float y = position.y / GetPixelHeight();
         y = (y - m_rect.top) / m_rect.height;
 
         return Vector3(x, y, 0);
@@ -724,7 +724,7 @@ namespace Galaxy3D
         if(m_orthographic)
         {
             float plane_h = m_orthographic_size * 2;
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
             float vp_x = (position.x - 0.5f) * plane_w;
             float vp_y = (position.y - 0.5f) * plane_h;
 
@@ -734,7 +734,7 @@ namespace Galaxy3D
         else
         {
             float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
             float vp_x = (position.x - 0.5f) * plane_w;
             float vp_y = (position.y - 0.5f) * plane_h;
             float vp_z = m_near_clip_plane;
@@ -757,7 +757,7 @@ namespace Galaxy3D
         if(m_orthographic)
         {
             float plane_h = m_orthographic_size * 2;
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
 
             float z = pos.z;
             float y = pos.y / plane_h + 0.5f;
@@ -768,7 +768,7 @@ namespace Galaxy3D
         else
         {
             float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
 
             float z = pos.z;
             float y = pos.y / z * m_near_clip_plane / plane_h + 0.5f;
@@ -787,7 +787,7 @@ namespace Galaxy3D
         if(m_orthographic)
         {
             float plane_h = m_orthographic_size * 2;
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
             float vp_x = (vp.x - 0.5f) * plane_w;
             float vp_y = (vp.y - 0.5f) * plane_h;
 
@@ -801,7 +801,7 @@ namespace Galaxy3D
         else
         {
             float plane_h = 2 * m_near_clip_plane * tan(m_field_of_view * Mathf::Deg2Rad / 2);
-            float plane_w = plane_h * (Screen::GetWidth() * m_rect.width) / (Screen::GetHeight() * m_rect.height);
+            float plane_w = plane_h * (GetPixelWidth() * m_rect.width) / (GetPixelHeight() * m_rect.height);
             float vp_x = (vp.x - 0.5f) * plane_w;
             float vp_y = (vp.y - 0.5f) * plane_h;
             float vp_z = m_near_clip_plane;

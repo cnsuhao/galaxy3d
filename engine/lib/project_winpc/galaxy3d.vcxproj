@@ -78,6 +78,7 @@
     <ClCompile Include="..\src\Tweenner.cpp" />
     <ClCompile Include="..\src\TweenPosition.cpp" />
     <ClCompile Include="..\src\TweenRotation.cpp" />
+    <ClCompile Include="..\src\UICanvas.cpp" />
     <ClCompile Include="..\src\Vector2.cpp" />
     <ClCompile Include="..\src\Vector3.cpp" />
     <ClCompile Include="..\src\World.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\src\Tweenner.h" />
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
+    <ClInclude Include="..\src\UICanvas.h" />
     <ClInclude Include="..\src\Vector2.h" />
     <ClInclude Include="..\src\Vector3.h" />
     <ClInclude Include="..\src\Vector4.h" />

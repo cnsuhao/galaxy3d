@@ -66,6 +66,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else
 		{
+            Sleep(1);
+
             World::Update();
             Camera::RenderAll();
 		}
