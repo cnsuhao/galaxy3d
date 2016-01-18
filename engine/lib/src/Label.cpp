@@ -1320,6 +1320,7 @@ namespace Galaxy3D
 
 		g_font_texture->Apply();
 
-        g_font_texture->EncodeToPNG("zfont.png");
+        // debug out
+        //g_font_texture->EncodeToPNG("font_tex.png");
 	}
 }
