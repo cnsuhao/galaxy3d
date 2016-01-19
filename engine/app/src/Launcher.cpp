@@ -1070,6 +1070,11 @@ void Launcher::Update()
 		}
 	}
 #endif
+
+    if(Input::GetKeyUp(KeyCode::Escape))
+    {
+        Application::Quit();
+    }
 }
 
 void Launcher::LateUpdate()
