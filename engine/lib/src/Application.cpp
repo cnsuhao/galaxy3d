@@ -7,6 +7,7 @@
 
 #ifdef WIN32
 #include <Windows.h>
+extern HWND g_hwnd;
 #endif
 
 #ifdef WINPHONE
@@ -57,5 +58,12 @@ namespace Galaxy3D
 #endif
 
 		return s_data_path;
+    }
+
+    void Application::Quit()
+    {
+#ifdef WINPC
+        SendMessage(g_hwnd, WM_CLOSE, 0, 0);
+#endif
     }
 }
