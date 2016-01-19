@@ -26,21 +26,6 @@ namespace Galaxy3D
         return index_count;
     }
 
-    void SpriteBatchRenderer::Start()
-    {
-        auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();
-
-        if(canvas && m_anchor)
-        {
-            canvas->AnchorTransform(GetTransform(), *m_anchor);
-        }
-    }
-
-    void SpriteBatchRenderer::SetAnchor(const Vector4 &anchor)
-    {
-        m_anchor = std::make_shared<Vector4>(anchor);
-    }
-
 	SpriteBatchRenderer::SpriteBatchRenderer():
 		m_color(1, 1, 1, 1)
 	{
@@ -99,8 +84,7 @@ namespace Galaxy3D
 		
 		auto camera = Camera::GetCurrent();
 
-        Matrix4x4 world = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
-		Matrix4x4 wvp = camera->GetViewProjectionMatrix() * world;
+        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * Matrix4x4::Identity();
 
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprites.front()->GetSprite()->GetTexture());
@@ -120,6 +104,11 @@ namespace Galaxy3D
 		{
 			return;
 		}
+
+        for(auto &i : m_sprites)
+        {
+            i->AnchorTransform();
+        }
 
 		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{

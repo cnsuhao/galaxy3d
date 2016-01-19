@@ -7,7 +7,7 @@
 
 namespace Galaxy3D
 {
-	//	批量绘制精灵，精灵位置由精灵transform控制，不受renderer影响
+	//	批量绘制精灵，精灵位置由sprite node控制，不受renderer影响
 	//	不允许添加空的sprite，要置空sprite，请使用RemoveSprite
 	//	修改sprite属性后，要调用UpdateSprites更新顶点buffer
 	//	SetColor会影响批次内所有sprite
@@ -20,10 +20,8 @@ namespace Galaxy3D
 		void RemoveSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void SetColor(const Color &color) {m_color = color;}
 		void UpdateSprites();//添加完所有sprite node后，需要手动调用
-        void SetAnchor(const Vector4 &anchor);
 
 	protected:
-        virtual void Start();
 		virtual void Render(int material_index);
 		
 	private:

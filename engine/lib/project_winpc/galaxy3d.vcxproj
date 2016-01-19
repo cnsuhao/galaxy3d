@@ -68,6 +68,7 @@
     <ClCompile Include="..\src\SkyBox.cpp" />
     <ClCompile Include="..\src\Sprite.cpp" />
     <ClCompile Include="..\src\SpriteBatchRenderer.cpp" />
+    <ClCompile Include="..\src\SpriteNode.cpp" />
     <ClCompile Include="..\src\SpriteRenderer.cpp" />
     <ClCompile Include="..\src\Terrain.cpp" />
     <ClCompile Include="..\src\TerrainCollider.cpp" />

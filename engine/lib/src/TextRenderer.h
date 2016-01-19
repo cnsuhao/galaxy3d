@@ -14,12 +14,15 @@ namespace Galaxy3D
 		void SetLabel(const std::shared_ptr<Label> &label);
 		std::shared_ptr<Label> GetLabel() const {return m_label;}
 		void UpdateLabel();//设置label后，需要手动调用
+        void SetAnchor(const Vector4 &anchor);
 
 	protected:
+        virtual void Start();
 		virtual void Render(int material_index);
 
 	private:
 		std::shared_ptr<Label> m_label;
+        std::shared_ptr<Vector4> m_anchor;
 		BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
 		int m_vertex_count;
