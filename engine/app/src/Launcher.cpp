@@ -113,7 +113,7 @@ void Launcher::Start()
     button_sr->AddSprite(button);
     button_sr->UpdateSprites();
 
-    label = Label::Create("Accept", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
+    label = Label::Create("Quit", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
     label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
     tr = GameObject::Create("")->AddComponent<TextRenderer>();
     tr->SetLabel(label);
