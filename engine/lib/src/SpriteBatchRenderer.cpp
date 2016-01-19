@@ -1,4 +1,6 @@
 #include "SpriteBatchRenderer.h"
+#include "GameObject.h"
+#include "UICanvas.h"
 
 namespace Galaxy3D
 {
@@ -22,6 +24,21 @@ namespace Galaxy3D
         }
 
         return index_count;
+    }
+
+    void SpriteBatchRenderer::Start()
+    {
+        auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();
+
+        if(canvas && m_anchor)
+        {
+            canvas->AnchorTransform(GetTransform(), *m_anchor);
+        }
+    }
+
+    void SpriteBatchRenderer::SetAnchor(const Vector4 &anchor)
+    {
+        m_anchor = std::make_shared<Vector4>(anchor);
     }
 
 	SpriteBatchRenderer::SpriteBatchRenderer():
@@ -81,7 +98,9 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
 		
 		auto camera = Camera::GetCurrent();
-		Matrix4x4 wvp = camera->GetViewProjectionMatrix() * Matrix4x4::Identity();
+
+        Matrix4x4 world = Matrix4x4::TRS(GetTransform()->GetPosition(), GetTransform()->GetRotation(), Vector3(1, 1, 1));
+		Matrix4x4 wvp = camera->GetViewProjectionMatrix() * world;
 
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprites.front()->GetSprite()->GetTexture());
@@ -137,7 +156,7 @@ namespace Galaxy3D
 	{
 		char *p = buffer;
 		auto s = sprite->GetSprite();
-		auto mat = sprite->GetTransform()->GetLocalToWorldMatrix();
+		auto mat_world = sprite->GetTransform()->GetLocalToWorldMatrix();
         int vertex_count = s->GetVertexCount();
 		Vector2 *vertices = s->GetVertices();
 		Vector2 *uv = s->GetUV();
@@ -145,7 +164,7 @@ namespace Galaxy3D
 
 		for(int i=0; i<vertex_count; i++)
 		{
-			Vector3 pos = mat.MultiplyPoint3x4(vertices[i]);
+			Vector3 pos = mat_world.MultiplyPoint3x4(vertices[i]);
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 

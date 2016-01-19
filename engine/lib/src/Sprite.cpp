@@ -202,8 +202,6 @@ namespace Galaxy3D
 
     void Sprite::FillMeshSimple()
     {
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -222,7 +220,7 @@ namespace Galaxy3D
         float left = -m_pivot.x * width;
         float top = -m_pivot.y * height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         m_vertices.resize(4);
@@ -255,8 +253,6 @@ namespace Galaxy3D
             return;
         }
 
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -279,14 +275,14 @@ namespace Galaxy3D
         float left = -m_pivot.x * width;
         float top = -m_pivot.y * height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         Rect vertices_inside(
-            (left + m_border.x) * v_ppu,
-            (top + m_border.y) * v_ppu,
-            (width - m_border.x - m_border.z) * v_ppu,
-            (height - m_border.y - m_border.w) * v_ppu);
+            (left + m_border.x),
+            (top + m_border.y),
+            (width - m_border.x - m_border.z),
+            (height - m_border.y - m_border.w));
         Rect uv_inside(
             (m_rect.left + m_border.x) * v_w,
             (m_rect.top + m_border.y) * v_h,
@@ -405,8 +401,6 @@ namespace Galaxy3D
 
     void Sprite::FillMeshTiled()
     {
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -442,22 +436,22 @@ namespace Galaxy3D
         {
             for(int j = 0; j < tile_count_x; j++)
             {
-                Vector2 min_v(Vector2(left + tile_w * j, top + tile_h * i) * v_ppu);
-                Vector2 max_v(Vector2(left + tile_w * (j + 1), top + tile_h * (i + 1)) * v_ppu);
+                Vector2 min_v(Vector2(left + tile_w * j, top + tile_h * i));
+                Vector2 max_v(Vector2(left + tile_w * (j + 1), top + tile_h * (i + 1)));
                 Vector2 min_uv(left_top_uv);
                 Vector2 max_uv(right_bottom_uv);
 
                 if(j == tile_count_x - 1)
                 {
                     float w = width - tile_w * (tile_count_x - 1);
-                    max_v.x = min_v.x + w * v_ppu;
+                    max_v.x = min_v.x + w;
                     max_uv.x = min_uv.x + w / tile_w;
                 }
 
                 if(i == tile_count_y - 1)
                 {
                     float h = height - tile_h * (tile_count_y - 1);
-                    max_v.y = min_v.y + h * v_ppu;
+                    max_v.y = min_v.y + h;
                     max_uv.y = min_uv.y + h / tile_h;
                 }
 
@@ -502,8 +496,6 @@ namespace Galaxy3D
             return;
         }
 
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -524,28 +516,28 @@ namespace Galaxy3D
         float right = left + width;
         float bottom = top + height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         if(m_fill_direction == FillDirection::Horizontal)
         {
-            vertices.width = width * v_ppu * m_fill_amount;
+            vertices.width = width * m_fill_amount;
             uv.width = m_rect.width * v_w * m_fill_amount;
 
             if(m_fill_invert)
             {
-                vertices.left = vertices.left + width * v_ppu - vertices.width;
+                vertices.left = vertices.left + width - vertices.width;
                 uv.left = uv.left + m_rect.width * v_w - uv.width;
             }
         }
         else if(m_fill_direction == FillDirection::Vertical)
         {
-            vertices.height = height * v_ppu * m_fill_amount;
+            vertices.height = height * m_fill_amount;
             uv.height = m_rect.height * v_h * m_fill_amount;
 
             if(!m_fill_invert)
             {
-                vertices.top = vertices.top + height * v_ppu - vertices.height;
+                vertices.top = vertices.top + height - vertices.height;
                 uv.top = uv.top + m_rect.height * v_h - uv.height;
             }
         }
@@ -578,8 +570,6 @@ namespace Galaxy3D
         m_uv.clear();
         m_triangles.clear();
 
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -600,7 +590,7 @@ namespace Galaxy3D
         float right = left + width;
         float bottom = top + height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         m_vertices.resize(10);
@@ -811,8 +801,6 @@ namespace Galaxy3D
         m_uv.clear();
         m_triangles.clear();
 
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -833,7 +821,7 @@ namespace Galaxy3D
         float right = left + width;
         float bottom = top + height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         if(m_fill_amount > 0.75f)
@@ -969,8 +957,6 @@ namespace Galaxy3D
         m_uv.clear();
         m_triangles.clear();
 
-        float v_ppu = 1 / m_pixels_per_unit;
-
         float width, height;
         if(m_size == Vector2(0, 0))
         {
@@ -991,7 +977,7 @@ namespace Galaxy3D
         float right = left + width;
         float bottom = top + height;
 
-        Rect vertices(left * v_ppu, top * v_ppu, width * v_ppu, height * v_ppu);
+        Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
 
         if(m_fill_amount > 0.5f)

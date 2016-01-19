@@ -25,6 +25,7 @@ namespace Galaxy3D
 		template<class T> std::shared_ptr<T> GetComponent() const;
         template<class T> std::vector<std::shared_ptr<T>> GetComponents() const;
         template<class T> std::vector<std::shared_ptr<T>> GetComponentsInChildren() const;
+        template<class T> std::shared_ptr<T> GetComponentInParent() const;
         std::shared_ptr<Component> GetComponentPtr(const Component *com) const;
 		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
 		bool IsActiveInHierarchy() const {return m_active_in_hierarchy;}
@@ -153,6 +154,29 @@ namespace Galaxy3D
         }
 
         return coms;
+    }
+
+    template<class T> std::shared_ptr<T> GameObject::GetComponentInParent() const
+    {
+        std::shared_ptr<T> com;
+
+        auto parent = GetTransform()->GetParent().lock();
+
+        while(parent)
+        {
+            com = parent->GetGameObject()->GetComponent<T>();
+
+            if(com)
+            {
+                break;
+            }
+            else
+            {
+                parent = parent->GetParent().lock();
+            }
+        }
+
+        return com;
     }
 }
 

@@ -64,14 +64,14 @@ void Launcher::Start()
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
 
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
-    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
+    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
 
     Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
     Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
 	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
-	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
+	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
     tr->GetTransform()->SetParent(canvas->GetTransform());
@@ -81,7 +81,7 @@ void Launcher::Start()
 
 #if DEMO_UI
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam2d->SetClearColor(Color(0, 0, 0, 1));
+    cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
 
     auto button_sprite = Sprite::Create(
         Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png"),
@@ -89,23 +89,40 @@ void Launcher::Start()
         Vector2(0.5f, 0.5f),
         100,
         Vector4(8, 10, 8, 8),
-        Sprite::Type::Simple,
-        Vector2(1000, 600));
-    /*
-    auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    button_sr->SetSprite(button_sprite);
-    */
+        Sprite::Type::Sliced,
+        Vector2(0, 0));
+
     
+    auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
+    button_sr->GetTransform()->SetParent(canvas->GetTransform());
+    button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    button_sr->SetSprite(button_sprite);
+    button_sr->SetSortingOrder(0, 0);
+    button_sr->SetAnchor(Vector4(1, 0, -63, 25));
+    
+    /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
     button_sr->GetTransform()->SetParent(canvas->GetTransform());
+    button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 
     auto node = GameObject::Create("")->AddComponent<SpriteNode>();
     node->GetTransform()->SetParent(button_sr->GetTransform());
+    node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     node->SetSprite(button_sprite);
     button_sr->AddSprite(node);
     button_sr->UpdateSprites();
+    button_sr->SetAnchor(Vector4(1, 0, -63, 25));
+    */
 
-    canvas->GetTransform()->SetPosition(Vector3(0, -100, 0) * g_unit_per_pixel);
+    label = Label::Create("Accept", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
+    label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
+    tr = GameObject::Create("")->AddComponent<TextRenderer>();
+    tr->SetLabel(label);
+    tr->UpdateLabel();
+    tr->SetSortingOrder(0, 1);
+    tr->GetTransform()->SetParent(button_sr->GetTransform());
+    tr->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+    tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
