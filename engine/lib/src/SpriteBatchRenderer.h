@@ -20,14 +20,17 @@ namespace Galaxy3D
 		void RemoveSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void SetColor(const Color &color) {m_color = color;}
 		void UpdateSprites();//添加完所有sprite node后，需要手动调用
+        void SetAnchor(const Vector4 &anchor);
 
 	protected:
+        virtual void Start();
 		virtual void Render(int material_index);
 		
 	private:
 		std::list<std::shared_ptr<SpriteNode>> m_sprites;
 		std::list<std::shared_ptr<SpriteNode>> m_sprites_cache;
 		Color m_color;
+        std::shared_ptr<Vector4> m_anchor;
 		BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
 

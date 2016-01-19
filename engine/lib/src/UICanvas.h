@@ -2,6 +2,7 @@
 #define __UICanvas_h__
 
 #include "Component.h"
+#include "Vector4.h"
 
 namespace Galaxy3D
 {
@@ -13,9 +14,9 @@ namespace Galaxy3D
             m_height(0)
         {}
         void SetSize(int w, int h);
-
-    protected:
-        virtual void Start();
+        int GetWidth();
+        int GetHeight();
+        void AnchorTransform(std::shared_ptr<Transform> &t, const Vector4 &anchor);
 
     private:
         int m_width;

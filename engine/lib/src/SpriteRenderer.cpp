@@ -1,7 +1,20 @@
 #include "SpriteRenderer.h"
+#include "Vector4.h"
+#include "GameObject.h"
+#include "UICanvas.h"
 
 namespace Galaxy3D
 {
+    void SpriteRenderer::Start()
+    {
+        auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();
+
+        if(canvas && m_anchor)
+        {
+            canvas->AnchorTransform(GetTransform(), *m_anchor);
+        }
+    }
+
 	SpriteRenderer::SpriteRenderer():
 		m_color(1, 1, 1, 1)
 	{
@@ -10,6 +23,11 @@ namespace Galaxy3D
 
 		SetSharedMaterial(Material::Create("UI/Sprite"));
 	}
+
+    void SpriteRenderer::SetAnchor(const Vector4 &anchor)
+    {
+        m_anchor = std::make_shared<Vector4>(anchor);
+    }
 
 	void SpriteRenderer::SetSprite(const std::shared_ptr<Sprite> &sprite)
 	{
