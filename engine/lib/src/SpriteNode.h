@@ -23,10 +23,13 @@ namespace Galaxy3D
 		void SetColor(const Color &color) {m_color = color;}
 		Color GetColor() const {return m_color;}
 		void SetSortingOrder(int order) {m_sorting_order = order;}
+        void SetAnchor(const Vector4 &anchor);
+        void AnchorTransform();
 
 	private:
 		std::shared_ptr<Sprite> m_sprite;
 		Color m_color;
+        std::shared_ptr<Vector4> m_anchor;
 		int m_sorting_order;
 	};
 }

@@ -75,8 +75,8 @@ void Launcher::Start()
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
     tr->GetTransform()->SetParent(canvas->GetTransform());
-    tr->GetTransform()->SetLocalPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0));
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    tr->SetAnchor(Vector4(0, 1, 0, 0));
 	fps = tr;
 
 #if DEMO_UI
@@ -92,35 +92,34 @@ void Launcher::Start()
         Sprite::Type::Sliced,
         Vector2(0, 0));
 
-    
-    auto button_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    button_sr->GetTransform()->SetParent(canvas->GetTransform());
-    button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    button_sr->SetSprite(button_sprite);
-    button_sr->SetSortingOrder(0, 0);
-    button_sr->SetAnchor(Vector4(1, 0, -63, 25));
-    
     /*
+    auto button = GameObject::Create("")->AddComponent<SpriteRenderer>();
+    button->GetTransform()->SetParent(canvas->GetTransform());
+    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    button->SetSprite(button_sprite);
+    button->SetSortingOrder(0, 0);
+    button->SetAnchor(Vector4(1, 0, -63, 25));
+    */
+    
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
     button_sr->GetTransform()->SetParent(canvas->GetTransform());
     button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 
-    auto node = GameObject::Create("")->AddComponent<SpriteNode>();
-    node->GetTransform()->SetParent(button_sr->GetTransform());
-    node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    node->SetSprite(button_sprite);
-    button_sr->AddSprite(node);
+    auto button = GameObject::Create("")->AddComponent<SpriteNode>();
+    button->GetTransform()->SetParent(button_sr->GetTransform());
+    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    button->SetSprite(button_sprite);
+    button->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
+    button_sr->AddSprite(button);
     button_sr->UpdateSprites();
-    button_sr->SetAnchor(Vector4(1, 0, -63, 25));
-    */
 
-    label = Label::Create("Accept", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
+    label = Label::Create("Accept", "consola", 20, LabelPivot::Center, LabelAlign::Auto, false);
     label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
     tr = GameObject::Create("")->AddComponent<TextRenderer>();
     tr->SetLabel(label);
     tr->UpdateLabel();
     tr->SetSortingOrder(0, 1);
-    tr->GetTransform()->SetParent(button_sr->GetTransform());
+    tr->GetTransform()->SetParent(button->GetTransform());
     tr->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 

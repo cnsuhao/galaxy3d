@@ -5,6 +5,15 @@
 
 namespace Galaxy3D
 {
+	SpriteRenderer::SpriteRenderer():
+		m_color(1, 1, 1, 1)
+	{
+		m_sorting_layer = 0;
+		m_sorting_order = 0;
+
+		SetSharedMaterial(Material::Create("UI/Sprite"));
+	}
+
     void SpriteRenderer::Start()
     {
         auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();
@@ -14,15 +23,6 @@ namespace Galaxy3D
             canvas->AnchorTransform(GetTransform(), *m_anchor);
         }
     }
-
-	SpriteRenderer::SpriteRenderer():
-		m_color(1, 1, 1, 1)
-	{
-		m_sorting_layer = 0;
-		m_sorting_order = 0;
-
-		SetSharedMaterial(Material::Create("UI/Sprite"));
-	}
 
     void SpriteRenderer::SetAnchor(const Vector4 &anchor)
     {
