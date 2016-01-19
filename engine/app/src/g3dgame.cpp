@@ -121,7 +121,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
     else
     {
         style = WS_SYSMENU | WS_MINIMIZEBOX;
-        AdjustWindowRect(&rc, style, FALSE);
+        AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
         w = rc.right - rc.left;
         h = rc.bottom - rc.top;
     }
