@@ -109,11 +109,11 @@ void Launcher::Start()
     button->GetTransform()->SetParent(button_sr->GetTransform());
     button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     button->SetSprite(button_sprite);
-    button->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
+    button->SetAnchor(Vector4(1, 0, -63, 25));
     button_sr->AddSprite(button);
     button_sr->UpdateSprites();
 
-    label = Label::Create("Accept", "consola", 20, LabelPivot::Center, LabelAlign::Auto, false);
+    label = Label::Create("Accept", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
     label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
     tr = GameObject::Create("")->AddComponent<TextRenderer>();
     tr->SetLabel(label);
