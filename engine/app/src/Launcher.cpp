@@ -51,32 +51,38 @@ int g_font_size = 100;
 bool g_start = false;
 #endif
 
+float g_unit_per_pixel = 0.01f;
+
 void Launcher::Start()
 {
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
-    cam2d->SetOrthographicSize(Screen::GetHeight() / 2 * 0.01f);
+    cam2d->SetOrthographicSize(g_unit_per_pixel * Screen::GetHeight() / 2);
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
 
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
+    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
 
-    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/consola.ttf");
+    Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
 	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftTop, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-	//tr->GetTransform()->SetPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0) * 0.01f);
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
     tr->GetTransform()->SetParent(canvas->GetTransform());
+    tr->GetTransform()->SetLocalPosition(Vector3(-Screen::GetWidth()/2.0f, Screen::GetHeight()/2.0f, 0));
+    tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 	fps = tr;
 
 #if DEMO_UI
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
-    
+    cam2d->SetClearColor(Color(0, 0, 0, 1));
+
     auto button_sprite = Sprite::Create(
         Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png"),
         Rect(1343, 1536, 126, 50),
@@ -91,17 +97,15 @@ void Launcher::Start()
     */
     
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
-
-    auto node = GameObject::Create("")->AddComponent<SpriteNode>();
-    node->GetTransform()->SetPosition(Vector3(0, 0, 0) * 0.01f);
-    node->SetSprite(button_sprite);
-    node->GetTransform()->SetParent(button_sr->GetTransform());
-    button_sr->AddSprite(node);
     button_sr->GetTransform()->SetParent(canvas->GetTransform());
 
-    //canvas->GetTransform()->SetPosition(Vector3(0, -1, 0) * 0.01f);
-
+    auto node = GameObject::Create("")->AddComponent<SpriteNode>();
+    node->GetTransform()->SetParent(button_sr->GetTransform());
+    node->SetSprite(button_sprite);
+    button_sr->AddSprite(node);
     button_sr->UpdateSprites();
+
+    canvas->GetTransform()->SetPosition(Vector3(0, -100, 0) * g_unit_per_pixel);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
@@ -725,9 +729,8 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 void Launcher::Update()
 {
 #if !DEMO_REWARD
-	/*fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
-		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);*/
-    fps->GetLabel()->SetText("abcdefghijklmnopqrstuvwxyz0123456789");
+	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
+		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
 #endif
 

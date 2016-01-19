@@ -696,7 +696,6 @@ namespace Galaxy3D
 		int pen_x = 0;
 		int pen_y = 0;
 		int origin_y = face->bbox.yMax * m_font_size / face->units_per_EM;
-		float v_ppu = 1 / m_pixels_per_unit;
 		float v_size = 1.0f / TEXTURE_SIZE_MAX;
 		int vertex_count = 0;
 
@@ -1082,10 +1081,10 @@ namespace Galaxy3D
 								line_y_min = y1;
 							}
 
-							img.vertices.push_back(Vector2(ix0 * v_ppu, iy0 * v_ppu));
-							img.vertices.push_back(Vector2(ix0 * v_ppu, iy1 * v_ppu));
-							img.vertices.push_back(Vector2(ix1 * v_ppu, iy1 * v_ppu));
-							img.vertices.push_back(Vector2(ix1 * v_ppu, iy0 * v_ppu));
+							img.vertices.push_back(Vector2((float) ix0, (float) iy0));
+							img.vertices.push_back(Vector2((float) ix0, (float) iy1));
+							img.vertices.push_back(Vector2((float) ix1, (float) iy1));
+							img.vertices.push_back(Vector2((float) ix1, (float) iy0));
 							img.uv.push_back(Vector2(0, 0));
 							img.uv.push_back(Vector2(0, 1));
 							img.uv.push_back(Vector2(1, 1));
@@ -1130,12 +1129,12 @@ namespace Galaxy3D
 
 				if(shadow && visible)
 				{
-					Vector2 offset = Vector2(1, -1) * v_ppu;
+					Vector2 offset = Vector2(1, -1);
 
-					line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
-					line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
-					line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
-					line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+					line.vertices.push_back(Vector2((float) x0, (float) y0) + offset);
+					line.vertices.push_back(Vector2((float) x0, (float) y1) + offset);
+					line.vertices.push_back(Vector2((float) x1, (float) y1) + offset);
+					line.vertices.push_back(Vector2((float) x1, (float) y0) + offset);
 					line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
 					line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
 					line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
@@ -1159,19 +1158,19 @@ namespace Galaxy3D
 				if(outline && visible)
 				{
 					Vector2 offsets[4];
-					offsets[0] = Vector2(-1, 1) * v_ppu;
-					offsets[1] = Vector2(-1, -1) * v_ppu;
-					offsets[2] = Vector2(1, -1) * v_ppu;
-					offsets[3] = Vector2(1, 1) * v_ppu;
+					offsets[0] = Vector2(-1, 1);
+					offsets[1] = Vector2(-1, -1);
+					offsets[2] = Vector2(1, -1);
+					offsets[3] = Vector2(1, 1);
 
 					for(int j=0; j<4; j++)
 					{
 						Vector2 offset = offsets[j];
 
-						line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu) + offset);
-						line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu) + offset);
-						line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu) + offset);
-						line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu) + offset);
+                        line.vertices.push_back(Vector2((float) x0, (float) y0) + offset);
+                        line.vertices.push_back(Vector2((float) x0, (float) y1) + offset);
+                        line.vertices.push_back(Vector2((float) x1, (float) y1) + offset);
+                        line.vertices.push_back(Vector2((float) x1, (float) y0) + offset);
 						line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
 						line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
 						line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
@@ -1196,10 +1195,10 @@ namespace Galaxy3D
 
 			if(visible)
 			{
-				line.vertices.push_back(Vector2(x0 * v_ppu, y0 * v_ppu));
-				line.vertices.push_back(Vector2(x0 * v_ppu, y1 * v_ppu));
-				line.vertices.push_back(Vector2(x1 * v_ppu, y1 * v_ppu));
-				line.vertices.push_back(Vector2(x1 * v_ppu, y0 * v_ppu));
+				line.vertices.push_back(Vector2((float) x0, (float) y0));
+				line.vertices.push_back(Vector2((float) x0, (float) y1));
+				line.vertices.push_back(Vector2((float) x1, (float) y1));
+				line.vertices.push_back(Vector2((float) x1, (float) y0));
 				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y0 * v_size));
 				line.uv.push_back(Vector2(uv_x0 * v_size, uv_y1 * v_size));
 				line.uv.push_back(Vector2(uv_x1 * v_size, uv_y1 * v_size));
@@ -1230,10 +1229,10 @@ namespace Galaxy3D
 					int ux1 = ux0 + info.advance_x + m_char_space;
 					int uy1 = uy0 - 1;
 
-					line.vertices.push_back(Vector2(ux0 * v_ppu, uy0 * v_ppu));
-					line.vertices.push_back(Vector2(ux0 * v_ppu, uy1 * v_ppu));
-					line.vertices.push_back(Vector2(ux1 * v_ppu, uy1 * v_ppu));
-					line.vertices.push_back(Vector2(ux1 * v_ppu, uy0 * v_ppu));
+					line.vertices.push_back(Vector2((float) ux0, (float) uy0));
+					line.vertices.push_back(Vector2((float) ux0, (float) uy1));
+					line.vertices.push_back(Vector2((float) ux1, (float) uy1));
+					line.vertices.push_back(Vector2((float) ux1, (float) uy0));
 					line.uv.push_back(Vector2(0 * v_size, 0 * v_size));
 					line.uv.push_back(Vector2(0 * v_size, 1 * v_size));
 					line.uv.push_back(Vector2(1 * v_size, 1 * v_size));
@@ -1267,10 +1266,10 @@ namespace Galaxy3D
 					{
 						int h = line.heights[j/4];
 
-						line.vertices[j].y -= (line_height - h) * v_ppu;
-						line.vertices[j+1].y -= (line_height - h) * v_ppu;
-						line.vertices[j+2].y -= (line_height - h) * v_ppu;
-						line.vertices[j+3].y -= (line_height - h) * v_ppu;
+						line.vertices[j].y -= (line_height - h);
+						line.vertices[j+1].y -= (line_height - h);
+						line.vertices[j+2].y -= (line_height - h);
+						line.vertices[j+3].y -= (line_height - h);
 					}
 
 					for(size_t j=0; j<line.image_items.size(); j++)
@@ -1279,10 +1278,10 @@ namespace Galaxy3D
 
 						float h = item.vertices[0].y - item.vertices[1].y ;
 
-						item.vertices[0].y -= line_height * v_ppu - h;
-						item.vertices[1].y -= line_height * v_ppu - h;
-						item.vertices[2].y -= line_height * v_ppu - h;
-						item.vertices[3].y -= line_height * v_ppu - h;
+						item.vertices[0].y -= line_height - h;
+						item.vertices[1].y -= line_height - h;
+						item.vertices[2].y -= line_height - h;
+						item.vertices[3].y -= line_height - h;
 					}
 				}
 
@@ -1321,6 +1320,6 @@ namespace Galaxy3D
 		g_font_texture->Apply();
 
         // debug out
-        //g_font_texture->EncodeToPNG("font_tex.png");
+        //g_font_texture->EncodeToPNG("out_font_tex.png");
 	}
 }

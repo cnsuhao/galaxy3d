@@ -191,8 +191,6 @@ namespace Galaxy3D
 		auto ah = label->GetHeightActual();
 		auto w = label->GetWidth();
 		auto h = label->GetHeight();
-		float ppu = label->GetPixelsPerUnit();
-		float v_ppu = 1.0f / ppu;
 
 		if(w < 0)
 		{
@@ -244,37 +242,37 @@ namespace Galaxy3D
 					pivot == LabelPivot::Center ||
 					pivot == LabelPivot::Bottom)
 				{
-					pos.x -= Mathf::Round(w * 0.5f) * v_ppu;
+					pos.x -= Mathf::Round(w * 0.5f);
 				}
 
 				if(	pivot == LabelPivot::RightTop ||
 					pivot == LabelPivot::Right ||
 					pivot == LabelPivot::RightBottom)
 				{
-					pos.x -= w * v_ppu;
+					pos.x -= w;
 				}
 
 				if(	pivot == LabelPivot::Left ||
 					pivot == LabelPivot::Center ||
 					pivot == LabelPivot::Right)
 				{
-					pos.y += Mathf::Round(h * 0.5f) * v_ppu;
+					pos.y += Mathf::Round(h * 0.5f);
 				}
 
 				if(	pivot == LabelPivot::LeftBottom ||
 					pivot == LabelPivot::Bottom ||
 					pivot == LabelPivot::RightBottom)
 				{
-					pos.y += h * v_ppu;
+					pos.y += h;
 				}
 
 				if(align == LabelAlign::Center)
 				{
-					pos.x += Mathf::Round((w - line.width) * 0.5f) * v_ppu;
+					pos.x += Mathf::Round((w - line.width) * 0.5f);
 				}
 				else if(align == LabelAlign::Right)
 				{
-					pos.x += (w - line.width) * v_ppu;
+					pos.x += (w - line.width);
 				}
 
 				memcpy(p, &pos, sizeof(Vector3));
@@ -303,8 +301,6 @@ namespace Galaxy3D
 		auto ah = label->GetHeightActual();
 		auto w = label->GetWidth();
 		auto h = label->GetHeight();
-		float ppu = label->GetPixelsPerUnit();
-		float v_ppu = 1.0f / ppu;
 
 		if(w < 0)
 		{
@@ -347,37 +343,37 @@ namespace Galaxy3D
 				pivot == LabelPivot::Center ||
 				pivot == LabelPivot::Bottom)
 			{
-				pos.x -= Mathf::Round(w * 0.5f) * v_ppu;
+				pos.x -= Mathf::Round(w * 0.5f);
 			}
 
 			if(	pivot == LabelPivot::RightTop ||
 				pivot == LabelPivot::Right ||
 				pivot == LabelPivot::RightBottom)
 			{
-				pos.x -= w * v_ppu;
+				pos.x -= w;
 			}
 
 			if(	pivot == LabelPivot::Left ||
 				pivot == LabelPivot::Center ||
 				pivot == LabelPivot::Right)
 			{
-				pos.y += Mathf::Round(h * 0.5f) * v_ppu;
+				pos.y += Mathf::Round(h * 0.5f);
 			}
 
 			if(	pivot == LabelPivot::LeftBottom ||
 				pivot == LabelPivot::Bottom ||
 				pivot == LabelPivot::RightBottom)
 			{
-				pos.y += h * v_ppu;
+				pos.y += h;
 			}
 
 			if(align == LabelAlign::Center)
 			{
-				pos.x += Mathf::Round((w - line.width) * 0.5f) * v_ppu;
+				pos.x += Mathf::Round((w - line.width) * 0.5f);
 			}
 			else if(align == LabelAlign::Right)
 			{
-				pos.x += (w - line.width) * v_ppu;
+				pos.x += (w - line.width);
 			}
 
 			memcpy(p, &pos, sizeof(Vector3));
