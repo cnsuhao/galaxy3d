@@ -92,15 +92,17 @@ void Launcher::Start()
         Sprite::Type::Sliced,
         Vector2(0, 0));
 
-    /*
+    
     auto button = GameObject::Create("")->AddComponent<SpriteRenderer>();
     button->GetTransform()->SetParent(canvas->GetTransform());
     button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     button->SetSprite(button_sprite);
     button->SetSortingOrder(0, 0);
     button->SetAnchor(Vector4(1, 0, -63, 25));
-    */
+    auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
+    collider->SetSize(Vector3(126, 50, 0));
     
+    /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
     button_sr->GetTransform()->SetParent(canvas->GetTransform());
     button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
@@ -115,6 +117,7 @@ void Launcher::Start()
 
     button_sr->AddSprite(button);
     button_sr->UpdateSprites();
+    */
 
     label = Label::Create("Quit", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
     label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
