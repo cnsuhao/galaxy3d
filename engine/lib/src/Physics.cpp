@@ -29,13 +29,13 @@ namespace Galaxy3D
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
     }
 
-    void Physics::AddRigidBody(void *shape, void *body)
+    void Physics::AddRigidBody(void *shape, void *body, int layer)
     {
         g_collision_shapes.push_back((btCollisionShape *) shape);
-        g_dynamics_world->addRigidBody((btRigidBody *) body);
+        g_dynamics_world->addRigidBody((btRigidBody *) body, 1 << layer, -1);
     }
 
-    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit)
+    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit, int layer_mask)
     {
         Vector3 to = from + Vector3::Normalize(dir) * length;
         btVector3 from_(from.x, from.y, from.z);
@@ -43,6 +43,7 @@ namespace Galaxy3D
 
         btCollisionWorld::ClosestRayResultCallback closest(from_, to_);
         closest.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+        closest.m_collisionFilterMask = layer_mask;
 
         g_dynamics_world->rayTest(from_, to_, closest);
 

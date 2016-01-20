@@ -1,5 +1,6 @@
 #include "BoxCollider.h"
 #include "Transform.h"
+#include "GameObject.h"
 #include "Physics.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
@@ -9,11 +10,13 @@ namespace Galaxy3D
 {
     void BoxCollider::Start()
     {
-        btBoxShape *shape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-        shape->setLocalScaling(btVector3(m_size.x, m_size.y, m_size.z));
-
         auto pos = GetTransform()->GetPosition();
         auto rot = GetTransform()->GetRotation();
+        auto sca = GetTransform()->GetScale();
+
+        btBoxShape *shape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+        shape->setLocalScaling(btVector3(m_size.x * sca.x, m_size.y * sca.y, m_size.z * sca.z));
+
         btTransform transform;
         transform.setIdentity();
         transform.setOrigin(btVector3(pos.x + m_center.x, pos.y + m_center.y, pos.z + m_center.z));
@@ -30,7 +33,7 @@ namespace Galaxy3D
         body->setFriction(1);
         body->setUserPointer(this);
 
-        Physics::AddRigidBody(shape, body);
+        Physics::AddRigidBody(shape, body, GetGameObject()->GetLayer());
 
         m_rigidbody = body;
     }

@@ -1,4 +1,5 @@
 #include "MeshCollider.h"
+#include "GameObject.h"
 #include "Physics.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
@@ -73,7 +74,7 @@ namespace Galaxy3D
         body->setFriction(1);
         body->setUserPointer(this);
 
-        Physics::AddRigidBody(shape, body);
+        Physics::AddRigidBody(shape, body, GetGameObject()->GetLayer());
 
         m_rigidbody = body;
     }

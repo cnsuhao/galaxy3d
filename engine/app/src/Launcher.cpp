@@ -110,6 +110,9 @@ void Launcher::Start()
     button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     button->SetSprite(button_sprite);
     button->SetAnchor(Vector4(1, 0, -63, 25));
+    auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
+    collider->SetSize(Vector3(126, 50, 0));
+
     button_sr->AddSprite(button);
     button_sr->UpdateSprites();
 
@@ -748,6 +751,19 @@ void Launcher::Update()
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
 	fps->UpdateLabel();
+#endif
+
+#if DEMO_UI
+    auto ray = cam2d->ScreenPointToRay(Input::GetMousePosition());
+
+    if(Input::GetMouseButtonDown(0))
+    {
+        RaycastHit hit;
+        if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit, LayerMask::GetMask(Layer::UI)))
+        {
+            hit = hit;
+        }
+    }
 #endif
 
 #if DEMO_REWARD
