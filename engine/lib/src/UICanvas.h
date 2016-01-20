@@ -18,9 +18,14 @@ namespace Galaxy3D
         int GetHeight();
         void AnchorTransform(std::shared_ptr<Transform> &t, const Vector4 &anchor);
 
+    protected:
+        virtual void Update();
+
     private:
         int m_width;
         int m_height;
+
+        void ProcessMouse();
     };
 }
 
