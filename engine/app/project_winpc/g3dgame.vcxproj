@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\Launcher.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ButtonEventListener.h" />
     <ClInclude Include="..\src\Launcher.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

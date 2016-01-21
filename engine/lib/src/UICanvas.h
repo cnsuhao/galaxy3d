@@ -30,6 +30,8 @@ namespace Galaxy3D
 
         void ProcessMouse();
         void ProcessTouch(bool pressed, bool released);
+        void ProcessRelease(float drag);
+        void ProcessPress(bool pressed, float click, float drag);
         void SetHoveredObject(std::weak_ptr<GameObject> &obj);
     };
 }

@@ -506,7 +506,7 @@
     <ClInclude Include="..\src\UICanvas.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\UIWidget.h">
+    <ClInclude Include="..\src\UIEventListener.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

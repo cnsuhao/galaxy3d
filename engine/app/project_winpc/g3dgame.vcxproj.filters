@@ -18,5 +18,8 @@
     <ClInclude Include="..\src\Launcher.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ButtonEventListener.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
