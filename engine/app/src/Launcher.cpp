@@ -4,8 +4,8 @@
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
 #define DEMO_DEF 0
-#define DEMO_REWARD 0
-#define DEMO_UI 1
+#define DEMO_REWARD 1
+#define DEMO_UI 0
 
 using namespace Galaxy3D;
 
@@ -136,6 +136,7 @@ void Launcher::Start()
 #if DEMO_REWARD
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
 
+    /*
     if(Screen::GetWidth() != 1920 || Screen::GetHeight() != 1080)
     {
         auto screen = RenderTexture::Create(1920, 1080, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Trilinear);
@@ -158,23 +159,25 @@ void Launcher::Start()
         float y = Screen::GetHeight() / (float) screen_sprite->GetTexture()->GetHeight();
         screen_sr->GetTransform()->SetScale(Vector3(x, y, 1));
     }
+    */
 
     {
         auto bg_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/start.png");
         auto bg_sr = GameObject::Create("bg")->AddComponent<SpriteRenderer>();
-        bg_sr->GetGameObject()->SetLayer(Layer::UI);
         bg_sr->SetSprite(bg_sprite);
+        bg_sr->GetTransform()->SetParent(canvas->GetTransform());
         float x = 1920 / (float) bg_sprite->GetTexture()->GetWidth();
         float y = 1080 / (float) bg_sprite->GetTexture()->GetHeight();
-        bg_sr->GetTransform()->SetScale(Vector3(x, y, 1));
+        bg_sr->GetTransform()->SetLocalScale(Vector3(x, y, 1));
         g_bg = bg_sr.get();
     }
 
     auto state_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/stop.png");
     auto state_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    state_sr->GetGameObject()->SetLayer(Layer::UI);
     state_sr->SetSprite(state_sprite);
-    state_sr->GetTransform()->SetPosition(Vector3(520, -420, 0) * 0.01f);
+    state_sr->GetTransform()->SetParent(canvas->GetTransform());
+    state_sr->GetTransform()->SetLocalPosition(Vector3(520, -420, 0));
+    state_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     state_sr->SetSortingOrder(1, 0);
     g_state = state_sr.get();
     g_state->Enable(false);
@@ -211,9 +214,10 @@ void Launcher::Start()
 
     auto image_sprite = Sprite::LoadFromFile(Application::GetDataPath() + "/Assets/texture/" + g_reward_image[0]);
     auto image_sr = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    image_sr->GetGameObject()->SetLayer(Layer::UI);
     image_sr->SetSprite(image_sprite);
-    image_sr->GetTransform()->SetPosition(Vector3(-400, -70, 0) * 0.01f);
+    image_sr->GetTransform()->SetParent(canvas->GetTransform());
+    image_sr->GetTransform()->SetLocalPosition(Vector3(-400, -70, 0));
+    image_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     image_sr->SetSortingOrder(1, 0);
     g_image = image_sr.get();
     g_image->Enable(false);
@@ -265,11 +269,11 @@ void Launcher::Start()
     {
         auto label = Label::Create("", "heiti", 60, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-        tr->GetTransform()->SetPosition(Vector3(-300, 260, 0) * 0.01f);
+        tr->GetTransform()->SetParent(canvas->GetTransform());
+        tr->GetTransform()->SetLocalPosition(Vector3(-300, 260, 0));
+        tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
         tr->SetLabel(label);
         tr->SetSortingOrder(1, 0);
-        tr->GetTransform()->SetParent(cam2d->GetTransform());
-        tr->GetGameObject()->SetLayer(Layer::UI);
 
         g_reward = tr.get();
     }
@@ -277,15 +281,17 @@ void Launcher::Start()
     {
         auto label = Label::Create("", "heiti", 120, LabelPivot::Center, LabelAlign::Auto, true);
         auto tr = GameObject::Create("label")->AddComponent<TextRenderer>();
-        tr->GetTransform()->SetPosition(Vector3(520, -70, 0) * 0.01f);
+        tr->GetTransform()->SetParent(canvas->GetTransform());
+        tr->GetTransform()->SetLocalPosition(Vector3(520, -70, 0));
+        tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
         tr->SetLabel(label);
         tr->SetSortingOrder(1, 0);
-        tr->GetTransform()->SetParent(cam2d->GetTransform());
-        tr->GetGameObject()->SetLayer(Layer::UI);
         label->SetLineSpace(30);
 
         g_name = tr.get();
     }
+
+    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
 
 #if DEMO_DEFERRED_SHADING
