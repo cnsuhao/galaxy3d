@@ -35,7 +35,7 @@ namespace Galaxy3D
         g_dynamics_world->addRigidBody((btRigidBody *) body, 1 << layer, -1);
     }
 
-    bool Physics::RayCast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit, int layer_mask)
+    bool Physics::Raycast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit, int layer_mask)
     {
         Vector3 to = from + Vector3::Normalize(dir) * length;
         btVector3 from_(from.x, from.y, from.z);
@@ -69,6 +69,49 @@ namespace Galaxy3D
         }
 
         return false;
+    }
+
+    std::vector<RaycastHit> Physics::RaycastAll(const Vector3 &from, const Vector3 &dir, float length, int layer_mask)
+    {
+        std::vector<RaycastHit> hits;
+
+        Vector3 to = from + Vector3::Normalize(dir) * length;
+        btVector3 from_(from.x, from.y, from.z);
+        btVector3 to_(to.x, to.y, to.z);
+
+        btCollisionWorld::AllHitsRayResultCallback all(from_, to_);
+        all.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+        all.m_collisionFilterMask = layer_mask;
+
+        g_dynamics_world->rayTest(from_, to_, all);
+
+        if(all.hasHit())
+        {
+            for(int i=0; i<all.m_hitFractions.size(); i++)
+            {
+                RaycastHit hit;
+
+                btVector3 pos = from_.lerp(to_, all.m_hitFractions[i]);
+                btVector3 nor = all.m_hitNormalWorld[i];
+
+                hit.point = Vector3(pos.x(), pos.y(), pos.z());
+                hit.normal = Vector3(nor.x(), nor.y(), nor.z());
+
+                if(all.m_collisionObjects[i] != NULL)
+                {
+                    void *user_data = all.m_collisionObjects[i]->getUserPointer();
+                    if(user_data != NULL)
+                    {
+                        Collider *collider = (Collider *) user_data;
+                        hit.collider = std::dynamic_pointer_cast<Collider>(collider->GetComponentPtr());
+                    }
+                }
+
+                hits.push_back(hit);
+            }
+        }
+
+        return hits;
     }
 
     void Physics::Step()
