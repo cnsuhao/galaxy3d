@@ -112,8 +112,8 @@ namespace Galaxy3D
 
             D3D11_TEXTURE2D_DESC td =
             {
-                m_width,//UINT Width;
-                m_height,//UINT Height;
+                (UINT) m_width,//UINT Width;
+                (UINT) m_height,//UINT Height;
                 1,//UINT MipLevels;
                 1,//UINT ArraySize;
                 fmt,//DXGI_FORMAT Format;
@@ -151,8 +151,8 @@ namespace Galaxy3D
 
             D3D11_TEXTURE2D_DESC td =
             {
-                m_width,//UINT Width;
-                m_height,//UINT Height;
+                (UINT) m_width,//UINT Width;
+                (UINT) m_height,//UINT Height;
                 1,//UINT MipLevels;
                 1,//UINT ArraySize;
                 fmt,//DXGI_FORMAT Format;
