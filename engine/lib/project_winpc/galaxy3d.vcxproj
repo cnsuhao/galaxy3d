@@ -173,7 +173,7 @@
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
     <ClInclude Include="..\src\UICanvas.h" />
-    <ClInclude Include="..\src\UIWidget.h" />
+    <ClInclude Include="..\src\UIEventListener.h" />
     <ClInclude Include="..\src\Vector2.h" />
     <ClInclude Include="..\src\Vector3.h" />
     <ClInclude Include="..\src\Vector4.h" />

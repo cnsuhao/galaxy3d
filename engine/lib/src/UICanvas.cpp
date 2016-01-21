@@ -6,6 +6,7 @@
 #include "GTTime.h"
 #include "Physics.h"
 #include "Renderer.h"
+#include "UIEventListener.h"
 
 namespace Galaxy3D
 {
@@ -68,9 +69,12 @@ namespace Galaxy3D
     static Vector2 g_last_pos;
     static int g_current_touch_id = -100;
     static std::weak_ptr<GameObject> g_ray_hit_object;
+    static std::weak_ptr<GameObject> g_hover_object;
+    static std::weak_ptr<GameObject> g_selected_object;
     static std::weak_ptr<Camera> g_camera;
     static RaycastHit g_last_hit;
     static Vector3 g_last_world_position;
+    static bool g_input_focus = false;
 
     static bool raycast(Vector3 &in_pos)
     {
@@ -188,12 +192,321 @@ namespace Galaxy3D
 
     void UICanvas::SetHoveredObject(std::weak_ptr<GameObject> &obj)
     {
+        if(g_hover_object.lock() == obj.lock())
+        {
+            return;
+        }
 
+        auto hover = g_hover_object.lock();
+        if(hover)
+        {
+            auto listener = hover->GetComponent<UIEventListener>();
+            if(listener)
+            {
+                listener->OnHover(false);
+            }
+        }
+
+        g_hover_object = obj;
+        hover = g_hover_object.lock();
+        if(hover)
+        {
+            auto listener = hover->GetComponent<UIEventListener>();
+            if(listener)
+            {
+                listener->OnHover(true);
+            }
+        }
+    }
+
+    void UICanvas::ProcessRelease(float drag)
+    {
+        g_current_touch->press_started = false;
+
+        if(!g_current_touch->pressed.expired())
+        {
+            // If there was a drag event in progress, make sure OnDragOut gets sent
+            if(g_current_touch->drag_started)
+            {
+                if(!g_current_touch->last.expired())
+                {
+                    auto listener = g_current_touch->last.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDragOut(g_current_touch->dragged);
+                    }
+                }
+                
+                if(!g_current_touch->dragged.expired())
+                {
+                    auto listener = g_current_touch->dragged.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDragEnd();
+                    }
+                }
+            }
+
+            // Send the notification of a touch ending
+            auto pressed_listener = g_current_touch->pressed.lock()->GetComponent<UIEventListener>();
+            if(pressed_listener)
+            {
+                pressed_listener->OnPress(false);
+            }
+
+            // Send a hover message to the object
+            // OnHover is sent to restore the visual state
+            if(g_hover_object.lock() == g_current_touch->current.lock())
+            {
+                if(!g_current_touch->current.expired())
+                {
+                    auto listener = g_current_touch->current.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnHover(true);
+                    }
+                }
+            }
+            else
+                SetHoveredObject(g_current_touch->current);
+
+            // If the button/touch was released on the same object, consider it a click and select it
+            if( g_current_touch->dragged.lock() == g_current_touch->current.lock() ||
+                Vector3(g_current_touch->total_delta).SqrMagnitude() < drag)
+            {
+                // If the touch should consider clicks, send out an OnClick notification
+                if(g_current_touch->pressed.lock() == g_current_touch->current.lock())
+                {
+                    float time = GTTime::GetRealTimeSinceStartup();
+
+                    if(pressed_listener)
+                    {
+                        pressed_listener->OnClick();
+                    }
+
+                    if(g_current_touch->click_time + 0.35f > time)
+                    {
+                        if(pressed_listener)
+                        {
+                            pressed_listener->OnDoubleClick();
+                        }
+                    }
+                    g_current_touch->click_time = time;
+                }
+            }
+            else if(g_current_touch->drag_started) // The button/touch was released on a different object
+            {
+                // Send a drop notification (for drag & drop)
+                if(!g_current_touch->current.expired())
+                {
+                    auto listener = g_current_touch->current.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDrop(g_current_touch->dragged);
+                    }
+                }
+            }
+        }
+
+        g_current_touch->drag_started = false;
+        g_current_touch->pressed.reset();
+        g_current_touch->dragged.reset();
+    }
+
+    void UICanvas::ProcessPress(bool pressed, float click, float drag)
+    {
+        if(pressed)
+        {
+            g_current_touch->press_started = true;
+
+            if(!g_current_touch->pressed.expired())
+            {
+                auto listener = g_current_touch->pressed.lock()->GetComponent<UIEventListener>();
+                if(listener)
+                {
+                    listener->OnPress(false);
+                }
+            }
+
+            g_current_touch->pressed = g_current_touch->current;
+            g_current_touch->dragged = g_current_touch->current;
+            g_current_touch->total_delta = Vector2(0, 0);
+            g_current_touch->drag_started = false;
+
+            if(!g_current_touch->pressed.expired())
+            {
+                auto listener = g_current_touch->pressed.lock()->GetComponent<UIEventListener>();
+                if(listener)
+                {
+                    listener->OnPress(true);
+                }
+            }
+
+            if(g_selected_object.lock() != g_current_touch->pressed.lock())
+            {
+                g_input_focus = false;
+
+                if(!g_selected_object.expired())
+                {
+                    auto listener = g_selected_object.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnSelect(false);
+                    }
+                }
+
+                // Change the selection
+                g_selected_object = g_current_touch->pressed;
+
+                // Set the selection
+                if(!g_selected_object.expired())
+                {
+                    auto selected = g_selected_object.lock();
+
+                    //g_input_focus = (selected->IsActiveInHierarchy() && selected->GetComponent<UIInput>());
+                    g_input_focus = false;
+                    
+                    auto listener = selected->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnSelect(true);
+                    }
+                }
+            }
+        }
+        else if(!g_current_touch->pressed.expired() &&
+            (Vector3(g_current_touch->delta).SqrMagnitude() > 0 || g_current_touch->current.lock() != g_current_touch->last.lock()))
+        {
+            // Keep track of the total movement
+            g_current_touch->total_delta = g_current_touch->total_delta + g_current_touch->delta;
+            float mag = Vector3(g_current_touch->total_delta).SqrMagnitude();
+            bool just_started = false;
+
+            // If the drag process hasn't started yet but we've already moved off the object, start it immediately
+            if(!g_current_touch->drag_started && g_current_touch->current.lock() != g_current_touch->last.lock())
+            {
+                g_current_touch->drag_started = true;
+                g_current_touch->delta = g_current_touch->total_delta;
+
+                // OnDragOver is sent for consistency, so that OnDragOut is always preceded by OnDragOver
+                if(!g_current_touch->dragged.expired())
+                {
+                    auto listener = g_current_touch->dragged.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDragStart();
+                    }
+                }
+                
+                if(!g_current_touch->last.expired())
+                {
+                    auto listener = g_current_touch->last.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDragOver(g_current_touch->dragged);
+                    }
+                }
+            }
+            else if(!g_current_touch->drag_started && drag < mag)
+            {
+                // If the drag event has not yet started, see if we've dragged the touch far enough to start it
+                just_started = true;
+                g_current_touch->drag_started = true;
+                g_current_touch->delta = g_current_touch->total_delta;
+            }
+
+            // If we're dragging the touch, send out drag events
+            if(g_current_touch->drag_started)
+            {
+                if(just_started)
+                {
+                    if(!g_current_touch->dragged.expired())
+                    {
+                        auto listener = g_current_touch->dragged.lock()->GetComponent<UIEventListener>();
+                        if(listener)
+                        {
+                            listener->OnDragStart();
+                        }
+                    }
+
+                    if(!g_current_touch->current.expired())
+                    {
+                        auto listener = g_current_touch->current.lock()->GetComponent<UIEventListener>();
+                        if(listener)
+                        {
+                            listener->OnDragOver(g_current_touch->dragged);
+                        }
+                    }
+                }
+                else if(g_current_touch->last.lock() != g_current_touch->current.lock())
+                {
+                    if(!g_current_touch->last.expired())
+                    {
+                        auto listener = g_current_touch->last.lock()->GetComponent<UIEventListener>();
+                        if(listener)
+                        {
+                            listener->OnDragOut(g_current_touch->dragged);
+                        }
+                    }
+
+                    if(!g_current_touch->current.expired())
+                    {
+                        auto listener = g_current_touch->current.lock()->GetComponent<UIEventListener>();
+                        if(listener)
+                        {
+                            listener->OnDragOver(g_current_touch->dragged);
+                        }
+                    }
+                }
+
+                if(!g_current_touch->dragged.expired())
+                {
+                    auto listener = g_current_touch->dragged.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnDrag(g_current_touch->delta);
+                    }
+                }
+
+                g_current_touch->last = g_current_touch->current;
+            }
+        }
     }
 
     void UICanvas::ProcessTouch(bool pressed, bool released)
     {
+        float drag_threshold = 4;
+        float click_threshold = 10;
 
+        drag_threshold *= drag_threshold;
+        click_threshold *= click_threshold;
+
+        if(!g_current_touch->pressed.expired())
+        {
+            if(released)
+                ProcessRelease(drag_threshold);
+            ProcessPress(pressed, click_threshold, drag_threshold);
+
+            if (g_current_touch->pressed.lock() == g_current_touch->current.lock() &&
+                !g_current_touch->drag_started &&
+                g_current_touch->GetDeltaTime() > 1)
+            {
+                if(!g_current_touch->current.expired())
+                {
+                    auto listener = g_current_touch->current.lock()->GetComponent<UIEventListener>();
+                    if(listener)
+                    {
+                        listener->OnLongPress();
+                    }
+                }
+            }
+        }
+        else
+        {
+            ProcessPress(pressed, click_threshold, drag_threshold);
+            if(released)
+                ProcessRelease(drag_threshold);
+        }
     }
 
     void UICanvas::ProcessMouse()

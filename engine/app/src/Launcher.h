@@ -45,6 +45,7 @@
 #include "ImageEffectHighlighting.h"
 #include "HighlightingObject.h"
 #include "UICanvas.h"
+#include "ButtonEventListener.h"
 
 namespace Galaxy3D
 {

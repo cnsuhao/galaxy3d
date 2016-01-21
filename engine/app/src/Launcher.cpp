@@ -101,7 +101,8 @@ void Launcher::Start()
     button->SetAnchor(Vector4(1, 0, -63, 25));
     auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
     collider->SetSize(Vector3(126, 50, 0));
-    
+    auto event_listener = button->GetGameObject()->AddComponent<ButtonEventListener>();
+
     /*
     auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
     button_sr->GetTransform()->SetParent(canvas->GetTransform());
