@@ -3,8 +3,8 @@
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
-#define DEMO_DEF 0
-#define DEMO_REWARD 1
+#define DEMO_DEF 1
+#define DEMO_REWARD 0
 #define DEMO_UI 0
 
 using namespace Galaxy3D;
@@ -129,8 +129,6 @@ void Launcher::Start()
     tr->GetTransform()->SetParent(button->GetTransform());
     tr->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-
-    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
 
 #if DEMO_REWARD
@@ -290,8 +288,6 @@ void Launcher::Start()
 
         g_name = tr.get();
     }
-
-    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 #endif
 
 #if DEMO_DEFERRED_SHADING
@@ -530,7 +526,7 @@ void Launcher::Start()
     if(Physics::Raycast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit))
     {
         hit.point.y += 0.05f;
-        anim->GetTransform()->SetPosition(hit);
+        anim->GetTransform()->SetPosition(hit.point);
     }
 #endif
 
@@ -657,6 +653,8 @@ void Launcher::Start()
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);
     Cursor::SetCursor(0);
 #endif
+
+    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
 
 #if DEMO_TERRAIN

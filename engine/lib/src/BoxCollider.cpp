@@ -33,7 +33,7 @@ namespace Galaxy3D
         body->setFriction(1);
         body->setUserPointer(this);
 
-        Physics::AddRigidBody(shape, body, GetGameObject()->GetLayer());
+        Physics::AddRigidBody(shape, body);
 
         m_rigidbody = body;
     }
