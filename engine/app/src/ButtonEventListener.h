@@ -13,7 +13,11 @@ namespace Galaxy3D
         virtual void OnPress(bool press) {Debug::Log("OnPress");}
         virtual void OnLongPress() {Debug::Log("OnLongPress");}
         virtual void OnSelect(bool select) {Debug::Log("OnSelect");}
-        virtual void OnClick() {Debug::Log("OnClick");}
+        virtual void OnClick()
+        {
+            Debug::Log("OnClick");
+            Application::Quit();
+        }
         virtual void OnDoubleClick() {Debug::Log("OnDoubleClick");}
 
         virtual void OnDragStart() {Debug::Log("OnDragStart");}
