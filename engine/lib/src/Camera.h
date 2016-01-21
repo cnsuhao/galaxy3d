@@ -29,6 +29,7 @@ namespace Galaxy3D
 		void SetDepth(int depth);
         int GetDepth() const {return m_depth;}
 		void SetCullingMask(int mask) {m_culling_mask = mask;}
+        int GetCullingMask() const {return m_culling_mask;}
         bool IsCulling(std::shared_ptr<GameObject> &obj) const;
 		void SetOrthographic(bool ortho) {m_orthographic = ortho;}
 		void SetOrthographicSize(float ortho_size) {m_orthographic_size = ortho_size;}

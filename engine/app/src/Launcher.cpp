@@ -520,7 +520,7 @@ void Launcher::Start()
     //set anim to ground
     Vector3 anim_pos = anim->GetTransform()->GetPosition();
     RaycastHit hit;
-    if(Physics::RayCast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit))
+    if(Physics::Raycast(Vector3(anim_pos.x, 1000, anim_pos.z), Vector3(0, -1, 0), 2000, hit))
     {
         hit.point.y += 0.05f;
         anim->GetTransform()->SetPosition(hit);
@@ -662,7 +662,7 @@ void Launcher::OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component
         TweenPosition *tp = (TweenPosition *) tween;
 
         RaycastHit hit;
-        if(Physics::RayCast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit))
+        if(Physics::Raycast(Vector3(pos->x, 1000, pos->z), Vector3(0, -1, 0), 2000, hit))
         {
             hit.point.y += 0.05f;
 
@@ -739,7 +739,7 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
     Vector3 cam_target = cam3d->GetTransform()->GetPosition() + cam3d->GetTransform()->GetForward() * g_cam_dis;
 
     RaycastHit hit;
-    if(Physics::RayCast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit))
+    if(Physics::Raycast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit))
     {
         cam3d->GetTransform()->SetPosition(Vector3::Lerp(hit.point, cam_target, 0.1f / 1.5f));
     }
@@ -757,16 +757,7 @@ void Launcher::Update()
 #endif
 
 #if DEMO_UI
-    auto ray = cam2d->ScreenPointToRay(Input::GetMousePosition());
 
-    if(Input::GetMouseButtonDown(0))
-    {
-        RaycastHit hit;
-        if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit, LayerMask::GetMask(Layer::UI)))
-        {
-            hit = hit;
-        }
-    }
 #endif
 
 #if DEMO_REWARD
@@ -961,7 +952,7 @@ void Launcher::Update()
         auto ray = cam3d->ScreenPointToRay(Input::GetMousePosition());
 
         RaycastHit hit;
-        if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit))
+        if(Physics::Raycast(ray.origin, ray.GetDirection(), 1000, hit))
         {
             if(hit.collider && hit.collider->GetGameObject() == anim->GetGameObject())
             {
@@ -991,7 +982,7 @@ void Launcher::Update()
             Ray ray = cam3d->ScreenPointToRay(pos);
 
             RaycastHit hit;
-            if(Physics::RayCast(ray.origin, ray.GetDirection(), 1000, hit))
+            if(Physics::Raycast(ray.origin, ray.GetDirection(), 1000, hit))
             {
                 Vector3 pos_old = anim->GetTransform()->GetPosition();
                 Vector3 pos_new = hit.point + Vector3(0, 0.05f, 0);

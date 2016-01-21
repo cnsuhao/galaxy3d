@@ -21,7 +21,8 @@ namespace Galaxy3D
         static void Done();
         // bullet use short for mask, so layer must in range 0 ~ 15
         static void AddRigidBody(void *shape, void *body, int layer);
-        static bool RayCast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit, int layer_mask = -1);
+        static bool Raycast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit, int layer_mask = -1);
+        static std::vector<RaycastHit> RaycastAll(const Vector3 &from, const Vector3 &dir, float length, int layer_mask = -1);
     };
 }
 

@@ -3,10 +3,11 @@
 
 #include "Renderer.h"
 #include "Sprite.h"
+#include "UIWidget.h"
 
 namespace Galaxy3D
 {
-	class SpriteRenderer : public Renderer
+	class SpriteRenderer : public Renderer, public UIWidget
 	{
 	public:
 		SpriteRenderer();

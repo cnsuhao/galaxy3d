@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Vector4.h"
+#include "Camera.h"
 
 namespace Galaxy3D
 {
@@ -19,13 +20,17 @@ namespace Galaxy3D
         void AnchorTransform(std::shared_ptr<Transform> &t, const Vector4 &anchor);
 
     protected:
+        virtual void Start();
         virtual void Update();
 
     private:
         int m_width;
         int m_height;
+        std::shared_ptr<Camera> m_camera;
 
         void ProcessMouse();
+        void ProcessTouch(bool pressed, bool released);
+        void SetHoveredObject(std::weak_ptr<GameObject> &obj);
     };
 }
 
