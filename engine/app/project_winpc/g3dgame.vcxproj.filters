@@ -13,12 +13,18 @@
     <ClCompile Include="..\src\Launcher.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\LauncherDemoUI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ButtonEventListener.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LauncherDemoUI.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

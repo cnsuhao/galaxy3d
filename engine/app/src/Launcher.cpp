@@ -3,9 +3,8 @@
 #define DEMO_TERRAIN 0
 #define DEMO_SCENE 0
 #define DEMO_DEFERRED_SHADING 0
-#define DEMO_DEF 0
+#define DEMO_DEF 1
 #define DEMO_REWARD 0
-#define DEMO_UI 1
 
 using namespace Galaxy3D;
 
@@ -51,7 +50,7 @@ int g_font_size = 100;
 bool g_start = false;
 #endif
 
-float g_unit_per_pixel = 0.01f;
+static float g_unit_per_pixel = 0.01f;
 
 void Launcher::Start()
 {
@@ -78,58 +77,6 @@ void Launcher::Start()
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     tr->SetAnchor(Vector4(0, 1, 0, 0));
 	fps = tr;
-
-#if DEMO_UI
-    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
-
-    auto button_sprite = Sprite::Create(
-        Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png"),
-        Rect(1343, 1536, 126, 50),
-        Vector2(0.5f, 0.5f),
-        100,
-        Vector4(8, 10, 8, 8),
-        Sprite::Type::Sliced,
-        Vector2(0, 0));
-
-    
-    auto button = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    button->GetTransform()->SetParent(canvas->GetTransform());
-    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    button->SetSprite(button_sprite);
-    button->SetSortingOrder(0, 0);
-    button->SetAnchor(Vector4(1, 0, -63, 25));
-    auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
-    collider->SetSize(Vector3(126, 50, 0));
-    auto event_listener = button->GetGameObject()->AddComponent<ButtonEventListener>();
-
-    /*
-    auto button_sr = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
-    button_sr->GetTransform()->SetParent(canvas->GetTransform());
-    button_sr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-
-    auto button = GameObject::Create("")->AddComponent<SpriteNode>();
-    button->GetTransform()->SetParent(button_sr->GetTransform());
-    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    button->SetSprite(button_sprite);
-    button->SetAnchor(Vector4(1, 0, -63, 25));
-    auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
-    collider->SetSize(Vector3(126, 50, 0));
-
-    button_sr->AddSprite(button);
-    button_sr->UpdateSprites();
-    */
-
-    label = Label::Create("Quit", "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
-    label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
-    tr = GameObject::Create("")->AddComponent<TextRenderer>();
-    tr->SetLabel(label);
-    tr->UpdateLabel();
-    tr->SetSortingOrder(0, 1);
-    tr->GetTransform()->SetParent(button->GetTransform());
-    tr->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
-    tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-#endif
 
 #if DEMO_REWARD
     cam2d->SetClearFlags(CameraClearFlags::SolidColor);
@@ -756,13 +703,9 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 void Launcher::Update()
 {
 #if !DEMO_REWARD
-	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::m_fps).str + "\n" +
-		"drawcall:" + GTString::ToString(GTTime::m_draw_call).str);
+	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
+		"drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
 	fps->UpdateLabel();
-#endif
-
-#if DEMO_UI
-
 #endif
 
 #if DEMO_REWARD
