@@ -60,7 +60,7 @@ namespace Galaxy3D
         float pixels_per_unit,
         const Vector4 &border,
         Type::Enum type,
-        Vector2 size)
+        const Vector2 &size)
     {
         std::shared_ptr<Sprite> sprite(new Sprite());
         sprite->m_texture = texture;

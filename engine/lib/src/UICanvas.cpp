@@ -172,7 +172,7 @@ namespace Galaxy3D
         int canvas_h = GetHeight();
 
         float x = (anchor.x - 0.5f) * canvas_w + anchor.z;
-        float y = (anchor.y - 0.5f) * canvas_h + anchor.w;
+        float y = ((1.0f - anchor.y) - 0.5f) * canvas_h + anchor.w;
         Vector3 pos_local = Vector3(x, y, 0);
 
         t->SetPosition(GetTransform()->TransformPoint(pos_local));

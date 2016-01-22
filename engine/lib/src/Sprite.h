@@ -53,6 +53,8 @@ namespace Galaxy3D
 		//	pivot:中心点，相对于sprite rect，(0，0)为左上角，（1，1）为右下角
 		//	pixels_per_unit:The number of pixels in the sprite that correspond to one unit in world space. (Read Only)
 		//	border:the border sizes of the sprite, x y z w : left top right bottom
+        //  type:sprite type
+        //  size:size in pixel, (0, 0) is defaut with rect size
 		static std::shared_ptr<Sprite> Create(
 			const std::shared_ptr<Texture> &texture,
 			const Rect &rect,
@@ -60,7 +62,7 @@ namespace Galaxy3D
 			float pixels_per_unit,
 			const Vector4 &border,
             Type::Enum type,
-            Vector2 size);
+            const Vector2 &size);
         virtual ~Sprite();
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
