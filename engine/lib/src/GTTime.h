@@ -8,7 +8,6 @@ namespace Galaxy3D
 		friend class World;
 		friend class Camera;
 		friend class Renderer;
-		friend class Launcher;
 
 	public:
 		static int GetFrameCount() {return m_frame_count;}
@@ -16,6 +15,8 @@ namespace Galaxy3D
 		static float GetRealTimeSinceStartup();
 		static float GetDeltaTime() {return m_time_delta;}
 		static long long GetTimeMS();
+        static int GetFPS() {return m_fps;}
+        static int GetDrawCall() {return m_draw_call;}
 
 	private:
 		static long long m_time_startup;

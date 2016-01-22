@@ -8,6 +8,7 @@
 #include "Screen.h"
 #include "Camera.h"
 #include "Launcher.h"
+#include "LauncherDemoUI.h"
 #include "Debug.h"
 
 #pragma comment(lib, "jpeg.lib")
@@ -53,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GraphicsDevice::GetInstance()->Init(g_hwnd);
 	World::Init();
 
-	GameObject::Create("launcher")->AddComponent<Launcher>();
+	GameObject::Create("launcher")->AddComponent<LauncherDemoUI>();
 
 	// Main message loop
 	MSG msg = {0};
