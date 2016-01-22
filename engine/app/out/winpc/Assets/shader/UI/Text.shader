@@ -1,4 +1,4 @@
-UI/Shader Text
+UI/Text
 {
 	Tags
 	{

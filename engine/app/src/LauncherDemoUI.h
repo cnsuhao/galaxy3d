@@ -45,7 +45,7 @@
 #include "ImageEffectHighlighting.h"
 #include "HighlightingObject.h"
 #include "UICanvas.h"
-#include "ButtonEventListener.h"
+#include "UIEventListener.h"
 
 namespace Galaxy3D
 {
@@ -61,17 +61,6 @@ namespace Galaxy3D
 		virtual void Start();
 		virtual void Update();
         virtual void LateUpdate();
-        void CreateButton(
-            const std::shared_ptr<Texture2D> &atlas,
-            const Rect &rect,
-            const Vector4 &border,
-            const Vector2 &size,
-            const std::shared_ptr<UICanvas> &canvas,
-            const std::string &text,
-            const Vector4 &anchor,
-            int layer,
-            int order,
-            const std::shared_ptr<SpriteBatchRenderer> &batch);
 	};
 }
 
