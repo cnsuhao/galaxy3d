@@ -7,6 +7,8 @@
 
 namespace Galaxy3D
 {
+    class SpriteBatchRenderer;
+
 	class SpriteNode : public Component
 	{
 	public:
@@ -24,6 +26,8 @@ namespace Galaxy3D
 		Color GetColor() const {return m_color;}
 		void SetSortingOrder(int order) {m_sorting_order = order;}
         void SetAnchor(const Vector4 &anchor);
+        void SetBatch(const std::weak_ptr<SpriteBatchRenderer> &batch) {m_batch = batch;}
+        std::weak_ptr<SpriteBatchRenderer> GetBatch() const {return m_batch;}
         void AnchorTransform();
 
 	private:
@@ -31,6 +35,7 @@ namespace Galaxy3D
 		Color m_color;
         std::shared_ptr<Vector4> m_anchor;
 		int m_sorting_order;
+        std::weak_ptr<SpriteBatchRenderer> m_batch;
 	};
 }
 

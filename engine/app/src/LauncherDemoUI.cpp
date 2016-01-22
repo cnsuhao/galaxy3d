@@ -4,7 +4,65 @@ using namespace Galaxy3D;
 
 static float g_unit_per_pixel = 0.01f;
 
-void LauncherDemoUI::CreateButton(
+struct ExitEventListener : public UIEventListener
+{
+    virtual void OnClick()
+    {
+        Application::Quit();
+    }
+};
+
+struct SettingEventListener : public UIEventListener
+{
+    std::shared_ptr<SpriteNode> m_button;
+    std::shared_ptr<SpriteBatchRenderer> m_renderer;
+
+    virtual void Start()
+    {
+        m_button = GetGameObject()->GetComponent<SpriteNode>();
+        m_button->SetColor(Color(1, 1, 1, 0));
+        m_renderer = GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<SpriteBatchRenderer>();
+        m_renderer->UpdateSprites();
+    }
+
+    virtual void OnPress(bool press)
+    {
+        if(press)
+        {
+            m_button->SetColor(Color(1, 1, 1, 1));
+        }
+        else
+        {
+            m_button->SetColor(Color(1, 1, 1, 0));
+        }
+
+        m_renderer->UpdateSprites();
+    }
+
+    virtual void OnClick()
+    {
+        
+    }
+};
+
+struct MenuEventListener : public SettingEventListener
+{
+    virtual void OnClick()
+    {
+
+    }
+};
+
+struct WorldEventListener : public SettingEventListener
+{
+    virtual void OnClick()
+    {
+
+    }
+};
+
+template<class T>
+void create_button(
     const std::shared_ptr<Texture2D> &atlas,
     const Rect &rect,
     const Vector4 &border,
@@ -14,7 +72,9 @@ void LauncherDemoUI::CreateButton(
     const Vector4 &anchor,
     int layer,
     int order,
-    const std::shared_ptr<SpriteBatchRenderer> &batch)
+    const std::shared_ptr<SpriteBatchRenderer> &batch,
+    std::vector<Rect> &sub_sprites,
+    std::vector<Vector3> &sub_offsets)
 {
     auto sprite_button = Sprite::Create(
         atlas,
@@ -25,7 +85,7 @@ void LauncherDemoUI::CreateButton(
         Sprite::Type::Sliced,
         size);
 
-    auto button = GameObject::Create("")->AddComponent<SpriteNode>();
+    auto button = GameObject::Create("button")->AddComponent<SpriteNode>();
     button->GetTransform()->SetParent(batch->GetTransform());
     button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     button->SetSprite(sprite_button);
@@ -34,7 +94,7 @@ void LauncherDemoUI::CreateButton(
 
     auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
     collider->SetSize(Vector3(size.x, size.y, 0));
-    auto event_listener = button->GetGameObject()->AddComponent<ButtonEventListener>();
+    auto event_listener = button->GetGameObject()->AddComponent<T>();
 
     batch->AddSprite(button);
 
@@ -49,6 +109,27 @@ void LauncherDemoUI::CreateButton(
         tr->SetLabel(label);
         tr->UpdateLabel();
         tr->SetSortingOrder(layer, order + 1);
+    }
+
+    for(size_t i=0; i<sub_sprites.size(); i++)
+    {
+        auto sprite = Sprite::Create(
+            atlas,
+            sub_sprites[i],
+            Vector2(0.5f, 0.5f),
+            100,
+            Vector4(0, 0, 0, 0),
+            Sprite::Type::Simple,
+            Vector2(0, 0));
+
+        auto node = GameObject::Create(GTString::ToString(i).str)->AddComponent<SpriteNode>();
+        node->GetTransform()->SetParent(button->GetTransform());
+        node->GetTransform()->SetLocalPosition(sub_offsets[i]);
+        node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+        node->SetSprite(sprite);
+        node->SetSortingOrder(order + 2 + i);
+
+        batch->AddSprite(node);
     }
 }
 
@@ -102,8 +183,65 @@ void LauncherDemoUI::Start()
     top_bar->SetSortingOrder(0);
 
     batch->AddSprite(top_bar);
+    
+    std::vector<Rect> setting_sub_sprites;
+    std::vector<Vector3> setting_sub_offsets;
+    setting_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    setting_sub_offsets.push_back(Vector3(-30, 0, 0));
+    setting_sub_sprites.push_back(Rect(180, 51, 30, 30));
+    setting_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<SettingEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        canvas,
+        "",
+        Vector4(1, 0, -31, -29),
+        0, 1,
+        batch,
+        setting_sub_sprites,
+        setting_sub_offsets);
 
-    CreateButton(
+    std::vector<Rect> menu_sub_sprites;
+    std::vector<Vector3> menu_sub_offsets;
+    menu_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    menu_sub_offsets.push_back(Vector3(-30, 0, 0));
+    menu_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
+    menu_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<MenuEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        canvas,
+        "",
+        Vector4(1, 0, -92, -29),
+        0, 2,
+        batch,
+        menu_sub_sprites,
+        menu_sub_offsets);
+
+    std::vector<Rect> world_sub_sprites;
+    std::vector<Vector3> world_sub_offsets;
+    world_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    world_sub_offsets.push_back(Vector3(31, 0, 0));
+    world_sub_sprites.push_back(Rect(128, 3, 32, 32));
+    world_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<WorldEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        canvas,
+        "",
+        Vector4(0, 0, 31, -29),
+        0, 3,
+        batch,
+        world_sub_sprites,
+        world_sub_offsets);
+        
+    create_button<ExitEventListener>(
         atlas,
         Rect(1343, 1536, 126, 50),
         Vector4(8, 10, 8, 8),
@@ -112,7 +250,9 @@ void LauncherDemoUI::Start()
         "Exit",
         Vector4(1, 1, -63, 25),
         0, 0,
-        batch);
+        batch,
+        std::vector<Rect>(),
+        std::vector<Vector3>());
     
     batch->UpdateSprites();
 

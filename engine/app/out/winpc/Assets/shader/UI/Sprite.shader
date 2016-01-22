@@ -1,4 +1,4 @@
-UI/Shader Sprite
+UI/Sprite
 {
 	Tags
 	{
@@ -45,7 +45,7 @@ UI/Shader Sprite
 		{
 			PS_INPUT output = (PS_INPUT) 0;
 
-			output.v_pos = mul( input.Position, WorldViewProjection );
+			output.v_pos = mul(input.Position, WorldViewProjection);
 			output.v_uv = input.Texcoord0;
 			output.v_color = input.Color;
     
@@ -67,7 +67,7 @@ UI/Shader Sprite
 
 		float4 main( PS_INPUT input) : SV_Target
 		{
-			float4 c = _MainTex.Sample( _MainTex_Sampler, input.v_uv ) * input.v_color;
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
 			return c;
 		}
 	}

@@ -47,6 +47,8 @@ namespace Galaxy3D
 		{
 			m_sprites.push_back(sprite);
 			m_sprites.sort(SpriteNode::Less);
+
+            sprite->SetBatch(std::dynamic_pointer_cast<SpriteBatchRenderer>(GetComponentPtr()));
 		}
 	}
 

@@ -16,7 +16,6 @@
     <ClCompile Include="..\src\LauncherDemoUI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\ButtonEventListener.h" />
     <ClInclude Include="..\src\Launcher.h" />
     <ClInclude Include="..\src\LauncherDemoUI.h" />
   </ItemGroup>

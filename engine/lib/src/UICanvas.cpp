@@ -7,6 +7,8 @@
 #include "Physics.h"
 #include "Renderer.h"
 #include "UIEventListener.h"
+#include "SpriteNode.h"
+#include "SpriteBatchRenderer.h"
 
 namespace Galaxy3D
 {
@@ -96,6 +98,14 @@ namespace Galaxy3D
             {
                 auto go = hits[i].collider->GetGameObject();
                 auto renderer = go->GetComponent<Renderer>();
+                if(!renderer)
+                {
+                    auto sprite_node = go->GetComponent<SpriteNode>();
+                    if(sprite_node)
+                    {
+                        renderer = sprite_node->GetBatch().lock();
+                    }
+                }
                 if(renderer)
                 {
                     long long layer = renderer->GetSortingLayer();
