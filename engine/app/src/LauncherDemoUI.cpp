@@ -54,20 +54,21 @@ void LauncherDemoUI::CreateButton(
 
 void LauncherDemoUI::Start()
 {
+    Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
+
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
     cam2d->SetOrthographicSize(g_unit_per_pixel * Screen::GetHeight() / 2);
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
-    cam2d->SetClearFlags(CameraClearFlags::Nothing);
+    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
 
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
-
-    Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
-    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
 	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftBottom, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
@@ -78,8 +79,9 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0, 1, 5, 10));
 	fps = tr;
 
-    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
-    cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
+    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    batch->GetTransform()->SetParent(canvas->GetTransform());
+    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 
     auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png");
 
@@ -92,16 +94,14 @@ void LauncherDemoUI::Start()
         Sprite::Type::Sliced,
         Vector2((float) Screen::GetWidth(), 79));
 
-    auto top_bar = GameObject::Create("")->AddComponent<SpriteRenderer>();
-    top_bar->GetTransform()->SetParent(canvas->GetTransform());
+    auto top_bar = GameObject::Create("")->AddComponent<SpriteNode>();
+    top_bar->GetTransform()->SetParent(batch->GetTransform());
     top_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     top_bar->SetSprite(sprite_top_bar);
-    top_bar->SetSortingOrder(0, 0);
     top_bar->SetAnchor(Vector4(0.5f, 0, 0, -40));
+    top_bar->SetSortingOrder(0);
 
-    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
-    batch->GetTransform()->SetParent(canvas->GetTransform());
-    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    batch->AddSprite(top_bar);
 
     CreateButton(
         atlas,
