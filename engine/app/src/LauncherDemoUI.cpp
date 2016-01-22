@@ -45,7 +45,7 @@ struct SettingEventListener : public UIEventListener
     }
 };
 
-struct MenuEventListener : public SettingEventListener
+struct NewsEventListener : public SettingEventListener
 {
     virtual void OnClick()
     {
@@ -151,13 +151,13 @@ void LauncherDemoUI::Start()
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
 
-	auto label = Label::Create("", "heiti", 20, LabelPivot::LeftBottom, LabelAlign::Auto, true);
+	auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
 	tr->SetLabel(label);
 	tr->SetSortingOrder(1000, 0);
     tr->GetTransform()->SetParent(canvas->GetTransform());
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    tr->SetAnchor(Vector4(0, 1, 5, 10));
+    tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
     auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
@@ -203,13 +203,13 @@ void LauncherDemoUI::Start()
         setting_sub_sprites,
         setting_sub_offsets);
 
-    std::vector<Rect> menu_sub_sprites;
-    std::vector<Vector3> menu_sub_offsets;
-    menu_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
-    menu_sub_offsets.push_back(Vector3(-30, 0, 0));
-    menu_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
-    menu_sub_offsets.push_back(Vector3(0, 0, 0));
-    create_button<MenuEventListener>(
+    std::vector<Rect> news_sub_sprites;
+    std::vector<Vector3> news_sub_offsets;
+    news_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    news_sub_offsets.push_back(Vector3(-30, 0, 0));
+    news_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
+    news_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<NewsEventListener>(
         atlas,
         Rect(65, 20, 58, 56),
         Vector4(0, 0, 0, 0),
@@ -219,8 +219,8 @@ void LauncherDemoUI::Start()
         Vector4(1, 0, -92, -29),
         0, 2,
         batch,
-        menu_sub_sprites,
-        menu_sub_offsets);
+        news_sub_sprites,
+        news_sub_offsets);
 
     std::vector<Rect> world_sub_sprites;
     std::vector<Vector3> world_sub_offsets;
