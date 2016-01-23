@@ -7,6 +7,14 @@ namespace Galaxy3D
 {
     class Collider : public Component
     {
+    protected:
+        void *m_rigidbody;
+
+        Collider():
+            m_rigidbody(NULL)
+        {}
+        virtual void OnEnable();
+        virtual void OnDisable();
     };
 }
 

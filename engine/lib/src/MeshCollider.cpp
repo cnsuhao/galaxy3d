@@ -2,8 +2,6 @@
 #include "GameObject.h"
 #include "Physics.h"
 #include "btBulletDynamicsCommon.h"
-#include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
-#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 
 namespace Galaxy3D
 {
@@ -74,7 +72,7 @@ namespace Galaxy3D
         body->setFriction(1);
         body->setUserPointer(this);
 
-        Physics::AddRigidBody(shape, body);
+        Physics::AddNewRigidBody(shape, body);
 
         m_rigidbody = body;
     }

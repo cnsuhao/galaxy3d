@@ -20,7 +20,9 @@ namespace Galaxy3D
         static void Step();
         static void Done();
         // bullet use short for mask, and 0 ~ 5 is used, so gameobject layer must be in range 0 ~ 9 (6 ~ 15 - 6)
-        static void AddRigidBody(void *shape, void *body);
+        static void AddNewRigidBody(void *shape, void *body);
+        static void RemoveRigidBody(void *body);
+        static void RestoreRigidBody(void *body);
         static bool Raycast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit);
         static std::vector<RaycastHit> RaycastAll(const Vector3 &from, const Vector3 &dir, float length, int layer_mask = -1);
     };
