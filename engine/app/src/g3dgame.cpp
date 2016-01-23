@@ -24,7 +24,7 @@
 
 using namespace Galaxy3D;
 
-static const char g_title[] = "Galaxy3D Engine";
+static const char g_title[] = "Galaxy3D Engine--Powered by v.Britannia";
 static int g_screen_w = 1600;
 static int g_screen_h = 900;
 static HINSTANCE g_hinst;
