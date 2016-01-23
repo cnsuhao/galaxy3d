@@ -288,8 +288,47 @@ static void create_window_setting(
         "Resume",
         false,
         Vector4(),
-        Vector3(0, 220, 0),
+        Vector3(0, 180, 0),
         1, 1,
+        batch,
+        std::vector<std::string>(),
+        std::vector<Vector3>());
+
+    create_button<NormalButtonEventListener>(
+        atlas,
+        "NormalButton_Normal",
+        Vector2(350, 50),
+        "Graphic",
+        false,
+        Vector4(),
+        Vector3(0, 180 - 90, 0),
+        1, 2,
+        batch,
+        std::vector<std::string>(),
+        std::vector<Vector3>());
+
+    create_button<NormalButtonEventListener>(
+        atlas,
+        "NormalButton_Normal",
+        Vector2(350, 50),
+        "Audio",
+        false,
+        Vector4(),
+        Vector3(0, 180 - 90 * 2, 0),
+        1, 3,
+        batch,
+        std::vector<std::string>(),
+        std::vector<Vector3>());
+
+    create_button<NormalButtonEventListener>(
+        atlas,
+        "NormalButton_Normal",
+        Vector2(350, 50),
+        "Input",
+        false,
+        Vector4(),
+        Vector3(0, 180 - 90 * 3, 0),
+        1, 3,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -301,8 +340,8 @@ static void create_window_setting(
         "Quit",
         false,
         Vector4(),
-        Vector3(0, -220, 0),
-        1, 1,
+        Vector3(0, 180 - 90 * 4, 0),
+        1, 5,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -339,7 +378,6 @@ void LauncherDemoUI::Start()
 
     auto atlas = UIAtlas::LoadFromJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
     g_atlas = atlas.get();
-    //auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/RnM UI Atlas.png");
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);
