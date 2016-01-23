@@ -11,8 +11,7 @@ namespace Galaxy3D
     public:
         BoxCollider():
             m_center(0, 0, 0),
-            m_size(1, 1, 1),
-            m_rigidbody(NULL)
+            m_size(1, 1, 1)
         {}
         void SetCenter(const Vector3 &center) {m_center = center;}
         void SetSize(const Vector3 &size) {m_size = size;}
@@ -24,7 +23,6 @@ namespace Galaxy3D
     private:
         Vector3 m_center;
         Vector3 m_size;
-        void *m_rigidbody;
     };
 }
 

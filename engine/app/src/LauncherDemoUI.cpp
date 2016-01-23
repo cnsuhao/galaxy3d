@@ -4,6 +4,7 @@ using namespace Galaxy3D;
 
 static float g_unit_per_pixel = 0.01f;
 static UIAtlas *g_atlas = NULL;
+static GameObject *g_win_setting = NULL;
 
 struct NormalButtonEventListener : public UIEventListener
 {
@@ -33,6 +34,17 @@ struct NormalButtonEventListener : public UIEventListener
     virtual void OnClick()
     {
         
+    }
+};
+
+struct ResumeEventListener : public NormalButtonEventListener
+{
+    virtual void OnClick()
+    {
+        if(g_win_setting->IsActiveSelf())
+        {
+            g_win_setting->SetActive(false);
+        }
     }
 };
 
@@ -76,7 +88,14 @@ struct SettingEventListener : public TopBarButtonEventListener
 {
     virtual void OnClick()
     {
-        
+        if(!g_win_setting->IsActiveSelf())
+        {
+            g_win_setting->SetActive(true);
+        }
+        else
+        {
+            g_win_setting->SetActive(false);
+        }
     }
 };
 
@@ -281,7 +300,7 @@ static void create_window_setting(
 
     batch->AddSprite(bg);
 
-    create_button<NormalButtonEventListener>(
+    create_button<ResumeEventListener>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
@@ -347,6 +366,8 @@ static void create_window_setting(
         std::vector<Vector3>());
 
     batch->UpdateSprites();
+
+    g_win_setting = batch->GetGameObject().get();
 }
 
 void LauncherDemoUI::Start()
@@ -381,6 +402,8 @@ void LauncherDemoUI::Start()
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);
+
+    g_win_setting->SetActive(false);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }

@@ -5,7 +5,6 @@
 #include "LayerMask.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
-#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 
 namespace Galaxy3D
 {
@@ -31,9 +30,19 @@ namespace Galaxy3D
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
     }
 
-    void Physics::AddRigidBody(void *shape, void *body)
+    void Physics::AddNewRigidBody(void *shape, void *body)
     {
         g_collision_shapes.push_back((btCollisionShape *) shape);
+        g_dynamics_world->addRigidBody((btRigidBody *) body);
+    }
+
+    void Physics::RemoveRigidBody(void *body)
+    {
+        g_dynamics_world->removeRigidBody((btRigidBody *) body);
+    }
+
+    void Physics::RestoreRigidBody(void *body)
+    {
         g_dynamics_world->addRigidBody((btRigidBody *) body);
     }
 
