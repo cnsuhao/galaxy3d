@@ -4,6 +4,7 @@
 #include "Mathf.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include "ftoutln.h"
 #include <unordered_map>
 
 struct CharInfo
@@ -19,6 +20,8 @@ struct CharInfo
 	int bearing_y;
 	int advance_x;
 	int advance_y;
+    bool bold;
+    bool italic;
 };
 
 struct TagInfo
@@ -181,8 +184,10 @@ namespace Galaxy3D
 		}
 	}
 
-	static CharInfo get_char_info(const std::string &font, int c, int size)
+	static CharInfo get_char_info(const std::string &font, int c, int size, bool bold, bool italic)
 	{
+        int size_key = size | (bold ? (1 << 24) : 0) | (italic ? (1 << 16) : 0);
+
 		auto find_font = g_chars.find(font);
 		if(find_font != g_chars.end())
 		{
@@ -191,7 +196,7 @@ namespace Galaxy3D
 			if(find_c != fon.end())
 			{
 				auto &cha = find_c->second;
-				auto find_s = cha.find(size);
+				auto find_s = cha.find(size_key);
 				if(find_s != cha.end())
 				{
 					return find_s->second;
@@ -223,7 +228,27 @@ namespace Galaxy3D
 
 			FT_GlyphSlot slot = face->glyph;
 			auto glyph_index = FT_Get_Char_Index(face, c);
-			FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
+			//FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
+
+            FT_Load_Char(face, c, FT_LOAD_FORCE_AUTOHINT);
+
+            if(bold)
+            {
+                FT_Outline_Embolden(&face->glyph->outline, 1 << 6);
+            }
+
+            if(italic)
+            {
+                float lean = 0.5f;
+                FT_Matrix matrix;
+                matrix.xx = 1 << 16;
+                matrix.xy = (int) (lean * (1 << 16));
+                matrix.yx = 0;
+                matrix.yy = (1 << 16);
+                FT_Outline_Transform(&face->glyph->outline, &matrix);
+            }
+            
+            FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
 
 			_ASSERT(slot->bitmap.width == slot->bitmap.pitch);
 
@@ -234,6 +259,8 @@ namespace Galaxy3D
 			info.bearing_y = slot->bitmap_top;
 			info.advance_x = slot->advance.x >> 6;
 			info.advance_y = slot->advance.y >> 6;
+            info.bold = bold;
+            info.italic = italic;
 
             if(c != '\n')
             {
@@ -280,7 +307,7 @@ namespace Galaxy3D
             }
 		}
 
-		g_chars[font][c][size] = info;
+		g_chars[font][c][size_key] = info;
 
 		return info;
 	}
@@ -620,6 +647,92 @@ namespace Galaxy3D
 				str.Erase(i, 7);
 				i--;
 			}
+            else if(
+                str[i+0] == '<' &&
+                str[i+1] == 'b' &&
+                str[i+2] == 'o' &&
+                str[i+3] == 'l' &&
+                str[i+4] == 'd' &&
+                str[i+5] == '>')
+            {
+                TagInfo info;
+                info.tag = "bold";
+                info.begin = i;
+
+                tag_find.push_back(info);
+
+                str.Erase(i, 6);
+                i--;
+            }
+            else if(
+                str[i+0] == '<' &&
+                str[i+1] == '/' &&
+                str[i+2] == 'b' &&
+                str[i+3] == 'o' &&
+                str[i+4] == 'l' &&
+                str[i+5] == 'd' &&
+                str[i+6] == '>')
+            {
+                for(int j=tag_find.size()-1; j>=0; j--)
+                {
+                    auto &t = tag_find[j];
+                    if(t.tag == "bold")
+                    {
+                        t.end = i;
+                        tags.push_back(t);
+                        tag_find.erase(tag_find.begin() + j);
+                        break;
+                    }
+                }
+
+                str.Erase(i, 7);
+                i--;
+            }
+            else if(
+                str[i+0] == '<' &&
+                str[i+1] == 'i' &&
+                str[i+2] == 't' &&
+                str[i+3] == 'a' &&
+                str[i+4] == 'l' &&
+                str[i+5] == 'i' &&
+                str[i+6] == 'c' &&
+                str[i+7] == '>')
+            {
+                TagInfo info;
+                info.tag = "italic";
+                info.begin = i;
+
+                tag_find.push_back(info);
+
+                str.Erase(i, 8);
+                i--;
+            }
+            else if(
+                str[i+0] == '<' &&
+                str[i+1] == '/' &&
+                str[i+2] == 'i' &&
+                str[i+3] == 't' &&
+                str[i+4] == 'a' &&
+                str[i+5] == 'l' &&
+                str[i+6] == 'i' &&
+                str[i+7] == 'c' &&
+                str[i+8] == '>')
+            {
+                for(int j=tag_find.size()-1; j>=0; j--)
+                {
+                    auto &t = tag_find[j];
+                    if(t.tag == "italic")
+                    {
+                        t.end = i;
+                        tags.push_back(t);
+                        tag_find.erase(tag_find.begin() + j);
+                        break;
+                    }
+                }
+
+                str.Erase(i, 9);
+                i--;
+            }
 			else if(
 				str[i+0] == '<' &&
 				str[i+1] == 'i' &&
@@ -727,15 +840,19 @@ namespace Galaxy3D
 			Color color_outline(0, 0, 0, 1);
 			bool underline = false;
 			int origin = origin_y;
+            bool bold = false;
+            bool italic = false;
 
 			if(m_rich)
 			{
-				TagInfo *tag_color = 0;
-				TagInfo *tag_shadow = 0;
-				TagInfo *tag_outline = 0;
-				TagInfo *tag_underline = 0;
-				TagInfo *tag_size = 0;
-				TagInfo *tag_font = 0;
+				TagInfo *tag_color = NULL;
+				TagInfo *tag_shadow = NULL;
+				TagInfo *tag_outline = NULL;
+				TagInfo *tag_underline = NULL;
+				TagInfo *tag_size = NULL;
+				TagInfo *tag_font = NULL;
+                TagInfo *tag_bold = NULL;
+                TagInfo *tag_italic = NULL;
 				int begin_max;
 
 				//	color
@@ -753,7 +870,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_color != 0)
+				if(tag_color != NULL)
 				{
 					auto &t = *tag_color;
 					
@@ -788,7 +905,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_shadow != 0)
+				if(tag_shadow != NULL)
 				{
 					auto &t = *tag_shadow;
 					
@@ -824,7 +941,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_outline != 0)
+				if(tag_outline != NULL)
 				{
 					auto &t = *tag_outline;
 					
@@ -860,9 +977,8 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_underline != 0)
+				if(tag_underline != NULL)
 				{
-					auto &t = *tag_underline;
 					underline = true;
 				}
 
@@ -881,7 +997,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_size != 0)
+				if(tag_size != NULL)
 				{
 					auto &t = *tag_size;
 					
@@ -926,7 +1042,7 @@ namespace Galaxy3D
 					}
 				}
 
-				if(tag_font != 0)
+				if(tag_font != NULL)
 				{
 					auto &t = *tag_font;
 
@@ -973,11 +1089,51 @@ namespace Galaxy3D
 						face_old = NULL;
 					}
 				}
+
+                //	bold
+                begin_max = -1;
+                for(int j=0; j<(int) tags.size(); j++)
+                {
+                    auto &t = tags[j];
+                    if(t.tag == "bold" && i >= t.begin && i < t.end)
+                    {
+                        if(begin_max < t.begin)
+                        {
+                            tag_bold = &t;
+                            begin_max = t.begin;
+                        }
+                    }
+                }
+
+                if(tag_bold != NULL)
+                {
+                    bold = true;
+                }
+
+                //	italic
+                begin_max = -1;
+                for(int j=0; j<(int) tags.size(); j++)
+                {
+                    auto &t = tags[j];
+                    if(t.tag == "italic" && i >= t.begin && i < t.end)
+                    {
+                        if(begin_max < t.begin)
+                        {
+                            tag_italic = &t;
+                            begin_max = t.begin;
+                        }
+                    }
+                }
+
+                if(tag_italic != NULL)
+                {
+                    italic = true;
+                }
 			}
 
 			bool visible = (c != '\n' && c != 0xffffffff);
 			
-			CharInfo info = get_char_info(font, c, font_size);
+			CharInfo info = get_char_info(font, c, font_size, bold, italic);
 
 			if(visible)
 			{

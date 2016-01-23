@@ -50,4 +50,9 @@ namespace Galaxy3D
 	{
 		return Color(r * v, g * v, b * v, a * v);
 	}
+
+    Color Color::operator /(float v) const
+    {
+        return *this * (1 / v);
+    }
 }
