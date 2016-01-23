@@ -14,6 +14,7 @@ namespace Galaxy3D
 		Color operator *(const Color &c) const;
 		Color &operator *=(const Color &c);
 		Color operator *(float v) const;
+        Color operator /(float v) const;
 
 	public:
 		float r;

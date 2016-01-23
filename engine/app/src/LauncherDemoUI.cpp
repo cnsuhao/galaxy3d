@@ -159,7 +159,7 @@ static void create_button(
 
     if(!text.empty())
     {
-        auto label = Label::Create(text, "heiti", 20, LabelPivot::Center, LabelAlign::Auto, false);
+        auto label = Label::Create(text, "heiti", 18, LabelPivot::Center, LabelAlign::Auto, false);
         label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
         auto tr = GameObject::Create("")->AddComponent<TextRenderer>();
         tr->GetTransform()->SetParent(button->GetTransform());
@@ -297,8 +297,32 @@ static void create_window_setting(
     bg->SetSprite(sprite_bg);
     bg->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
     bg->SetSortingOrder(0);
-
     batch->AddSprite(bg);
+
+    auto sprite_header = atlas->CreateSprite(
+        "Window_Header",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Sliced,
+        Vector2(401, 81));
+
+    auto header = GameObject::Create("")->AddComponent<SpriteNode>();
+    header->GetTransform()->SetParent(bg->GetTransform());
+    header->GetTransform()->SetLocalPosition(Vector3(0, 232, 0));
+    header->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    header->SetSprite(sprite_header);
+    header->SetSortingOrder(1);
+    batch->AddSprite(header);
+
+    auto label = Label::Create("<bold>SETTINGS</bold>", "consola", 20, LabelPivot::Center, LabelAlign::Auto, true);
+    label->SetColor(Color(185, 124, 43, 255) / 255.0f);
+    auto tr = GameObject::Create("")->AddComponent<TextRenderer>();
+    tr->GetTransform()->SetParent(header->GetTransform());
+    tr->GetTransform()->SetLocalPosition(Vector3(0, 20, 0));
+    tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    tr->SetLabel(label);
+    tr->UpdateLabel();
+    tr->SetSortingOrder(1, 1);
 
     create_button<ResumeEventListener>(
         atlas,
@@ -307,8 +331,8 @@ static void create_window_setting(
         "Resume",
         false,
         Vector4(),
-        Vector3(0, 180, 0),
-        1, 1,
+        Vector3(0, 160, 0),
+        1, 2,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -320,8 +344,8 @@ static void create_window_setting(
         "Graphic",
         false,
         Vector4(),
-        Vector3(0, 180 - 90, 0),
-        1, 2,
+        Vector3(0, 160 - 90, 0),
+        1, 3,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -333,8 +357,8 @@ static void create_window_setting(
         "Audio",
         false,
         Vector4(),
-        Vector3(0, 180 - 90 * 2, 0),
-        1, 3,
+        Vector3(0, 160 - 90 * 2, 0),
+        1, 4,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -346,8 +370,8 @@ static void create_window_setting(
         "Input",
         false,
         Vector4(),
-        Vector3(0, 180 - 90 * 3, 0),
-        1, 3,
+        Vector3(0, 160 - 90 * 3, 0),
+        1, 5,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
@@ -359,8 +383,8 @@ static void create_window_setting(
         "Quit",
         false,
         Vector4(),
-        Vector3(0, 180 - 90 * 4, 0),
-        1, 5,
+        Vector3(0, 160 - 90 * 4, 0),
+        1, 6,
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
