@@ -62,14 +62,15 @@ struct WorldEventListener : public SettingEventListener
 };
 
 template<class T>
-void create_button(
+static void create_button(
     const std::shared_ptr<Texture2D> &atlas,
     const Rect &rect,
     const Vector4 &border,
     const Vector2 &size,
-    const std::shared_ptr<UICanvas> &canvas,
     const std::string &text,
+    bool use_anchor,
     const Vector4 &anchor,
+    const Vector3 &local_pos,
     int layer,
     int order,
     const std::shared_ptr<SpriteBatchRenderer> &batch,
@@ -89,7 +90,14 @@ void create_button(
     button->GetTransform()->SetParent(batch->GetTransform());
     button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     button->SetSprite(sprite_button);
-    button->SetAnchor(anchor);
+    if(use_anchor)
+    {
+        button->SetAnchor(anchor);
+    }
+    else
+    {
+        button->GetTransform()->SetLocalPosition(local_pos);
+    }
     button->SetSortingOrder(order);
 
     auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
@@ -133,6 +141,142 @@ void create_button(
     }
 }
 
+static void create_top_bar(
+    const std::shared_ptr<Texture2D> &atlas,
+    const std::shared_ptr<UICanvas> &canvas)
+{
+    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    batch->GetTransform()->SetParent(canvas->GetTransform());
+    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    batch->SetSortingOrder(0, 0);
+
+    auto sprite_top_bar = Sprite::Create(
+        atlas,
+        Rect(399, 1302, 512, 79),
+        Vector2(0.5f, 0.5f),
+        100,
+        Vector4(150, 0, 150, 0),
+        Sprite::Type::Sliced,
+        Vector2((float) Screen::GetWidth(), 79));
+
+    auto top_bar = GameObject::Create("")->AddComponent<SpriteNode>();
+    top_bar->GetTransform()->SetParent(batch->GetTransform());
+    top_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    top_bar->SetSprite(sprite_top_bar);
+    top_bar->SetAnchor(Vector4(0.5f, 0, 0, -40));
+    top_bar->SetSortingOrder(0);
+
+    batch->AddSprite(top_bar);
+
+    std::vector<Rect> setting_sub_sprites;
+    std::vector<Vector3> setting_sub_offsets;
+    setting_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    setting_sub_offsets.push_back(Vector3(-30, 0, 0));
+    setting_sub_sprites.push_back(Rect(180, 51, 30, 30));
+    setting_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<SettingEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        "",
+        true,
+        Vector4(1, 0, -31, -29),
+        Vector3(),
+        0, 1,
+        batch,
+        setting_sub_sprites,
+        setting_sub_offsets);
+
+    std::vector<Rect> news_sub_sprites;
+    std::vector<Vector3> news_sub_offsets;
+    news_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    news_sub_offsets.push_back(Vector3(-30, 0, 0));
+    news_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
+    news_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<NewsEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        "",
+        true,
+        Vector4(1, 0, -92, -29),
+        Vector3(),
+        0, 2,
+        batch,
+        news_sub_sprites,
+        news_sub_offsets);
+
+    std::vector<Rect> world_sub_sprites;
+    std::vector<Vector3> world_sub_offsets;
+    world_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    world_sub_offsets.push_back(Vector3(31, 0, 0));
+    world_sub_sprites.push_back(Rect(128, 3, 32, 32));
+    world_sub_offsets.push_back(Vector3(0, 0, 0));
+    create_button<WorldEventListener>(
+        atlas,
+        Rect(65, 20, 58, 56),
+        Vector4(0, 0, 0, 0),
+        Vector2(58, 56),
+        "",
+        true,
+        Vector4(0, 0, 31, -29),
+        Vector3(),
+        0, 3,
+        batch,
+        world_sub_sprites,
+        world_sub_offsets);
+
+    batch->UpdateSprites();
+}
+
+static void create_window_setting(
+    const std::shared_ptr<Texture2D> &atlas,
+    const std::shared_ptr<UICanvas> &canvas)
+{
+    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    batch->GetTransform()->SetParent(canvas->GetTransform());
+    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    batch->SetSortingOrder(1, 0);
+
+    auto sprite_bg = Sprite::Create(
+        atlas,
+        Rect(0, 1536, 512, 512),
+        Vector2(0.5f, 0.5f),
+        100,
+        Vector4(150, 150, 150, 150),
+        Sprite::Type::Sliced,
+        Vector2(438, 584));
+
+    auto bg = GameObject::Create("")->AddComponent<SpriteNode>();
+    bg->GetTransform()->SetParent(batch->GetTransform());
+    bg->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    bg->SetSprite(sprite_bg);
+    bg->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
+    bg->SetSortingOrder(0);
+
+    batch->AddSprite(bg);
+
+
+
+    create_button<ExitEventListener>(
+        atlas,
+        Rect(0, 142, 126, 50),//Rect(1343, 1536, 126, 50)
+        Vector4(8, 10, 8, 8),
+        Vector2(350, 50),
+        "Quit",
+        false,
+        Vector4(),
+        Vector3(0, -220, 0),
+        1, 1,
+        batch,
+        std::vector<Rect>(),
+        std::vector<Vector3>());
+
+    batch->UpdateSprites();
+}
+
 void LauncherDemoUI::Start()
 {
     Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
@@ -160,101 +304,10 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
-    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
-    batch->GetTransform()->SetParent(canvas->GetTransform());
-    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-
     auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png");
 
-    auto sprite_top_bar = Sprite::Create(
-        atlas,
-        Rect(399, 1302, 512, 79),
-        Vector2(0.5f, 0.5f),
-        100,
-        Vector4(150, 0, 150, 0),
-        Sprite::Type::Sliced,
-        Vector2((float) Screen::GetWidth(), 79));
-
-    auto top_bar = GameObject::Create("")->AddComponent<SpriteNode>();
-    top_bar->GetTransform()->SetParent(batch->GetTransform());
-    top_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    top_bar->SetSprite(sprite_top_bar);
-    top_bar->SetAnchor(Vector4(0.5f, 0, 0, -40));
-    top_bar->SetSortingOrder(0);
-
-    batch->AddSprite(top_bar);
-    
-    std::vector<Rect> setting_sub_sprites;
-    std::vector<Vector3> setting_sub_offsets;
-    setting_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
-    setting_sub_offsets.push_back(Vector3(-30, 0, 0));
-    setting_sub_sprites.push_back(Rect(180, 51, 30, 30));
-    setting_sub_offsets.push_back(Vector3(0, 0, 0));
-    create_button<SettingEventListener>(
-        atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
-        Vector2(58, 56),
-        canvas,
-        "",
-        Vector4(1, 0, -31, -29),
-        0, 1,
-        batch,
-        setting_sub_sprites,
-        setting_sub_offsets);
-
-    std::vector<Rect> news_sub_sprites;
-    std::vector<Vector3> news_sub_offsets;
-    news_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
-    news_sub_offsets.push_back(Vector3(-30, 0, 0));
-    news_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
-    news_sub_offsets.push_back(Vector3(0, 0, 0));
-    create_button<NewsEventListener>(
-        atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
-        Vector2(58, 56),
-        canvas,
-        "",
-        Vector4(1, 0, -92, -29),
-        0, 2,
-        batch,
-        news_sub_sprites,
-        news_sub_offsets);
-
-    std::vector<Rect> world_sub_sprites;
-    std::vector<Vector3> world_sub_offsets;
-    world_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
-    world_sub_offsets.push_back(Vector3(31, 0, 0));
-    world_sub_sprites.push_back(Rect(128, 3, 32, 32));
-    world_sub_offsets.push_back(Vector3(0, 0, 0));
-    create_button<WorldEventListener>(
-        atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
-        Vector2(58, 56),
-        canvas,
-        "",
-        Vector4(0, 0, 31, -29),
-        0, 3,
-        batch,
-        world_sub_sprites,
-        world_sub_offsets);
-        
-    create_button<ExitEventListener>(
-        atlas,
-        Rect(1343, 1536, 126, 50),
-        Vector4(8, 10, 8, 8),
-        Vector2(126, 50),
-        canvas,
-        "Exit",
-        Vector4(1, 1, -63, 25),
-        0, 0,
-        batch,
-        std::vector<Rect>(),
-        std::vector<Vector3>());
-    
-    batch->UpdateSprites();
+    create_top_bar(atlas, canvas);
+    create_window_setting(atlas, canvas);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
