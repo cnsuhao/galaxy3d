@@ -304,7 +304,8 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
-    auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/ui/RnM UI Atlas.png");
+    UIAtlas::LoadJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
+    auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/RnM UI Atlas.png");
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);
