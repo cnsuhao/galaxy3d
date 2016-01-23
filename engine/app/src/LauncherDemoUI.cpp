@@ -3,8 +3,40 @@
 using namespace Galaxy3D;
 
 static float g_unit_per_pixel = 0.01f;
+static UIAtlas *g_atlas = NULL;
 
-struct ExitEventListener : public UIEventListener
+struct NormalButtonEventListener : public UIEventListener
+{
+    std::shared_ptr<SpriteNode> m_button;
+    std::shared_ptr<SpriteBatchRenderer> m_renderer;
+
+    virtual void Start()
+    {
+        m_button = GetGameObject()->GetComponent<SpriteNode>();
+        m_renderer = GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<SpriteBatchRenderer>();
+    }
+
+    virtual void OnPress(bool press)
+    {
+        if(press)
+        {
+            g_atlas->SetSpriteData(m_button->GetSprite(), "NormalButton_Hover");
+        }
+        else
+        {
+            g_atlas->SetSpriteData(m_button->GetSprite(), "NormalButton_Normal");
+        }
+
+        m_renderer->UpdateSprites();
+    }
+
+    virtual void OnClick()
+    {
+        
+    }
+};
+
+struct ExitEventListener : public NormalButtonEventListener
 {
     virtual void OnClick()
     {
@@ -12,7 +44,7 @@ struct ExitEventListener : public UIEventListener
     }
 };
 
-struct SettingEventListener : public UIEventListener
+struct TopBarButtonEventListener : public UIEventListener
 {
     std::shared_ptr<SpriteNode> m_button;
     std::shared_ptr<SpriteBatchRenderer> m_renderer;
@@ -38,14 +70,17 @@ struct SettingEventListener : public UIEventListener
 
         m_renderer->UpdateSprites();
     }
+};
 
+struct SettingEventListener : public TopBarButtonEventListener
+{
     virtual void OnClick()
     {
         
     }
 };
 
-struct NewsEventListener : public SettingEventListener
+struct NewsEventListener : public TopBarButtonEventListener
 {
     virtual void OnClick()
     {
@@ -53,7 +88,7 @@ struct NewsEventListener : public SettingEventListener
     }
 };
 
-struct WorldEventListener : public SettingEventListener
+struct WorldEventListener : public TopBarButtonEventListener
 {
     virtual void OnClick()
     {
@@ -63,9 +98,8 @@ struct WorldEventListener : public SettingEventListener
 
 template<class T>
 static void create_button(
-    const std::shared_ptr<Texture2D> &atlas,
-    const Rect &rect,
-    const Vector4 &border,
+    const std::shared_ptr<UIAtlas> &atlas,
+    const std::string &sprite_name,
     const Vector2 &size,
     const std::string &text,
     bool use_anchor,
@@ -74,15 +108,13 @@ static void create_button(
     int layer,
     int order,
     const std::shared_ptr<SpriteBatchRenderer> &batch,
-    std::vector<Rect> &sub_sprites,
+    std::vector<std::string> &sub_sprites,
     std::vector<Vector3> &sub_offsets)
 {
-    auto sprite_button = Sprite::Create(
-        atlas,
-        rect,
+    auto sprite_button = atlas->CreateSprite(
+        sprite_name,
         Vector2(0.5f, 0.5f),
-        100,
-        border,
+        100, 
         Sprite::Type::Sliced,
         size);
 
@@ -121,12 +153,10 @@ static void create_button(
 
     for(size_t i=0; i<sub_sprites.size(); i++)
     {
-        auto sprite = Sprite::Create(
-            atlas,
+        auto sprite = atlas->CreateSprite(
             sub_sprites[i],
             Vector2(0.5f, 0.5f),
-            100,
-            Vector4(0, 0, 0, 0),
+            100, 
             Sprite::Type::Simple,
             Vector2(0, 0));
 
@@ -142,7 +172,7 @@ static void create_button(
 }
 
 static void create_top_bar(
-    const std::shared_ptr<Texture2D> &atlas,
+    const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
 {
     auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
@@ -150,12 +180,10 @@ static void create_top_bar(
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(0, 0);
 
-    auto sprite_top_bar = Sprite::Create(
-        atlas,
-        Rect(399, 1302, 512, 79),
+    auto sprite_top_bar = atlas->CreateSprite(
+        "TopBar_Background",
         Vector2(0.5f, 0.5f),
-        100,
-        Vector4(150, 0, 150, 0),
+        100, 
         Sprite::Type::Sliced,
         Vector2((float) Screen::GetWidth(), 79));
 
@@ -168,16 +196,15 @@ static void create_top_bar(
 
     batch->AddSprite(top_bar);
 
-    std::vector<Rect> setting_sub_sprites;
+    std::vector<std::string> setting_sub_sprites;
     std::vector<Vector3> setting_sub_offsets;
-    setting_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    setting_sub_sprites.push_back("TopBar_Separator");
     setting_sub_offsets.push_back(Vector3(-30, 0, 0));
-    setting_sub_sprites.push_back(Rect(180, 51, 30, 30));
+    setting_sub_sprites.push_back("UIIcon_Settings");
     setting_sub_offsets.push_back(Vector3(0, 0, 0));
     create_button<SettingEventListener>(
         atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
+        "TopBar_Button_Hover",
         Vector2(58, 56),
         "",
         true,
@@ -188,16 +215,15 @@ static void create_top_bar(
         setting_sub_sprites,
         setting_sub_offsets);
 
-    std::vector<Rect> news_sub_sprites;
+    std::vector<std::string> news_sub_sprites;
     std::vector<Vector3> news_sub_offsets;
-    news_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    news_sub_sprites.push_back("TopBar_Separator");
     news_sub_offsets.push_back(Vector3(-30, 0, 0));
-    news_sub_sprites.push_back(Rect(2018, 1634, 27, 27));
+    news_sub_sprites.push_back("UIIcon_News");
     news_sub_offsets.push_back(Vector3(0, 0, 0));
     create_button<NewsEventListener>(
         atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
+        "TopBar_Button_Hover",
         Vector2(58, 56),
         "",
         true,
@@ -208,16 +234,15 @@ static void create_top_bar(
         news_sub_sprites,
         news_sub_offsets);
 
-    std::vector<Rect> world_sub_sprites;
+    std::vector<std::string> world_sub_sprites;
     std::vector<Vector3> world_sub_offsets;
-    world_sub_sprites.push_back(Rect(1753, 1732, 8, 60));
+    world_sub_sprites.push_back("TopBar_Separator");
     world_sub_offsets.push_back(Vector3(31, 0, 0));
-    world_sub_sprites.push_back(Rect(128, 3, 32, 32));
+    world_sub_sprites.push_back("UIIcon_World");
     world_sub_offsets.push_back(Vector3(0, 0, 0));
     create_button<WorldEventListener>(
         atlas,
-        Rect(65, 20, 58, 56),
-        Vector4(0, 0, 0, 0),
+        "TopBar_Button_Hover",
         Vector2(58, 56),
         "",
         true,
@@ -232,7 +257,7 @@ static void create_top_bar(
 }
 
 static void create_window_setting(
-    const std::shared_ptr<Texture2D> &atlas,
+    const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
 {
     auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
@@ -240,12 +265,10 @@ static void create_window_setting(
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(1, 0);
 
-    auto sprite_bg = Sprite::Create(
-        atlas,
-        Rect(0, 1536, 512, 512),
+    auto sprite_bg = atlas->CreateSprite(
+        "Window_Background",
         Vector2(0.5f, 0.5f),
-        100,
-        Vector4(150, 150, 150, 150),
+        100, 
         Sprite::Type::Sliced,
         Vector2(438, 584));
 
@@ -258,12 +281,22 @@ static void create_window_setting(
 
     batch->AddSprite(bg);
 
-
+    create_button<NormalButtonEventListener>(
+        atlas,
+        "NormalButton_Normal",
+        Vector2(350, 50),
+        "Resume",
+        false,
+        Vector4(),
+        Vector3(0, 220, 0),
+        1, 1,
+        batch,
+        std::vector<std::string>(),
+        std::vector<Vector3>());
 
     create_button<ExitEventListener>(
         atlas,
-        Rect(0, 142, 126, 50),//Rect(1343, 1536, 126, 50)
-        Vector4(8, 10, 8, 8),
+        "NormalButton_Normal",
         Vector2(350, 50),
         "Quit",
         false,
@@ -271,7 +304,7 @@ static void create_window_setting(
         Vector3(0, -220, 0),
         1, 1,
         batch,
-        std::vector<Rect>(),
+        std::vector<std::string>(),
         std::vector<Vector3>());
 
     batch->UpdateSprites();
@@ -304,8 +337,9 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
-    UIAtlas::LoadJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
-    auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/RnM UI Atlas.png");
+    auto atlas = UIAtlas::LoadFromJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
+    g_atlas = atlas.get();
+    //auto atlas = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/texture/RnM UI Atlas.png");
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);

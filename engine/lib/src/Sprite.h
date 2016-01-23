@@ -77,6 +77,7 @@ namespace Galaxy3D
         void SetFillDirection(FillDirection::Enum dir);
         void SetFillInvert(bool invert);
         void SetFlip(Flip::Enum flip);
+        void SetSpriteData(const Rect &rect, const Vector4 &border);
 
 	private:
 		std::shared_ptr<Texture> m_texture;

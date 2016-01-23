@@ -1090,6 +1090,16 @@ namespace Galaxy3D
         }
     }
 
+    void Sprite::SetSpriteData(const Rect &rect, const Vector4 &border)
+    {
+        if(m_rect != rect || m_border != border)
+        {
+            m_rect = rect;
+            m_border = border;
+            m_dirty = true;
+        }
+    }
+
     BufferObject Sprite::GetVertexBuffer()
     {
         FillMeshIfNeeded();
