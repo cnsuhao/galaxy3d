@@ -46,6 +46,7 @@
 #include "HighlightingObject.h"
 #include "UICanvas.h"
 #include "UIEventListener.h"
+#include "UIAtlas.h"
 
 namespace Galaxy3D
 {

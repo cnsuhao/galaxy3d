@@ -79,6 +79,7 @@
     <ClCompile Include="..\src\Tweenner.cpp" />
     <ClCompile Include="..\src\TweenPosition.cpp" />
     <ClCompile Include="..\src\TweenRotation.cpp" />
+    <ClCompile Include="..\src\UIAtlas.cpp" />
     <ClCompile Include="..\src\UICanvas.cpp" />
     <ClCompile Include="..\src\Vector2.cpp" />
     <ClCompile Include="..\src\Vector3.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="..\src\Tweenner.h" />
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
+    <ClInclude Include="..\src\UIAtlas.h" />
     <ClInclude Include="..\src\UICanvas.h" />
     <ClInclude Include="..\src\UIEventListener.h" />
     <ClInclude Include="..\src\Vector2.h" />
@@ -213,11 +215,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

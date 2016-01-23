@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\lib\depend\zl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bullet", "..\..\lib\depend\bullet3-2.83.6\project_winpc\bullet.vcxproj", "{489B358F-DDB9-4B16-8CCF-7D8848A8B9B4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json", "..\..\lib\depend\json\project_winpc\json.vcxproj", "{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -72,6 +74,14 @@ Global
 		{489B358F-DDB9-4B16-8CCF-7D8848A8B9B4}.Release|Win32.Build.0 = Release|Win32
 		{489B358F-DDB9-4B16-8CCF-7D8848A8B9B4}.Release|x64.ActiveCfg = Release|x64
 		{489B358F-DDB9-4B16-8CCF-7D8848A8B9B4}.Release|x64.Build.0 = Release|x64
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Debug|Win32.Build.0 = Debug|Win32
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Debug|x64.ActiveCfg = Debug|x64
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Debug|x64.Build.0 = Debug|x64
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|Win32.ActiveCfg = Release|Win32
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|Win32.Build.0 = Release|Win32
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|x64.ActiveCfg = Release|x64
+		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

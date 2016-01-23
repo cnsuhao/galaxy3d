@@ -16,6 +16,7 @@
 #pragma comment(lib, "zlib.lib")
 #pragma comment(lib, "freetype.lib")
 #pragma comment(lib, "bullet.lib")
+#pragma comment(lib, "json.lib")
 #pragma comment(lib, "galaxy3d.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
