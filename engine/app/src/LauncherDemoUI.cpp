@@ -130,17 +130,15 @@ static void create_button(
     std::vector<std::string> &sub_sprites,
     std::vector<Vector3> &sub_offsets)
 {
-    auto sprite_button = atlas->CreateSprite(
+    auto button = GameObject::Create("button")->AddComponent<SpriteNode>();
+    button->GetTransform()->SetParent(batch->GetTransform());
+    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    button->SetSprite(atlas->CreateSprite(
         sprite_name,
         Vector2(0.5f, 0.5f),
         100, 
         Sprite::Type::Sliced,
-        size);
-
-    auto button = GameObject::Create("button")->AddComponent<SpriteNode>();
-    button->GetTransform()->SetParent(batch->GetTransform());
-    button->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    button->SetSprite(sprite_button);
+        size));
     if(use_anchor)
     {
         button->SetAnchor(anchor);
@@ -172,20 +170,17 @@ static void create_button(
 
     for(size_t i=0; i<sub_sprites.size(); i++)
     {
-        auto sprite = atlas->CreateSprite(
-            sub_sprites[i],
-            Vector2(0.5f, 0.5f),
-            100, 
-            Sprite::Type::Simple,
-            Vector2(0, 0));
-
         auto node = GameObject::Create(GTString::ToString(i).str)->AddComponent<SpriteNode>();
         node->GetTransform()->SetParent(button->GetTransform());
         node->GetTransform()->SetLocalPosition(sub_offsets[i]);
         node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-        node->SetSprite(sprite);
+        node->SetSprite(atlas->CreateSprite(
+            sub_sprites[i],
+            Vector2(0.5f, 0.5f),
+            100, 
+            Sprite::Type::Simple,
+            Vector2(0, 0)));
         node->SetSortingOrder(order + 2 + i);
-
         batch->AddSprite(node);
     }
 }
@@ -199,20 +194,17 @@ static void create_top_bar(
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(0, 0);
 
-    auto sprite_top_bar = atlas->CreateSprite(
-        "TopBar_Background",
-        Vector2(0.5f, 0.5f),
-        100, 
-        Sprite::Type::Sliced,
-        Vector2((float) Screen::GetWidth(), 79));
-
     auto top_bar = GameObject::Create("")->AddComponent<SpriteNode>();
     top_bar->GetTransform()->SetParent(batch->GetTransform());
     top_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    top_bar->SetSprite(sprite_top_bar);
-    top_bar->SetAnchor(Vector4(0.5f, 0, 0, -40));
+    top_bar->SetSprite(atlas->CreateSprite(
+        "TopBar_Background",
+        Vector2(0.5f, 0),
+        100, 
+        Sprite::Type::Sliced,
+        Vector2((float) Screen::GetWidth(), 79)));
+    top_bar->SetAnchor(Vector4(0.5f, 0, 0, 0));
     top_bar->SetSortingOrder(0);
-
     batch->AddSprite(top_bar);
 
     std::vector<std::string> setting_sub_sprites;
@@ -275,6 +267,140 @@ static void create_top_bar(
     batch->UpdateSprites();
 }
 
+static void create_action_bar(
+    const std::shared_ptr<UIAtlas> &atlas,
+    const std::shared_ptr<UICanvas> &canvas)
+{
+    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    batch->GetTransform()->SetParent(canvas->GetTransform());
+    batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    batch->SetSortingOrder(0, 0);
+
+    auto action_bar = GameObject::Create("")->AddComponent<SpriteNode>();
+    action_bar->GetTransform()->SetParent(batch->GetTransform());
+    action_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    action_bar->SetSprite(atlas->CreateSprite(
+        "ActionBar_Background",
+        Vector2(0.5f, 1),
+        100, 
+        Sprite::Type::Sliced,
+        Vector2(890, 98)));
+    action_bar->SetAnchor(Vector4(0.5f, 1, 0, 0));
+    action_bar->SetSortingOrder(0);
+    batch->AddSprite(action_bar);
+
+    auto left_globe_bg = GameObject::Create("")->AddComponent<SpriteNode>();
+    left_globe_bg->GetTransform()->SetParent(action_bar->GetTransform());
+    left_globe_bg->GetTransform()->SetLocalPosition(Vector3(-539, 172, 0));
+    left_globe_bg->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    left_globe_bg->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Background",
+        Vector2(0, 0),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    left_globe_bg->SetSortingOrder(1);
+    batch->AddSprite(left_globe_bg);
+
+    auto left_globe_fill = GameObject::Create("")->AddComponent<SpriteNode>();
+    left_globe_fill->GetTransform()->SetParent(left_globe_bg->GetTransform());
+    left_globe_fill->GetTransform()->SetLocalPosition(Vector3(95, -92, 0));
+    left_globe_fill->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    left_globe_fill->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Fill",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Filled,
+        Vector2(0, 0)));
+    left_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
+    left_globe_fill->SetColor(Color(243, 30, 30, 255) / 255.0f);
+    left_globe_fill->SetSortingOrder(2);
+    batch->AddSprite(left_globe_fill);
+
+    auto left_globe_overlay = GameObject::Create("")->AddComponent<SpriteNode>();
+    left_globe_overlay->GetTransform()->SetParent(left_globe_bg->GetTransform());
+    left_globe_overlay->GetTransform()->SetLocalPosition(Vector3(94, -94, 0));
+    left_globe_overlay->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    left_globe_overlay->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Overlay_D",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    left_globe_overlay->SetSortingOrder(3);
+    batch->AddSprite(left_globe_overlay);
+
+    auto left_globe_decoration = GameObject::Create("")->AddComponent<SpriteNode>();
+    left_globe_decoration->GetTransform()->SetParent(left_globe_bg->GetTransform());
+    left_globe_decoration->GetTransform()->SetLocalPosition(Vector3(93, -148, 0));
+    left_globe_decoration->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    left_globe_decoration->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Decoration",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    left_globe_decoration->SetSortingOrder(4);
+    batch->AddSprite(left_globe_decoration);
+    
+    auto right_globe_bg = GameObject::Create("")->AddComponent<SpriteNode>();
+    right_globe_bg->GetTransform()->SetParent(action_bar->GetTransform());
+    right_globe_bg->GetTransform()->SetLocalPosition(Vector3(354, 172, 0));
+    right_globe_bg->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    right_globe_bg->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Background",
+        Vector2(0, 0),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    right_globe_bg->SetSortingOrder(1);
+    batch->AddSprite(right_globe_bg);
+
+    auto right_globe_fill = GameObject::Create("")->AddComponent<SpriteNode>();
+    right_globe_fill->GetTransform()->SetParent(right_globe_bg->GetTransform());
+    right_globe_fill->GetTransform()->SetLocalPosition(Vector3(95, -92, 0));
+    right_globe_fill->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    right_globe_fill->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Fill",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Filled,
+        Vector2(0, 0)));
+    right_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
+    right_globe_fill->SetColor(Color(36, 157, 183, 255) / 255.0f);
+    right_globe_fill->SetSortingOrder(2);
+    batch->AddSprite(right_globe_fill);
+
+    auto right_globe_overlay = GameObject::Create("")->AddComponent<SpriteNode>();
+    right_globe_overlay->GetTransform()->SetParent(right_globe_bg->GetTransform());
+    right_globe_overlay->GetTransform()->SetLocalPosition(Vector3(94, -94, 0));
+    right_globe_overlay->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    right_globe_overlay->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Overlay_D",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    right_globe_overlay->GetSprite()->SetFlip(Sprite::Flip::Horizontal);
+    right_globe_overlay->SetSortingOrder(3);
+    batch->AddSprite(right_globe_overlay);
+
+    auto right_globe_decoration = GameObject::Create("")->AddComponent<SpriteNode>();
+    right_globe_decoration->GetTransform()->SetParent(right_globe_bg->GetTransform());
+    right_globe_decoration->GetTransform()->SetLocalPosition(Vector3(93, -148, 0));
+    right_globe_decoration->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    right_globe_decoration->SetSprite(atlas->CreateSprite(
+        "ActionBar_Globe_Decoration",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Simple,
+        Vector2(0, 0)));
+    right_globe_decoration->SetSortingOrder(4);
+    batch->AddSprite(right_globe_decoration);
+
+    batch->UpdateSprites();
+}
+
 static void create_window_setting(
     const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
@@ -284,33 +410,29 @@ static void create_window_setting(
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(1, 0);
 
-    auto sprite_bg = atlas->CreateSprite(
+    auto bg = GameObject::Create("")->AddComponent<SpriteNode>();
+    bg->GetTransform()->SetParent(batch->GetTransform());
+    bg->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    bg->SetSprite(atlas->CreateSprite(
         "Window_Background",
         Vector2(0.5f, 0.5f),
         100, 
         Sprite::Type::Sliced,
-        Vector2(438, 584));
-
-    auto bg = GameObject::Create("")->AddComponent<SpriteNode>();
-    bg->GetTransform()->SetParent(batch->GetTransform());
-    bg->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    bg->SetSprite(sprite_bg);
+        Vector2(438, 584)));
     bg->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
     bg->SetSortingOrder(0);
     batch->AddSprite(bg);
-
-    auto sprite_header = atlas->CreateSprite(
-        "Window_Header",
-        Vector2(0.5f, 0.5f),
-        100, 
-        Sprite::Type::Sliced,
-        Vector2(401, 81));
 
     auto header = GameObject::Create("")->AddComponent<SpriteNode>();
     header->GetTransform()->SetParent(bg->GetTransform());
     header->GetTransform()->SetLocalPosition(Vector3(0, 232, 0));
     header->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    header->SetSprite(sprite_header);
+    header->SetSprite(atlas->CreateSprite(
+        "Window_Header",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Sliced,
+        Vector2(401, 81)));
     header->SetSortingOrder(1);
     batch->AddSprite(header);
 
@@ -328,7 +450,7 @@ static void create_window_setting(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
-        "Resume",
+        "Back To Game",
         false,
         Vector4(),
         Vector3(0, 160, 0),
@@ -380,7 +502,7 @@ static void create_window_setting(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
-        "Quit",
+        "Quit To Desktop",
         false,
         Vector4(),
         Vector3(0, 160 - 90 * 4, 0),
@@ -426,6 +548,7 @@ void LauncherDemoUI::Start()
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);
+    create_action_bar(atlas, canvas);
 
     g_win_setting->SetActive(false);
 
@@ -440,7 +563,14 @@ void LauncherDemoUI::Update()
 
     if(Input::GetKeyUp(KeyCode::Escape))
     {
-        //Application::Quit();
+        if(!g_win_setting->IsActiveSelf())
+        {
+            g_win_setting->SetActive(true);
+        }
+        else
+        {
+            g_win_setting->SetActive(false);
+        }
     }
 }
 
