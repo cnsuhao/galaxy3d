@@ -304,7 +304,7 @@ static void create_action_bar(
 
     auto left_globe_fill = GameObject::Create("")->AddComponent<SpriteNode>();
     left_globe_fill->GetTransform()->SetParent(left_globe_bg->GetTransform());
-    left_globe_fill->GetTransform()->SetLocalPosition(Vector3(95, -92, 0));
+    left_globe_fill->GetTransform()->SetLocalPosition(Vector3(93, -94, 0));
     left_globe_fill->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     left_globe_fill->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Fill",
@@ -313,6 +313,7 @@ static void create_action_bar(
         Sprite::Type::Filled,
         Vector2(0, 0)));
     left_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
+    left_globe_fill->GetSprite()->SetFillAmount(0.75f);
     left_globe_fill->SetColor(Color(243, 30, 30, 255) / 255.0f);
     left_globe_fill->SetSortingOrder(2);
     batch->AddSprite(left_globe_fill);
@@ -358,7 +359,7 @@ static void create_action_bar(
 
     auto right_globe_fill = GameObject::Create("")->AddComponent<SpriteNode>();
     right_globe_fill->GetTransform()->SetParent(right_globe_bg->GetTransform());
-    right_globe_fill->GetTransform()->SetLocalPosition(Vector3(95, -92, 0));
+    right_globe_fill->GetTransform()->SetLocalPosition(Vector3(93, -94, 0));
     right_globe_fill->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     right_globe_fill->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Fill",
@@ -367,6 +368,7 @@ static void create_action_bar(
         Sprite::Type::Filled,
         Vector2(0, 0)));
     right_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
+    right_globe_fill->GetSprite()->SetFillAmount(0.75f);
     right_globe_fill->SetColor(Color(36, 157, 183, 255) / 255.0f);
     right_globe_fill->SetSortingOrder(2);
     batch->AddSprite(right_globe_fill);
@@ -397,6 +399,66 @@ static void create_action_bar(
         Vector2(0, 0)));
     right_globe_decoration->SetSortingOrder(4);
     batch->AddSprite(right_globe_decoration);
+
+    for(int i=0; i<12; i++)
+    {
+        auto spell_slot = GameObject::Create("")->AddComponent<SpriteNode>();
+        spell_slot->GetTransform()->SetParent(action_bar->GetTransform());
+        spell_slot->GetTransform()->SetLocalPosition(Vector3(-330 + i * 60.0f, 38, 0));
+        spell_slot->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+        spell_slot->SetSprite(atlas->CreateSprite(
+            "ActionBar_SpellSlot",
+            Vector2(0.5f, 0.5f),
+            100, 
+            Sprite::Type::Simple,
+            Vector2(0, 0)));
+        spell_slot->SetSortingOrder(1);
+        batch->AddSprite(spell_slot);
+
+        auto spell_cooldown = GameObject::Create("")->AddComponent<SpriteNode>();
+        spell_cooldown->GetTransform()->SetParent(spell_slot->GetTransform());
+        spell_cooldown->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+        spell_cooldown->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+        spell_cooldown->SetSprite(atlas->CreateSprite(
+            "SpellSlot_Cooldown",
+            Vector2(0.5f, 0.5f),
+            100, 
+            Sprite::Type::Filled,
+            Vector2(0, 0)));
+        spell_cooldown->SetSortingOrder(2);
+        spell_cooldown->GetSprite()->SetFillDirection(Sprite::FillDirection::Radial_360);
+        spell_cooldown->GetSprite()->SetFillAmount(0);
+        batch->AddSprite(spell_cooldown);
+    }
+
+    auto xp_bar = GameObject::Create("")->AddComponent<SpriteNode>();
+    xp_bar->GetTransform()->SetParent(action_bar->GetTransform());
+    xp_bar->GetTransform()->SetLocalPosition(Vector3(0, 96, 0));
+    xp_bar->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    xp_bar->SetSprite(atlas->CreateSprite(
+        "ActionBar_XPBar_Background",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Sliced,
+        Vector2(680, 43)));
+    xp_bar->SetSortingOrder(1);
+    batch->AddSprite(xp_bar);
+
+    auto xp_fill = GameObject::Create("")->AddComponent<SpriteNode>();
+    xp_fill->GetTransform()->SetParent(xp_bar->GetTransform());
+    xp_fill->GetTransform()->SetLocalPosition(Vector3(1, -9, 0));
+    xp_fill->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    xp_fill->SetSprite(atlas->CreateSprite(
+        "ActionBar_XPBar_Fill",
+        Vector2(0.5f, 0.5f),
+        100, 
+        Sprite::Type::Filled,
+        Vector2(0, 0)));
+    xp_fill->SetSortingOrder(2);
+    xp_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Horizontal);
+    xp_fill->GetSprite()->SetFillAmount(0.75f);
+    xp_fill->SetColor(Color(168, 255, 140, 255) / 255.0f);
+    batch->AddSprite(xp_fill);
 
     batch->UpdateSprites();
 }
