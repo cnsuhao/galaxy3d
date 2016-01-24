@@ -635,11 +635,3 @@ void LauncherDemoUI::Update()
         }
     }
 }
-
-void LauncherDemoUI::LateUpdate()
-{
-}
-
-LauncherDemoUI::~LauncherDemoUI()
-{
-}

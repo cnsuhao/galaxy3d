@@ -13,10 +13,18 @@
   <ItemGroup>
     <ClCompile Include="..\src\g3dgame.cpp" />
     <ClCompile Include="..\src\Launcher.cpp" />
+    <ClCompile Include="..\src\LauncherDemoDef.cpp" />
+    <ClCompile Include="..\src\LauncherDemoDeferredShading.cpp" />
+    <ClCompile Include="..\src\LauncherDemoTemple.cpp" />
+    <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
     <ClCompile Include="..\src\LauncherDemoUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h" />
+    <ClInclude Include="..\src\LauncherDemoDef.h" />
+    <ClInclude Include="..\src\LauncherDemoDeferredShading.h" />
+    <ClInclude Include="..\src\LauncherDemoTemple.h" />
+    <ClInclude Include="..\src\LauncherDemoTerrain.h" />
     <ClInclude Include="..\src\LauncherDemoUI.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
