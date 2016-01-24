@@ -50,22 +50,12 @@ namespace Galaxy3D
 {
 	class Launcher :public Component
 	{
-	public:
-        static void OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component> &target, void *value);
-        static void OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component> &target, void *value);
-        static void OnTweenPositionFinished(Component *tween, std::weak_ptr<Component> &target);
-		virtual ~Launcher();
-
 	protected:
 		std::shared_ptr<TextRenderer> fps;
 		std::shared_ptr<Camera> cam2d;
-        std::shared_ptr<Camera> cam3d;
-        Vector3 cam_offset;
-        std::shared_ptr<Animation> anim;
 
 		virtual void Start();
 		virtual void Update();
-        virtual void LateUpdate();
 	};
 }
 

@@ -9,6 +9,10 @@
 #include "Camera.h"
 #include "Launcher.h"
 #include "LauncherDemoUI.h"
+#include "LauncherDemoTerrain.h"
+#include "LauncherDemoDef.h"
+#include "LauncherDemoTemple.h"
+#include "LauncherDemoDeferredShading.h"
 #include "Debug.h"
 
 #pragma comment(lib, "jpeg.lib")
@@ -24,13 +28,13 @@
 
 using namespace Galaxy3D;
 
-static const char g_title[] = "Galaxy3D Engine--Powered by v.Britannia";
+static const char g_title[] = "Galaxy3D Engine";
 static int g_screen_w = 1600;
 static int g_screen_h = 900;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;
-bool g_fullscreen = false;
+static bool g_fullscreen = false;
 
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

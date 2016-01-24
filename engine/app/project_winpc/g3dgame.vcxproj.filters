@@ -16,12 +16,36 @@
     <ClCompile Include="..\src\LauncherDemoUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\LauncherDemoTerrain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LauncherDemoDef.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LauncherDemoTemple.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LauncherDemoDeferredShading.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\LauncherDemoUI.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LauncherDemoTerrain.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LauncherDemoDef.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LauncherDemoTemple.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LauncherDemoDeferredShading.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

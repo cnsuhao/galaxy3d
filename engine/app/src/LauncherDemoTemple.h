@@ -1,5 +1,5 @@
-#ifndef __LauncherDemoUI_h__
-#define __LauncherDemoUI_h__
+#ifndef __LauncherDemoTemple_h__
+#define __LauncherDemoTemple_h__
 
 #include "Component.h"
 #include "Application.h"
@@ -45,20 +45,19 @@
 #include "ImageEffectHighlighting.h"
 #include "HighlightingObject.h"
 #include "UICanvas.h"
-#include "UIEventListener.h"
-#include "UIAtlas.h"
 
 namespace Galaxy3D
 {
-	class LauncherDemoUI :public Component
-	{
-	protected:
-		std::shared_ptr<TextRenderer> fps;
-		std::shared_ptr<Camera> cam2d;
+    class LauncherDemoTemple :public Component
+    {
+    protected:
+        std::shared_ptr<TextRenderer> fps;
+        std::shared_ptr<Camera> cam2d;
+        std::shared_ptr<Camera> cam3d;
 
-		virtual void Start();
-		virtual void Update();
-	};
+        virtual void Start();
+        virtual void Update();
+    };
 }
 
 #endif

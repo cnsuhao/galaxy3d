@@ -1,5 +1,5 @@
-#ifndef __LauncherDemoUI_h__
-#define __LauncherDemoUI_h__
+#ifndef __LauncherDemoTerrain_h__
+#define __LauncherDemoTerrain_h__
 
 #include "Component.h"
 #include "Application.h"
@@ -50,15 +50,24 @@
 
 namespace Galaxy3D
 {
-	class LauncherDemoUI :public Component
-	{
-	protected:
-		std::shared_ptr<TextRenderer> fps;
-		std::shared_ptr<Camera> cam2d;
+    class LauncherDemoTerrain :public Component
+    {
+    public:
+        static void OnTweenPositionSetValue(Component *tween, std::weak_ptr<Component> &target, void *value);
+        static void OnTweenRotationSetValue(Component *tween, std::weak_ptr<Component> &target, void *value);
+        static void OnTweenPositionFinished(Component *tween, std::weak_ptr<Component> &target);
 
-		virtual void Start();
-		virtual void Update();
-	};
+    protected:
+        std::shared_ptr<TextRenderer> fps;
+        std::shared_ptr<Camera> cam2d;
+        std::shared_ptr<Camera> cam3d;
+        Vector3 cam_offset;
+        std::shared_ptr<Animation> anim;
+
+        virtual void Start();
+        virtual void Update();
+        virtual void LateUpdate();
+    };
 }
 
 #endif
