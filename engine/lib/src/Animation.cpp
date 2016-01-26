@@ -65,34 +65,24 @@ namespace Galaxy3D
             }
 
             float now = GTTime::GetTime();
-            float time = now - state->time_start;
-            state->time += time * state->play_dir;
-            state->time_start = now;
+            float time_delta = now - state->time_last;
+            state->time += time_delta * state->play_dir;
+            state->time_last = now;
 
             if(state->fade.mode == FadeMode::In)
             {
-                state->fade.weight += time * (state->weight - 0) / state->fade.length;
+                state->fade.weight += time_delta * (state->weight - 0) / state->fade.length;
                 if(state->fade.weight >= state->weight)
                 {
                     state->fade.Clear();
                 }
-
-                if(state->fade.weight > 0.5f)
-                {
-                    state->fade.weight = state->fade.weight;
-                }
             }
             else if(state->fade.mode == FadeMode::Out)
             {
-                state->fade.weight += time * (0 - state->weight) / state->fade.length;
+                state->fade.weight += time_delta * (0 - state->weight) / state->fade.length;
                 if(state->fade.weight <= 0)
                 {
                     Stop(*state);
-                }
-
-                if(state->fade.weight < 0.5f)
-                {
-                    state->fade.weight = state->fade.weight;
                 }
             }
 
@@ -353,7 +343,7 @@ namespace Galaxy3D
 
     void Animation::Play(AnimationState &state)
     {
-        state.time_start = GTTime::GetTime();
+        state.time_last = GTTime::GetTime();
         state.enabled = true;
     }
 
