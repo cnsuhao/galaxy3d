@@ -61,7 +61,7 @@ namespace Galaxy3D
             time(0),
             weight(1),
             wrap_mode(WrapMode::Default),
-            time_start(0),
+            time_last(0),
             play_dir(1)
         {
         }
@@ -79,7 +79,7 @@ namespace Galaxy3D
         float weight;
         WrapMode::Enum wrap_mode;
 
-        float time_start;
+        float time_last;
         int play_dir;
         AnimationFade fade;
     };
