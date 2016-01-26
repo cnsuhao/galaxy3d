@@ -59,7 +59,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GraphicsDevice::GetInstance()->Init(g_hwnd);
 	World::Init();
 
-	GameObject::Create("launcher")->AddComponent<LauncherDemoDef>();
+	GameObject::Create("launcher")->AddComponent<LauncherDemoUI>();
 
 	// Main message loop
 	MSG msg = {0};
