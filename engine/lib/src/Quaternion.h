@@ -11,11 +11,13 @@ namespace Galaxy3D
 		Quaternion(float x=0, float y=0, float z=0, float w=1);
 
 		Quaternion operator *(const Quaternion &q) const;
+        Quaternion operator *(float v) const;
 		Vector3 operator *(const Vector3 &p) const;
 		bool operator !=(const Quaternion &v) const;
 		bool operator ==(const Quaternion &v) const;
 		Vector3 ToEulerAngles() const;
         void Normalize();
+        float Dot(const Quaternion &v) const;
 		std::string ToString() const;
 
 		inline static Quaternion Identity() {return m_identity;}

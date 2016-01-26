@@ -39,6 +39,11 @@ namespace Galaxy3D
 		return Quaternion(_x, _y, _z, _w);
 	}
 
+    Quaternion Quaternion::operator *(float v) const
+    {
+        return Quaternion(x * v, y * v, z * v, w * v);
+    }
+
 	Vector3 Quaternion::operator *(const Vector3 &p) const
 	{
 		Quaternion p_ = *this * Quaternion(p.x, p.y, p.z, 0) * Inverse(*this);
@@ -93,12 +98,9 @@ namespace Galaxy3D
     {
         Quaternion to_;
         
-        if(Mathf::Sign(from.w) * Mathf::Sign(to.w) < 0)
+        if(from.Dot(to) < 0)
         {
-            to_.x = -to.x;
-            to_.y = -to.y;
-            to_.z = -to.z;
-            to_.w = -to.w;
+            to_ = to * -1.0f;
         }
         else
         {
@@ -119,12 +121,9 @@ namespace Galaxy3D
     {
         Quaternion to_;
 
-        if(Mathf::Sign(from.w) * Mathf::Sign(to.w) < 0)
+        if(from.Dot(to) < 0)
         {
-            to_.x = -to.x;
-            to_.y = -to.y;
-            to_.z = -to.z;
-            to_.w = -to.w;
+            to_ = to * -1.0f;
         }
         else
         {
@@ -227,5 +226,10 @@ namespace Galaxy3D
             z = z * inv;
             w = w * inv;
         }
+    }
+
+    float Quaternion::Dot(const Quaternion &v) const
+    {
+        return x*v.x + y*v.y + z*v.z + w*v.w;
     }
 }

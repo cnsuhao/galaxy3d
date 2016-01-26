@@ -294,18 +294,23 @@ namespace Galaxy3D
             Vector3 sca_final(0, 0, 0);
             for(int j=0; j<in_effect_count; j++)
             {
-                pos_final.x += poss[j].x * weights[j];
-                pos_final.y += poss[j].y * weights[j];
-                pos_final.z += poss[j].z * weights[j];
+                pos_final += poss[j] * weights[j];
 
+                if(rots[j].Dot(rots[0]) < 0)
+                {
+                    rots[j] = rots[j] * -1.0f;
+                }
                 rot_final.x += rots[j].x * weights[j];
                 rot_final.y += rots[j].y * weights[j];
                 rot_final.z += rots[j].z * weights[j];
                 rot_final.w += rots[j].w * weights[j];
 
-                sca_final.x += scas[j].x * weights[j];
-                sca_final.y += scas[j].y * weights[j];
-                sca_final.z += scas[j].z * weights[j];
+                sca_final += scas[j] * weights[j];
+            }
+
+            if(in_effect_count > 1)
+            {
+                in_effect_count = in_effect_count;
             }
 
             if(in_effect_count > 0)
