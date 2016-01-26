@@ -210,9 +210,9 @@ namespace Galaxy3D
                 auto find = state->clip->curves.find(i->first);
                 if(find != state->clip->curves.end())
                 {
-                    Vector3 pos;
-                    Quaternion rot;
-                    Vector3 sca;
+                    Vector3 pos(0, 0, 0);
+                    Quaternion rot(0, 0, 0, 1);
+                    Vector3 sca(1, 1, 1);
                     auto &cb = find->second;
 
                     for(size_t k=0; k<cb.curves.size(); k++)
@@ -286,7 +286,7 @@ namespace Galaxy3D
             {
                 pos_final += poss[j] * weights[j];
 
-                if(rots[j].Dot(rots[0]) < 0)
+                if(j > 0 && rots[j].Dot(rots[0]) < 0)
                 {
                     rots[j] = rots[j] * -1.0f;
                 }
