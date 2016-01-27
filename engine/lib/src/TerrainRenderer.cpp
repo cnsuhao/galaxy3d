@@ -1,5 +1,7 @@
 #include "TerrainRenderer.h"
 #include "GameObject.h"
+#include "RenderSettings.h"
+#include "LightmapSettings.h"
 
 namespace Galaxy3D
 {
@@ -31,18 +33,44 @@ namespace Galaxy3D
         auto camera = Camera::GetCurrent();
         auto mat = GetSharedMaterial();
         auto shader = mat->GetShader();
-        auto pass = shader->GetPass(0);
 
         Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
         mat->SetMatrix("WorldViewProjection", wvp);
+        mat->SetMatrix("World", GetTransform()->GetLocalToWorldMatrix());
+        mat->SetVector("EyePosition", Vector4(camera->GetTransform()->GetPosition()));
+        mat->SetColor("GlobalAmbient", RenderSettings::light_ambient);
+        mat->SetVector("LightDirection", Vector4(RenderSettings::GetGlobalDirectionalLight()->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
+        mat->SetColor("LightColor", RenderSettings::GetGlobalDirectionalLight()->GetColor() * RenderSettings::GetGlobalDirectionalLight()->GetIntensity());
 
+        int pass_index = 0;
+        auto pass_count = shader->GetPassCount();
+        for(int j=0; j<pass_count; j++)
+        {
+            auto pass = shader->GetPass(j);
+
+            if(camera->IsDeferredShading())
+            {
+                if(pass->name == "deferred")
+                {
+                    pass_index = j;
+                    break;
+                }
+            }
+            else
+            {
+                pass_index = j;
+                break;
+            }
+        }
+
+        auto pass = shader->GetPass(pass_index);
         GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
         GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
         GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UInt);
 
-        mat->ReadyPass(0);
+        mat->ReadyPass(pass_index);
         pass->rs->Apply();
-        mat->ApplyPass(0);
+        mat->ApplyPass(pass_index);
 
         DrawIndexed(m_terrain->GetIndexCount(), 0);
 

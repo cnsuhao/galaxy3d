@@ -12,6 +12,13 @@ Terrain/Diffuse
         RenderStates rs
     }
 
+    Pass deferred
+    {
+        VS vs_deferred
+        PS ps_deferred
+        RenderStates rs
+    }
+
     RenderStates rs
     {
         Cull Back
@@ -22,6 +29,90 @@ Terrain/Diffuse
     }
 
     HLVS vs
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix WorldViewProjection;
+        };
+
+        cbuffer cbuffer1 : register(b1)
+        {
+            float4 TerrainSize;
+        };
+
+        struct VS_INPUT
+        {
+            float4 Position : POSITION;
+            float3 Normal : NORMAL;
+            float4 Tangent : TANGENT;
+            float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord1 : TEXCOORD1;
+        };
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+            float2 v_uv_alpha : TEXCOORD1;
+        };
+
+        PS_INPUT main(VS_INPUT input)
+        {
+            PS_INPUT output = (PS_INPUT)0;
+
+            output.v_pos = mul(input.Position, WorldViewProjection);
+            output.v_uv = input.Texcoord0;
+            output.v_uv_alpha = float2(input.Position.x, input.Position.z) * TerrainSize.x;
+            output.v_uv_alpha.y = 1.0 - output.v_uv_alpha.y;
+
+            return output;
+        }
+    }
+
+    HLPS ps
+    {
+        Texture2D AlphaMap : register(t0);
+        SamplerState AlphaMap_Sampler : register(s0);
+        Texture2D Layer_0 : register(t1);
+        SamplerState Layer_0_Sampler : register(s1);
+        Texture2D Layer_1 : register(t2);
+        SamplerState Layer_1_Sampler : register(s2);
+        Texture2D Layer_2 : register(t3);
+        SamplerState Layer_2_Sampler : register(s3);
+        Texture2D Layer_3 : register(t4);
+        SamplerState Layer_3_Sampler : register(s4);
+        Texture2D Layer_4 : register(t5);
+        SamplerState Layer_4_Sampler : register(s5);
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+            float2 v_uv_alpha : TEXCOORD1;
+        };
+
+        float4 main(PS_INPUT input) : SV_Target
+        {
+            float4 alpha = AlphaMap.Sample(AlphaMap_Sampler, input.v_uv_alpha);
+
+            float4 color = float4(0.0, 0.0, 0.0, 0.0);
+
+            color += Layer_0.Sample(Layer_0_Sampler, input.v_uv) * alpha.r;
+            color += Layer_1.Sample(Layer_1_Sampler, input.v_uv) * alpha.g;
+            color += Layer_2.Sample(Layer_2_Sampler, input.v_uv) * alpha.b;
+            color += Layer_3.Sample(Layer_3_Sampler, input.v_uv) * alpha.a;
+
+            float rest = 1.0 - alpha.r - alpha.g - alpha.b - alpha.a;
+            if(rest > 0)
+            {
+                color += Layer_4.Sample(Layer_4_Sampler, input.v_uv) * rest;
+            }
+
+            return color;
+        }
+    }
+
+    HLVS vs_deferred
     {
         cbuffer cbuffer0 : register(b0)
         {
@@ -52,7 +143,8 @@ Terrain/Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
-            float2 v_uv_2 : TEXCOORD2;
+            float4 v_pos_proj : TEXCOORD2;
+            float3 v_normal_world : TEXCOORD3;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -63,14 +155,14 @@ Terrain/Diffuse
             output.v_uv = input.Texcoord0;
             output.v_uv_alpha = float2(input.Position.x, input.Position.z) * TerrainSize.x;
             output.v_uv_alpha.y = 1.0 - output.v_uv_alpha.y;
-            output.v_uv_2 = input.Texcoord1;
-            output.v_uv_2.y = 1.0 - output.v_uv_2.y;
+            output.v_pos_proj = output.v_pos;
+            output.v_normal_world = mul(input.Normal, World);
 
             return output;
         }
     }
 
-    HLPS ps
+    HLPS ps_deferred
     {
         Texture2D AlphaMap : register(t0);
         SamplerState AlphaMap_Sampler : register(s0);
@@ -90,11 +182,22 @@ Terrain/Diffuse
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
             float2 v_uv_alpha : TEXCOORD1;
-            float2 v_uv_2 : TEXCOORD2;
+            float4 v_pos_proj : TEXCOORD2;
+            float3 v_normal_world : TEXCOORD3;
         };
 
-        float4 main(PS_INPUT input) : SV_Target
+        struct PS_OUTPUT
         {
+            float4 o_color : SV_Target0;
+            float4 o_normal : SV_Target1;
+            float4 o_specular : SV_Target2;
+            float4 o_depth : SV_Target3;
+        };
+
+        PS_OUTPUT main(PS_INPUT input)
+        {
+            PS_OUTPUT output = (PS_OUTPUT) 0;
+
             float4 alpha = AlphaMap.Sample(AlphaMap_Sampler, input.v_uv_alpha);
 
             float4 color = float4(0.0, 0.0, 0.0, 0.0);
@@ -110,7 +213,28 @@ Terrain/Diffuse
                 color += Layer_4.Sample(Layer_4_Sampler, input.v_uv) * rest;
             }
 
-            return color;
+            float3 normal = normalize(input.v_normal_world);
+            // encode normal3 to normal2
+            float2 normal_2 = 0;
+            if(length(normal.xy) <= 0)
+            {
+                normal_2 = float2(normal.z * 10, 0);
+            }
+            else
+            {
+                normal_2 = normalize(normal.xy)*sqrt(normal.z*0.5+0.5);
+            }
+
+            float specular_power = 0;
+            float specular_intensity = 0;
+
+            output.o_color = color;
+            output.o_normal.xy = normal_2;
+            output.o_specular.z = specular_power;
+            output.o_specular.w = specular_intensity;
+            output.o_depth.r = input.v_pos_proj.z / input.v_pos_proj.w;
+
+            return output;
         }
     }
 
