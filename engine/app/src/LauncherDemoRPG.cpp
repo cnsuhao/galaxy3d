@@ -40,10 +40,12 @@ void LauncherDemoRPG::Start()
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(128, 128, 55, 255) / 255.0f);
-    light->SetIntensity(2.5f);
+    light->SetColor(Color(255, 168, 55, 255) / 255.0f);
+    light->SetIntensity(3.0f);
+    light->EnableShadow(true);
+    light->EnableCascade(true);
 
-    RenderSettings::light_ambient = Color(128, 128, 200, 255) / 255.0f;
+    RenderSettings::light_ambient = Color(67, 128, 200, 255) / 255.0f;
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
     cascade_splits.push_back(0.08f);
@@ -125,6 +127,11 @@ void LauncherDemoRPG::Start()
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
+    auto rs = anim->GetGameObject()->GetComponentsInChildren<SkinnedMeshRenderer>();
+    for(auto &i : rs)
+    {
+        i->GetSharedMaterial()->SetMainColor(Color(150, 150, 150, 255) / 255.0f);
+    }
 
     cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
     g_cam_rot = Vector3(10, -180, 0);
