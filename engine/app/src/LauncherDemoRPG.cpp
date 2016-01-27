@@ -40,12 +40,10 @@ void LauncherDemoRPG::Start()
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(255, 168, 55, 255) / 255.0f);
-    light->SetIntensity(2.0f);
-    light->EnableShadow(true);
-    light->EnableCascade(true);
+    light->SetColor(Color(128, 128, 55, 255) / 255.0f);
+    light->SetIntensity(2.5f);
 
-    RenderSettings::light_ambient = Color(67, 128, 200, 255) / 255.0f;
+    RenderSettings::light_ambient = Color(128, 128, 200, 255) / 255.0f;
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
     cascade_splits.push_back(0.08f);

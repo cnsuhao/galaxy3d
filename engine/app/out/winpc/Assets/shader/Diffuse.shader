@@ -39,20 +39,15 @@ Diffuse
 
         cbuffer cbuffer1 : register(b1)
         {
-            float4 _Color;
+            matrix World;
         };
 
         cbuffer cbuffer2 : register(b2)
         {
-            matrix World;
-        };
-
-        cbuffer cbuffer3 : register(b3)
-        {
             float4 LightDirection;
         };
 
-        cbuffer cbuffer4 : register(b4)
+        cbuffer cbuffer3 : register(b3)
         {
             float4 EyePosition;
         };
@@ -70,7 +65,6 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
             float3 v_light_dir_world : TEXCOORD1;
             float3 v_eye_dir_world : TEXCOORD2;
             float3 v_normal_world : TEXCOORD3;
@@ -82,7 +76,6 @@ Diffuse
 
 			output.v_pos = mul(input.Position, WorldViewProjection);
 			output.v_uv = input.Texcoord0;
-            output.v_color = _Color;
 
             float4 pos_world = mul(input.Position, World);
             float3 normal_world = mul(input.Normal, World);
@@ -107,6 +100,11 @@ Diffuse
             float4 LightColor;
         };
 
+        cbuffer cbuffer2 : register(b2)
+        {
+            float4 _Color;
+        };
+
 		Texture2D _MainTex : register(t0);
 		SamplerState _MainTex_Sampler : register(s0);
 
@@ -114,7 +112,6 @@ Diffuse
 		{
 			float4 v_pos : SV_POSITION;
 			float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
             float3 v_light_dir_world : TEXCOORD1;
             float3 v_eye_dir_world : TEXCOORD2;
             float3 v_normal_world : TEXCOORD3;
@@ -125,7 +122,7 @@ Diffuse
             float specular_power = 1.0;
             float specular_intensity = 0.5;
 
-			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _Color;
 
             float3 normal = normalize(input.v_normal_world);
             float3 light_dir = normalize(input.v_light_dir_world);
@@ -152,11 +149,6 @@ Diffuse
 
         cbuffer cbuffer1 : register(b1)
         {
-            float4 _Color;
-        };
-
-        cbuffer cbuffer2 : register(b2)
-        {
             matrix World;
         };
 
@@ -173,7 +165,6 @@ Diffuse
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
             float4 v_pos_proj : TEXCOORD1;
             float3 v_normal_world : TEXCOORD2;
         };
@@ -184,7 +175,6 @@ Diffuse
 
             output.v_pos = mul(input.Position, WorldViewProjection);
             output.v_uv = input.Texcoord0;
-            output.v_color = _Color;
             output.v_pos_proj = output.v_pos;
             output.v_normal_world = mul(input.Normal, World);
 
@@ -194,6 +184,11 @@ Diffuse
 
     HLPS ps_deferred
     {
+        cbuffer cbuffer0 : register(b0)
+        {
+            float4 _Color;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
 
@@ -201,7 +196,6 @@ Diffuse
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
-            float4 v_color : COLOR;
             float4 v_pos_proj : TEXCOORD1;
             float3 v_normal_world : TEXCOORD2;
         };
@@ -218,7 +212,7 @@ Diffuse
         {
             PS_OUTPUT output = (PS_OUTPUT) 0;
 
-            float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
+            float4 color = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _Color;
             float3 normal = normalize(input.v_normal_world);
 
             // encode normal3 to normal2
