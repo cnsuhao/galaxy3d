@@ -8,7 +8,7 @@
 #include "Cubemap.h"
 
 static const std::string MAIN_TEXTURE_NAME = "_MainTex";
-static const std::string MAIN_COLOR_NAME = "_MainColor";
+static const std::string MAIN_COLOR_NAME = "_Color";
 
 namespace Galaxy3D
 {
