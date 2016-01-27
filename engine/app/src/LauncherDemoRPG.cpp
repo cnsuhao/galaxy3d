@@ -46,9 +46,9 @@ void LauncherDemoRPG::Start()
 
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
-    cascade_splits.push_back(0.25f);
-    cascade_splits.push_back(0.55f);
-    cascade_splits.push_back(0.90f);
+    cascade_splits.push_back(0.08f);
+    cascade_splits.push_back(0.20f);
+    cascade_splits.push_back(0.50f);
     Light::SetCascadeSplits(cascade_splits);
     RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.5f;
 
@@ -81,6 +81,8 @@ void LauncherDemoRPG::Start()
     terrain_renderer->SetCastShadow(false);
     //auto tc = terrain_obj->AddComponent<TerrainCollider>();
     //tc->SetTerrain(ter);
+
+    Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
 
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();

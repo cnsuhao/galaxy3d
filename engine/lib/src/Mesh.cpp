@@ -562,8 +562,11 @@ namespace Galaxy3D
 
                 auto renderer = renderer_obj->AddComponent<MeshRenderer>();
                 auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), false);
-                renderer->SetMesh(mesh);
-                renderer->CalculateBounds();
+                if(mesh)
+                {
+                    renderer->SetMesh(mesh);
+                    renderer->CalculateBounds();
+                }
                 
                 // lightmap
                 int lightmap_index;
