@@ -27,8 +27,8 @@ namespace Galaxy3D
     }
 
 	Renderer::Renderer():
-		m_cast_shadow(false),
-		m_receive_shadow(false),
+		m_cast_shadow(true),
+		m_receive_shadow(true),
 		m_visible(true),
 		m_lightmap_index(-1),
 		m_lightmap_tiling_offset(),
@@ -348,7 +348,8 @@ namespace Galaxy3D
                 {
                     auto bounds = i.renderer->GetBounds();
                     int contains = frustum.ContainsBounds(bounds.center, bounds.extents);
-                    if(contains != ContainsResult::Out)
+                    if( contains != ContainsResult::Out &&
+                        i.renderer->IsCastShadow())
                     {
                         batches.push_back(i);
                     }
@@ -395,7 +396,8 @@ namespace Galaxy3D
                         contains = frustum.ContainsPoints(corners, &world_to_view);
                     }
                     
-                    if(contains != ContainsResult::Out)
+                    if( contains != ContainsResult::Out &&
+                        i.renderer->IsCastShadow())
                     {
                         batches.push_back(i);
                     }

@@ -10,6 +10,7 @@
 #include "Launcher.h"
 #include "LauncherDemoUI.h"
 #include "LauncherDemoTerrain.h"
+#include "LauncherDemoRPG.h"
 #include "LauncherDemoDef.h"
 #include "LauncherDemoTemple.h"
 #include "LauncherDemoDeferredShading.h"
@@ -29,8 +30,8 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static int g_screen_w = 1600;
-static int g_screen_h = 900;
+static int g_screen_w = 1280;
+static int g_screen_h = 720;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;
@@ -59,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GraphicsDevice::GetInstance()->Init(g_hwnd);
 	World::Init();
 
-	GameObject::Create("launcher")->AddComponent<LauncherDemoDef>();
+	GameObject::Create("launcher")->AddComponent<LauncherDemoRPG>();
 
 	// Main message loop
 	MSG msg = {0};

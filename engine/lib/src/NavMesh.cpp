@@ -242,7 +242,7 @@ namespace Galaxy3D
         float sabc = triangle_area2(a_l, a_r, b_l);
         float sabd = triangle_area2(a_l, a_r, b_r);
 
-        if(Mathf::FloatEqual(sabc, 0))
+        if(fabsf(sabc) < 0.0001f)
         {
             // c在ab上
             intersect.x = b_l.x;
@@ -251,7 +251,7 @@ namespace Galaxy3D
 
             return true;
         }
-        else if(Mathf::FloatEqual(sabd, 0))
+        else if(fabsf(sabd) < 0.0001f)
         {
             // d在ab上
             intersect.x = b_r.x;

@@ -66,6 +66,8 @@ namespace Galaxy3D
         void SetLightmapTilingOffset(Vector4 lightmap_tiling_offset) {m_lightmap_tiling_offset = lightmap_tiling_offset;}
         void SetBounds(const Bounds &bounds) {m_bounds = bounds;}
         Bounds GetBounds() const {return m_bounds;}
+        void SetCastShadow(bool cast) {m_cast_shadow = cast;}
+        bool IsCastShadow() const {return m_cast_shadow;}
 
 	protected:
         static BufferObject m_static_batching_vertex_buffer;
