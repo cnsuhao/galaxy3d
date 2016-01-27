@@ -285,7 +285,7 @@ namespace Galaxy3D
 
         // shading global ambient first with blend off
         GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
-        
+
         material->SetZBufferParams(camera);
         material->SetVector("ShadowMapTexel", Vector4(1.0f / (SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT), 1.0f / SHADOW_MAP_SIZE));
 
