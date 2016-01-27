@@ -282,6 +282,19 @@ namespace Galaxy3D
 			auto find = shader_pass->ps->textures.find(i.first);
 			if(find != shader_pass->ps->textures.end())
 			{
+                if(!i.second)
+                {
+                    find->second.texture = NULL;
+
+                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+                    if(find_sampler != shader_pass->ps->samplers.end())
+                    {
+                        find_sampler->second.sampler = NULL;
+                    }
+
+                    continue;
+                }
+
                 auto tex = std::dynamic_pointer_cast<Texture2D>(i.second);
 				if(tex)
 				{
