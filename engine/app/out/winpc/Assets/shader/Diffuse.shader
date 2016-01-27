@@ -246,8 +246,8 @@ Diffuse
             }
             */
 
-            float specular_power = 1.0;
-            float specular_intensity = 0.5;
+            float specular_power = 0;//1.0;
+            float specular_intensity = 0;//0.5;
 
             output.o_color = color;
             output.o_normal.xy = normal_2;

@@ -383,8 +383,12 @@ DeferredShading
 
             float intensity = 1;
 
-            float shadow = sample_shadow(uv, depth, pos_world);
-            intensity *= shadow;
+            bool shadow_enable = ((int) ShadowParam.w) == 1;
+            if(shadow_enable)
+            {
+                float shadow = sample_shadow(uv, depth, pos_world);
+                intensity *= shadow;
+            }
 
             c.rgb = (diff * c.rgb * LightColor.rgb +
                 spec * LightColor.rgb) * intensity;
@@ -812,8 +816,12 @@ DeferredShading
             }
             intensity *= factor;
             
-            float shadow = sample_shadow(uv, depth, pos_world);
-            intensity *= shadow;
+            bool shadow_enable = ((int) ShadowParam.w) == 1;
+            if(shadow_enable)
+            {
+                float shadow = sample_shadow(uv, depth, pos_world);
+                intensity *= shadow;
+            }
 
             return float4(c * intensity, 1);
         }
