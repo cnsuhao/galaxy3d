@@ -45,10 +45,10 @@ void LauncherDemoTerrain::Start()
     cam3d->GetTransform()->SetRotation(Quaternion::Euler(20, -140, 0));
 
     std::vector<std::string> terrain_texs;
-    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/1.png");
-    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/2.png");
-    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/3.png");
-    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/4.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t0/1.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t0/2.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t0/3.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t0/4.png");
 
     GameObject *terrain_obj = GameObject::Create("terrain").get();
     terrain_obj->SetLayer(Layer::Default);
@@ -58,20 +58,20 @@ void LauncherDemoTerrain::Start()
     ter->LoadData(
         513,
         200.0f, 600.0f,
-        Application::GetDataPath() + "/Assets/terrain/Terrain.raw",
-        Application::GetDataPath() + "/Assets/terrain/Terrain.png",
+        Application::GetDataPath() + "/Assets/terrain/t0/Terrain.raw",
+        Application::GetDataPath() + "/Assets/terrain/t0/Terrain.png",
         terrain_texs, 3);
     terrain_obj->AddComponent<TerrainRenderer>();
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
 
-    auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t0/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
 
-    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
+    auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t0/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.push_back(lightmap);
 
-    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/Objects/Objects.mesh");
+    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t0/Objects/Objects.mesh");
     mesh->SetLayerRecursively(Layer::Default);
     Renderer::BuildOctree(mesh);
 

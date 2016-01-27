@@ -92,7 +92,7 @@ namespace Galaxy3D
             m_shared_material = Material::Create("Terrain/Diffuse");
             m_shared_material->SetVector("TerrainSize", Vector4(1.0f / (m_map_size * m_xz_unit), 0, 0, 0));
             m_shared_material->SetTexture("AlphaMap", tex);
-            for(size_t i=0; i<4 && i<file_textures.size(); i++)
+            for(size_t i=0; i<file_textures.size(); i++)
             {
                 tex = Texture2D::LoadFromFile(file_textures[i], FilterMode::Bilinear, TextureWrapMode::Repeat, true);
                 m_shared_material->SetTexture(GTString::Format("Layer_%d", i).str, tex);

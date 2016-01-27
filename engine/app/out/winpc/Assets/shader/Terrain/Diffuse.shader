@@ -82,8 +82,8 @@ Terrain/Diffuse
         SamplerState Layer_2_Sampler : register(s3);
         Texture2D Layer_3 : register(t4);
         SamplerState Layer_3_Sampler : register(s4);
-        Texture2D _Lightmap : register(t5);
-        SamplerState _Lightmap_Sampler : register(s5);
+        Texture2D Layer_4 : register(t5);
+        SamplerState Layer_4_Sampler : register(s5);
 
         struct PS_INPUT
         {
@@ -104,15 +104,11 @@ Terrain/Diffuse
             color += Layer_2.Sample(Layer_2_Sampler, input.v_uv) * alpha.b;
             color += Layer_3.Sample(Layer_3_Sampler, input.v_uv) * alpha.a;
 
-            //doubleLDR
-            color.rgb = color.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
-
-            //RGBM
-            /*
-            float4 lightmap_color = _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 );
-            lightmap_color.rgb = lightmap_color.rgb * (8.0 * lightmap_color.a);
-            color.rgb = color.rgb * lightmap_color.rgb;
-            */
+            float rest = 1.0 - alpha.r - alpha.g - alpha.b - alpha.a;
+            if(rest > 0)
+            {
+                color += Layer_4.Sample(Layer_4_Sampler, input.v_uv) * rest;
+            }
 
             return color;
         }

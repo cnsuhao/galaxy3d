@@ -1,16 +1,16 @@
-#include "LauncherDemoDef.h"
+#include "LauncherDemoRPG.h"
 
 using namespace Galaxy3D;
 
 static float g_unit_per_pixel = 0.01f;
-static int g_key_down_count = 0;
+int g_key_down_count = 0;
 static bool g_key_down[4] = {false};
-static Vector3 g_mouse_down_pos;
-static bool g_mouse_down = false;
-static Vector3 g_cam_rot;
-static float g_cam_dis;
+Vector3 g_mouse_down_pos;
+bool g_mouse_down = false;
+Vector3 g_cam_rot;
+float g_cam_dis;
 
-void LauncherDemoDef::Start()
+void LauncherDemoRPG::Start()
 {
     Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
     Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
@@ -54,10 +54,33 @@ void LauncherDemoDef::Start()
 
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(45);
-    cam3d->SetClipPlane(0.1f, 100.0f);
+    cam3d->SetClipPlane(0.1f, 200.0f);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default) | LayerMask::GetMask(Layer::Highlighting));
     cam3d->EnableDeferredShading(true);
     auto high_lihgting = cam3d->GetGameObject()->AddComponent<ImageEffectHighlighting>();
+
+    std::vector<std::string> terrain_texs;
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/0.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/1.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/2.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/3.png");
+    terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/4.png");
+
+    GameObject *terrain_obj = GameObject::Create("terrain").get();
+    terrain_obj->SetLayer(Layer::Default);
+
+    auto ter = terrain_obj->AddComponent<Terrain>();
+    ter->SetCamera(cam3d);
+    ter->LoadData(
+        257,
+        301, 120,
+        Application::GetDataPath() + "/Assets/terrain/t1/Terrain.raw",
+        Application::GetDataPath() + "/Assets/terrain/t1/Terrain.png",
+        terrain_texs, 3);
+    auto terrain_renderer = terrain_obj->AddComponent<TerrainRenderer>();
+    terrain_renderer->SetCastShadow(false);
+    //auto tc = terrain_obj->AddComponent<TerrainCollider>();
+    //tc->SetTerrain(ter);
 
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
@@ -78,10 +101,21 @@ void LauncherDemoDef::Start()
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/back.png");
     sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
 
+    // scene mesh
+    /*
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
+    auto rs = mesh->GetComponentsInChildren<MeshRenderer>();
+    for(auto i : rs)
+    {
+        auto c = i->GetGameObject()->AddComponent<MeshCollider>();
+        c->SetMesh(i->GetMesh());
+    }
+    */
 
     auto anim_parent = GameObject::Create("anim_parent");
-    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/Warrior/warrior.anim");
+    anim_parent->GetTransform()->SetPosition(Vector3(145.27f, 55, 163.55f));
+
+    auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/xiao_bie_li/xiao_bie_li.anim");
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
     anim_obj->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
     anim_obj->GetTransform()->SetLocalRotation(Quaternion::Euler(Vector3(0, 180, 0)));
@@ -90,46 +124,6 @@ void LauncherDemoDef::Start()
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
     anim->Play("idle");
-    {
-        anim_obj->SetLayerRecursively(Layer::Highlighting);
-        auto rs = anim_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-        for(auto &i : rs)
-        {
-            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
-            ho->SetColor(Color(0, 0, 0, 0.005f));
-        }
-    }
-
-    {
-        auto clone_obj = GameObject::Instantiate(anim_obj);
-        clone_obj->GetTransform()->SetPosition(Vector3(-3, 0, 0));
-        clone_obj->SetLayerRecursively(Layer::Highlighting);
-        auto clone_anim = clone_obj->GetComponent<Animation>();
-        clone_anim->Play("idle");
-        clone_obj->AddComponent<NavMeshAgent>();
-
-        auto rs = clone_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-        for(auto &i : rs)
-        {
-            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
-            ho->SetColor(Color(1, 0, 0, 1));
-        }
-    }
-    {
-        auto clone_obj = GameObject::Instantiate(anim_obj);
-        clone_obj->GetTransform()->SetPosition(Vector3(-6, 0, 0));
-        clone_obj->SetLayerRecursively(Layer::Highlighting);
-        auto clone_anim = clone_obj->GetComponent<Animation>();
-        clone_anim->Play("idle");
-        clone_obj->AddComponent<NavMeshAgent>();
-
-        auto rs = clone_obj->GetComponentsInChildren<SkinnedMeshRenderer>();
-        for(auto &i : rs)
-        {
-            auto ho = i->GetGameObject()->AddComponent<HighlightingObject>();
-            ho->SetColor(Color(0, 1, 0, 1));
-        }
-    }
 
     cam3d->GetTransform()->SetParent(anim_parent->GetTransform());
     g_cam_rot = Vector3(10, -180, 0);
@@ -138,25 +132,17 @@ void LauncherDemoDef::Start()
     cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
 
     // navmesh
-    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/mesh/LY/navmesh.nav");
-    anim_parent->GetTransform()->SetPosition(Vector3(1, 0, 0));
+    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t1/navmesh.nav");
     anim_parent->AddComponent<NavMeshAgent>();
 
     // collider
-    auto rs = mesh->GetComponentsInChildren<MeshRenderer>();
-    for(auto i : rs)
-    {
-        auto c = i->GetGameObject()->AddComponent<MeshCollider>();
-        c->SetMesh(i->GetMesh());
-    }
-
     auto bc = anim_obj->AddComponent<BoxCollider>();
     bc->SetCenter(Vector3(0, 1, 0));
     bc->SetSize(Vector3(1, 2, 1));
 
     // cursor
-    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);
-    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);
+    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);//normal
+    Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);//attack
     Cursor::SetCursor(0);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
@@ -213,7 +199,7 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
     return rot_offset;
 }
 
-void LauncherDemoDef::Update()
+void LauncherDemoRPG::Update()
 {
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
@@ -264,7 +250,7 @@ void LauncherDemoDef::Update()
     if(move_dir != Vector3(0, 0, 0))
     {
         move_dir.Normalize();
-        float speed = 6.0f;
+        float speed = 10.0f;
         Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();

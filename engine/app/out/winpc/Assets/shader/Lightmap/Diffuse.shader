@@ -82,7 +82,17 @@ Lightmap/Diffuse
 		float4 main( PS_INPUT input) : SV_Target
 		{
 			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * input.v_color;
+
+            //doubleLDR
             c.rgb = c.rgb * _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 ).rgb * 2;
+
+            //RGBM
+            /*
+            float4 lightmap_color = _Lightmap.Sample( _Lightmap_Sampler, input.v_uv_2 );
+            lightmap_color.rgb = lightmap_color.rgb * (8.0 * lightmap_color.a);
+            c.rgb = color.rgb * lightmap_color.rgb;
+            */
+
 			return c;
 		}
 	}
