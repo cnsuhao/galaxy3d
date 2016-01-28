@@ -40,8 +40,8 @@ void LauncherDemoRPG::Start()
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(255, 168, 55, 255) / 255.0f);
-    light->SetIntensity(3.0f);
+    light->SetColor(Color(247 * 1.4f + 255 * 2, 199 * 1.4f + 168 * 2, 137 * 1.4f + 55 * 2, 255 * 1.4f + 255 * 2) / 255.0f);
+    light->SetIntensity(1.0f);
     light->EnableShadow(true);
     light->EnableCascade(true);
 
@@ -56,9 +56,11 @@ void LauncherDemoRPG::Start()
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(45);
     cam3d->SetClipPlane(0.1f, 200.0f);
-    cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default) | LayerMask::GetMask(Layer::Highlighting));
+    cam3d->SetCullingMask(
+        LayerMask::GetMask(Layer::Default) |
+        LayerMask::GetMask(Layer::Scene) |
+        LayerMask::GetMask(Layer::Character));
     cam3d->EnableDeferredShading(true);
-    auto high_lihgting = cam3d->GetGameObject()->AddComponent<ImageEffectHighlighting>();
 
     std::vector<std::string> terrain_texs;
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/0.png");
@@ -68,7 +70,7 @@ void LauncherDemoRPG::Start()
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/4.png");
 
     GameObject *terrain_obj = GameObject::Create("terrain").get();
-    terrain_obj->SetLayer(Layer::Default);
+    terrain_obj->SetLayer(Layer::Scene);
 
     auto ter = terrain_obj->AddComponent<Terrain>();
     ter->SetCamera(cam3d);
@@ -80,11 +82,14 @@ void LauncherDemoRPG::Start()
         terrain_texs, 3);
     auto terrain_renderer = terrain_obj->AddComponent<TerrainRenderer>();
     terrain_renderer->SetCastShadow(false);
-    //auto tc = terrain_obj->AddComponent<TerrainCollider>();
-    //tc->SetTerrain(ter);
+    auto tc = terrain_obj->AddComponent<TerrainCollider>();
+    tc->SetTerrain(ter);
 
-    Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
-
+    auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
+    Renderer::BuildOctree(scene);
+    scene->SetStaticRecursively();
+    Renderer::BuildStaticBatches();
+    
     auto static_skin = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/terrain/t1/skinned mesh/monster550.anim");
     static_skin->GetTransform()->SetPosition(Vector3(145.2373f, 56.40065f, 84.6097f));
     static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, -79.45871f, 0));
@@ -167,17 +172,6 @@ void LauncherDemoRPG::Start()
     sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/back.png");
     sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
 
-    // scene mesh
-    /*
-    auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
-    auto rs = mesh->GetComponentsInChildren<MeshRenderer>();
-    for(auto i : rs)
-    {
-        auto c = i->GetGameObject()->AddComponent<MeshCollider>();
-        c->SetMesh(i->GetMesh());
-    }
-    */
-
     auto anim_parent = GameObject::Create("anim_parent");
     anim_parent->GetTransform()->SetPosition(Vector3(145.27f, 55, 163.55f));
 
@@ -185,7 +179,7 @@ void LauncherDemoRPG::Start()
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
     anim_obj->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
     anim_obj->GetTransform()->SetLocalRotation(Quaternion::Euler(Vector3(0, 180, 0)));
-    anim_obj->SetLayerRecursively(Layer::Default);
+    anim_obj->SetLayerRecursively(Layer::Character);
     anim = anim_obj->GetComponent<Animation>();
     anim->GetAnimationState("idle")->wrap_mode = WrapMode::Loop;
     anim->GetAnimationState("run")->wrap_mode = WrapMode::Loop;
@@ -201,10 +195,6 @@ void LauncherDemoRPG::Start()
     cam3d->GetTransform()->SetLocalRotation(Quaternion::Euler(g_cam_rot));
     g_cam_dis = 12;
     cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
-
-    // navmesh
-    NavMesh::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t1/navmesh.nav");
-    anim_parent->AddComponent<NavMeshAgent>();
 
     // collider
     auto bc = anim_obj->AddComponent<BoxCollider>();
@@ -324,8 +314,13 @@ void LauncherDemoRPG::Update()
         float speed = 10.0f;
         Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
 
-        auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();
-        agent->Move(offset);
+        auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
+        Vector3 target = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
+        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Scene));
+        if(!hits.empty())
+        {
+            agent->GetTransform()->SetPosition(hits[0].point);
+        }
 
         anim->GetTransform()->SetForward(move_dir);
     }

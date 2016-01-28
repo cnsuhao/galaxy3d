@@ -13,6 +13,8 @@ namespace Galaxy3D
             Highlighting = 3,
 			Water = 4,
 			UI = 5,
+            Scene = 6,
+            Character = 7,
 		};
 	};
 }
