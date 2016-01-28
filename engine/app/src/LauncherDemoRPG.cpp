@@ -85,6 +85,69 @@ void LauncherDemoRPG::Start()
 
     Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
 
+    auto static_skin = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/terrain/t1/skinned mesh/monster550.anim");
+    static_skin->GetTransform()->SetPosition(Vector3(145.2373f, 56.40065f, 84.6097f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, -79.45871f, 0));
+    auto static_skin_anim = static_skin->GetComponent<Animation>();
+    static_skin_anim->GetAnimationState("monster550")->wrap_mode = WrapMode::Loop;
+    static_skin_anim->Play("monster550");
+
+    static_skin = GameObject::Instantiate(static_skin);
+    static_skin->GetTransform()->SetPosition(Vector3(144.8962f, 56.25666f, 82.47664f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, -159.8306f, 0));
+    auto static_skin_anim_state = static_skin_anim->GetAnimationState("monster550");
+    static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
+    static_skin->GetComponent<Animation>()->Play("monster550");
+
+    static_skin = GameObject::Instantiate(static_skin);
+    static_skin->GetTransform()->SetPosition(Vector3(146.788f, 56.25666f, 88.28624f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, -4.007324f, 0));
+    static_skin_anim_state = static_skin_anim->GetAnimationState("monster550");
+    static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
+    static_skin->GetComponent<Animation>()->Play("monster550");
+
+    static_skin = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/terrain/t1/skinned mesh/qizi6.anim");
+    static_skin->GetTransform()->SetPosition(Vector3(129.9555f, 59.13635f, 101.2854f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, 180.0f, 0));
+    static_skin_anim = static_skin->GetComponent<Animation>();
+    static_skin_anim->GetAnimationState("c")->wrap_mode = WrapMode::Loop;
+    static_skin_anim->Play("c");
+
+    static_skin = GameObject::Instantiate(static_skin);
+    static_skin->GetTransform()->SetPosition(Vector3(129.9555f, 59.13635f, 118.4536f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, 180.0f, 0));
+    static_skin_anim_state = static_skin_anim->GetAnimationState("c");
+    static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
+    static_skin->GetComponent<Animation>()->Play("c");
+
+    static_skin = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/terrain/t1/skinned mesh/qizi7.anim");
+    static_skin->GetTransform()->SetPosition(Vector3(110.3188f, 59.17264f, 116.552f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, 180.0f, 0));
+    static_skin_anim = static_skin->GetComponent<Animation>();
+    static_skin_anim->GetAnimationState("S1_qizi07_zm_piao")->wrap_mode = WrapMode::Loop;
+    static_skin_anim->Play("S1_qizi07_zm_piao");
+
+    static_skin = GameObject::Instantiate(static_skin);
+    static_skin->GetTransform()->SetPosition(Vector3(110.3188f, 59.17264f, 104.2874f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, 180.0f, 0));
+    static_skin_anim_state = static_skin_anim->GetAnimationState("S1_qizi07_zm_piao");
+    static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
+    static_skin->GetComponent<Animation>()->Play("S1_qizi07_zm_piao");
+
+    static_skin = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/terrain/t1/skinned mesh/wujian.anim");
+    static_skin->GetTransform()->SetPosition(Vector3(144.9908f, 58.20395f, 106.3395f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, -90.0f, 0));
+    static_skin_anim = static_skin->GetComponent<Animation>();
+    static_skin_anim->GetAnimationState("cS1_wujian01_zm_piao")->wrap_mode = WrapMode::Loop;
+    static_skin_anim->Play("cS1_wujian01_zm_piao");
+
+    static_skin = GameObject::Instantiate(static_skin);
+    static_skin->GetTransform()->SetPosition(Vector3(129.9706f, 57.00055f, 138.3009f));
+    static_skin->GetTransform()->SetRotation(Quaternion::Euler(0, 90.0f, 0));
+    static_skin_anim_state = static_skin_anim->GetAnimationState("cS1_wujian01_zm_piao");
+    static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
+    static_skin->GetComponent<Animation>()->Play("cS1_wujian01_zm_piao");
+
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
     fog->EnableHeight(false);

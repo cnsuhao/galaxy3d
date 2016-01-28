@@ -92,10 +92,6 @@ namespace Galaxy3D
                 WrapMode::Enum wrap_mode = state->wrap_mode;
                 if(wrap_mode == WrapMode::Default)
                 {
-                    wrap_mode = wrap_mode;
-                }
-                if(wrap_mode == WrapMode::Default)
-                {
                     wrap_mode = c->wrap_mode;
                 }
 
