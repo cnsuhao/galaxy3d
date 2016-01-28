@@ -19,6 +19,13 @@ Transparent/Cutout/Diffuse
         RenderStates rs
     }
 
+    Pass depth
+    {
+        VS vs_depth
+        PS ps_depth
+        RenderStates rs
+    }
+
 	RenderStates rs
 	{
         Cull Back
@@ -189,6 +196,68 @@ Transparent/Cutout/Diffuse
             output.o_depth.r = input.v_pos_proj.z / input.v_pos_proj.w;
 
             return output;
+        }
+    }
+
+    HLVS vs_depth
+    {
+        cbuffer cbuffer0 : register(b0)
+        {
+            matrix WorldViewProjection;
+        };
+
+        struct VS_INPUT
+        {
+            float4 Position : POSITION;
+            float3 Normal : NORMAL;
+            float4 Tangent : TANGENT;
+            float2 Texcoord0 : TEXCOORD0;
+            float2 Texcoord1 : TEXCOORD1;
+        };
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+        };
+
+        PS_INPUT main(VS_INPUT input)
+        {
+            PS_INPUT output = (PS_INPUT) 0;
+
+            output.v_pos = mul(input.Position, WorldViewProjection);
+            output.v_uv = input.Texcoord0;
+
+            return output;
+        }
+    }
+
+    HLPS ps_depth
+    {
+        cbuffer cbuffer0 : register( b0 )
+        {
+            float4 _Cutoff;
+        };
+
+        cbuffer cbuffer1 : register( b1 )
+        {
+            float4 _Color;
+        };
+
+        Texture2D _MainTex : register( t0 );
+        SamplerState _MainTex_Sampler : register( s0 );
+
+        struct PS_INPUT
+        {
+            float4 v_pos : SV_POSITION;
+            float2 v_uv : TEXCOORD0;
+        };
+
+        float4 main( PS_INPUT input) : SV_Target
+        {
+            float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _Color;
+            clip(c.a - _Cutoff);
+            return c;
         }
     }
 
