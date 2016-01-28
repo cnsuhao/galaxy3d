@@ -9,6 +9,7 @@ Vector3 g_mouse_down_pos;
 bool g_mouse_down = false;
 Vector3 g_cam_rot;
 float g_cam_dis;
+static bool g_init_pos = false;
 
 void LauncherDemoRPG::Start()
 {
@@ -159,7 +160,7 @@ void LauncherDemoRPG::Start()
     fog->SetFogMode(FogMode::ExponentialSquared);
     fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
     fog->SetFogDensity(0.02f);
-    fog->ExcludeFarPixels(true);
+    fog->ExcludeFarPixels(false);
     */
 
     auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();
@@ -306,6 +307,19 @@ void LauncherDemoRPG::Update()
         dir.y = 0;
         dir.Normalize();
         move_dir += dir;
+    }
+
+    if(!g_init_pos)
+    {
+        g_init_pos = true;
+
+        auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
+        Vector3 target = agent->GetTransform()->GetPosition() + Vector3(0, 100, 0);
+        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Scene));
+        if(!hits.empty())
+        {
+            agent->GetTransform()->SetPosition(hits[0].point);
+        }
     }
 
     if(move_dir != Vector3(0, 0, 0))
