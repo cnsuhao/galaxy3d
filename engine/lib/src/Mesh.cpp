@@ -100,21 +100,24 @@ namespace Galaxy3D
                     std::string tex_name = read_string(p);
                     std::string tex_path = dir + "/" + tex_name;
 
-                    TextureWrapMode::Enum wrap;
-                    if(tex_name.back() == '0')
+                    if(!tex_name.empty())
                     {
-                        wrap = TextureWrapMode::Repeat;
-                    }
-                    else
-                    {
-                        wrap = TextureWrapMode::Clamp;
-                    }
+                        TextureWrapMode::Enum wrap;
+                        if(tex_name.back() == '0')
+                        {
+                            wrap = TextureWrapMode::Repeat;
+                        }
+                        else
+                        {
+                            wrap = TextureWrapMode::Clamp;
+                        }
 
-                    auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, wrap, true);
+                        auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, wrap, true);
 
-                    if(mat)
-                    {
-                        mat->SetTexture(property_name, tex);
+                        if(mat)
+                        {
+                            mat->SetTexture(property_name, tex);
+                        }
                     }
                 }
                 break;
@@ -349,6 +352,10 @@ namespace Galaxy3D
 
             int bone_count;
             BUFFER_READ(bone_count, p, 4);
+            std::vector<std::string> bone_paths;
+            std::vector<std::string> bone_parents;
+
+            // create bones
             for(int i=0; i<bone_count; i++)
             {
                 std::string bone_path = read_string(p);
@@ -370,6 +377,17 @@ namespace Galaxy3D
 
                 bones[bone_path] = bone_tran;
 
+                bone_paths.push_back(bone_path);
+                bone_parents.push_back(parent);
+            }
+
+            // set parent for every bone
+            for(int i=0; i<bone_count; i++)
+            {
+                std::string bone_path = bone_paths[i];
+                std::string parent = bone_parents[i];
+                auto bone_tran = bones[bone_path];
+
                 if(parent == "")
                 {
                     bone_tran->SetParent(tran);
@@ -380,10 +398,6 @@ namespace Galaxy3D
                     if(find != bones.end())
                     {
                         bone_tran->SetParent(find->second);
-                    }
-                    else
-                    {
-                        bones[bone_path] = bone_tran;
                     }
                 }
             }
