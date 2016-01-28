@@ -21,9 +21,19 @@ namespace Galaxy3D
     {
         auto obj = renderer->GetGameObject();
         auto mesh_renderer = dynamic_cast<MeshRenderer *>(renderer);
-        bool single_pass = renderer->GetSharedMaterials()[material_index]->GetShader()->GetPassCount() == 1;
+        auto shader = renderer->GetSharedMaterials()[material_index]->GetShader();
+        int pass_count = shader->GetPassCount();
+        int count = 0;
+        for(int i=0; i<pass_count; i++)
+        {
+            auto name = shader->GetPass(i)->name;
+            if(name != "deferred" && name != "depth")
+            {
+                count++;
+            }
+        }
 
-        return obj->IsStatic() && mesh_renderer != NULL && single_pass;
+        return obj->IsStatic() && mesh_renderer != NULL && count == 1;
     }
 
 	Renderer::Renderer():
@@ -423,20 +433,18 @@ namespace Galaxy3D
         std::list<RenderBatch *> dynamic_batches;
         for(auto i=batches.begin(); i!=batches.end(); i++)
         {
-            auto obj = i->renderer->GetGameObject();
-
             if(i->renderer->IsVisible())
             {
-                auto mesh_renderer = dynamic_cast<MeshRenderer *>(i->renderer);
-
                 if( i->IsStaticSinglePassMeshRenderer() &&
                     m_static_batching_vertex_buffer.buffer != NULL &&
                     m_static_batching_index_buffer.buffer != NULL)
                 {
+                    auto mesh_renderer = dynamic_cast<MeshRenderer *>(i->renderer);
                     mesh_renderer->RenderStaticBatch(&(*i), last_batch);
                 }
                 else
                 {
+                    auto obj = i->renderer->GetGameObject();
                     obj->OnWillRenderObject(i->material_index);
                     i->renderer->Render(i->material_index);
                     obj->OnDidRenderObject(i->material_index);
@@ -483,6 +491,11 @@ namespace Galaxy3D
             if(i.IsStaticSinglePassMeshRenderer())
             {
                 auto mesh = mesh_renderer->GetMesh();
+                if(!mesh)
+                {
+                    continue;
+                }
+
                 auto &vs = mesh->GetVertices();
                 auto &is = mesh->GetIndices();
                 auto &mat = i.renderer->GetTransform()->GetLocalToWorldMatrix();
@@ -494,9 +507,9 @@ namespace Galaxy3D
                     VertexMesh &v_model = vs[j];
                     VertexMesh v = v_model;
                     v.POSITION = mat.MultiplyPoint3x4(v_model.POSITION);
-                    v.NORMAL = mat.MultiplyPoint3x4(v_model.NORMAL);
+                    v.NORMAL = Vector3::Normalize(mat.MultiplyDirection(v_model.NORMAL));
                     v.TANGENT = mat * v_model.TANGENT;
-
+                    
                     vertices->push_back(v);
                 }
 

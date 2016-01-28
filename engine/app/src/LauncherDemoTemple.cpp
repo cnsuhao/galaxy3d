@@ -78,7 +78,6 @@ void LauncherDemoTemple::Start()
     add_dust_particles(dusts, cam3d, Vector3(-47.34644f, 43.30156f, 15.99386f));
 
     Renderer::BuildOctree(scene);
-
     scene->SetStaticRecursively();
     Renderer::BuildStaticBatches();
 

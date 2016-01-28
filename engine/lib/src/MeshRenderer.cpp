@@ -142,9 +142,47 @@ namespace Galaxy3D
     {
         auto mat = batch->renderer->GetSharedMaterials()[batch->material_index];
         auto shader = mat->GetShader();
-        auto pass = shader->GetPass(0);
         auto camera = Camera::GetCurrent();
         Matrix4x4 wvp = camera->GetViewProjectionMatrix();
+        int pass_index = 0;
+
+        auto shadow_light = RenderSettings::GetLightRenderingShadowMap();
+        auto pass_count = shader->GetPassCount();
+        for(int i=0; i<pass_count; i++)
+        {
+            auto pass = shader->GetPass(i);
+            if(shadow_light)
+            {
+                if(pass->name == "depth")
+                {
+                    wvp = shadow_light->GetViewProjectionMatrix();
+                    pass_index = i;
+                    break;
+                }
+            }
+            else
+            {
+                if(camera->IsDeferredShading())
+                {
+                    if(pass->name == "deferred")
+                    {
+                        pass_index = i;
+                        break;
+                    }
+                }
+                else
+                {
+                    if( pass->name != "depth" &&
+                        pass->name != "deferred")
+                    {
+                        pass_index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        auto pass = shader->GetPass(pass_index);
 
         bool set_buffer = false;
         bool set_material = false;
@@ -202,19 +240,22 @@ namespace Galaxy3D
 
         if(set_lightmap)
         {
-            mat->SetTextureDirectlyPS("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index], 0);
+            if(m_lightmap_index >= 0 && m_lightmap_index < (int) LightmapSettings::lightmaps.size())
+            {
+                mat->SetTextureDirectlyPS("_Lightmap", LightmapSettings::lightmaps[m_lightmap_index], pass_index);
+            }
         }
 
         if(m_lightmap_index >= 0)
         {
-            mat->SetVectorDirectlyVS("_LightmapST", m_lightmap_tiling_offset, 0);
+            mat->SetVectorDirectlyVS("_LightmapST", m_lightmap_tiling_offset, pass_index);
         }
 
         if(set_material)
         {
-            mat->ReadyPass(0);
+            mat->ReadyPass(pass_index);
             pass->rs->Apply();
-            mat->ApplyPass(0);
+            mat->ApplyPass(pass_index);
         }
 
         DrawIndexed(batch->static_batching_index_count, batch->static_batching_index_offset);
