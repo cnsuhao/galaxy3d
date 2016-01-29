@@ -186,7 +186,7 @@ void LauncherDemoRPG::Start()
     sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
 
     auto anim_parent = GameObject::Create("anim_parent");
-    anim_parent->GetTransform()->SetPosition(Vector3(153.8f, 61.07f, 154.13f));
+    anim_parent->GetTransform()->SetPosition(Vector3(145.27f, 51.901f, 163.55f));
 
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/xiao_bie_li/xiao_bie_li.anim");
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
