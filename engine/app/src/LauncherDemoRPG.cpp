@@ -42,7 +42,7 @@ void LauncherDemoRPG::Start()
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
     light->SetColor(Color(247 * 1.4f + 255 * 2, 199 * 1.4f + 168 * 2, 137 * 1.4f + 55 * 2, 255 * 1.4f + 255 * 2) / 255.0f);
-    light->SetIntensity(1.0f);
+    light->SetIntensity(1);
     light->EnableShadow(true);
     light->EnableCascade(true);
 
@@ -85,7 +85,7 @@ void LauncherDemoRPG::Start()
     terrain_renderer->SetCastShadow(false);
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
-
+    
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
     scene->SetLayerRecursively(Layer::Scene);
     auto mrs = scene->GetComponentsInChildren<MeshRenderer>();
@@ -98,7 +98,7 @@ void LauncherDemoRPG::Start()
             c->SetMesh(m);
         }
     }
-
+    
     Renderer::BuildOctree(scene);
     scene->SetStaticRecursively();
     Renderer::BuildStaticBatches();
@@ -165,6 +165,7 @@ void LauncherDemoRPG::Start()
     static_skin_anim_state = static_skin_anim->GetAnimationState("cS1_wujian01_zm_piao");
     static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
     static_skin->GetComponent<Animation>()->Play("cS1_wujian01_zm_piao");
+    
 
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
