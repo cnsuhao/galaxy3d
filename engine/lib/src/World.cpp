@@ -112,7 +112,6 @@ namespace Galaxy3D
 
 	void World::Done()
 	{
-        Physics::Done();
         Renderer::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();
@@ -121,6 +120,7 @@ namespace Galaxy3D
         Light::Done();
         Object::ClearAllCachedObjects();
 		Label::DoneFontLib();
+        Physics::Done();
         Cursor::Done();
 	}
 }

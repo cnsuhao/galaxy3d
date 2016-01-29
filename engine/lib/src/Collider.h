@@ -9,10 +9,13 @@ namespace Galaxy3D
     {
     protected:
         void *m_rigidbody;
+        bool m_in_world;
 
         Collider():
-            m_rigidbody(NULL)
+            m_rigidbody(NULL),
+            m_in_world(false)
         {}
+        virtual ~Collider();
         virtual void OnEnable();
         virtual void OnDisable();
     };

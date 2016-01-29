@@ -4,15 +4,30 @@
 
 namespace Galaxy3D
 {
+    Collider::~Collider()
+    {
+        OnDisable();
+    }
+
     void Collider::OnEnable()
     {
-        btRigidBody *body = (btRigidBody *) m_rigidbody;
-        Physics::RestoreRigidBody(body);
+        if(!m_in_world)
+        {
+            m_in_world = true;
+
+            btRigidBody *body = (btRigidBody *) m_rigidbody;
+            Physics::RestoreRigidBody(body);
+        }
     }
 
     void Collider::OnDisable()
     {
-        btRigidBody *body = (btRigidBody *) m_rigidbody;
-        Physics::RemoveRigidBody(body);
+        if(m_in_world)
+        {
+            m_in_world = false;
+
+            btRigidBody *body = (btRigidBody *) m_rigidbody;
+            Physics::RemoveRigidBody(body);
+        }
     }
 }
