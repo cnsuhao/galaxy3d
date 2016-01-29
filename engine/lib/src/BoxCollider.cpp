@@ -31,7 +31,7 @@ namespace Galaxy3D
         body->setFriction(1);
         body->setUserPointer(this);
 
-        Physics::AddNewRigidBody(shape, body);
+        Physics::AddRigidBody(body);
 
         m_in_world = true;
         m_rigidbody = body;
