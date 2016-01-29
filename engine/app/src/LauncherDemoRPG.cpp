@@ -87,6 +87,18 @@ void LauncherDemoRPG::Start()
     tc->SetTerrain(ter);
 
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
+    scene->SetLayerRecursively(Layer::Scene);
+    auto mrs = scene->GetComponentsInChildren<MeshRenderer>();
+    for(auto &i : mrs)
+    {
+        auto m = i->GetMesh();
+        if(m)
+        {
+            auto c = i->GetGameObject()->AddComponent<MeshCollider>();
+            c->SetMesh(m);
+        }
+    }
+
     Renderer::BuildOctree(scene);
     scene->SetStaticRecursively();
     Renderer::BuildStaticBatches();
@@ -174,7 +186,7 @@ void LauncherDemoRPG::Start()
     sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
 
     auto anim_parent = GameObject::Create("anim_parent");
-    anim_parent->GetTransform()->SetPosition(Vector3(145.27f, 55, 163.55f));
+    anim_parent->GetTransform()->SetPosition(Vector3(153.8f, 61.07f, 154.13f));
 
     auto anim_obj = Mesh::LoadSkinnedMesh(Application::GetDataPath() + "/Assets/mesh/anim/xiao_bie_li/xiao_bie_li.anim");
     anim_obj->GetTransform()->SetParent(anim_parent->GetTransform());
@@ -252,10 +264,10 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
     Vector3 cam_target = cam3d->GetTransform()->GetPosition() + cam3d->GetTransform()->GetForward() * g_cam_dis;
 
-    RaycastHit hit;
-    if(Physics::Raycast(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, hit))
+    auto hits = Physics::RaycastAll(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, LayerMask::GetMask(Layer::Scene));
+    if(!hits.empty())
     {
-        cam3d->GetTransform()->SetPosition(Vector3::Lerp(hit.point, cam_target, 0.1f / 1.5f));
+        //cam3d->GetTransform()->SetPosition(Vector3::Lerp(hits[0].point, cam_target, 0.1f / 1.5f));
     }
 
     return rot_offset;
@@ -363,10 +375,11 @@ void LauncherDemoRPG::Update()
     {
         auto ray = cam3d->ScreenPointToRay(Input::GetMousePosition());
 
-        RaycastHit hit;
-        if(Physics::Raycast(ray.origin, ray.GetDirection(), 1000, hit))
+        auto hits = Physics::RaycastAll(ray.origin, ray.GetDirection(), 1000, LayerMask::GetMask(Layer::Character));
+        if(!hits.empty())
         {
-            if(hit.collider && hit.collider->GetGameObject() == anim->GetGameObject())
+            auto c =  hits[0].collider;
+            if(c && c->GetGameObject() == anim->GetGameObject())
             {
                 Cursor::SetCursor(1);
                 set_cursor = true;

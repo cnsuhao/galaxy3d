@@ -5,6 +5,7 @@
 #include "LayerMask.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
+#include <algorithm>
 
 namespace Galaxy3D
 {
@@ -14,6 +15,12 @@ namespace Galaxy3D
     static btSequentialImpulseConstraintSolver *g_solver = NULL;
     static btDiscreteDynamicsWorld *g_dynamics_world = NULL;
     static btAlignedObjectArray<btCollisionShape *> g_collision_shapes;
+    static Vector3 g_hit_from;
+
+    static bool hit_less(RaycastHit &a, RaycastHit &b)
+    {
+        return (a.point - g_hit_from).SqrMagnitude() < (b.point - g_hit_from).SqrMagnitude();
+    }
 
     void Physics::Init()
     {
@@ -122,6 +129,13 @@ namespace Galaxy3D
                     }
                 }
             }
+        }
+
+        // sort result by distance
+        if(hits.size() > 1)
+        {
+            g_hit_from = from;
+            std::sort(hits.begin(), hits.end(), hit_less);
         }
 
         return hits;

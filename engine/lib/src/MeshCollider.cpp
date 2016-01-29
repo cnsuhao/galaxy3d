@@ -15,8 +15,14 @@ namespace Galaxy3D
 
         if(m_indices != NULL)
         {
-            delete m_indices;
+            delete [] m_indices;
             m_indices = 0;
+        }
+
+        if(m_vertices != NULL)
+        {
+            delete [] m_vertices;
+            m_vertices = 0;
         }
     }
 
@@ -41,12 +47,24 @@ namespace Galaxy3D
             old_size += size;
         }
 
+        auto scale = GetTransform()->GetScale();
+        m_vertices = new unsigned char[vertices.size() * sizeof(VertexMesh)];
+        for(size_t i=0; i<vertices.size(); i++)
+        {
+            auto v = vertices[i];
+            v.POSITION.x *= scale.x;
+            v.POSITION.y *= scale.y;
+            v.POSITION.z *= scale.z;
+
+            memcpy(&m_vertices[i * sizeof(VertexMesh)], &v, sizeof(VertexMesh));
+        }
+
         btIndexedMesh mesh;
         mesh.m_numTriangles = index_count / 3;
         mesh.m_triangleIndexBase = (const unsigned char *) m_indices;
         mesh.m_triangleIndexStride = sizeof(unsigned short) * 3;
         mesh.m_numVertices = vertices.size();
-        mesh.m_vertexBase = (const unsigned char *) &vertices[0];
+        mesh.m_vertexBase = m_vertices;
         mesh.m_vertexStride = sizeof(VertexMesh);
 
         m_collider_data = new btTriangleIndexVertexArray();
