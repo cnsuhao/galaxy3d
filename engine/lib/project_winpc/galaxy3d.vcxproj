@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\Bounds.cpp" />
     <ClCompile Include="..\src\BoxCollider.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
+    <ClCompile Include="..\src\CharacterController.cpp" />
     <ClCompile Include="..\src\Collider.cpp" />
     <ClCompile Include="..\src\Color.cpp" />
     <ClCompile Include="..\src\Component.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="..\src\BoxCollider.h" />
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\CameraClearFlags.h" />
+    <ClInclude Include="..\src\CharacterController.h" />
     <ClInclude Include="..\src\Collider.h" />
     <ClInclude Include="..\src\Color.h" />
     <ClInclude Include="..\src\ColorGradient.h" />

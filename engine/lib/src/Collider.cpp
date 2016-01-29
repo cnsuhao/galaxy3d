@@ -6,7 +6,25 @@ namespace Galaxy3D
 {
     Collider::~Collider()
     {
-        OnDisable();
+        btRigidBody *body = (btRigidBody *) m_rigidbody;
+        if(body != NULL)
+        {
+            OnDisable();
+
+            auto motion_state = body->getMotionState();
+            if(motion_state != NULL)
+            {
+                delete motion_state;
+            }
+
+            auto shape = body->getCollisionShape();
+            if(shape != NULL)
+            {
+                delete shape;
+            }
+
+            delete body;
+        }
     }
 
     void Collider::OnEnable()
@@ -16,7 +34,7 @@ namespace Galaxy3D
             m_in_world = true;
 
             btRigidBody *body = (btRigidBody *) m_rigidbody;
-            Physics::RestoreRigidBody(body);
+            Physics::AddRigidBody(body);
         }
     }
 

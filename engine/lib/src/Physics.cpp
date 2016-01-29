@@ -5,6 +5,8 @@
 #include "LayerMask.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
+#include "BulletDynamics/Character/btKinematicCharacterController.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include <algorithm>
 
 namespace Galaxy3D
@@ -14,7 +16,6 @@ namespace Galaxy3D
     static btDbvtBroadphase *g_broadphase = NULL;
     static btSequentialImpulseConstraintSolver *g_solver = NULL;
     static btDiscreteDynamicsWorld *g_dynamics_world = NULL;
-    static btAlignedObjectArray<btCollisionShape *> g_collision_shapes;
     static Vector3 g_hit_from;
 
     static bool hit_less(RaycastHit &a, RaycastHit &b)
@@ -35,11 +36,11 @@ namespace Galaxy3D
         g_solver = new btSequentialImpulseConstraintSolver();
         g_dynamics_world = new btDiscreteDynamicsWorld(g_dispatcher, g_broadphase, g_solver, g_config);
         g_dynamics_world->setGravity(btVector3(0, -10, 0));
+        g_broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
     }
 
-    void Physics::AddNewRigidBody(void *shape, void *body)
+    void Physics::AddRigidBody(void *body)
     {
-        g_collision_shapes.push_back((btCollisionShape *) shape);
         g_dynamics_world->addRigidBody((btRigidBody *) body);
     }
 
@@ -48,9 +49,25 @@ namespace Galaxy3D
         g_dynamics_world->removeRigidBody((btRigidBody *) body);
     }
 
-    void Physics::RestoreRigidBody(void *body)
+    void Physics::AddCharacter(void *character)
     {
-        g_dynamics_world->addRigidBody((btRigidBody *) body);
+        auto c = (btKinematicCharacterController *) character;
+        g_dynamics_world->addCharacter(c);
+
+        auto ghost = c->getGhostObject();
+        g_dynamics_world->addCollisionObject(
+            ghost,
+            btBroadphaseProxy::CharacterFilter,
+            btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+    }
+
+    void Physics::RemoveCharacter(void *character)
+    {
+        auto c = (btKinematicCharacterController *) character;
+        g_dynamics_world->removeCharacter(c);
+
+        auto ghost = c->getGhostObject();
+        g_dynamics_world->removeCollisionObject(ghost);
     }
 
     bool Physics::Raycast(const Vector3 &from, const Vector3 &dir, float length, RaycastHit &hit)
@@ -148,25 +165,6 @@ namespace Galaxy3D
 
     void Physics::Done()
     {
-        for(int i=g_dynamics_world->getNumCollisionObjects()-1; i>=0; i--)
-        {
-            btCollisionObject *obj = g_dynamics_world->getCollisionObjectArray()[i];
-            btRigidBody *body = btRigidBody::upcast(obj);
-            if(body && body->getMotionState())
-            {
-                delete body->getMotionState();
-            }
-            g_dynamics_world->removeCollisionObject(obj);
-            delete obj;
-        }
-
-        for(int i=0; i<g_collision_shapes.size(); i++)
-        {
-            btCollisionShape *shape = g_collision_shapes[i];
-            delete shape;
-        }
-        g_collision_shapes.clear();
-
         delete g_dynamics_world;
         delete g_solver;
         delete g_broadphase;

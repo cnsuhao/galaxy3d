@@ -210,10 +210,14 @@ void LauncherDemoRPG::Start()
     g_cam_dis = 12;
     cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
 
+    /*
     // collider
     auto bc = anim_obj->AddComponent<BoxCollider>();
     bc->SetCenter(Vector3(0, 1, 0));
     bc->SetSize(Vector3(1, 2, 1));
+    */
+    cc = anim_parent->AddComponent<CharacterController>();
+    
 
     // cursor
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);//normal
@@ -338,18 +342,25 @@ void LauncherDemoRPG::Update()
     if(move_dir != Vector3(0, 0, 0))
     {
         move_dir.Normalize();
-        float speed = 10.0f;
+        float speed = 25;
         Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
 
+        /*
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
         Vector3 target = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
         auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Scene));
         if(!hits.empty())
         {
             agent->GetTransform()->SetPosition(hits[0].point);
-        }
+        }*/
+        cc->Move(offset);
 
         anim->GetTransform()->SetForward(move_dir);
+    }
+
+    if(g_key_down_count == 0)
+    {
+        cc->Move(Vector3(0, 0, 0));
     }
 
     if(Input::GetMouseButtonDown(1))

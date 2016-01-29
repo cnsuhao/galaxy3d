@@ -47,6 +47,7 @@
 #include "UICanvas.h"
 #include "UIEventListener.h"
 #include "UIAtlas.h"
+#include "CharacterController.h"
 
 namespace Galaxy3D
 {
@@ -57,6 +58,7 @@ namespace Galaxy3D
         std::shared_ptr<Camera> cam2d;
         std::shared_ptr<Camera> cam3d;
         std::shared_ptr<Animation> anim;
+        std::shared_ptr<CharacterController> cc;
 
         virtual void Start();
         virtual void Update();

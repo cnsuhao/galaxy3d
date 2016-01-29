@@ -103,6 +103,7 @@
     <ClCompile Include="..\src\BulletCollision\NarrowPhaseCollision\btRaycastCallback.cpp" />
     <ClCompile Include="..\src\BulletCollision\NarrowPhaseCollision\btSubSimplexConvexCast.cpp" />
     <ClCompile Include="..\src\BulletCollision\NarrowPhaseCollision\btVoronoiSimplexSolver.cpp" />
+    <ClCompile Include="..\src\BulletDynamics\Character\btKinematicCharacterController.cpp" />
     <ClCompile Include="..\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp" />
     <ClCompile Include="..\src\BulletDynamics\ConstraintSolver\btContactConstraint.cpp" />
     <ClCompile Include="..\src\BulletDynamics\ConstraintSolver\btFixedConstraint.cpp" />

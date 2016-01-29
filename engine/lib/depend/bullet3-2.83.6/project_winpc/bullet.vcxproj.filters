@@ -340,6 +340,9 @@
     <ClCompile Include="..\src\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BulletDynamics\Character\btKinematicCharacterController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BulletCollision\CollisionDispatch\btHashedSimplePairCache.h">
