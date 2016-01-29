@@ -380,6 +380,7 @@ DeferredShading
             float3 h = normalize(light_dir + eye_dir);
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
+            spec = max(spec, 0);
 
             float intensity = 1;
 
@@ -555,6 +556,7 @@ DeferredShading
             float3 h = normalize(light_dir + eye_dir);
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
+            spec = max(spec, 0);
 
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;
@@ -793,6 +795,7 @@ DeferredShading
             float3 h = normalize(light_dir + eye_dir);
             float nh = max(0, dot(normal, h));
             float spec = pow(nh, 128 * specular.x) * specular.y;
+            spec = max(spec, 0);
 
             float3 c = diff * color * LightColor.rgb +
                 spec * LightColor.rgb;

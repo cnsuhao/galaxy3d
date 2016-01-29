@@ -100,8 +100,8 @@ ImageEffect/ToneMapping
 
         float4 main(PS_INPUT input) : SV_Target
         {
-            const float DELTA = 0.0001f;
-            float fLogLumSum = 0.0f;
+            const float DELTA = 0.0001;
+            float fLogLumSum = 0.0;
 
             fLogLumSum += log(luminance(_MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(-1,-1)).rgb) + DELTA);		
             fLogLumSum += log(luminance(_MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(1,1)).rgb) + DELTA);		
@@ -136,16 +136,16 @@ ImageEffect/ToneMapping
 
         float4 main(PS_INPUT input) : SV_Target
         {
-            float2 lum = float2(0.0f, 0.0f);
+            float lum = 0.0;
 
-            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(-1,-1)).xy;	
-            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv  + _MainTex_TexelSize.xy * float2(1,1)).xy;	
-            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(1,-1)).xy;	
-            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv  + _MainTex_TexelSize.xy * float2(-1,1)).xy;	
+            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(-1,-1)).r;	
+            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv  + _MainTex_TexelSize.xy * float2(1,1)).r;	
+            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv + _MainTex_TexelSize.xy * float2(1,-1)).r;	
+            lum += _MainTex.Sample(_MainTex_Sampler, input.v_uv  + _MainTex_TexelSize.xy * float2(-1,1)).r;	
 
-            lum = exp(lum / 4.0f);
+            lum = exp(lum / 4.0);
 
-            return float4(lum.x, lum.x, lum.x, saturate(0.0125 * _AdaptionSpeed.x));
+            return float4(lum, lum, lum, saturate(0.0125 * _AdaptionSpeed.x));
         }
     }
 
@@ -181,7 +181,7 @@ ImageEffect/ToneMapping
 
             float lumScaled = cieLum * _HdrParams.z / (0.001 + avgLum);
 
-            lumScaled = (lumScaled * (1.0f + lumScaled / (_HdrParams.w)))/(1.0f + lumScaled);
+            lumScaled = (lumScaled * (1.0 + lumScaled / (_HdrParams.w)))/(1.0 + lumScaled);
             color.rgb = color.rgb * (lumScaled / cieLum);
 
             return color;

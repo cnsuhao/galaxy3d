@@ -32,6 +32,7 @@ namespace Galaxy3D
         // log
         GraphicsDevice::GetInstance()->Blit(adaptive_texture, rts[0], m_material, 0);
 
+        // down sample lum
         for(int i=0; i<lum_tex_count-1; i++)
         {
             GraphicsDevice::GetInstance()->Blit(rts[i], rts[i + 1], mat_empty, 0);
