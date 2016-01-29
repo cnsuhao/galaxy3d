@@ -33,6 +33,7 @@ namespace Galaxy3D
 
         Physics::AddNewRigidBody(shape, body);
 
+        m_in_world = true;
         m_rigidbody = body;
     }
 

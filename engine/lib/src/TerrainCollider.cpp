@@ -50,7 +50,8 @@ namespace Galaxy3D
         body->setUserPointer(this);
 
         Physics::AddNewRigidBody(shape, body);
-
+        
+        m_in_world = true;
         m_rigidbody = body;
     }
 }
