@@ -1,4 +1,5 @@
 #include "LauncherDemoRPG.h"
+#include "LauncherDemoUI.h"
 
 using namespace Galaxy3D;
 
@@ -13,6 +14,8 @@ static bool g_init_pos = false;
 
 void LauncherDemoRPG::Start()
 {
+    GameObject::Create("ui")->AddComponent<LauncherDemoUI>();
+    /*
     Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
     Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
@@ -37,7 +40,7 @@ void LauncherDemoRPG::Start()
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
     fps = tr;
-
+    */
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
@@ -86,7 +89,7 @@ void LauncherDemoRPG::Start()
     terrain_renderer->SetCastShadow(false);
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
-    
+    /*
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
     scene->SetLayerRecursively(Layer::Scene);
     auto mrs = scene->GetComponentsInChildren<MeshRenderer>();
@@ -166,7 +169,7 @@ void LauncherDemoRPG::Start()
     static_skin_anim_state = static_skin_anim->GetAnimationState("cS1_wujian01_zm_piao");
     static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
     static_skin->GetComponent<Animation>()->Play("cS1_wujian01_zm_piao");
-    
+    */
 
     /*
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
@@ -225,7 +228,7 @@ void LauncherDemoRPG::Start()
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);//attack
     Cursor::SetCursor(0);
 
-    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
+    //cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
 
 static void move_key_down(std::shared_ptr<Animation> &anim, int index)
@@ -280,11 +283,11 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 }
 
 void LauncherDemoRPG::Update()
-{
+{/*
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
     fps->UpdateLabel();
-
+    */
     int key_down_count_old = g_key_down_count;
 
     if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim, 0);
@@ -391,7 +394,7 @@ void LauncherDemoRPG::Update()
         auto hits = Physics::RaycastAll(ray.origin, ray.GetDirection(), 1000, LayerMask::GetMask(Layer::Character));
         if(!hits.empty())
         {
-            auto c =  hits[0].collider;
+            auto c =  hits[0].collider.lock();
             if(c && c->GetGameObject() == anim->GetGameObject())
             {
                 Cursor::SetCursor(1);

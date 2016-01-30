@@ -96,7 +96,7 @@ namespace Galaxy3D
         {
             for(size_t i=0; i<hits.size(); i++)
             {
-                auto go = hits[i].collider->GetGameObject();
+                auto go = hits[i].collider.lock()->GetGameObject();
                 auto renderer = go->GetComponent<Renderer>();
                 if(!renderer)
                 {
@@ -116,7 +116,7 @@ namespace Galaxy3D
                     hit.depth = layer | order;
                     hit.hit = hits[i];
                     hit.point = hits[i].point;
-                    hit.go = hits[i].collider->GetGameObject();
+                    hit.go = hits[i].collider.lock()->GetGameObject();
 
                     renderer_hits.push_back(hit);
                 }
@@ -130,10 +130,8 @@ namespace Galaxy3D
         }
         else if(hits.size() == 1)
         {
-            auto go = hits[0].collider->GetGameObject();
-
             g_last_hit = hits[0];
-            g_ray_hit_object = g_last_hit.collider->GetGameObject();
+            g_ray_hit_object = hits[0].collider.lock()->GetGameObject();
             g_last_world_position = hits[0].point;
             return true;
         }

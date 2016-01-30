@@ -10,7 +10,7 @@ namespace Galaxy3D
     {
         Vector3 point;
         Vector3 normal;
-        std::shared_ptr<Collider> collider;
+        std::weak_ptr<Collider> collider;
     };
 
     class Physics
