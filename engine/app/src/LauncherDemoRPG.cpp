@@ -60,6 +60,7 @@ void LauncherDemoRPG::Start()
     cam3d->SetCullingMask(
         LayerMask::GetMask(Layer::Default) |
         LayerMask::GetMask(Layer::Scene) |
+        LayerMask::GetMask(Layer::Terrain) |
         LayerMask::GetMask(Layer::Character));
     cam3d->EnableDeferredShading(true);
 
@@ -71,7 +72,7 @@ void LauncherDemoRPG::Start()
     terrain_texs.push_back(Application::GetDataPath() + "/Assets/terrain/t1/4.png");
 
     GameObject *terrain_obj = GameObject::Create("terrain").get();
-    terrain_obj->SetLayer(Layer::Scene);
+    terrain_obj->SetLayer(Layer::Terrain);
 
     auto ter = terrain_obj->AddComponent<Terrain>();
     ter->SetCamera(cam3d);
@@ -269,10 +270,10 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
     Vector3 cam_target = cam3d->GetTransform()->GetPosition() + cam3d->GetTransform()->GetForward() * g_cam_dis;
 
-    auto hits = Physics::RaycastAll(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, LayerMask::GetMask(Layer::Scene));
+    auto hits = Physics::RaycastAll(cam_target, -cam3d->GetTransform()->GetForward(), g_cam_dis, LayerMask::GetMask(Layer::Terrain));
     if(!hits.empty())
     {
-        //cam3d->GetTransform()->SetPosition(Vector3::Lerp(hits[0].point, cam_target, 0.1f / 1.5f));
+        cam3d->GetTransform()->SetPosition(Vector3::Lerp(hits[0].point, cam_target, 0.1f / 1.5f));
     }
 
     return rot_offset;
@@ -332,28 +333,28 @@ void LauncherDemoRPG::Update()
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
         Vector3 target = agent->GetTransform()->GetPosition() + Vector3(0, 100, 0);
-        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Scene));
+        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
         if(!hits.empty())
         {
-            agent->GetTransform()->SetPosition(hits[0].point);
+            //agent->GetTransform()->SetPosition(hits[0].point);
         }
     }
 
     if(move_dir != Vector3(0, 0, 0))
     {
         move_dir.Normalize();
-        float speed = 25;
-        Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
+        float speed = 11;
+        Vector3 offset = move_dir * speed * (1.0f / 60);
+        cc->Move(offset);
 
         /*
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
         Vector3 target = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
-        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Scene));
+        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
         if(!hits.empty())
         {
             agent->GetTransform()->SetPosition(hits[0].point);
         }*/
-        cc->Move(offset);
 
         anim->GetTransform()->SetForward(move_dir);
     }

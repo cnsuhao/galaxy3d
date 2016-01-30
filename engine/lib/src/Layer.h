@@ -14,7 +14,8 @@ namespace Galaxy3D
 			Water = 4,
 			UI = 5,
             Scene = 6,
-            Character = 7,
+            Terrain = 7,
+            Character = 8,
 		};
 	};
 }

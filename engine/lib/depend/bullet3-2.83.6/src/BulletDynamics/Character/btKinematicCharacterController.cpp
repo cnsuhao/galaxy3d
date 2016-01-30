@@ -607,7 +607,9 @@ void btKinematicCharacterController::warp (const btVector3& origin)
 
 void btKinematicCharacterController::preStep (  btCollisionWorld* collisionWorld)
 {
-	
+    auto old_pos = m_ghostObject->getWorldTransform().getOrigin();
+
+
 	int numPenetrationLoops = 0;
 	m_touchingContact = false;
 	while (recoverFromPenetration (collisionWorld))
@@ -625,7 +627,12 @@ void btKinematicCharacterController::preStep (  btCollisionWorld* collisionWorld
 	m_targetPosition = m_currentPosition;
 //	printf("m_targetPosition=%f,%f,%f\n",m_targetPosition[0],m_targetPosition[1],m_targetPosition[2]);
 
-	
+
+    if(m_walkDirection.fuzzyZero())
+    {
+        m_currentPosition = btVector3(old_pos.x(), m_currentPosition.y(), old_pos.z());
+        m_targetPosition = m_currentPosition;
+    }
 }
 
 #include <stdio.h>
@@ -663,23 +670,28 @@ void btKinematicCharacterController::playerStep (  btCollisionWorld* collisionWo
 //	printf("walkSpeed=%f\n",walkSpeed);
 
 	stepUp (collisionWorld);
-	if (m_useWalkDirection) {
-		stepForwardAndStrafe (collisionWorld, m_walkDirection);
-	} else {
-		//printf("  time: %f", m_velocityTimeInterval);
-		// still have some time left for moving!
-		btScalar dtMoving =
-			(dt < m_velocityTimeInterval) ? dt : m_velocityTimeInterval;
-		m_velocityTimeInterval -= dt;
 
-		// how far will we move while we are moving?
-		btVector3 move = m_walkDirection * dtMoving;
+    if(!m_walkDirection.fuzzyZero())
+    {
+        if (m_useWalkDirection) {
+            stepForwardAndStrafe (collisionWorld, m_walkDirection);
+        } else {
+            //printf("  time: %f", m_velocityTimeInterval);
+            // still have some time left for moving!
+            btScalar dtMoving =
+                (dt < m_velocityTimeInterval) ? dt : m_velocityTimeInterval;
+            m_velocityTimeInterval -= dt;
 
-		//printf("  dtMoving: %f", dtMoving);
+            // how far will we move while we are moving?
+            btVector3 move = m_walkDirection * dtMoving;
 
-		// okay, step
-		stepForwardAndStrafe(collisionWorld, move);
-	}
+            //printf("  dtMoving: %f", dtMoving);
+
+            // okay, step
+            stepForwardAndStrafe(collisionWorld, move);
+        }
+    }
+	
 	stepDown (collisionWorld, dt);
 
 	// printf("\n");
