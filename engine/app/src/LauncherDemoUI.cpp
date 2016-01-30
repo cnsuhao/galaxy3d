@@ -589,7 +589,7 @@ void LauncherDemoUI::Start()
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
-    cam2d->SetClearFlags(CameraClearFlags::SolidColor);
+    cam2d->SetClearFlags(CameraClearFlags::Nothing);
     cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
 
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();

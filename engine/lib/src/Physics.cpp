@@ -138,7 +138,7 @@ namespace Galaxy3D
                         Collider *collider = (Collider *) user_data;
                         hit.collider = std::dynamic_pointer_cast<Collider>(collider->GetComponentPtr());
 
-                        int obj_layer = hit.collider->GetGameObject()->GetLayer();
+                        int obj_layer = hit.collider.lock()->GetGameObject()->GetLayer();
                         if(!LayerMask::IsCulled(obj_layer, layer_mask))
                         {
                             hits.push_back(hit);

@@ -300,7 +300,7 @@ void LauncherDemoDef::Update()
         RaycastHit hit;
         if(Physics::Raycast(ray.origin, ray.GetDirection(), 1000, hit))
         {
-            if(hit.collider && hit.collider->GetGameObject() == anim->GetGameObject())
+            if(hit.collider.lock()->GetGameObject() == anim->GetGameObject())
             {
                 Cursor::SetCursor(1);
                 set_cursor = true;
