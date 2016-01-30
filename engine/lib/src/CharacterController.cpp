@@ -43,11 +43,10 @@ namespace Galaxy3D
         ghost_object->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
         ghost_object->setWorldTransform(transform);
 
-        btConvexShape *shape = new btCapsuleShape(m_radius, m_height); 
+        btConvexShape *shape = new btCapsuleShape(m_radius, m_height - m_radius * 2); 
         ghost_object->setCollisionShape(shape);
         
         btKinematicCharacterController *character = new btKinematicCharacterController(ghost_object, shape, m_step_height);
-        character->setGravity(0);
 
         Physics::AddCharacter(character);
 
