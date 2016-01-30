@@ -1,6 +1,8 @@
 #include "CharacterController.h"
 #include "Transform.h"
 #include "Physics.h"
+#include "LayerMask.h"
+#include "Layer.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
@@ -100,7 +102,19 @@ namespace Galaxy3D
     {
         auto c = (btKinematicCharacterController *) m_character;
         auto pos = c->getGhostObject()->getWorldTransform().getOrigin();
+        auto target_pos = Vector3(pos.x() - m_center.x, pos.y() - m_center.y, pos.z() - m_center.z);
         
-        GetTransform()->SetPosition(Vector3(pos.x() - m_center.x, pos.y() - m_center.y, pos.z() - m_center.z));
+        // keep up on ground
+        Vector3 from = target_pos + Vector3(0, 100, 0);
+        auto hits = Physics::RaycastAll(from, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
+        if(!hits.empty())
+        {
+            if(target_pos.y < hits[0].point.y)
+            {
+                target_pos.y = hits[0].point.y;
+            }
+        }
+
+        GetTransform()->SetPosition(target_pos);
     }
 }
