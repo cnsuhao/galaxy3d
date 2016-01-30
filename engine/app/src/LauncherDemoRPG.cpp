@@ -332,11 +332,11 @@ void LauncherDemoRPG::Update()
         g_init_pos = true;
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
-        Vector3 target = agent->GetTransform()->GetPosition() + Vector3(0, 100, 0);
-        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
+        Vector3 from = agent->GetTransform()->GetPosition() + Vector3(0, 100, 0);
+        auto hits = Physics::RaycastAll(from, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
         if(!hits.empty())
         {
-            //agent->GetTransform()->SetPosition(hits[0].point);
+            agent->GetTransform()->SetPosition(hits[0].point);
         }
     }
 
@@ -349,8 +349,8 @@ void LauncherDemoRPG::Update()
 
         /*
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
-        Vector3 target = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
-        auto hits = Physics::RaycastAll(target, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
+        Vector3 from = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
+        auto hits = Physics::RaycastAll(from, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
         if(!hits.empty())
         {
             agent->GetTransform()->SetPosition(hits[0].point);
