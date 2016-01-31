@@ -15,32 +15,7 @@ static bool g_init_pos = false;
 void LauncherDemoRPG::Start()
 {
     GameObject::Create("ui")->AddComponent<LauncherDemoUI>();
-    /*
-    Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
-    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
-    cam2d = GameObject::Create("camera")->AddComponent<Camera>();
-    cam2d->SetOrthographic(true);
-    cam2d->SetOrthographicSize(g_unit_per_pixel * Screen::GetHeight() / 2);
-    cam2d->SetClipPlane(-1, 1);
-    cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
-    cam2d->SetDepth(1);
-    cam2d->SetClearFlags(CameraClearFlags::Nothing);
-    cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
-
-    auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
-    canvas->GetTransform()->SetParent(cam2d->GetTransform());
-    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
-
-    auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
-    auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
-    tr->SetLabel(label);
-    tr->SetSortingOrder(1000, 0);
-    tr->GetTransform()->SetParent(canvas->GetTransform());
-    tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
-    fps = tr;
-    */
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
@@ -89,6 +64,7 @@ void LauncherDemoRPG::Start()
     terrain_renderer->SetCastShadow(false);
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
+
     /*
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
     scene->SetLayerRecursively(Layer::Scene);
@@ -214,21 +190,12 @@ void LauncherDemoRPG::Start()
     g_cam_dis = 12;
     cam3d->GetTransform()->SetLocalPosition(Vector3(0, 1.5f, 0) - cam3d->GetTransform()->GetForward() * g_cam_dis);
 
-    /*
-    // collider
-    auto bc = anim_obj->AddComponent<BoxCollider>();
-    bc->SetCenter(Vector3(0, 1, 0));
-    bc->SetSize(Vector3(1, 2, 1));
-    */
     cc = anim_parent->AddComponent<CharacterController>();
-    
 
     // cursor
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Cursor.cur", 0);//normal
     Cursor::Load(Application::GetDataPath() + "/Assets/texture/cursor/Battle2.cur", 1);//attack
     Cursor::SetCursor(0);
-
-    //cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
 
 static void move_key_down(std::shared_ptr<Animation> &anim, int index)
@@ -283,11 +250,7 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 }
 
 void LauncherDemoRPG::Update()
-{/*
-    fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-        "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-    fps->UpdateLabel();
-    */
+{
     int key_down_count_old = g_key_down_count;
 
     if(Input::GetKeyDown(KeyCode::W)) move_key_down(anim, 0);
@@ -349,15 +312,6 @@ void LauncherDemoRPG::Update()
         float speed = 11;
         Vector3 offset = move_dir * speed * (1.0f / 60);
         cc->Move(offset);
-
-        /*
-        auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject();
-        Vector3 from = agent->GetTransform()->GetPosition() + offset + Vector3(0, 100, 0);
-        auto hits = Physics::RaycastAll(from, Vector3(0, -1, 0), 200, LayerMask::GetMask(Layer::Terrain));
-        if(!hits.empty())
-        {
-            agent->GetTransform()->SetPosition(hits[0].point);
-        }*/
 
         anim->GetTransform()->SetForward(move_dir);
     }

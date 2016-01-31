@@ -81,7 +81,7 @@ namespace Galaxy3D
             return sprite;
         }
 
-        return Sprite::Create(
+        sprite = Sprite::Create(
             m_texture,
             find->second.rect,
             pivot,
@@ -89,6 +89,9 @@ namespace Galaxy3D
             find->second.border,
             type,
             size);
+        sprite->SetAtlas(std::dynamic_pointer_cast<UIAtlas>(GetComponentPtr()));
+
+        return sprite;
     }
 
     void UIAtlas::SetSpriteData(std::shared_ptr<Sprite> &sprite, const std::string &name)

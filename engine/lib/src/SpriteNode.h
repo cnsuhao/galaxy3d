@@ -18,17 +18,20 @@ namespace Galaxy3D
 		}
 		SpriteNode():
 			m_color(1, 1, 1, 1),
-			m_sorting_order(0)
+			m_sorting_order(0),
+            m_dirty(true)
 		{}
-		void SetSprite(const std::shared_ptr<Sprite> &sprite) {m_sprite = sprite;}
+		void SetSprite(const std::shared_ptr<Sprite> &sprite);
 		std::shared_ptr<Sprite> GetSprite() const {return m_sprite;}
-		void SetColor(const Color &color) {m_color = color;}
+		void SetColor(const Color &color);
 		Color GetColor() const {return m_color;}
-		void SetSortingOrder(int order) {m_sorting_order = order;}
+		void SetSortingOrder(int order);
         void SetAnchor(const Vector4 &anchor);
         void SetBatch(const std::weak_ptr<SpriteBatchRenderer> &batch) {m_batch = batch;}
         std::weak_ptr<SpriteBatchRenderer> GetBatch() const {return m_batch;}
         void AnchorTransform();
+        bool IsDirty() const {return m_dirty;}
+        void SetDirty(bool dirty) {m_dirty = dirty;}
 
 	private:
 		std::shared_ptr<Sprite> m_sprite;
@@ -36,6 +39,7 @@ namespace Galaxy3D
         std::shared_ptr<Vector4> m_anchor;
 		int m_sorting_order;
         std::weak_ptr<SpriteBatchRenderer> m_batch;
+        bool m_dirty;
 	};
 }
 

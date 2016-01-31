@@ -62,6 +62,7 @@ namespace Galaxy3D
 
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprite->GetTexture());
+        mat->SetMainColor(m_color);
 		
 		mat->ReadyPass(0);
 		pass->rs->Apply();

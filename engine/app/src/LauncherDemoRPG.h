@@ -54,8 +54,6 @@ namespace Galaxy3D
     class LauncherDemoRPG :public Component
     {
     protected:
-        std::shared_ptr<TextRenderer> fps;
-        std::shared_ptr<Camera> cam2d;
         std::shared_ptr<Camera> cam3d;
         std::shared_ptr<Animation> anim;
         std::shared_ptr<CharacterController> cc;

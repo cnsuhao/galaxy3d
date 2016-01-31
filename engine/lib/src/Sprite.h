@@ -10,6 +10,8 @@
 
 namespace Galaxy3D
 {
+    class UIAtlas;
+
 	class Sprite : Object
 	{
     public:
@@ -64,6 +66,7 @@ namespace Galaxy3D
             Type::Enum type,
             const Vector2 &size);
         virtual ~Sprite();
+        bool IsDirdy() const {return m_dirty;}
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
         int GetVertexCount() {FillMeshIfNeeded(); return m_vertices.size();}
@@ -78,8 +81,11 @@ namespace Galaxy3D
         void SetFillInvert(bool invert);
         void SetFlip(Flip::Enum flip);
         void SetSpriteData(const Rect &rect, const Vector4 &border);
+        void SetAtlas(const std::shared_ptr<UIAtlas> &atlas) {m_atlas = atlas;}
+        std::weak_ptr<UIAtlas> GetAtlas() const {return m_atlas;}
 
 	private:
+        std::weak_ptr<UIAtlas> m_atlas;
 		std::shared_ptr<Texture> m_texture;
 		Rect m_rect;
 		Vector2 m_pivot;

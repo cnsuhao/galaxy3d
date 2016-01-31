@@ -27,12 +27,14 @@ namespace Galaxy3D
     }
 
 	SpriteBatchRenderer::SpriteBatchRenderer():
-		m_color(1, 1, 1, 1)
+		m_color(1, 1, 1, 1),
+        m_dirty(true)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
 
-		SetSharedMaterial(Material::Create("UI/Sprite"));
+        auto mat = Material::Create("UI/Sprite");
+		SetSharedMaterial(mat);
 	}
 
 	SpriteBatchRenderer::~SpriteBatchRenderer()
@@ -49,6 +51,8 @@ namespace Galaxy3D
 			m_sprites.sort(SpriteNode::Less);
 
             sprite->SetBatch(std::dynamic_pointer_cast<SpriteBatchRenderer>(GetComponentPtr()));
+
+            m_dirty = true;
 		}
 	}
 
@@ -59,6 +63,8 @@ namespace Galaxy3D
 			if((*i) == sprite)
 			{
 				m_sprites.erase(i);
+
+                m_dirty = true;
 				break;
 			}
 		}
@@ -70,6 +76,17 @@ namespace Galaxy3D
 		{
 			return;
 		}
+
+        if(IsDirty())
+        {
+            m_dirty = false;
+            for(auto &i : m_sprites)
+            {
+                i->SetDirty(false);
+            }
+
+            UpdateSprites();
+        }
 
 		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
@@ -90,6 +107,7 @@ namespace Galaxy3D
 
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprites.front()->GetSprite()->GetTexture());
+        mat->SetMainColor(m_color);
 		
 		mat->ReadyPass(0);
 		pass->rs->Apply();
@@ -99,6 +117,22 @@ namespace Galaxy3D
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
+
+    bool SpriteBatchRenderer::IsDirty()
+    {
+        bool any_sprite_dirty = false;
+
+        for(auto &i : m_sprites)
+        {
+            if(i->IsDirty() || i->GetSprite()->IsDirdy())
+            {
+                any_sprite_dirty = true;
+                break;
+            }
+        }
+
+        return any_sprite_dirty || m_dirty;
+    }
 
 	void SpriteBatchRenderer::UpdateSprites()
 	{
@@ -143,7 +177,7 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
 	}
 
-	static int fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite, const Color &color)
+	static int fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite)
 	{
 		char *p = buffer;
 		auto s = sprite->GetSprite();
@@ -151,7 +185,7 @@ namespace Galaxy3D
         int vertex_count = s->GetVertexCount();
 		Vector2 *vertices = s->GetVertices();
 		Vector2 *uv = s->GetUV();
-		Color c = sprite->GetColor() * color;
+		Color c = sprite->GetColor();
 
 		for(int i=0; i<vertex_count; i++)
 		{
@@ -181,7 +215,7 @@ namespace Galaxy3D
             char *p = buffer;
             for(auto &i : m_sprites)
             {
-                p += fill_vertex_buffer(p, i, m_color);
+                p += fill_vertex_buffer(p, i);
             }
 
             m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
@@ -201,7 +235,7 @@ namespace Galaxy3D
             char *p = buffer;
             for(auto &i : m_sprites)
             {
-                p += fill_vertex_buffer(p, i, m_color);
+                p += fill_vertex_buffer(p, i);
             }
 
             GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
