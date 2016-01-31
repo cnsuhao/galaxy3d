@@ -145,7 +145,6 @@ namespace Galaxy3D
 		m_pixels_per_unit(100),
 		m_char_space(0),
 		m_line_space(0),
-		m_color(1, 1, 1, 1),
 		m_width(-1),
 		m_height(-1),
 		m_width_actual(-1),
@@ -153,7 +152,8 @@ namespace Galaxy3D
 		m_rich(false),
 		m_pivot(LabelPivot::LeftTop),
 		m_align(LabelAlign::Auto),
-		m_vertex_count(0)
+		m_vertex_count(0),
+        m_dirty(true)
 	{
 	}
 
@@ -163,6 +163,8 @@ namespace Galaxy3D
 		{
 			m_text = text;
 			ProcessText();
+
+            m_dirty = true;
 		}
 	}
 
@@ -172,6 +174,8 @@ namespace Galaxy3D
 		{
 			m_char_space = space;
 			ProcessText();
+
+            m_dirty = true;
 		}
 	}
 
@@ -181,8 +185,32 @@ namespace Galaxy3D
 		{
 			m_line_space = space;
 			ProcessText();
+
+            m_dirty = true;
 		}
 	}
+
+    void Label::SetWidth(int width)
+    {
+        if(m_width != width)
+        {
+            m_width = width;
+            ProcessText();
+
+            m_dirty = true;
+        }
+    }
+
+    void Label::SetHeight(int height)
+    {
+        if(m_height != height)
+        {
+            m_height = height;
+
+            // not used in process text, but used in textrenderer, so just mark dirty
+            m_dirty = true;
+        }
+    }
 
 	static CharInfo get_char_info(const std::string &font, int c, int size, bool bold, bool italic)
 	{

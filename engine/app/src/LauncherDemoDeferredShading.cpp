@@ -154,5 +154,4 @@ void LauncherDemoDeferredShading::Update()
 {
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-    fps->UpdateLabel();
 }

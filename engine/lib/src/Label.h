@@ -93,11 +93,9 @@ namespace Galaxy3D
 		std::string GetText() const {return m_text;}
 		void SetCharSpace(int space);
 		void SetLineSpace(int space);
-		void SetColor(const Color &color) {m_color = color;}
-		Color GetColor() const {return m_color;}
-		void SetWidth(int width) {m_width = width;}
+		void SetWidth(int width);
 		int GetWidth() const {return m_width;}
-		void SetHeight(int height) {m_height = height;}
+		void SetHeight(int height);
 		int GetHeight() const {return m_height;}
 		int GetWidthActual() const {return m_width_actual;}
 		int GetHeightActual() const {return m_height_actual;}
@@ -107,6 +105,8 @@ namespace Galaxy3D
 		std::vector<LabelLine> &GetLines() {return m_lines;}
 		int GetVertexCount() const {return m_vertex_count;}
 		int GetImageCount() const {return m_image_count;}
+        bool IsDirty() const {return m_dirty;}
+        void SetDirty(bool dirty) {m_dirty = dirty;}
 
 	private:
 		std::string m_text;
@@ -115,7 +115,6 @@ namespace Galaxy3D
 		float m_pixels_per_unit;
 		int m_char_space;
 		int m_line_space;
-		Color m_color;
 		int m_width;
 		int m_height;
 		int m_width_actual;
@@ -126,6 +125,7 @@ namespace Galaxy3D
 		std::vector<LabelLine> m_lines;
 		int m_vertex_count;
 		int m_image_count;
+        bool m_dirty;
 
 		Label();
 		virtual void ProcessText();

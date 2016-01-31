@@ -123,13 +123,12 @@ static std::shared_ptr<T> create_button(
     if(!text.empty())
     {
         auto label = Label::Create(text, "heiti", 18, LabelPivot::Center, LabelAlign::Auto, false);
-        label->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
         auto tr = GameObject::Create("")->AddComponent<TextRenderer>();
         tr->GetTransform()->SetParent(button->GetTransform());
         tr->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
         tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
         tr->SetLabel(label);
-        tr->UpdateLabel();
+        tr->SetColor(Color(0.7f, 0.7f, 0.7f, 1));
         tr->SetSortingOrder(layer, order + 1);
     }
 
@@ -462,13 +461,12 @@ static void create_window_setting(
     batch->AddSprite(header);
 
     auto label = Label::Create("<bold>SETTINGS</bold>", "consola", 20, LabelPivot::Center, LabelAlign::Auto, true);
-    label->SetColor(Color(185, 124, 43, 255) / 255.0f);
     auto tr = GameObject::Create("")->AddComponent<TextRenderer>();
     tr->GetTransform()->SetParent(header->GetTransform());
     tr->GetTransform()->SetLocalPosition(Vector3(0, 20, 0));
     tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     tr->SetLabel(label);
-    tr->UpdateLabel();
+    tr->SetColor(Color(185, 124, 43, 255) / 255.0f);
     tr->SetSortingOrder(1, 1);
 
     std::shared_ptr<UIButton> button;
@@ -593,7 +591,6 @@ void LauncherDemoUI::Update()
 {
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
 		"drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-	fps->UpdateLabel();
 
     if(Input::GetKeyUp(KeyCode::Escape))
     {

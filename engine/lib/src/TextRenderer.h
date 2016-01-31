@@ -13,8 +13,9 @@ namespace Galaxy3D
 		virtual ~TextRenderer();
 		void SetLabel(const std::shared_ptr<Label> &label);
 		std::shared_ptr<Label> GetLabel() const {return m_label;}
-		void UpdateLabel();//设置label后，需要手动调用
         void SetAnchor(const Vector4 &anchor);
+        void SetColor(const Color &color) {m_color = color;}
+        Color GetColor() const {return m_color;}
 
 	protected:
         virtual void Start();
@@ -23,13 +24,16 @@ namespace Galaxy3D
 	private:
 		std::shared_ptr<Label> m_label;
         std::shared_ptr<Vector4> m_anchor;
+        Color m_color;
 		BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
 		int m_vertex_count;
 		std::vector<BufferObject> m_vertex_buffer_img;
 		std::vector<BufferObject> m_index_buffer_img;
 		std::shared_ptr<Material> m_material_img;
+        bool m_dirty;
 
+        void UpdateLabel();
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
 		void CreateIndexBuffer();

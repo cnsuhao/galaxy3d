@@ -217,7 +217,6 @@ void LauncherDemoDef::Update()
 {
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-    fps->UpdateLabel();
 
     int key_down_count_old = g_key_down_count;
 

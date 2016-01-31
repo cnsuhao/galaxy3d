@@ -231,7 +231,6 @@ void Launcher::Update()
     }
 
     g_reward->GetLabel()->SetText("<shadow=#000000ff>" + g_reward_name[g_reward_index].str + "</shadow>");
-    g_reward->UpdateLabel();
 
     std::string names;
 
@@ -280,7 +279,6 @@ void Launcher::Update()
         }
 
         g_name->GetLabel()->SetText(name_text);
-        g_name->UpdateLabel();
 
         if(!first_frame && (Input::GetKeyUp(KeyCode::Space) || Input::GetKeyUp(KeyCode::Return)))
         {

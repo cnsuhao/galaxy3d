@@ -88,7 +88,6 @@ void LauncherDemoTemple::Update()
 {
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-    fps->UpdateLabel();
 }
 
 static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_ptr<Camera> &cam3d, const Vector3 &local_pos)
