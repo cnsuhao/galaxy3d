@@ -153,7 +153,6 @@ void LauncherDemoTerrain::Update()
 {
     fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
         "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
-    fps->UpdateLabel();
 
     if(Input::GetTouchCount() > 0)
     {

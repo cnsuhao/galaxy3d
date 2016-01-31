@@ -5,7 +5,9 @@
 namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
-		m_vertex_count(0)
+        m_color(1, 1, 1, 1),
+		m_vertex_count(0),
+        m_dirty(true)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
@@ -31,7 +33,11 @@ namespace Galaxy3D
 
     void TextRenderer::SetAnchor(const Vector4 &anchor)
     {
-        m_anchor = std::make_shared<Vector4>(anchor);
+        if(!m_anchor || *m_anchor != anchor)
+        {
+            m_anchor = std::make_shared<Vector4>(anchor);
+            m_dirty = true;
+        }
     }
 
 	void TextRenderer::SetLabel(const std::shared_ptr<Label> &label)
@@ -39,6 +45,7 @@ namespace Galaxy3D
 		if(m_label != label)
 		{
 			m_label = label;
+            m_dirty = true;
 		}
 	}
 
@@ -113,30 +120,41 @@ namespace Galaxy3D
 			return;
 		}
 
-		if(m_vertex_buffer.buffer != NULL && m_index_buffer.buffer != NULL)
+        if(m_dirty || m_label->IsDirty())
+        {
+            m_dirty = false;
+            m_label->SetDirty(false);
+
+            UpdateLabel();
+        }
+
+		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
-			auto mat = GetSharedMaterial();
-			auto shader = mat->GetShader();
-			auto pass = shader->GetPass(0);
-
-            GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-            GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs->vertex_stride, 0);
-            GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
-
-			auto camera = Camera::GetCurrent();
-			Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
-
-			mat->SetMatrix("WorldViewProjection", wvp);
-			mat->SetMainTexture(Label::GetFontTexture());
-		
-			mat->ReadyPass(0);
-			pass->rs->Apply();
-			mat->ApplyPass(0);
-
-			DrawIndexed(m_label->GetVertexCount() / 4 * 6, 0);
-
-			GraphicsDevice::GetInstance()->ClearShaderResources();
+            return;
 		}
+
+        auto mat = GetSharedMaterial();
+        auto shader = mat->GetShader();
+        auto pass = shader->GetPass(0);
+
+        GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
+
+        auto camera = Camera::GetCurrent();
+        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
+
+        mat->SetMatrix("WorldViewProjection", wvp);
+        mat->SetMainTexture(Label::GetFontTexture());
+        mat->SetMainColor(m_color);
+
+        mat->ReadyPass(0);
+        pass->rs->Apply();
+        mat->ApplyPass(0);
+
+        DrawIndexed(m_label->GetVertexCount() / 4 * 6, 0);
+
+        GraphicsDevice::GetInstance()->ClearShaderResources();
 
 		RenderLabelImage();
 	}
@@ -201,7 +219,6 @@ namespace Galaxy3D
 	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<Label> &label)
 	{
 		char *p = buffer;
-		auto color = label->GetColor();
 		auto pivot = label->GetPivot();
 		auto align = label->GetAlign();
 		auto aw = label->GetWidthActual();
@@ -295,7 +312,7 @@ namespace Galaxy3D
 				memcpy(p, &pos, sizeof(Vector3));
 				p += sizeof(Vector3);
 
-				Color c = colors[i] * color;
+				Color c = colors[i];
 				memcpy(p, &c, sizeof(Color));
 				p += sizeof(Color);
 
@@ -311,7 +328,6 @@ namespace Galaxy3D
 		char *p = buffer;
 		Vector2 *vertices = &item.vertices[0];
 		Vector2 *uv = &item.uv[0];
-		auto color = label->GetColor();
 		auto pivot = label->GetPivot();
 		auto align = label->GetAlign();
 		auto aw = label->GetWidthActual();
@@ -396,7 +412,7 @@ namespace Galaxy3D
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
-			Color c = color;
+			Color c(1, 1, 1, 1);
 			memcpy(p, &c, sizeof(Color));
 			p += sizeof(Color);
 
