@@ -3,41 +3,9 @@
 using namespace Galaxy3D;
 
 static float g_unit_per_pixel = 0.01f;
-static UIAtlas *g_atlas = NULL;
 static GameObject *g_win_setting = NULL;
 
-struct NormalButtonEventListener : public UIEventListener
-{
-    std::shared_ptr<SpriteNode> m_button;
-    std::shared_ptr<SpriteBatchRenderer> m_renderer;
-
-    virtual void Start()
-    {
-        m_button = GetGameObject()->GetComponent<SpriteNode>();
-        m_renderer = GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<SpriteBatchRenderer>();
-    }
-
-    virtual void OnPress(bool press)
-    {
-        if(press)
-        {
-            g_atlas->SetSpriteData(m_button->GetSprite(), "NormalButton_Hover");
-        }
-        else
-        {
-            g_atlas->SetSpriteData(m_button->GetSprite(), "NormalButton_Normal");
-        }
-
-        m_renderer->UpdateSprites();
-    }
-
-    virtual void OnClick()
-    {
-        
-    }
-};
-
-struct ResumeEventListener : public NormalButtonEventListener
+struct ResumeEventListener : public UIButton
 {
     virtual void OnClick()
     {
@@ -48,7 +16,7 @@ struct ResumeEventListener : public NormalButtonEventListener
     }
 };
 
-struct ExitEventListener : public NormalButtonEventListener
+struct ExitEventListener : public UIButton
 {
     virtual void OnClick()
     {
@@ -58,15 +26,13 @@ struct ExitEventListener : public NormalButtonEventListener
 
 struct TopBarButtonEventListener : public UIEventListener
 {
+    std::shared_ptr<Sprite> sprite;
     std::shared_ptr<SpriteNode> m_button;
-    std::shared_ptr<SpriteBatchRenderer> m_renderer;
 
     virtual void Start()
     {
         m_button = GetGameObject()->GetComponent<SpriteNode>();
         m_button->SetColor(Color(1, 1, 1, 0));
-        m_renderer = GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<SpriteBatchRenderer>();
-        m_renderer->UpdateSprites();
     }
 
     virtual void OnPress(bool press)
@@ -79,8 +45,6 @@ struct TopBarButtonEventListener : public UIEventListener
         {
             m_button->SetColor(Color(1, 1, 1, 0));
         }
-
-        m_renderer->UpdateSprites();
     }
 };
 
@@ -116,7 +80,7 @@ struct WorldEventListener : public TopBarButtonEventListener
 };
 
 template<class T>
-static void create_button(
+static std::shared_ptr<T> create_button(
     const std::shared_ptr<UIAtlas> &atlas,
     const std::string &sprite_name,
     const Vector2 &size,
@@ -152,6 +116,7 @@ static void create_button(
     auto collider = button->GetGameObject()->AddComponent<BoxCollider>();
     collider->SetSize(Vector3(size.x, size.y, 0));
     auto event_listener = button->GetGameObject()->AddComponent<T>();
+    event_listener->sprite = button->GetSprite();
 
     batch->AddSprite(button);
 
@@ -183,6 +148,8 @@ static void create_button(
         node->SetSortingOrder(order + 2 + i);
         batch->AddSprite(node);
     }
+
+    return event_listener;
 }
 
 static void create_top_bar(
@@ -263,8 +230,6 @@ static void create_top_bar(
         batch,
         world_sub_sprites,
         world_sub_offsets);
-
-    batch->UpdateSprites();
 }
 
 static void create_action_bar(
@@ -313,7 +278,7 @@ static void create_action_bar(
         Sprite::Type::Filled,
         Vector2(0, 0)));
     left_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
-    left_globe_fill->GetSprite()->SetFillAmount(0.75f);
+    left_globe_fill->GetSprite()->SetFillAmount(1);
     left_globe_fill->SetColor(Color(243, 30, 30, 255) / 255.0f);
     left_globe_fill->SetSortingOrder(2);
     batch->AddSprite(left_globe_fill);
@@ -368,7 +333,7 @@ static void create_action_bar(
         Sprite::Type::Filled,
         Vector2(0, 0)));
     right_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
-    right_globe_fill->GetSprite()->SetFillAmount(0.75f);
+    right_globe_fill->GetSprite()->SetFillAmount(1);
     right_globe_fill->SetColor(Color(36, 157, 183, 255) / 255.0f);
     right_globe_fill->SetSortingOrder(2);
     batch->AddSprite(right_globe_fill);
@@ -456,11 +421,9 @@ static void create_action_bar(
         Vector2(0, 0)));
     xp_fill->SetSortingOrder(2);
     xp_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Horizontal);
-    xp_fill->GetSprite()->SetFillAmount(0.75f);
+    xp_fill->GetSprite()->SetFillAmount(0);
     xp_fill->SetColor(Color(168, 255, 140, 255) / 255.0f);
     batch->AddSprite(xp_fill);
-
-    batch->UpdateSprites();
 }
 
 static void create_window_setting(
@@ -508,11 +471,13 @@ static void create_window_setting(
     tr->UpdateLabel();
     tr->SetSortingOrder(1, 1);
 
-    create_button<ResumeEventListener>(
+    std::shared_ptr<UIButton> button;
+
+    button = create_button<ResumeEventListener>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
-        "Back To Game",
+        "Back",
         false,
         Vector4(),
         Vector3(0, 160, 0),
@@ -520,8 +485,10 @@ static void create_window_setting(
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
+    button->sprite_name_normal = "NormalButton_Normal";
+    button->sprite_name_pressed = "NormalButton_Hover";
 
-    create_button<NormalButtonEventListener>(
+    button = create_button<UIButton>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
@@ -533,8 +500,10 @@ static void create_window_setting(
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
+    button->sprite_name_normal = "NormalButton_Normal";
+    button->sprite_name_pressed = "NormalButton_Hover";
 
-    create_button<NormalButtonEventListener>(
+    button = create_button<UIButton>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
@@ -546,8 +515,10 @@ static void create_window_setting(
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
+    button->sprite_name_normal = "NormalButton_Normal";
+    button->sprite_name_pressed = "NormalButton_Hover";
 
-    create_button<NormalButtonEventListener>(
+    button = create_button<UIButton>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
@@ -559,12 +530,14 @@ static void create_window_setting(
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
+    button->sprite_name_normal = "NormalButton_Normal";
+    button->sprite_name_pressed = "NormalButton_Hover";
 
-    create_button<ExitEventListener>(
+    button = create_button<ExitEventListener>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
-        "Quit To Desktop",
+        "Quit",
         false,
         Vector4(),
         Vector3(0, 160 - 90 * 4, 0),
@@ -572,8 +545,8 @@ static void create_window_setting(
         batch,
         std::vector<std::string>(),
         std::vector<Vector3>());
-
-    batch->UpdateSprites();
+    button->sprite_name_normal = "NormalButton_Normal";
+    button->sprite_name_pressed = "NormalButton_Hover";
 
     g_win_setting = batch->GetGameObject().get();
 }
@@ -606,7 +579,6 @@ void LauncherDemoUI::Start()
 	fps = tr;
 
     auto atlas = UIAtlas::LoadFromJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
-    g_atlas = atlas.get();
 
     create_top_bar(atlas, canvas);
     create_window_setting(atlas, canvas);

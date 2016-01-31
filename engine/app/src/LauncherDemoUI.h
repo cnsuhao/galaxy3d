@@ -47,6 +47,7 @@
 #include "UICanvas.h"
 #include "UIEventListener.h"
 #include "UIAtlas.h"
+#include "UIButton.h"
 
 namespace Galaxy3D
 {

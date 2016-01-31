@@ -7,10 +7,6 @@
 
 namespace Galaxy3D
 {
-	//	批量绘制精灵，精灵位置由sprite node控制，不受renderer影响
-	//	不允许添加空的sprite，要置空sprite，请使用RemoveSprite
-	//	修改sprite属性后，要调用UpdateSprites更新顶点buffer
-	//	SetColor会影响批次内所有sprite
 	class SpriteBatchRenderer : public Renderer
 	{
 	public:
@@ -19,7 +15,6 @@ namespace Galaxy3D
 		void AddSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void RemoveSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void SetColor(const Color &color) {m_color = color;}
-		void UpdateSprites();//添加完所有sprite node后，需要手动调用
 
 	protected:
 		virtual void Render(int material_index);
@@ -31,7 +26,10 @@ namespace Galaxy3D
         std::shared_ptr<Vector4> m_anchor;
 		BufferObject m_vertex_buffer;
         BufferObject m_index_buffer;
+        bool m_dirty;
 
+        bool IsDirty();
+        void UpdateSprites();
 		void CreateVertexBuffer();
 		void UpdateVertexBuffer();
 		void CreateIndexBuffer();

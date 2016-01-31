@@ -177,6 +177,7 @@
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
     <ClInclude Include="..\src\UIAtlas.h" />
+    <ClInclude Include="..\src\UIButton.h" />
     <ClInclude Include="..\src\UICanvas.h" />
     <ClInclude Include="..\src\UIEventListener.h" />
     <ClInclude Include="..\src\Vector2.h" />

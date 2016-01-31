@@ -30,8 +30,8 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static int g_screen_w = 1280;
-static int g_screen_h = 720;
+static int g_screen_w = 1600;
+static int g_screen_h = 900;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;

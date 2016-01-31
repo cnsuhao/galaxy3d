@@ -524,5 +524,8 @@
     <ClInclude Include="..\src\CharacterController.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\UIButton.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
