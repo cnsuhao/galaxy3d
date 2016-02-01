@@ -10,6 +10,7 @@ namespace Galaxy3D
     class UICanvas : public Component
     {
     public:
+        static std::weak_ptr<GameObject> GetRayHitObject();
         UICanvas():
             m_width(0),
             m_height(0)

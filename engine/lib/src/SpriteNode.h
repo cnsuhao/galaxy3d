@@ -26,6 +26,7 @@ namespace Galaxy3D
 		void SetColor(const Color &color);
 		Color GetColor() const {return m_color;}
 		void SetSortingOrder(int order);
+        int GetSortingOrder() const {return m_sorting_order;}
         void SetAnchor(const Vector4 &anchor);
         void SetBatch(const std::weak_ptr<SpriteBatchRenderer> &batch) {m_batch = batch;}
         std::weak_ptr<SpriteBatchRenderer> GetBatch() const {return m_batch;}

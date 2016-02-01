@@ -55,13 +55,19 @@ namespace Galaxy3D
     struct DepthEntry
     {
         long long depth;
+        int second_order;
         RaycastHit hit;
         Vector3 point;
         std::weak_ptr<GameObject> go;
 
         int operator <(DepthEntry &a) const
         {
-            return depth < a.depth;
+            if(depth == a.depth)
+            {
+                return second_order > a.second_order;
+            }
+
+            return depth > a.depth;
         }
     };
 
@@ -77,6 +83,11 @@ namespace Galaxy3D
     static RaycastHit g_last_hit;
     static Vector3 g_last_world_position;
     static bool g_input_focus = false;
+
+    std::weak_ptr<GameObject> UICanvas::GetRayHitObject()
+    {
+        return g_ray_hit_object;
+    }
 
     static bool raycast(Vector3 &in_pos)
     {
@@ -96,6 +107,9 @@ namespace Galaxy3D
         {
             for(size_t i=0; i<hits.size(); i++)
             {
+                DepthEntry hit;
+                hit.second_order = 0;
+
                 auto go = hits[i].collider.lock()->GetGameObject();
                 auto renderer = go->GetComponent<Renderer>();
                 if(!renderer)
@@ -104,6 +118,7 @@ namespace Galaxy3D
                     if(sprite_node)
                     {
                         renderer = sprite_node->GetBatch().lock();
+                        hit.second_order = sprite_node->GetSortingOrder();
                     }
                 }
                 if(renderer)
@@ -112,7 +127,6 @@ namespace Galaxy3D
                     layer <<= 32;
                     long long order = renderer->GetSortingOrder();
 
-                    DepthEntry hit;
                     hit.depth = layer | order;
                     hit.hit = hits[i];
                     hit.point = hits[i].point;

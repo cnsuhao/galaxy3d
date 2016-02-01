@@ -2,8 +2,9 @@
 
 using namespace Galaxy3D;
 
-static float g_unit_per_pixel = 0.01f;
+static float g_pixel_per_unit = 100;
 static GameObject *g_win_setting = NULL;
+static GameObject *g_win_graphic_settings = NULL;
 
 struct ResumeEventListener : public UIButton
 {
@@ -13,6 +14,25 @@ struct ResumeEventListener : public UIButton
         {
             g_win_setting->SetActive(false);
         }
+    }
+};
+
+struct GraphicEventListener : public UIButton
+{
+    virtual void OnClick()
+    {
+        if(!g_win_graphic_settings->IsActiveSelf())
+        {
+            g_win_graphic_settings->SetActive(true);
+        }
+    }
+};
+
+struct GraphicCloseEventListener : public UIEventListener
+{
+    virtual void OnClick()
+    {
+        g_win_graphic_settings->SetActive(false);
     }
 };
 
@@ -100,7 +120,7 @@ static std::shared_ptr<T> create_button(
     button->SetSprite(atlas->CreateSprite(
         sprite_name,
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         size));
     if(use_anchor)
@@ -141,7 +161,7 @@ static std::shared_ptr<T> create_button(
         node->SetSprite(atlas->CreateSprite(
             sub_sprites[i],
             Vector2(0.5f, 0.5f),
-            100, 
+            g_pixel_per_unit, 
             Sprite::Type::Simple,
             Vector2(0, 0)));
         node->SetSortingOrder(order + 2 + i);
@@ -166,7 +186,7 @@ static void create_top_bar(
     top_bar->SetSprite(atlas->CreateSprite(
         "TopBar_Background",
         Vector2(0.5f, 0),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         Vector2((float) Screen::GetWidth(), 79)));
     top_bar->SetAnchor(Vector4(0.5f, 0, 0, 0));
@@ -246,7 +266,7 @@ static void create_action_bar(
     action_bar->SetSprite(atlas->CreateSprite(
         "ActionBar_Background",
         Vector2(0.5f, 1),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         Vector2(890, 98)));
     action_bar->SetAnchor(Vector4(0.5f, 1, 0, 0));
@@ -260,7 +280,7 @@ static void create_action_bar(
     left_globe_bg->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Background",
         Vector2(0, 0),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     left_globe_bg->SetSortingOrder(1);
@@ -273,7 +293,7 @@ static void create_action_bar(
     left_globe_fill->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Fill",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Filled,
         Vector2(0, 0)));
     left_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
@@ -289,7 +309,7 @@ static void create_action_bar(
     left_globe_overlay->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Overlay_D",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     left_globe_overlay->SetSortingOrder(3);
@@ -302,7 +322,7 @@ static void create_action_bar(
     left_globe_decoration->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Decoration",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     left_globe_decoration->SetSortingOrder(4);
@@ -315,7 +335,7 @@ static void create_action_bar(
     right_globe_bg->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Background",
         Vector2(0, 0),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     right_globe_bg->SetSortingOrder(1);
@@ -328,7 +348,7 @@ static void create_action_bar(
     right_globe_fill->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Fill",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Filled,
         Vector2(0, 0)));
     right_globe_fill->GetSprite()->SetFillDirection(Sprite::FillDirection::Vertical);
@@ -344,7 +364,7 @@ static void create_action_bar(
     right_globe_overlay->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Overlay_D",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     right_globe_overlay->GetSprite()->SetFlip(Sprite::Flip::Horizontal);
@@ -358,7 +378,7 @@ static void create_action_bar(
     right_globe_decoration->SetSprite(atlas->CreateSprite(
         "ActionBar_Globe_Decoration",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Simple,
         Vector2(0, 0)));
     right_globe_decoration->SetSortingOrder(4);
@@ -373,7 +393,7 @@ static void create_action_bar(
         spell_slot->SetSprite(atlas->CreateSprite(
             "ActionBar_SpellSlot",
             Vector2(0.5f, 0.5f),
-            100, 
+            g_pixel_per_unit, 
             Sprite::Type::Simple,
             Vector2(0, 0)));
         spell_slot->SetSortingOrder(1);
@@ -386,7 +406,7 @@ static void create_action_bar(
         spell_cooldown->SetSprite(atlas->CreateSprite(
             "SpellSlot_Cooldown",
             Vector2(0.5f, 0.5f),
-            100, 
+            g_pixel_per_unit, 
             Sprite::Type::Filled,
             Vector2(0, 0)));
         spell_cooldown->SetSortingOrder(2);
@@ -402,7 +422,7 @@ static void create_action_bar(
     xp_bar->SetSprite(atlas->CreateSprite(
         "ActionBar_XPBar_Background",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         Vector2(680, 43)));
     xp_bar->SetSortingOrder(1);
@@ -415,7 +435,7 @@ static void create_action_bar(
     xp_fill->SetSprite(atlas->CreateSprite(
         "ActionBar_XPBar_Fill",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Filled,
         Vector2(0, 0)));
     xp_fill->SetSortingOrder(2);
@@ -440,7 +460,7 @@ static void create_window_setting(
     bg->SetSprite(atlas->CreateSprite(
         "Window_Background",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         Vector2(438, 584)));
     bg->SetAnchor(Vector4(0.5f, 0.5f, 0, 0));
@@ -454,7 +474,7 @@ static void create_window_setting(
     header->SetSprite(atlas->CreateSprite(
         "Window_Header",
         Vector2(0.5f, 0.5f),
-        100, 
+        g_pixel_per_unit, 
         Sprite::Type::Sliced,
         Vector2(401, 81)));
     header->SetSortingOrder(1);
@@ -486,7 +506,7 @@ static void create_window_setting(
     button->sprite_name_normal = "NormalButton_Normal";
     button->sprite_name_pressed = "NormalButton_Hover";
 
-    button = create_button<UIButton>(
+    button = create_button<GraphicEventListener>(
         atlas,
         "NormalButton_Normal",
         Vector2(350, 50),
@@ -556,7 +576,7 @@ void LauncherDemoUI::Start()
 
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
-    cam2d->SetOrthographicSize(g_unit_per_pixel * Screen::GetHeight() / 2);
+    cam2d->SetOrthographicSize(1 / g_pixel_per_unit * Screen::GetHeight() / 2);
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
@@ -565,7 +585,7 @@ void LauncherDemoUI::Start()
 
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
-    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
+    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1 / g_pixel_per_unit));
 
 	auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
@@ -576,21 +596,35 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
-    auto atlas = UIAtlas::LoadFromJsonFile(Application::GetDataPath() + "/Assets/texture/ui.json");
+    auto atlas = GTUIManager::LoadAtlas("ui", Application::GetDataPath() + "/Assets/ui/atlas.json");
 
     create_top_bar(atlas, canvas);
-    create_window_setting(atlas, canvas);
     create_action_bar(atlas, canvas);
-
+    create_window_setting(atlas, canvas);
     g_win_setting->SetActive(false);
+
+    auto win_graphic_settings = GTUIManager::LoadWindowFromJsonFile(Application::GetDataPath() + "/Assets/ui/win graphic settings.json", 2, g_pixel_per_unit);
+    win_graphic_settings->GetTransform()->SetParent(canvas->GetTransform());
+    win_graphic_settings->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+    win_graphic_settings->GetTransform()->Find("Background/Header/close")->GetGameObject()->AddComponent<GraphicCloseEventListener>();
+    g_win_graphic_settings = win_graphic_settings.get();
+    g_win_graphic_settings->SetActive(false);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
 
 void LauncherDemoUI::Update()
 {
+    std::string hit_name;
+    auto hit = UICanvas::GetRayHitObject().lock();
+    if(hit)
+    {
+        hit_name = hit->GetName();
+    }
+
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-		"drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
+		"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
+        "ray hit ui:" + hit_name);
 
     if(Input::GetKeyUp(KeyCode::Escape))
     {
