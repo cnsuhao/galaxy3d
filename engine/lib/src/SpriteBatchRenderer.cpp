@@ -20,7 +20,10 @@ namespace Galaxy3D
         int index_count = 0;
         for(auto &i : list)
         {
-            index_count += i->GetSprite()->GetIndexCount();
+            if(i->GetGameObject()->IsActiveInHierarchy())
+            {
+                index_count += i->GetSprite()->GetIndexCount();
+            }
         }
 
         return index_count;
@@ -257,13 +260,16 @@ namespace Galaxy3D
             for(auto &i : m_sprites)
             {
                 int index_count = i->GetSprite()->GetIndexCount();
-                unsigned short *uv = i->GetSprite()->GetIndices();
+                unsigned short *indices = i->GetSprite()->GetIndices();
 
-                for(int j=0; j<index_count; j++)
+                if(i->GetGameObject()->IsActiveInHierarchy())
                 {
-                    unsigned short index = uv[j] + vertex_count;
-                    *p = index;
-                    p++;
+                    for(int j=0; j<index_count; j++)
+                    {
+                        unsigned short index = indices[j] + vertex_count;
+                        *p = index;
+                        p++;
+                    }
                 }
 
                 vertex_count += i->GetSprite()->GetVertexCount();

@@ -11,15 +11,15 @@ namespace Galaxy3D
 
         if(GTFile::Exist(file))
         {
-            int size;
-            char *bytes = (char *) GTFile::ReadAllBytes(file, &size);
+            std::string str;
+            GTFile::ReadAllText(file, str);
 
-            if(bytes != NULL)
+            if(!str.empty())
             {
                 Json::Reader reader;
                 Json::Value root;
 
-                if(reader.parse(bytes, bytes + size, root))
+                if(reader.parse(str, root))
                 {
                     auto frames = root["frames"];
                     auto meta = root["meta"];
@@ -58,8 +58,6 @@ namespace Galaxy3D
                         atlas->m_sprites[filename] = data;
                     }
                 }
-
-                free(bytes);
             }
         }
 
