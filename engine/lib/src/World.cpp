@@ -6,6 +6,7 @@
 #include "Light.h"
 #include "Physics.h"
 #include "Cursor.h"
+#include "GTUIManager.h"
 
 namespace Galaxy3D
 {
@@ -112,6 +113,7 @@ namespace Galaxy3D
 
 	void World::Done()
 	{
+        GTUIManager::Done();
         Renderer::Done();
 		m_gameobjects_new.clear();
 		m_gameobjects.clear();

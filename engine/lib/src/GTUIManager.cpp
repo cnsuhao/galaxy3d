@@ -16,6 +16,11 @@ namespace Galaxy3D
         m_atlases.clear();
     }
 
+    void GTUIManager::LoadFont(const std::string &name, const std::string &file)
+    {
+        Label::LoadFont(name, file);
+    }
+
     std::shared_ptr<UIAtlas> GTUIManager::LoadAtlas(const std::string &name, const std::string &file)
     {
         auto atlas = UIAtlas::LoadFromJsonFile(file);
