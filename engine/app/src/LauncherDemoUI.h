@@ -49,6 +49,7 @@
 #include "UIAtlas.h"
 #include "UIButton.h"
 #include "GTUIManager.h"
+#include "UISlider.h"
 
 namespace Galaxy3D
 {

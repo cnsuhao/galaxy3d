@@ -99,6 +99,39 @@ struct WorldEventListener : public TopBarButtonEventListener
     }
 };
 
+struct AmbientRSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        Color color = RenderSettings::light_ambient;
+        color.r = amount;
+
+        RenderSettings::light_ambient = color;
+    }
+};
+
+struct AmbientGSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        Color color = RenderSettings::light_ambient;
+        color.g = amount;
+
+        RenderSettings::light_ambient = color;
+    }
+};
+
+struct AmbientBSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        Color color = RenderSettings::light_ambient;
+        color.b = amount;
+
+        RenderSettings::light_ambient = color;
+    }
+};
+
 template<class T>
 static std::shared_ptr<T> create_button(
     const std::shared_ptr<UIAtlas> &atlas,
@@ -571,8 +604,9 @@ static void create_window_setting(
 
 void LauncherDemoUI::Start()
 {
-    Label::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
-    Label::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
+    GTUIManager::LoadFont("consola", Application::GetDataPath() + "/Assets/font/consola.ttf");
+    GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
+    auto atlas = GTUIManager::LoadAtlas("ui", Application::GetDataPath() + "/Assets/ui/atlas.json");
 
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
@@ -596,8 +630,6 @@ void LauncherDemoUI::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	fps = tr;
 
-    auto atlas = GTUIManager::LoadAtlas("ui", Application::GetDataPath() + "/Assets/ui/atlas.json");
-
     create_top_bar(atlas, canvas);
     create_action_bar(atlas, canvas);
     create_window_setting(atlas, canvas);
@@ -607,6 +639,37 @@ void LauncherDemoUI::Start()
     win_graphic_settings->GetTransform()->SetParent(canvas->GetTransform());
     win_graphic_settings->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     win_graphic_settings->GetTransform()->Find("Background/Header/close")->GetGameObject()->AddComponent<GraphicCloseEventListener>();
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ar/Slider")->GetGameObject()->AddComponent<AmbientRSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.263f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ag/Slider")->GetGameObject()->AddComponent<AmbientGSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.502f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ab/Slider")->GetGameObject()->AddComponent<AmbientBSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.784f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+    }
+
     g_win_graphic_settings = win_graphic_settings.get();
     g_win_graphic_settings->SetActive(false);
 
@@ -624,7 +687,8 @@ void LauncherDemoUI::Update()
 
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
 		"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
-        "ray hit ui:" + hit_name);
+        "ray hit ui:" + hit_name + "\n" +
+        "ray hit point:" + UICanvas::GetLastRayHit().point.ToString());
 
     if(Input::GetKeyUp(KeyCode::Escape))
     {

@@ -1,7 +1,8 @@
 #include "Vector2.h"
 #include "Vector3.h"
-#include <math.h>
 #include "Mathf.h"
+#include <math.h>
+#include <sstream>
 
 namespace Galaxy3D
 {
@@ -51,4 +52,12 @@ namespace Galaxy3D
 	{
 		return !(*this == value);
 	}
+
+    std::string Vector2::ToString() const
+    {
+        std::stringstream ss;
+        ss << '(' << x << ',' << y << ')';
+
+        return ss.str();
+    }
 }

@@ -34,6 +34,9 @@ namespace Galaxy3D
         bool IsDirty() const {return m_dirty;}
         void SetDirty(bool dirty) {m_dirty = dirty;}
 
+    protected:
+        virtual void OnTranformChanged() {m_dirty = true;}
+
 	private:
 		std::shared_ptr<Sprite> m_sprite;
 		Color m_color;
