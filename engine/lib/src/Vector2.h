@@ -1,6 +1,8 @@
 #ifndef __Vector2_h__
 #define __Vector2_h__
 
+#include <string>
+
 namespace Galaxy3D
 {
 	class Vector3;
@@ -19,6 +21,7 @@ namespace Galaxy3D
 		Vector2 operator -(const Vector2 &value) const;
 		bool operator ==(const Vector2 &value) const;
 		bool operator !=(const Vector2 &value) const;
+        std::string ToString() const;
 		float Magnitude() const;
 		float SqrMagnitude() const;
 	};

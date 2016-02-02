@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Vector4.h"
 #include "Camera.h"
+#include "Physics.h"
 
 namespace Galaxy3D
 {
@@ -11,6 +12,8 @@ namespace Galaxy3D
     {
     public:
         static std::weak_ptr<GameObject> GetRayHitObject();
+        static Vector2 GetLastPosition();
+        static RaycastHit GetLastRayHit();
         UICanvas():
             m_width(0),
             m_height(0)

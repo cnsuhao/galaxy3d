@@ -4,7 +4,6 @@
 #include "Input.h"
 #include "GameObject.h"
 #include "GTTime.h"
-#include "Physics.h"
 #include "Renderer.h"
 #include "UIEventListener.h"
 #include "SpriteNode.h"
@@ -87,6 +86,16 @@ namespace Galaxy3D
     std::weak_ptr<GameObject> UICanvas::GetRayHitObject()
     {
         return g_ray_hit_object;
+    }
+
+    Vector2 UICanvas::GetLastPosition()
+    {
+        return g_last_pos;
+    }
+
+    RaycastHit UICanvas::GetLastRayHit()
+    {
+        return g_last_hit;
     }
 
     static bool raycast(Vector3 &in_pos)
