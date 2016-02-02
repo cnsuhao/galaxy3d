@@ -25,7 +25,7 @@ namespace Galaxy3D
     {
     }
 
-    void UISlider::Start()
+    void UISlider::Init()
     {
         m_slider_collider = GetGameObject()->GetComponent<BoxCollider>();
         if(thumb)
