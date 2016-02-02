@@ -14,13 +14,13 @@ static bool g_init_pos = false;
 
 void LauncherDemoRPG::Start()
 {
-    GameObject::Create("ui")->AddComponent<LauncherDemoUI>();
+    auto ui = GameObject::Create("ui")->AddComponent<LauncherDemoUI>();
 
     auto light = GameObject::Create("light")->AddComponent<Light>();
     light->GetTransform()->SetRotation(Quaternion::Euler(50, -150, 0));
     light->SetType(LightType::Directional);
-    light->SetColor(Color(247 * 1.4f + 255 * 2, 199 * 1.4f + 168 * 2, 137 * 1.4f + 55 * 2, 255 * 1.4f + 255 * 2) / 255.0f);
-    light->SetIntensity(1);
+    light->SetColor(Color(252, 181, 89, 255) / 255.0f);
+    light->SetIntensity(3.4f);
     light->EnableShadow(true);
     light->EnableCascade(true);
 

@@ -39,11 +39,11 @@ namespace Galaxy3D
         float amount;//0.0~1.0
 
         UISlider();
+        void Init();
         virtual void OnPress(bool press);
         void OnDragSliderThumb(const Vector3 &delta);
 
     protected:
-        virtual void Start();
         virtual void OnValueChanged() {}
 
     private:

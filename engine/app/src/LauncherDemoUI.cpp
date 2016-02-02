@@ -132,6 +132,51 @@ struct AmbientBSliderEventListener : public UISlider
     }
 };
 
+struct DirectionalRSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        Color color = dir->GetColor();
+        color.r = amount;
+
+        dir->SetColor(color);
+    }
+};
+
+struct DirectionalGSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        Color color = dir->GetColor();
+        color.g = amount;
+
+        dir->SetColor(color);
+    }
+};
+
+struct DirectionalBSliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        Color color = dir->GetColor();
+        color.b = amount;
+
+        dir->SetColor(color);
+    }
+};
+
+struct DirectionalISliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        dir->SetIntensity(value);
+    }
+};
+
 template<class T>
 static std::shared_ptr<T> create_button(
     const std::shared_ptr<UIAtlas> &atlas,
@@ -208,7 +253,7 @@ static void create_top_bar(
     const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
 {
-    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    auto batch = GameObject::Create("top_bar")->AddComponent<SpriteBatchRenderer>();
     batch->GetTransform()->SetParent(canvas->GetTransform());
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(0, 0);
@@ -288,7 +333,7 @@ static void create_action_bar(
     const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
 {
-    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    auto batch = GameObject::Create("action_bar")->AddComponent<SpriteBatchRenderer>();
     batch->GetTransform()->SetParent(canvas->GetTransform());
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(0, 0);
@@ -482,7 +527,7 @@ static void create_window_setting(
     const std::shared_ptr<UIAtlas> &atlas,
     const std::shared_ptr<UICanvas> &canvas)
 {
-    auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
+    auto batch = GameObject::Create("window_setting")->AddComponent<SpriteBatchRenderer>();
     batch->GetTransform()->SetParent(canvas->GetTransform());
     batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
     batch->SetSortingOrder(1, 0);
@@ -617,7 +662,7 @@ void LauncherDemoUI::Start()
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
     cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
 
-    auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
+    auto canvas = GameObject::Create("canvas")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1 / g_pixel_per_unit));
 
@@ -648,6 +693,7 @@ void LauncherDemoUI::Start()
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
+        slider->Init();
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ag/Slider")->GetGameObject()->AddComponent<AmbientGSliderEventListener>();
@@ -658,6 +704,7 @@ void LauncherDemoUI::Start()
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
+        slider->Init();
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ab/Slider")->GetGameObject()->AddComponent<AmbientBSliderEventListener>();
@@ -668,12 +715,58 @@ void LauncherDemoUI::Start()
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
+        slider->Init();
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/dr/Slider")->GetGameObject()->AddComponent<DirectionalRSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.988f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->Init();
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/dg/Slider")->GetGameObject()->AddComponent<DirectionalGSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.71f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->Init();
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/db/Slider")->GetGameObject()->AddComponent<DirectionalBSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->amount = 0.349f;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->Init();
+    }
+    {
+        auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/di/Slider")->GetGameObject()->AddComponent<DirectionalISliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->value_min = 0;
+        slider->value_max = 8;
+        slider->amount = 3.4f / 8;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->Init();
     }
 
     g_win_graphic_settings = win_graphic_settings.get();
     g_win_graphic_settings->SetActive(false);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
+    cam2d->GetTransform()->SetParent(GetTransform());
 }
 
 void LauncherDemoUI::Update()
