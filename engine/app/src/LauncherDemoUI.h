@@ -50,6 +50,7 @@
 #include "UIButton.h"
 #include "GTUIManager.h"
 #include "UISlider.h"
+#include "UIToggle.h"
 
 namespace Galaxy3D
 {

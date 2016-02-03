@@ -30,12 +30,14 @@ namespace Galaxy3D
         void SetAnchor(const Vector4 &anchor);
         void SetBatch(const std::weak_ptr<SpriteBatchRenderer> &batch) {m_batch = batch;}
         std::weak_ptr<SpriteBatchRenderer> GetBatch() const {return m_batch;}
-        void AnchorTransform();
         bool IsDirty() const {return m_dirty;}
         void SetDirty(bool dirty) {m_dirty = dirty;}
 
     protected:
+        virtual void Start();
         virtual void OnTranformChanged() {m_dirty = true;}
+        virtual void OnEnable() {m_dirty = true;}
+        virtual void OnDisable() {m_dirty = true;}
 
 	private:
 		std::shared_ptr<Sprite> m_sprite;

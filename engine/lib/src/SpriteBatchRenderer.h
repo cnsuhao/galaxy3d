@@ -21,7 +21,8 @@ namespace Galaxy3D
 		
 	private:
 		std::list<std::shared_ptr<SpriteNode>> m_sprites;
-		std::list<std::shared_ptr<SpriteNode>> m_sprites_cache;
+        int m_vertex_count_old;
+        int m_index_count_old;
 		Color m_color;
         std::shared_ptr<Vector4> m_anchor;
 		BufferObject m_vertex_buffer;

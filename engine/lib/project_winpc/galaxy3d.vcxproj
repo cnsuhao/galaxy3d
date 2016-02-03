@@ -85,6 +85,7 @@
     <ClCompile Include="..\src\UIAtlas.cpp" />
     <ClCompile Include="..\src\UICanvas.cpp" />
     <ClCompile Include="..\src\UISlider.cpp" />
+    <ClCompile Include="..\src\UIToggle.cpp" />
     <ClCompile Include="..\src\Vector2.cpp" />
     <ClCompile Include="..\src\Vector3.cpp" />
     <ClCompile Include="..\src\World.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="..\src\UICanvas.h" />
     <ClInclude Include="..\src\UIEventListener.h" />
     <ClInclude Include="..\src\UISlider.h" />
+    <ClInclude Include="..\src\UIToggle.h" />
     <ClInclude Include="..\src\Vector2.h" />
     <ClInclude Include="..\src\Vector3.h" />
     <ClInclude Include="..\src\Vector4.h" />

@@ -20,20 +20,8 @@ namespace Galaxy3D
         type(UISliderValueType::Float),
         value_min(0),
         value_max(1),
-        value(1),
-        amount(1)
+        m_amount(-1)
     {
-    }
-
-    void UISlider::Init()
-    {
-        m_slider_collider = GetGameObject()->GetComponent<BoxCollider>();
-        if(thumb)
-        {
-            m_thumb_collider = thumb->GetGameObject()->GetComponent<BoxCollider>();
-        }
-
-        SetValue(amount, true);
     }
 
     void UISlider::OnDragSliderThumb(const Vector3 &delta)
@@ -43,7 +31,7 @@ namespace Galaxy3D
         float x = (local_pos - m_slider_collider->GetCenter()).x;
         float v = 0.5f + x / m_slider_collider->GetSize().x;
 
-        SetValue(v);
+        SetAmount(v);
     }
 
     void UISlider::OnPress(bool press)
@@ -55,35 +43,46 @@ namespace Galaxy3D
             float x = (local_pos - m_slider_collider->GetCenter()).x;
             float v = 0.5f + x / m_slider_collider->GetSize().x;
 
-            SetValue(v);
+            SetAmount(v);
         }
     }
 
-    void UISlider::SetValue(float v, bool force)
+    void UISlider::SetAmount(float v)
     {
-        v = Mathf::Clamp01(v);
-        if(force || !Mathf::FloatEqual(v, amount))
+        if(!m_slider_collider)
         {
-            amount = v;
-            value = value_min + amount * (value_max - value_min);
+            m_slider_collider = GetGameObject()->GetComponent<BoxCollider>();
+        }
+        if(thumb)
+        {
+            if(!m_thumb_collider)
+            {
+                m_thumb_collider = thumb->GetGameObject()->GetComponent<BoxCollider>();
+            }
+        }
+
+        v = Mathf::Clamp01(v);
+        if(!Mathf::FloatEqual(v, m_amount))
+        {
+            m_amount = v;
 
             if(label)
             {
                 std::string text;
                 if(type == UISliderValueType::Int)
                 {
-                    text = GTString::ToString((int) value).str;
+                    text = GTString::ToString(GetValue<int>()).str;
                 }
                 else
                 {
-                    text = GTString::ToString(value).str;
+                    text = GTString::ToString(GetValue<float>()).str;
                 }
                 label->SetText(text);
             }
 
             if(thumb)
             {
-                float x = (amount - 0.5f) * m_slider_collider->GetSize().x;
+                float x = (m_amount - 0.5f) * m_slider_collider->GetSize().x;
                 x += m_slider_collider->GetCenter().x;
 
                 auto center = m_thumb_collider->GetCenter();

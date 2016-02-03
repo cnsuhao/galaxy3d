@@ -4,7 +4,7 @@
 
 namespace Galaxy3D
 {
-    void SpriteNode::AnchorTransform()
+    void SpriteNode::Start()
     {
         auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();
 

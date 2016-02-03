@@ -31,7 +31,9 @@ namespace Galaxy3D
 
 	SpriteBatchRenderer::SpriteBatchRenderer():
 		m_color(1, 1, 1, 1),
-        m_dirty(true)
+        m_dirty(true),
+        m_vertex_count_old(-1),
+        m_index_count_old(-1)
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
@@ -144,10 +146,8 @@ namespace Galaxy3D
 			return;
 		}
 
-        for(auto &i : m_sprites)
-        {
-            i->AnchorTransform();
-        }
+        int vertex_count = get_sprites_vertex_count(m_sprites);
+        int index_count = get_sprites_index_count(m_sprites);
 
 		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
@@ -156,9 +156,8 @@ namespace Galaxy3D
 		}
 		else
 		{
-            if( m_sprites_cache.size() != m_sprites.size() ||
-                get_sprites_vertex_count(m_sprites_cache) != get_sprites_vertex_count(m_sprites) ||
-                get_sprites_index_count(m_sprites_cache) != get_sprites_index_count(m_sprites))
+            if( m_vertex_count_old != vertex_count ||
+                m_index_count_old != index_count)
 			{
 				Release();
 
@@ -171,7 +170,8 @@ namespace Galaxy3D
 			}
 		}
 
-		m_sprites_cache = m_sprites;
+        m_vertex_count_old = vertex_count;
+        m_index_count_old = index_count;
 	}
 
 	void SpriteBatchRenderer::Release()
