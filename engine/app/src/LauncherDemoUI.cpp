@@ -104,7 +104,7 @@ struct AmbientRSliderEventListener : public UISlider
     virtual void OnValueChanged()
     {
         Color color = RenderSettings::light_ambient;
-        color.r = amount;
+        color.r = GetAmount();
 
         RenderSettings::light_ambient = color;
     }
@@ -115,7 +115,7 @@ struct AmbientGSliderEventListener : public UISlider
     virtual void OnValueChanged()
     {
         Color color = RenderSettings::light_ambient;
-        color.g = amount;
+        color.g = GetAmount();
 
         RenderSettings::light_ambient = color;
     }
@@ -126,7 +126,7 @@ struct AmbientBSliderEventListener : public UISlider
     virtual void OnValueChanged()
     {
         Color color = RenderSettings::light_ambient;
-        color.b = amount;
+        color.b = GetAmount();
 
         RenderSettings::light_ambient = color;
     }
@@ -138,7 +138,7 @@ struct DirectionalRSliderEventListener : public UISlider
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
-        color.r = amount;
+        color.r = GetAmount();
 
         dir->SetColor(color);
     }
@@ -150,7 +150,7 @@ struct DirectionalGSliderEventListener : public UISlider
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
-        color.g = amount;
+        color.g = GetAmount();
 
         dir->SetColor(color);
     }
@@ -162,7 +162,7 @@ struct DirectionalBSliderEventListener : public UISlider
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
-        color.b = amount;
+        color.b = GetAmount();
 
         dir->SetColor(color);
     }
@@ -173,7 +173,25 @@ struct DirectionalISliderEventListener : public UISlider
     virtual void OnValueChanged()
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
-        dir->SetIntensity(value);
+        dir->SetIntensity(GetValue<float>());
+    }
+};
+
+struct ShadowToggleEventListener : public UIToggle
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        dir->EnableShadow(GetValue());
+    }
+};
+
+struct CascadeToggleEventListener : public UIToggle
+{
+    virtual void OnValueChanged()
+    {
+        auto dir = RenderSettings::GetGlobalDirectionalLight();
+        dir->EnableCascade(GetValue());
     }
 };
 
@@ -687,81 +705,84 @@ void LauncherDemoUI::Start()
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ar/Slider")->GetGameObject()->AddComponent<AmbientRSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.263f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.263f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ag/Slider")->GetGameObject()->AddComponent<AmbientGSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.502f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.502f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/ab/Slider")->GetGameObject()->AddComponent<AmbientBSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.784f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.784f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/dr/Slider")->GetGameObject()->AddComponent<DirectionalRSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.988f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.988f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/dg/Slider")->GetGameObject()->AddComponent<DirectionalGSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.71f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.71f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/db/Slider")->GetGameObject()->AddComponent<DirectionalBSliderEventListener>();
         slider->type = UISliderValueType::Int;
-        slider->value_min = 0;
-        slider->value_max = 255;
-        slider->amount = 0.349f;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->SetAmount(0.349f);
     }
     {
         auto slider = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/di/Slider")->GetGameObject()->AddComponent<DirectionalISliderEventListener>();
         slider->type = UISliderValueType::Float;
-        slider->value_min = 0;
-        slider->value_max = 8;
-        slider->amount = 3.4f / 8;
         slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
         slider->thumb->slider = slider;
-        slider->Init();
+        slider->value_min = 0;
+        slider->value_max = 8;
+        slider->SetAmount(3.4f / 8);
     }
-
+    {
+        auto toggle = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/shadow/Toggle")->GetGameObject()->AddComponent<ShadowToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->SetValue(true);
+    }
+    {
+        auto toggle = win_graphic_settings->GetTransform()->Find("Background/left tabs/lighting/hilight/view/cascade/Toggle")->GetGameObject()->AddComponent<CascadeToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->SetValue(true);
+    }
+    
     g_win_graphic_settings = win_graphic_settings.get();
     g_win_graphic_settings->SetActive(false);
 
