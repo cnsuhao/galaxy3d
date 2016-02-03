@@ -19,6 +19,7 @@
     <ClCompile Include="..\src\LauncherDemoTemple.cpp" />
     <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
     <ClCompile Include="..\src\LauncherDemoUI.cpp" />
+    <ClCompile Include="..\src\WinGraphicSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="..\src\LauncherDemoTemple.h" />
     <ClInclude Include="..\src\LauncherDemoTerrain.h" />
     <ClInclude Include="..\src\LauncherDemoUI.h" />
+    <ClInclude Include="..\src\WinGraphicSettings.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>

@@ -1090,6 +1090,15 @@ namespace Galaxy3D
         }
     }
 
+    void Sprite::SetSize(const Vector2 &size)
+    {
+        if(m_size != size)
+        {
+            m_size = size;
+            m_dirty = true;
+        }
+    }
+
     void Sprite::SetSpriteData(const Rect &rect, const Vector4 &border)
     {
         if(m_rect != rect || m_border != border)

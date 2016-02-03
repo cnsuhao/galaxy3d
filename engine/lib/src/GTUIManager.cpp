@@ -120,6 +120,7 @@ namespace Galaxy3D
                 auto depth = com["depth"].asInt();
                 auto width = com["width"].asInt();
                 auto height = com["height"].asInt();
+                auto enable = com["enable"].asBool();
 
                 auto atlas = GTUIManager::FindAtlas(sprite_atlas);
                 if(atlas)
@@ -142,6 +143,7 @@ namespace Galaxy3D
                     sprite_node->SetSprite(sprite);
                     sprite_node->SetSortingOrder(depth);
                     sprite_node->SetColor(color);
+                    sprite_node->Enable(enable);
 
                     batch->AddSprite(sprite_node);
                 }
