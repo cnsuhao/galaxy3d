@@ -44,13 +44,12 @@
 #include "Cursor.h"
 #include "ImageEffectHighlighting.h"
 #include "HighlightingObject.h"
+#include "GTUIManager.h"
 #include "UICanvas.h"
 #include "UIEventListener.h"
 #include "UIAtlas.h"
 #include "UIButton.h"
-#include "GTUIManager.h"
-#include "UISlider.h"
-#include "UIToggle.h"
+#include "WinGraphicSettings.h"
 
 namespace Galaxy3D
 {

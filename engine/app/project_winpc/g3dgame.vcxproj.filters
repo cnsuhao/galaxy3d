@@ -31,6 +31,9 @@
     <ClCompile Include="..\src\LauncherDemoDef.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\WinGraphicSettings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h">
@@ -52,6 +55,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\LauncherDemoDef.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WinGraphicSettings.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

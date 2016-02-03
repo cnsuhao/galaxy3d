@@ -83,6 +83,8 @@ namespace Galaxy3D
         void SetSpriteData(const Rect &rect, const Vector4 &border);
         void SetAtlas(const std::shared_ptr<UIAtlas> &atlas) {m_atlas = atlas;}
         std::weak_ptr<UIAtlas> GetAtlas() const {return m_atlas;}
+        void SetSize(const Vector2 &size);
+        Vector2 GetSize() const {return m_size;}
 
 	private:
         std::weak_ptr<UIAtlas> m_atlas;

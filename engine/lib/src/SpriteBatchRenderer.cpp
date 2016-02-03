@@ -20,7 +20,7 @@ namespace Galaxy3D
         int index_count = 0;
         for(auto &i : list)
         {
-            if(i->GetGameObject()->IsActiveInHierarchy())
+            if(i->GetGameObject()->IsActiveInHierarchy() && i->IsEnable())
             {
                 index_count += i->GetSprite()->GetIndexCount();
             }
@@ -262,7 +262,7 @@ namespace Galaxy3D
                 int index_count = i->GetSprite()->GetIndexCount();
                 unsigned short *indices = i->GetSprite()->GetIndices();
 
-                if(i->GetGameObject()->IsActiveInHierarchy())
+                if(i->GetGameObject()->IsActiveInHierarchy() && i->IsEnable())
                 {
                     for(int j=0; j<index_count; j++)
                     {

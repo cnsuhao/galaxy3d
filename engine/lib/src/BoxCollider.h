@@ -15,7 +15,7 @@ namespace Galaxy3D
         {}
         void SetCenter(const Vector3 &center) {m_center = center;}
         Vector3 GetCenter() const {return m_center;}
-        void SetSize(const Vector3 &size) {m_size = size;}
+        void SetSize(const Vector3 &size);
         Vector3 GetSize() const {return m_size;}
 
     protected:

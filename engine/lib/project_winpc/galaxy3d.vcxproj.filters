@@ -240,6 +240,12 @@
     <ClCompile Include="..\src\UIToggle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\UIScrollView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIScrollBar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -543,6 +549,12 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\UIToggle.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIScrollView.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIScrollBar.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
