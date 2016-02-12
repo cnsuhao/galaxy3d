@@ -8,6 +8,7 @@
 #include "UIEventListener.h"
 #include "SpriteNode.h"
 #include "SpriteBatchRenderer.h"
+#include "TextRenderer.h"
 
 namespace Galaxy3D
 {
@@ -126,8 +127,26 @@ namespace Galaxy3D
                     auto sprite_node = go->GetComponent<SpriteNode>();
                     if(sprite_node)
                     {
-                        renderer = sprite_node->GetBatch().lock();
+                        auto batch = sprite_node->GetBatch().lock();
+                        renderer = batch;
                         hit.second_order = sprite_node->GetSortingOrder();
+
+                        if(batch->IsClip() && !batch->IsPointInClipRect(hits[i].point))
+                        {
+                            renderer.reset();
+                        }
+                    }
+                }
+                else
+                {
+                    auto text = std::dynamic_pointer_cast<TextRenderer>(renderer);
+                    if(text && text->IsClip())
+                    {
+                        auto batch = text->GetClipPanel();
+                        if(!batch.expired() && batch.lock()->IsPointInClipRect(hits[i].point))
+                        {
+                            renderer.reset();
+                        }
                     }
                 }
                 if(renderer)

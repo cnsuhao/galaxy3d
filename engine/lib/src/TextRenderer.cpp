@@ -1,11 +1,15 @@
 #include "TextRenderer.h"
 #include "GameObject.h"
 #include "UICanvas.h"
+#include "SpriteBatchRenderer.h"
 
 namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
         m_color(1, 1, 1, 1),
+        m_clip(false),
+        m_clip_rect(),
+        m_clip_soft(),
 		m_vertex_count(0),
         m_dirty(true)
 	{
@@ -147,6 +151,23 @@ namespace Galaxy3D
         mat->SetMatrix("WorldViewProjection", wvp);
         mat->SetMainTexture(Label::GetFontTexture());
         mat->SetMainColor(m_color);
+        if(m_clip && !m_clip_panel.expired())
+        {
+            auto wvp_clip = camera->GetViewProjectionMatrix() * m_clip_panel.lock()->GetTransform()->GetLocalToWorldMatrix();
+            Vector3 min = wvp_clip.MultiplyPoint(Vector3(m_clip_rect.x, m_clip_rect.w, 0));
+            Vector3 max = wvp_clip.MultiplyPoint(Vector3(m_clip_rect.z, m_clip_rect.y, 0));
+            Vector4 rect(min.x, max.y, max.x, min.y);
+            min = wvp_clip.MultiplyPoint(Vector3(m_clip_rect.x + m_clip_soft.x, m_clip_rect.w + m_clip_soft.y, 0));
+            max = wvp_clip.MultiplyPoint(Vector3(m_clip_rect.z - m_clip_soft.x, m_clip_rect.y - m_clip_soft.y, 0));
+            Vector4 soft(min.x, max.y, max.x, min.y);
+            mat->SetVector("ClipRect", rect);
+            mat->SetVector("ClipSoft", soft);
+        }
+        else
+        {
+            mat->SetVector("ClipRect", Vector4(-1, 1, 1, -1));
+            mat->SetVector("ClipSoft", Vector4(-1, 1, 1, -1));
+        }
 
         mat->ReadyPass(0);
         pass->rs->Apply();
