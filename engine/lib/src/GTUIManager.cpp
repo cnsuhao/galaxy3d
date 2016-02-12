@@ -68,7 +68,7 @@ namespace Galaxy3D
         const Json::Value &node,
         std::shared_ptr<Transform> &parent,
         int sorting_layer,
-        std::shared_ptr<SpriteBatchRenderer> &batch,
+        SpriteBatchRenderer *batch,
         float pixel_per_unit)
     {
         std::shared_ptr<GameObject> obj;
@@ -87,12 +87,6 @@ namespace Galaxy3D
         obj = GameObject::Create(name);
         obj->SetLayer(Layer::UI);
         obj->SetActive(active);
-
-        if(!batch)
-        {
-            batch = obj->AddComponent<SpriteBatchRenderer>();
-            batch->SetSortingOrder(sorting_layer, 0);
-        }
 
         auto transform = obj->GetTransform();
         transform->SetParent(parent);
@@ -182,6 +176,14 @@ namespace Galaxy3D
                     tr->SetLabel(label);
                     tr->SetColor(color);
                     tr->SetSortingOrder(sorting_layer, depth);
+
+                    if(batch->IsClip())
+                    {
+                        tr->SetClip(true);
+                        tr->SetClipRect(batch->GetClipRect());
+                        tr->SetClipSoft(batch->GetClipSoft());
+                        tr->SetClipPanel(std::dynamic_pointer_cast<SpriteBatchRenderer>(batch->GetComponentPtr()));
+                    }
                 }
             }
             else if(type == "BoxCollider")
@@ -192,6 +194,38 @@ namespace Galaxy3D
                 auto collider = obj->AddComponent<BoxCollider>();
                 collider->SetCenter(center);
                 collider->SetSize(size);
+            }
+            else if(type == "Panel")
+            {
+                auto depth = com["depth"].asInt();
+
+                batch = obj->AddComponent<SpriteBatchRenderer>().get();
+                batch->SetSortingOrder(sorting_layer + depth, 0);
+
+                auto clip = com["clip"].asBool();
+                if(clip)
+                {
+                    auto clip_center_x = (float) com["clip_center_x"].asDouble();
+                    auto clip_center_y = (float) com["clip_center_y"].asDouble();
+                    auto clip_size_w = (float) com["clip_size_w"].asDouble();
+                    auto clip_size_h = (float) com["clip_size_h"].asDouble();
+                    auto clip_soft_x = (float) com["clip_soft_x"].asDouble();
+                    auto clip_soft_y = (float) com["clip_soft_y"].asDouble();
+
+                    Vector4 clip_rect;
+                    clip_rect.x = clip_center_x - clip_size_w / 2;
+                    clip_rect.y = clip_center_y + clip_size_h / 2;
+                    clip_rect.z = clip_center_x + clip_size_w / 2;
+                    clip_rect.w = clip_center_y - clip_size_h / 2;
+
+                    Vector2 clip_soft;
+                    clip_soft.x = clip_soft_x;
+                    clip_soft.y = clip_soft_y;
+
+                    batch->SetClip(true);
+                    batch->SetClipRect(clip_rect);
+                    batch->SetClipSoft(clip_soft);
+                }
             }
         }
 
@@ -220,7 +254,7 @@ namespace Galaxy3D
 
                 if(reader.parse(str, root))
                 {
-                    obj = read_window_json_node(root, std::shared_ptr<Transform>(), sorting_layer, std::shared_ptr<SpriteBatchRenderer>(), pixel_per_unit);
+                    obj = read_window_json_node(root, std::shared_ptr<Transform>(), sorting_layer, NULL, pixel_per_unit);
                 }
             }
         }

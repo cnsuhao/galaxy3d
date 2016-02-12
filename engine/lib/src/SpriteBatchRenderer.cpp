@@ -31,6 +31,9 @@ namespace Galaxy3D
 
 	SpriteBatchRenderer::SpriteBatchRenderer():
 		m_color(1, 1, 1, 1),
+        m_clip(false),
+        m_clip_rect(),
+        m_clip_soft(),
         m_dirty(true),
         m_vertex_count_old(-1),
         m_index_count_old(-1)
@@ -108,11 +111,27 @@ namespace Galaxy3D
 		
 		auto camera = Camera::GetCurrent();
 
-        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * Matrix4x4::Identity();
+        Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
 
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprites.front()->GetSprite()->GetTexture());
         mat->SetMainColor(m_color);
+        if(m_clip)
+        {
+            Vector3 min = wvp.MultiplyPoint(Vector3(m_clip_rect.x, m_clip_rect.w, 0));
+            Vector3 max = wvp.MultiplyPoint(Vector3(m_clip_rect.z, m_clip_rect.y, 0));
+            Vector4 rect(min.x, max.y, max.x, min.y);
+            min = wvp.MultiplyPoint(Vector3(m_clip_rect.x + m_clip_soft.x, m_clip_rect.w + m_clip_soft.y, 0));
+            max = wvp.MultiplyPoint(Vector3(m_clip_rect.z - m_clip_soft.x, m_clip_rect.y - m_clip_soft.y, 0));
+            Vector4 soft(min.x, max.y, max.x, min.y);
+            mat->SetVector("ClipRect", rect);
+            mat->SetVector("ClipSoft", soft);
+        }
+        else
+        {
+            mat->SetVector("ClipRect", Vector4(-1, 1, 1, -1));
+            mat->SetVector("ClipSoft", Vector4(-1, 1, 1, -1));
+        }
 		
 		mat->ReadyPass(0);
 		pass->rs->Apply();
@@ -122,6 +141,24 @@ namespace Galaxy3D
 
 		GraphicsDevice::GetInstance()->ClearShaderResources();
 	}
+
+    bool SpriteBatchRenderer::IsPointInClipRect(const Vector3 &point)
+    {
+        auto rect = GetClipRect();
+        auto matrix = GetTransform()->GetLocalToWorldMatrix();
+        auto min = matrix.MultiplyPoint3x4(Vector3(rect.x, rect.w));
+        auto max = matrix.MultiplyPoint3x4(Vector3(rect.z, rect.y));
+
+        if( point.x < min.x ||
+            point.x > max.x ||
+            point.y < min.y ||
+            point.y > max.y)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     bool SpriteBatchRenderer::IsDirty()
     {
@@ -180,19 +217,28 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->ReleaseBufferObject(m_index_buffer);
 	}
 
-	static int fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite)
+	static int fill_vertex_buffer(char *buffer, const std::shared_ptr<SpriteNode> &sprite, SpriteBatchRenderer *batch)
 	{
 		char *p = buffer;
 		auto s = sprite->GetSprite();
-		auto mat_world = sprite->GetTransform()->GetLocalToWorldMatrix();
         int vertex_count = s->GetVertexCount();
 		Vector2 *vertices = s->GetVertices();
 		Vector2 *uv = s->GetUV();
 		Color c = sprite->GetColor();
 
+        auto local_position = batch->GetTransform()->InverseTransformPoint(sprite->GetTransform()->GetPosition());
+        auto local_rotation = Quaternion::Inverse(batch->GetTransform()->GetRotation()) * sprite->GetTransform()->GetRotation();
+        const Vector3 &parent_scale = batch->GetTransform()->GetScale();
+        Vector3 scale = sprite->GetTransform()->GetScale();
+        float x = scale.x / parent_scale.x;
+        float y = scale.y / parent_scale.y;
+        float z = scale.z / parent_scale.z;
+        auto local_scale = Vector3(x, y, z);
+        auto matrix = Matrix4x4::TRS(local_position, local_rotation, local_scale);
+
 		for(int i=0; i<vertex_count; i++)
 		{
-			Vector3 pos = mat_world.MultiplyPoint3x4(vertices[i]);
+			Vector3 pos = matrix.MultiplyPoint3x4(vertices[i]);
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);
 
@@ -218,7 +264,7 @@ namespace Galaxy3D
             char *p = buffer;
             for(auto &i : m_sprites)
             {
-                p += fill_vertex_buffer(p, i);
+                p += fill_vertex_buffer(p, i, this);
             }
 
             m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
@@ -238,7 +284,7 @@ namespace Galaxy3D
             char *p = buffer;
             for(auto &i : m_sprites)
             {
-                p += fill_vertex_buffer(p, i);
+                p += fill_vertex_buffer(p, i, this);
             }
 
             GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);

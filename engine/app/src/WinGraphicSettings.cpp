@@ -98,6 +98,45 @@ struct DirectionalISliderEventListener : public UISlider
     }
 };
 
+struct CascadeSplit0SliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto old = Light::GetCascadeSplits();
+        std::vector<float> splits;
+        splits.push_back(GetValue<float>());
+        splits.push_back(old[1]);
+        splits.push_back(old[2]);
+        Light::SetCascadeSplits(splits);
+    }
+};
+
+struct CascadeSplit1SliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto old = Light::GetCascadeSplits();
+        std::vector<float> splits;
+        splits.push_back(old[0]);
+        splits.push_back(GetValue<float>());
+        splits.push_back(old[2]);
+        Light::SetCascadeSplits(splits);
+    }
+};
+
+struct CascadeSplit2SliderEventListener : public UISlider
+{
+    virtual void OnValueChanged()
+    {
+        auto old = Light::GetCascadeSplits();
+        std::vector<float> splits;
+        splits.push_back(old[0]);
+        splits.push_back(old[1]);
+        splits.push_back(GetValue<float>());
+        Light::SetCascadeSplits(splits);
+    }
+};
+
 struct ShadowToggleEventListener : public UIToggle
 {
     virtual void OnValueChanged()
@@ -202,9 +241,39 @@ void WinGraphicSettings::Init()
         toggle->SetValue(true);
     }
     {
+        auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/cascade split 0/Slider")->GetGameObject()->AddComponent<CascadeSplit0SliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 1;
+        slider->SetAmount(0.08f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/cascade split 1/Slider")->GetGameObject()->AddComponent<CascadeSplit1SliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 1;
+        slider->SetAmount(0.2f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/cascade split 2/Slider")->GetGameObject()->AddComponent<CascadeSplit2SliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 1;
+        slider->SetAmount(0.5f);
+    }
+    {
         auto scroll_view = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view")->GetGameObject()->AddComponent<UIScrollView>();
         scroll_view->scroll_target = scroll_view->GetTransform()->Find("scroll target")->GetGameObject();
-        auto scroll_bar = scroll_view->GetTransform()->Find("scroll bar")->GetGameObject()->AddComponent<UIScrollBar>();
+        auto scroll_bar = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll bar")->GetGameObject()->AddComponent<UIScrollBar>();
         scroll_bar->scroll_view = scroll_view;
         scroll_bar->background = scroll_bar->GetGameObject()->GetComponent<SpriteNode>();
         auto thumb = scroll_bar->GetTransform()->Find("Foreground")->GetGameObject()->AddComponent<UIScrollBarThumb>();

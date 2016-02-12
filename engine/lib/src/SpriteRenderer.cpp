@@ -11,7 +11,8 @@ namespace Galaxy3D
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
 
-		SetSharedMaterial(Material::Create("UI/Sprite"));
+        auto mat = Material::Create("UI/Sprite");
+		SetSharedMaterial(mat);
 	}
 
     void SpriteRenderer::Start()
