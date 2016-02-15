@@ -147,14 +147,14 @@ void LauncherDemoRPG::Start()
     static_skin->GetComponent<Animation>()->Play("cS1_wujian01_zm_piao");
     */
 
-    /*
+    
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
     fog->EnableHeight(false);
     fog->SetFogMode(FogMode::ExponentialSquared);
     fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
     fog->SetFogDensity(0.02f);
     fog->ExcludeFarPixels(false);
-    */
+    
 
     auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();
     std::vector<std::string> sky_textures;

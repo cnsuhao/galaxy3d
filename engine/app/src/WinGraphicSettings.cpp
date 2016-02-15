@@ -20,6 +20,24 @@ struct GraphicCloseEventListener : public UIEventListener
     }
 };
 
+struct TabLightingEventListener : public UIEventListener
+{
+    virtual void OnClick()
+    {
+        GetTransform()->Find("hilight")->GetGameObject()->SetActive(true);
+        GetTransform()->GetParent().lock()->Find("fog/hilight")->GetGameObject()->SetActive(false);
+    }
+};
+
+struct TabFogEventListener : public UIEventListener
+{
+    virtual void OnClick()
+    {
+        GetTransform()->Find("hilight")->GetGameObject()->SetActive(true);
+        GetTransform()->GetParent().lock()->Find("lighting/hilight")->GetGameObject()->SetActive(false);
+    }
+};
+
 struct AmbientRSliderEventListener : public UISlider
 {
     virtual void OnValueChanged()
@@ -159,6 +177,9 @@ void WinGraphicSettings::Init()
 {
     auto close = GetTransform()->Find("Background/Header/close")->GetGameObject()->AddComponent<GraphicCloseEventListener>();
     close->win = GetGameObject();
+
+    GetTransform()->Find("Background/left tabs/lighting")->GetGameObject()->AddComponent<TabLightingEventListener>();
+    GetTransform()->Find("Background/left tabs/fog")->GetGameObject()->AddComponent<TabFogEventListener>();
     
     {
         auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/ar/Slider")->GetGameObject()->AddComponent<AmbientRSliderEventListener>();
@@ -274,6 +295,18 @@ void WinGraphicSettings::Init()
         auto scroll_view = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view")->GetGameObject()->AddComponent<UIScrollView>();
         scroll_view->scroll_target = scroll_view->GetTransform()->Find("scroll target")->GetGameObject();
         auto scroll_bar = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll bar")->GetGameObject()->AddComponent<UIScrollBar>();
+        scroll_bar->scroll_view = scroll_view;
+        scroll_bar->background = scroll_bar->GetGameObject()->GetComponent<SpriteNode>();
+        auto thumb = scroll_bar->GetTransform()->Find("Foreground")->GetGameObject()->AddComponent<UIScrollBarThumb>();
+        thumb->scroll_bar = scroll_bar;
+        scroll_bar->thumb = thumb;
+        scroll_view->scroll_bar = scroll_bar;
+        scroll_view->Init();
+    }
+    {
+        auto scroll_view = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view")->GetGameObject()->AddComponent<UIScrollView>();
+        scroll_view->scroll_target = scroll_view->GetTransform()->Find("scroll target")->GetGameObject();
+        auto scroll_bar = GetTransform()->Find("Background/left tabs/fog/hilight/scroll bar")->GetGameObject()->AddComponent<UIScrollBar>();
         scroll_bar->scroll_view = scroll_view;
         scroll_bar->background = scroll_bar->GetGameObject()->GetComponent<SpriteNode>();
         auto thumb = scroll_bar->GetTransform()->Find("Foreground")->GetGameObject()->AddComponent<UIScrollBarThumb>();

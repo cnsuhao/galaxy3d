@@ -41,9 +41,8 @@ namespace Galaxy3D
 
         bool IsDirty();
         void UpdateSprites();
-		void CreateVertexBuffer();
-		void UpdateVertexBuffer();
-		void CreateIndexBuffer();
+		void UpdateVertexBuffer(bool create);
+		void UpdateIndexBuffer(bool create);
 		void Release();
 	};
 }

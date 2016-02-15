@@ -88,6 +88,7 @@ namespace Galaxy3D
             float from = back_size.y / 2 - fore_size.y / 2;
             float to = -from;
             float y = Mathf::Lerp(from, to, amount, false);
+            y = Mathf::Round(y);
 
             auto transform = m_foreground->GetTransform();
             auto pos = transform->GetLocalPosition();
