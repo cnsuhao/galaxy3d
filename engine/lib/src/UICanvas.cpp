@@ -113,7 +113,7 @@ namespace Galaxy3D
         std::list<DepthEntry> renderer_hits;
 
         auto hits = Physics::RaycastAll(ray.origin, ray.GetDirection(), lenth, mask);
-        if(hits.size() > 1)
+        if(!hits.empty())
         {
             for(size_t i=0; i<hits.size(); i++)
             {
@@ -163,19 +163,20 @@ namespace Galaxy3D
                     renderer_hits.push_back(hit);
                 }
             }
-            renderer_hits.sort();
+            
+            if(!renderer_hits.empty())
+            {
+                renderer_hits.sort();
 
-            g_last_hit = renderer_hits.front().hit;
-            g_ray_hit_object = renderer_hits.front().go;
-            g_last_world_position = renderer_hits.front().point;
-            return true;
-        }
-        else if(hits.size() == 1)
-        {
-            g_last_hit = hits[0];
-            g_ray_hit_object = hits[0].collider.lock()->GetGameObject();
-            g_last_world_position = hits[0].point;
-            return true;
+                g_last_hit = renderer_hits.front().hit;
+                g_ray_hit_object = renderer_hits.front().go;
+                g_last_world_position = renderer_hits.front().point;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         return false;

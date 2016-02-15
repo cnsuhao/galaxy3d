@@ -188,8 +188,8 @@ namespace Galaxy3D
 
 		if(m_vertex_buffer.buffer == NULL || m_index_buffer.buffer == NULL)
 		{
-			CreateVertexBuffer();
-			CreateIndexBuffer();
+            UpdateVertexBuffer(true);
+            UpdateIndexBuffer(true);
 		}
 		else
 		{
@@ -198,12 +198,13 @@ namespace Galaxy3D
 			{
 				Release();
 
-				CreateVertexBuffer();
-				CreateIndexBuffer();
+                UpdateVertexBuffer(true);
+                UpdateIndexBuffer(true);
 			}
 			else
 			{
-				UpdateVertexBuffer();
+				UpdateVertexBuffer(false);
+                UpdateIndexBuffer(false);
 			}
 		}
 
@@ -253,27 +254,7 @@ namespace Galaxy3D
         return p - buffer;
 	}
 
-	void SpriteBatchRenderer::CreateVertexBuffer()
-	{
-        int vertex_count = get_sprites_vertex_count(m_sprites);
-        if(vertex_count > 0)
-        {
-            int buffer_size = sizeof(VertexUI) * vertex_count;
-            char *buffer = (char *) malloc(buffer_size);
-
-            char *p = buffer;
-            for(auto &i : m_sprites)
-            {
-                p += fill_vertex_buffer(p, i, this);
-            }
-
-            m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
-
-            free(buffer);
-        }
-	}
-
-	void SpriteBatchRenderer::UpdateVertexBuffer()
+	void SpriteBatchRenderer::UpdateVertexBuffer(bool create)
 	{
         int vertex_count = get_sprites_vertex_count(m_sprites);
         if(vertex_count)
@@ -287,14 +268,21 @@ namespace Galaxy3D
                 p += fill_vertex_buffer(p, i, this);
             }
 
-            GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
+            if(create)
+            {
+                m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
+            }
+            else
+            {
+                GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
+            }
 
             free(buffer);
         }
 	}
-	
-	void SpriteBatchRenderer::CreateIndexBuffer()
-	{
+
+    void SpriteBatchRenderer::UpdateIndexBuffer(bool create)
+    {
         int index_count = get_sprites_index_count(m_sprites);
         if(index_count > 0)
         {
@@ -321,9 +309,16 @@ namespace Galaxy3D
                 vertex_count += i->GetSprite()->GetVertexCount();
             }
 
-            m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
+            if(create)
+            {
+                m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Index);
+            }
+            else
+            {
+                GraphicsDevice::GetInstance()->UpdateBufferObject(m_index_buffer, buffer, buffer_size);
+            }
 
             free(buffer);
         }
-	}
+    }
 }

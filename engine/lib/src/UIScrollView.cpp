@@ -50,6 +50,7 @@ namespace Galaxy3D
             float from = 0;
             float to = m_target_size.y - m_view_size.y;
             float y = Mathf::Lerp(from, to, amount, false);
+            y = Mathf::Round(y);
 
             auto pos = scroll_target->GetTransform()->GetLocalPosition();
             pos.y = y;
