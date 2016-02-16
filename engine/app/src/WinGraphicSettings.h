@@ -5,9 +5,13 @@
 
 namespace Galaxy3D
 {
+    class Camera;
+
     class WinGraphicSettings : public Component
     {
     public:
+        std::shared_ptr<Camera> cam3d;
+        
         void Init();
     };
 }

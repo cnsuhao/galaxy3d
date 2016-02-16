@@ -2,11 +2,13 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "RenderSettings.h"
+#include "ImageEffectGlobalFog.h"
 #include "TextRenderer.h"
 #include "UISlider.h"
 #include "UIToggle.h"
 #include "UIScrollView.h"
 #include "UIScrollBar.h"
+#include "UISelectView.h"
 
 using namespace Galaxy3D;
 
@@ -173,6 +175,24 @@ struct CascadeToggleEventListener : public UIToggle
     }
 };
 
+struct FogModeSelectEventListener : public UISelectView
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnSelected(int index)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetFogMode((FogMode::Enum) (index + 1));
+            }
+        }
+    }
+};
+
 void WinGraphicSettings::Init()
 {
     auto close = GetTransform()->Find("Background/Header/close")->GetGameObject()->AddComponent<GraphicCloseEventListener>();
@@ -314,5 +334,31 @@ void WinGraphicSettings::Init()
         scroll_bar->thumb = thumb;
         scroll_view->scroll_bar = scroll_bar;
         scroll_view->Init();
+    }
+    {
+        auto select_view = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/fog mode/Select Field")->GetGameObject()->AddComponent<FogModeSelectEventListener>();
+        select_view->selected_item = select_view->GetTransform()->Find("Label")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        select_view->selected_index = 0;
+        select_view->arrow = select_view->GetTransform()->Find("Arrow")->GetGameObject()->GetComponent<SpriteNode>();
+        select_view->arrow_down = "SelectField_Arrow_Down";
+        select_view->arrow_up = "SelectField_Arrow_Up";
+        select_view->list = select_view->GetTransform()->Find("List")->GetGameObject();
+
+        UISelectItem item;
+        item.label = select_view->GetTransform()->Find("List/Label 0")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        item.high_light = select_view->GetTransform()->Find("List/Label 0/Hilight")->GetGameObject()->GetComponent<SpriteNode>();
+        select_view->items.push_back(item);
+
+        item.label = select_view->GetTransform()->Find("List/Label 1")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        item.high_light = select_view->GetTransform()->Find("List/Label 1/Hilight")->GetGameObject()->GetComponent<SpriteNode>();
+        select_view->items.push_back(item);
+
+        item.label = select_view->GetTransform()->Find("List/Label 2")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        item.high_light = select_view->GetTransform()->Find("List/Label 2/Hilight")->GetGameObject()->GetComponent<SpriteNode>();
+        select_view->items.push_back(item);
+
+        select_view->cam3d = cam3d;
+
+        select_view->Select(2);
     }
 }

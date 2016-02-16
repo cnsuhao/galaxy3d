@@ -200,7 +200,8 @@ namespace Galaxy3D
                 auto depth = com["depth"].asInt();
 
                 batch = obj->AddComponent<SpriteBatchRenderer>().get();
-                batch->SetSortingOrder(sorting_layer + depth, 0);
+                sorting_layer += depth;
+                batch->SetSortingOrder(sorting_layer, 0);
 
                 auto clip = com["clip"].asBool();
                 if(clip)

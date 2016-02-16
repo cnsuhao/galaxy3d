@@ -55,6 +55,9 @@ namespace Galaxy3D
 {
 	class LauncherDemoUI :public Component
 	{
+    public:
+        std::shared_ptr<Camera> cam3d;
+
 	protected:
 		std::shared_ptr<TextRenderer> fps;
 		std::shared_ptr<Camera> cam2d;

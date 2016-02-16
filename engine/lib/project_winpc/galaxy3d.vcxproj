@@ -86,6 +86,7 @@
     <ClCompile Include="..\src\UICanvas.cpp" />
     <ClCompile Include="..\src\UIScrollBar.cpp" />
     <ClCompile Include="..\src\UIScrollView.cpp" />
+    <ClCompile Include="..\src\UISelectView.cpp" />
     <ClCompile Include="..\src\UISlider.cpp" />
     <ClCompile Include="..\src\UIToggle.cpp" />
     <ClCompile Include="..\src\Vector2.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="..\src\UIEventListener.h" />
     <ClInclude Include="..\src\UIScrollBar.h" />
     <ClInclude Include="..\src\UIScrollView.h" />
+    <ClInclude Include="..\src\UISelectView.h" />
     <ClInclude Include="..\src\UISlider.h" />
     <ClInclude Include="..\src\UIToggle.h" />
     <ClInclude Include="..\src\Vector2.h" />
