@@ -12,6 +12,8 @@ namespace Galaxy3D
         {
             canvas->AnchorTransform(GetTransform(), *m_anchor);
         }
+
+        m_dirty = true;
     }
 
     void SpriteNode::SetSprite(const std::shared_ptr<Sprite> &sprite)

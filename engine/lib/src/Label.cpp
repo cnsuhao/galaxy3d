@@ -149,8 +149,9 @@ namespace Galaxy3D
 		m_height(-1),
 		m_width_actual(-1),
 		m_height_actual(-1),
+        m_offset_y(0),
 		m_rich(false),
-		m_pivot(LabelPivot::LeftTop),
+		m_pivot(LabelPivot::TopLeft),
 		m_align(LabelAlign::Auto),
 		m_vertex_count(0),
         m_dirty(true)
@@ -207,7 +208,7 @@ namespace Galaxy3D
         {
             m_height = height;
 
-            // not used in process text, but used in textrenderer, so just mark dirty
+            // not used in process text, but used in text renderer, so just mark dirty
             m_dirty = true;
         }
     }
@@ -853,6 +854,7 @@ namespace Galaxy3D
 		int line_height = m_font_size;
 		int x_max = 0;
 		int y_min = 0;
+        int y_max = INT_MIN;
 		int line_x_max = 0;
 		int line_y_min = 0;
 
@@ -1160,7 +1162,7 @@ namespace Galaxy3D
 			}
 
 			bool visible = (c != '\n' && c != 0xffffffff);
-			
+
 			CharInfo info = get_char_info(font, c, font_size, bold, italic);
 
 			if(visible)
@@ -1182,8 +1184,13 @@ namespace Galaxy3D
 				}
 			}
 
+            CharInfo base_info = get_char_info(font, 'A', font_size, bold, italic);
+            int base_y0 = base_info.bearing_y;
+            int base_y1 = base_info.bearing_y - base_info.uv_pixel_h;
+            int baseline = Mathf::RoundToInt(base_y0 + (font_size - base_y0 + base_y1) * 0.5f);
+
 			int x0 = pen_x + info.bearing_x;
-			int y0 = pen_y - origin + info.bearing_y;
+			int y0 = pen_y + info.bearing_y - baseline;//- origin;
 			int x1 = x0 + info.uv_pixel_w;
 			int y1 = y0 - info.uv_pixel_h;
 
@@ -1200,6 +1207,10 @@ namespace Galaxy3D
 			{
 				y_min = y1;
 			}
+            if(y_max < y0)
+            {
+                y_max = y0;
+            }
 			if(line_x_max < x1)
 			{
 				line_x_max = x1;
@@ -1256,6 +1267,10 @@ namespace Galaxy3D
 							{
 								y_min = iy1;
 							}
+                            if(y_max < iy0)
+                            {
+                                y_max = iy0;
+                            }
 							if(line_x_max < x1)
 							{
 								line_x_max = x1;
@@ -1409,7 +1424,7 @@ namespace Galaxy3D
 				if(underline && visible)
 				{
 					int ux0 = pen_x - (info.advance_x + m_char_space);
-					int uy0 = pen_y - origin - 2;
+					int uy0 = pen_y - 2 - baseline;//- origin
 					int ux1 = ux0 + info.advance_x + m_char_space;
 					int uy1 = uy0 - 1;
 
@@ -1469,13 +1484,13 @@ namespace Galaxy3D
 					}
 				}
 
-				pen_x = 0;
-				pen_y += -(line_height + m_line_space);
 				line_height = m_font_size;
 				line.width = line_x_max;
-				line.height = -line_y_min;
+				line.height = pen_y - line_y_min;
 				line_x_max = 0;
 				line_y_min = 0;
+                pen_x = 0;
+                pen_y += -(line_height + m_line_space);
 
 				m_vertex_count += line.vertices.size();
 				m_image_count += line.image_items.size();
@@ -1489,9 +1504,7 @@ namespace Galaxy3D
 		if(!line.vertices.empty() || !line.image_items.empty())
 		{
 			line.width = line_x_max;
-			line.height = -line_y_min;
-			line_x_max = 0;
-			line_y_min = 0;
+            line.height = pen_y - line_y_min;
 
 			m_vertex_count += line.vertices.size();
 			m_image_count += line.image_items.size();
@@ -1500,6 +1513,7 @@ namespace Galaxy3D
 
 		m_width_actual = x_max;
 		m_height_actual = -y_min;
+        m_offset_y = -y_max;
 
 		g_font_texture->Apply();
 

@@ -17,15 +17,15 @@ namespace Galaxy3D
 	{
 		enum Enum
 		{
-			LeftTop,
-			Left,
-			LeftBottom,
-			Top,
-			Center,
-			Bottom,
-			RightTop,
-			Right,
-			RightBottom
+            TopLeft,
+            Top,
+            TopRight,
+            Left,
+            Center,
+            Right,
+            BottomLeft,
+            Bottom,
+            BottomRight,
 		};
 	};
 
@@ -88,7 +88,7 @@ namespace Galaxy3D
 		static void LoadImage(const std::string &name, const std::string &file);
 		static void LoadImages(const std::string &name, const std::vector<std::string> &files);
 		static std::shared_ptr<Texture2D> GetRichImageTexture(const std::string &name, int index);
-		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::LeftTop, LabelAlign::Enum align = LabelAlign::Auto, bool rich = false);
+		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::TopLeft, LabelAlign::Enum align = LabelAlign::Auto, bool rich = false);
 		void SetText(const std::string &text);
 		std::string GetText() const {return m_text;}
 		void SetCharSpace(int space);
@@ -99,6 +99,7 @@ namespace Galaxy3D
 		int GetHeight() const {return m_height;}
 		int GetWidthActual() const {return m_width_actual;}
 		int GetHeightActual() const {return m_height_actual;}
+        int GetOffsetY() const {return m_offset_y;}
 		LabelPivot::Enum GetPivot() const {return m_pivot;}
 		LabelAlign::Enum GetAlign() const {return m_align;}
 		float GetPixelsPerUnit() const {return m_pixels_per_unit;}
@@ -119,6 +120,7 @@ namespace Galaxy3D
 		int m_height;
 		int m_width_actual;
 		int m_height_actual;
+        int m_offset_y;
 		bool m_rich;
 		LabelPivot::Enum m_pivot;
 		LabelAlign::Enum m_align;

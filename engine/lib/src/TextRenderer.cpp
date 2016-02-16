@@ -246,6 +246,7 @@ namespace Galaxy3D
 		auto ah = label->GetHeightActual();
 		auto w = label->GetWidth();
 		auto h = label->GetHeight();
+        auto offset_y = label->GetOffsetY();
 
 		if(w < 0)
 		{
@@ -258,9 +259,9 @@ namespace Galaxy3D
 
 		if(align == LabelAlign::Auto)
 		{
-			if(	pivot == LabelPivot::LeftTop ||
+			if(	pivot == LabelPivot::TopLeft ||
 				pivot == LabelPivot::Left ||
-				pivot == LabelPivot::LeftBottom)
+				pivot == LabelPivot::BottomLeft)
 			{
 				align = LabelAlign::Left;
 			}
@@ -272,9 +273,9 @@ namespace Galaxy3D
 				align = LabelAlign::Center;
 			}
 			else if(
-				pivot == LabelPivot::RightTop ||
+				pivot == LabelPivot::TopRight ||
 				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::RightBottom)
+				pivot == LabelPivot::BottomRight)
 			{
 				align = LabelAlign::Right;
 			}
@@ -300,9 +301,9 @@ namespace Galaxy3D
 					pos.x -= Mathf::Round(w * 0.5f);
 				}
 
-				if(	pivot == LabelPivot::RightTop ||
+				if(	pivot == LabelPivot::TopRight ||
 					pivot == LabelPivot::Right ||
-					pivot == LabelPivot::RightBottom)
+					pivot == LabelPivot::BottomRight)
 				{
 					pos.x -= w;
 				}
@@ -314,9 +315,9 @@ namespace Galaxy3D
 					pos.y += Mathf::Round(h * 0.5f);
 				}
 
-				if(	pivot == LabelPivot::LeftBottom ||
+				if(	pivot == LabelPivot::BottomLeft ||
 					pivot == LabelPivot::Bottom ||
-					pivot == LabelPivot::RightBottom)
+					pivot == LabelPivot::BottomRight)
 				{
 					pos.y += h;
 				}
@@ -329,6 +330,8 @@ namespace Galaxy3D
 				{
 					pos.x += (w - line.width);
 				}
+
+                pos.y += offset_y;
 
 				memcpy(p, &pos, sizeof(Vector3));
 				p += sizeof(Vector3);
@@ -355,6 +358,7 @@ namespace Galaxy3D
 		auto ah = label->GetHeightActual();
 		auto w = label->GetWidth();
 		auto h = label->GetHeight();
+        auto offset_y = label->GetOffsetY();
 
 		if(w < 0)
 		{
@@ -367,9 +371,9 @@ namespace Galaxy3D
 
 		if(align == LabelAlign::Auto)
 		{
-			if(	pivot == LabelPivot::LeftTop ||
+			if(	pivot == LabelPivot::TopLeft ||
 				pivot == LabelPivot::Left ||
-				pivot == LabelPivot::LeftBottom)
+				pivot == LabelPivot::BottomLeft)
 			{
 				align = LabelAlign::Left;
 			}
@@ -381,9 +385,9 @@ namespace Galaxy3D
 				align = LabelAlign::Center;
 			}
 			else if(
-				pivot == LabelPivot::RightTop ||
+				pivot == LabelPivot::TopRight ||
 				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::RightBottom)
+				pivot == LabelPivot::BottomRight)
 			{
 				align = LabelAlign::Right;
 			}
@@ -400,9 +404,9 @@ namespace Galaxy3D
 				pos.x -= Mathf::Round(w * 0.5f);
 			}
 
-			if(	pivot == LabelPivot::RightTop ||
+			if(	pivot == LabelPivot::TopRight ||
 				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::RightBottom)
+				pivot == LabelPivot::BottomRight)
 			{
 				pos.x -= w;
 			}
@@ -414,9 +418,9 @@ namespace Galaxy3D
 				pos.y += Mathf::Round(h * 0.5f);
 			}
 
-			if(	pivot == LabelPivot::LeftBottom ||
+			if(	pivot == LabelPivot::BottomLeft ||
 				pivot == LabelPivot::Bottom ||
-				pivot == LabelPivot::RightBottom)
+				pivot == LabelPivot::BottomRight)
 			{
 				pos.y += h;
 			}
@@ -429,6 +433,8 @@ namespace Galaxy3D
 			{
 				pos.x += (w - line.width);
 			}
+
+            pos.y += offset_y;
 
 			memcpy(p, &pos, sizeof(Vector3));
 			p += sizeof(Vector3);

@@ -594,12 +594,13 @@ void LauncherDemoUI::Start()
     create_window_setting(atlas, canvas);
     g_win_setting->SetActive(false);
 
-    auto win_graphic_settings = GTUIManager::LoadWindowFromJsonFile(Application::GetDataPath() + "/Assets/ui/win graphic settings.json", 2, g_pixel_per_unit);
+    auto win_graphic_settings = GTUIManager::LoadWindowFromJsonFile(Application::GetDataPath() + "/Assets/ui/win graphic settings.json", 2, g_pixel_per_unit)->AddComponent<WinGraphicSettings>();
     win_graphic_settings->GetTransform()->SetParent(canvas->GetTransform());
     win_graphic_settings->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-    win_graphic_settings->AddComponent<WinGraphicSettings>()->Init();
+    win_graphic_settings->cam3d = cam3d;
+    win_graphic_settings->Init();
     
-    g_win_graphic_settings = win_graphic_settings.get();
+    g_win_graphic_settings = win_graphic_settings->GetGameObject().get();
     g_win_graphic_settings->SetActive(false);
 
     cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
