@@ -5,7 +5,9 @@ namespace Galaxy3D
 {
     void UIToggle::SetValue(bool check)
     {
-        if((check ? 1 : 0) != m_value)
+        char value = (check ? 1 : 0);
+
+        if(value != m_value)
         {
             m_value = check;
 
@@ -14,7 +16,7 @@ namespace Galaxy3D
                 checkmark->SetActive(check);
             }
 
-            OnValueChanged();
+            OnValueChanged(check);
         }
     }
 

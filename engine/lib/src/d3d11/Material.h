@@ -45,7 +45,6 @@ namespace Galaxy3D
         std::string GetGuid() const {return m_guid;}
         void SetZBufferParams(std::shared_ptr<Camera> &cam);
         void SetProjectionParams(std::shared_ptr<Camera> &cam);
-        void SetFrustumCornersWS(std::shared_ptr<Camera> &cam);
         void SetMainTexTexelSize(const std::shared_ptr<Texture> &tex);
 
 	private:

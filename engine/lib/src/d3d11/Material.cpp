@@ -431,44 +431,6 @@ namespace Galaxy3D
         SetVector("_ProjectionParams", Vector4(1, cam_near, cam_far, 1 / cam_far));
     }
 
-    void Material::SetFrustumCornersWS(std::shared_ptr<Camera> &cam)
-    {
-        auto camtr = cam->GetTransform();
-        float camNear = cam->GetClipNear();
-        float camFar = cam->GetClipFar();
-        float camFov = cam->GetFieldOfView();
-        float aspect = cam->GetRenderTarget()->GetWidth() / (float) cam->GetRenderTarget()->GetHeight();
-
-        float fovWHalf = camFov * 0.5f;
-        auto frustumCorners = Matrix4x4::Identity();
-        Vector3 toRight = camtr->GetRight() * camNear * tan(fovWHalf * Mathf::Deg2Rad) * aspect;
-        Vector3 toTop = camtr->GetUp() * camNear * tan(fovWHalf * Mathf::Deg2Rad);
-
-        Vector3 topLeft = (camtr->GetForward() * camNear - toRight + toTop);
-        float camScale = topLeft.Magnitude() * camFar/camNear;
-        topLeft.Normalize();
-        topLeft *= camScale;
-
-        Vector3 topRight = (camtr->GetForward() * camNear + toRight + toTop);
-        topRight.Normalize();
-        topRight *= camScale;
-
-        Vector3 bottomRight = (camtr->GetForward() * camNear + toRight - toTop);
-        bottomRight.Normalize();
-        bottomRight *= camScale;
-
-        Vector3 bottomLeft = (camtr->GetForward() * camNear - toRight - toTop);
-        bottomLeft.Normalize();
-        bottomLeft *= camScale;
-
-        frustumCorners.SetRow(0, topLeft);
-        frustumCorners.SetRow(1, topRight);
-        frustumCorners.SetRow(2, bottomRight);
-        frustumCorners.SetRow(3, bottomLeft);
-
-        SetMatrix("_FrustumCornersWS", frustumCorners);
-    }
-
     void Material::SetMainTexTexelSize(const std::shared_ptr<Texture> &tex)
     {
         SetVector("_MainTex_TexelSize", Vector4(1.0f / tex->GetWidth(), 1.0f / tex->GetHeight(), (float) tex->GetWidth(), (float) tex->GetHeight()));

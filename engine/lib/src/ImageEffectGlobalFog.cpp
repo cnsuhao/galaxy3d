@@ -24,7 +24,7 @@ namespace Galaxy3D
         float paramK = (FdotC <= 0.0f ? 1.0f : 0.0f);
         float excludeDepth = m_exclude_far_pixels ? 1.0f : 2.0f;
 
-        m_material->SetFrustumCornersWS(cam);
+        m_material->SetMatrix("InvViewProjection", cam->GetViewProjectionMatrix().Inverse());
         m_material->SetVector("_CameraWS", camPos);
         m_material->SetVector("_HeightParams", Vector4(m_height, FdotC, paramK, m_height_density * 0.5f));
         m_material->SetVector("_DistanceParams", Vector4(-Mathf::Max(m_start_distance, 0.0f), excludeDepth, 0, 0));

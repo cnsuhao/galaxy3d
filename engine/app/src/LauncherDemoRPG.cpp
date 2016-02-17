@@ -150,7 +150,7 @@ void LauncherDemoRPG::Start()
     ui->cam3d = cam3d;
 
     auto fog = cam3d->GetGameObject()->AddComponent<ImageEffectGlobalFog>();
-    fog->EnableHeight(false);
+    fog->SetHeight(10);
     fog->SetFogMode(FogMode::ExponentialSquared);
     fog->SetFogColor(Color(1, 1, 1, 1) * 0.5f);
     fog->SetFogDensity(0.02f);

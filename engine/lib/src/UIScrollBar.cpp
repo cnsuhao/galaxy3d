@@ -22,7 +22,7 @@ namespace Galaxy3D
     {
         if(!scroll_bar.expired())
         {
-            Vector3 pos = UICanvas::GetLastPosition();
+            Vector2 pos = UICanvas::GetLastPosition();
             
             scroll_bar.lock()->OnDragSliderThumb(pos - m_down_pos);
         }
@@ -40,7 +40,7 @@ namespace Galaxy3D
         }
     }
 
-    void UIScrollBar::OnDragSliderThumb(const Vector3 &delta)
+    void UIScrollBar::OnDragSliderThumb(const Vector2 &delta)
     {
         if(background && m_foreground)
         {

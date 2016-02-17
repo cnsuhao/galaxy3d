@@ -16,7 +16,7 @@ namespace Galaxy3D
         void SetValue(bool check);
         bool GetValue() const {return m_value == 1;}
         virtual void OnClick();
-        virtual void OnValueChanged() {}
+        virtual void OnValueChanged(bool value) {}
 
     private:
         char m_value;
