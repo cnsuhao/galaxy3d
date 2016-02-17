@@ -9,8 +9,37 @@
 #include "UIScrollView.h"
 #include "UIScrollBar.h"
 #include "UISelectView.h"
+#include "UICanvas.h"
 
 using namespace Galaxy3D;
+
+struct GraphicHeaderEventListener : public UIEventListener
+{
+    std::weak_ptr<GameObject> win;
+    Vector3 down_pos;
+    Vector3 down_pos_win;
+
+    virtual void OnDragStart()
+    {
+        down_pos = UICanvas::GetLastPosition();
+
+        if(!win.expired())
+        {
+            down_pos_win = win.lock()->GetTransform()->GetLocalPosition();
+        }
+    }
+
+    virtual void OnDrag(const Vector3 &delta)
+    {
+        Vector3 pos = UICanvas::GetLastPosition();
+
+        if(!win.expired())
+        {
+            Vector3 offset = pos - down_pos;
+            win.lock()->GetTransform()->SetLocalPosition(down_pos_win + offset);
+        }
+    }
+};
 
 struct GraphicCloseEventListener : public UIEventListener
 {
@@ -46,7 +75,6 @@ struct AmbientRSliderEventListener : public UISlider
     {
         Color color = RenderSettings::light_ambient;
         color.r = GetAmount();
-
         RenderSettings::light_ambient = color;
     }
 };
@@ -57,7 +85,6 @@ struct AmbientGSliderEventListener : public UISlider
     {
         Color color = RenderSettings::light_ambient;
         color.g = GetAmount();
-
         RenderSettings::light_ambient = color;
     }
 };
@@ -68,7 +95,6 @@ struct AmbientBSliderEventListener : public UISlider
     {
         Color color = RenderSettings::light_ambient;
         color.b = GetAmount();
-
         RenderSettings::light_ambient = color;
     }
 };
@@ -80,7 +106,6 @@ struct DirectionalRSliderEventListener : public UISlider
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
         color.r = GetAmount();
-
         dir->SetColor(color);
     }
 };
@@ -92,7 +117,6 @@ struct DirectionalGSliderEventListener : public UISlider
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
         color.g = GetAmount();
-
         dir->SetColor(color);
     }
 };
@@ -104,7 +128,6 @@ struct DirectionalBSliderEventListener : public UISlider
         auto dir = RenderSettings::GetGlobalDirectionalLight();
         Color color = dir->GetColor();
         color.b = GetAmount();
-
         dir->SetColor(color);
     }
 };
@@ -159,19 +182,241 @@ struct CascadeSplit2SliderEventListener : public UISlider
 
 struct ShadowToggleEventListener : public UIToggle
 {
-    virtual void OnValueChanged()
+    virtual void OnValueChanged(bool value)
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
-        dir->EnableShadow(GetValue());
+        dir->EnableShadow(value);
     }
 };
 
 struct CascadeToggleEventListener : public UIToggle
 {
-    virtual void OnValueChanged()
+    virtual void OnValueChanged(bool value)
     {
         auto dir = RenderSettings::GetGlobalDirectionalLight();
-        dir->EnableCascade(GetValue());
+        dir->EnableCascade(value);
+    }
+};
+
+struct FogEnableToggleEventListener : public UIToggle
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged(bool value)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->Enable(value);
+            }
+        }
+    }
+};
+
+struct FogExcludeFarPixelsToggleEventListener : public UIToggle
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged(bool value)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->ExcludeFarPixels(value);
+            }
+        }
+    }
+};
+
+struct FogRSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                Color c = fog->GetFogColor();
+                c.r = GetAmount();
+                fog->SetFogColor(c);
+            }
+        }
+    }
+};
+
+struct FogGSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                Color c = fog->GetFogColor();
+                c.g = GetAmount();
+                fog->SetFogColor(c);
+            }
+        }
+    }
+};
+
+struct FogBSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                Color c = fog->GetFogColor();
+                c.b = GetAmount();
+                fog->SetFogColor(c);
+            }
+        }
+    }
+};
+
+struct FogDistanceEnableToggleEventListener : public UIToggle
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged(bool value)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->EnableDistance(value);
+            }
+        }
+    }
+};
+
+struct FogDistanceRadialToggleEventListener : public UIToggle
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged(bool value)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->UseRadialDistance(value);
+            }
+        }
+    }
+};
+
+struct FogDistanceStartSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetStartDistance(GetValue<float>());
+            }
+        }
+    }
+};
+
+struct FogHeightEnableToggleEventListener : public UIToggle
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged(bool value)
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->EnableHeight(value);
+            }
+        }
+    }
+};
+
+struct FogHeightSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetHeight(GetValue<float>());
+            }
+        }
+    }
+};
+
+struct FogHeightDensitySliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetHeightDensity(GetValue<float>());
+            }
+        }
+    }
+};
+
+struct FogDensitySliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetFogDensity(GetValue<float>());
+            }
+        }
     }
 };
 
@@ -193,8 +438,47 @@ struct FogModeSelectEventListener : public UISelectView
     }
 };
 
+struct FogLinearStartSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetLinearStart(GetValue<float>());
+            }
+        }
+    }
+};
+
+struct FogLinearEndSliderEventListener : public UISlider
+{
+    std::weak_ptr<Camera> cam3d;
+
+    virtual void OnValueChanged()
+    {
+        auto cam = cam3d.lock();
+        if(cam)
+        {
+            auto fog = cam->GetGameObject()->GetComponent<ImageEffectGlobalFog>();
+            if(fog)
+            {
+                fog->SetLinearEnd(GetValue<float>());
+            }
+        }
+    }
+};
+
 void WinGraphicSettings::Init()
 {
+    auto header = GetTransform()->Find("Background/Header")->GetGameObject()->AddComponent<GraphicHeaderEventListener>();
+    header->win = GetGameObject();
+
     auto close = GetTransform()->Find("Background/Header/close")->GetGameObject()->AddComponent<GraphicCloseEventListener>();
     close->win = GetGameObject();
 
@@ -336,6 +620,113 @@ void WinGraphicSettings::Init()
         scroll_view->Init();
     }
     {
+        auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/enable/Toggle")->GetGameObject()->AddComponent<FogEnableToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->cam3d = cam3d;
+        toggle->SetValue(true);
+    }
+    {
+        auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/far/Toggle")->GetGameObject()->AddComponent<FogExcludeFarPixelsToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->cam3d = cam3d;
+        toggle->SetValue(false);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/r/Slider")->GetGameObject()->AddComponent<FogRSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.5f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/g/Slider")->GetGameObject()->AddComponent<FogGSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.5f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/b/Slider")->GetGameObject()->AddComponent<FogBSliderEventListener>();
+        slider->type = UISliderValueType::Int;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 255;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.5f);
+    }
+    {
+        auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/distance enable/Toggle")->GetGameObject()->AddComponent<FogDistanceEnableToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->cam3d = cam3d;
+        toggle->SetValue(true);
+    }
+    {
+        auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/distance radial/Toggle")->GetGameObject()->AddComponent<FogDistanceRadialToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->cam3d = cam3d;
+        toggle->SetValue(false);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/distance start/Slider")->GetGameObject()->AddComponent<FogDistanceStartSliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 200;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0);
+    }
+    {
+        auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/height enable/Toggle")->GetGameObject()->AddComponent<FogHeightEnableToggleEventListener>();
+        toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
+        toggle->cam3d = cam3d;
+        toggle->SetValue(true);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/height/Slider")->GetGameObject()->AddComponent<FogHeightSliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 100;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.1f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/height density/Slider")->GetGameObject()->AddComponent<FogHeightDensitySliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 10;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.2f);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/fog density/Slider")->GetGameObject()->AddComponent<FogDensitySliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 0.05f;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.4f);
+    }
+    {
         auto select_view = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/fog mode/Select Field")->GetGameObject()->AddComponent<FogModeSelectEventListener>();
         select_view->selected_item = select_view->GetTransform()->Find("Label")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
         select_view->selected_index = 0;
@@ -360,5 +751,27 @@ void WinGraphicSettings::Init()
         select_view->cam3d = cam3d;
 
         select_view->Select(2);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/linear start/Slider")->GetGameObject()->AddComponent<FogLinearStartSliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 500;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0);
+    }
+    {
+        auto slider = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/linear end/Slider")->GetGameObject()->AddComponent<FogLinearEndSliderEventListener>();
+        slider->type = UISliderValueType::Float;
+        slider->label = slider->GetTransform()->Find("Percent")->GetGameObject()->GetComponent<TextRenderer>()->GetLabel();
+        slider->thumb = slider->GetTransform()->Find("Thumb")->GetGameObject()->AddComponent<UISliderThumb>();
+        slider->thumb->slider = slider;
+        slider->value_min = 0;
+        slider->value_max = 500;
+        slider->cam3d = cam3d;
+        slider->SetAmount(0.6f);
     }
 }

@@ -29,9 +29,6 @@
 #include "ParticleSystem.h"
 #include "ParticleSystemRenderer.h"
 #include "RenderTexture.h"
-#include "ImageEffectBloom.h"
-#include "ImageEffectToneMapping.h"
-#include "ImageEffectGlobalFog.h"
 #include "Light.h"
 #include "MeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
@@ -42,8 +39,6 @@
 #include "TerrainCollider.h"
 #include "BoxCollider.h"
 #include "Cursor.h"
-#include "ImageEffectHighlighting.h"
-#include "HighlightingObject.h"
 #include "UICanvas.h"
 
 namespace Galaxy3D

@@ -18,7 +18,7 @@ namespace Galaxy3D
         virtual void OnDrag(const Vector3 &delta);
 
     private:
-        Vector3 m_down_pos;
+        Vector2 m_down_pos;
     };
 
     class UIScrollBar : public UIEventListener
@@ -31,7 +31,7 @@ namespace Galaxy3D
         void SetAmount(float amount);
         void SetRatio(float ratio);
         void OnDragSliderThumbStart();
-        void OnDragSliderThumb(const Vector3 &delta);
+        void OnDragSliderThumb(const Vector2 &delta);
 
     private:
         std::shared_ptr<SpriteNode> m_foreground;

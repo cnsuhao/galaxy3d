@@ -22,11 +22,6 @@ ImageEffect/GlobalFog
 
     HLVS vs
     {
-        cbuffer cbuffer0 : register(b0)
-        {
-            matrix _FrustumCornersWS;
-        };
-
         struct VS_INPUT
         {
             float4 Position : POSITION;
@@ -40,7 +35,7 @@ ImageEffect/GlobalFog
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
-            float4 v_interpolated_ray : TEXCOORD1;
+            float4 v_pos_proj : TEXCOORD1;
         };
 
         PS_INPUT main(VS_INPUT input)
@@ -49,10 +44,7 @@ ImageEffect/GlobalFog
 
             output.v_pos = input.Position;
             output.v_uv = input.Texcoord0;
-
-            float index = input.Position.z * 10;
-            output.v_interpolated_ray = _FrustumCornersWS[(int) index];
-            output.v_interpolated_ray.w = index;
+            output.v_pos_proj = output.v_pos;
 
             return output;
         }
@@ -100,6 +92,11 @@ ImageEffect/GlobalFog
             float4 _DistanceParams;
         };
 
+        cbuffer cbuffer8 : register(b8)
+        {
+            matrix InvViewProjection;
+        };
+
         Texture2D _MainTex : register(t0);
         SamplerState _MainTex_Sampler : register(s0);
         Texture2D _CameraDepthTexture : register(t1);
@@ -109,7 +106,7 @@ ImageEffect/GlobalFog
         {
             float4 v_pos : SV_POSITION;
             float2 v_uv : TEXCOORD0;
-            float4 v_interpolated_ray : TEXCOORD1;
+            float4 v_pos_proj : TEXCOORD1;
         };
 
         float linear_depth_01(float z)
@@ -134,9 +131,9 @@ ImageEffect/GlobalFog
 
         float ComputeHalfSpace(float3 wsDir)
         {
-            float3 wpos = _CameraWS.xyz + wsDir;
-            float FH = _HeightParams.x;
             float3 C = _CameraWS.xyz;
+            float3 wpos = C + wsDir;
+            float FH = _HeightParams.x;
             float3 V = wsDir;
             float3 P = wpos;
             float3 aV = _HeightParams.w * V;
@@ -147,7 +144,7 @@ ImageEffect/GlobalFog
             float c1 = k * (FdotP + FdotC);
             float c2 = (1-2*k) * FdotP;
             float g = min(c2, 0.0);
-            g = -length(aV) * (c1 - g * g / abs(FdotV+1.0e-5f));
+            g = -length(aV) * (c1 - g * g / abs(FdotV + 1.0e-5f));
             return g;
         }
 
@@ -162,12 +159,14 @@ ImageEffect/GlobalFog
             if ((int) _SceneFogMode.x == 2) // exp
             {
                 // factor = exp(-density*z)
-                fogFac = _SceneFogParams.y * coord; fogFac = exp2(-fogFac);
+                fogFac = _SceneFogParams.y * coord;
+                fogFac = exp2(-fogFac);
             }
             if ((int) _SceneFogMode.x == 3) // exp2
             {
                 // factor = exp(-(density*z)^2)
-                fogFac = _SceneFogParams.x * coord; fogFac = exp2(-fogFac*fogFac);
+                fogFac = _SceneFogParams.x * coord;
+                fogFac = exp2(-fogFac*fogFac);
             }
             return saturate(fogFac);
         }
@@ -178,23 +177,26 @@ ImageEffect/GlobalFog
 
             // Reconstruct world space position & direction
             // towards this screen pixel.
-            float rawDepth = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, input.v_uv).r;
-            float dpth = linear_depth_01(rawDepth);
-            float4 wsDir = dpth * input.v_interpolated_ray;
+            float depth = _CameraDepthTexture.Sample(_CameraDepthTexture_Sampler, input.v_uv).r;
+            float depth_linear = linear_depth_01(depth);
+
+            float4 pos_world = mul(float4(input.v_pos_proj.xy / input.v_pos_proj.w, depth, 1), InvViewProjection);
+            pos_world /= pos_world.w;
+            float3 dir_world = pos_world.xyz - _CameraWS.xyz;
 
             // Compute fog distance
             bool distance = (int) _SceneFogMode.z == 1;
             bool height = (int) _SceneFogMode.w == 1;
             float g = _DistanceParams.x;
             if(distance)
-                g += ComputeDistance(wsDir.xyz, dpth);
+                g += ComputeDistance(dir_world, depth_linear);
             if(height)
-                g += ComputeHalfSpace(wsDir.xyz);
+                g += ComputeHalfSpace(dir_world);
 
             // Compute fog amount
             half fogFac = ComputeFogFactor(max(0.0,g));
             // Do not fog skybox
-            if (rawDepth == _DistanceParams.y)
+            if (depth == _DistanceParams.y)
                 fogFac = 1.0;
             //return fogFac; // for debugging
 

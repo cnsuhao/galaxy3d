@@ -45,6 +45,7 @@ namespace Galaxy3D
         void SetLinearEnd(float end) {m_linear_end = end;}
         void SetFogDensity(float density) {m_fog_density = density;}
         void SetFogColor(Color color) {m_fog_color = color;}
+        Color GetFogColor() const {return m_fog_color;}
 
     protected:
         virtual void Start();
