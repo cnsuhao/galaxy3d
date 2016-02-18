@@ -50,6 +50,7 @@ namespace Galaxy3D
 		Vector3 GetForward();
         void SetForward(const Vector3 &forward);
         void Changed();
+        bool IsChangeNotifying() const {return m_change_notifying;}
 
 	private:
 		std::weak_ptr<Transform> m_parent;
@@ -63,6 +64,7 @@ namespace Galaxy3D
 		Vector3 m_scale;
 		Matrix4x4 m_local_to_world_matrix;
 		Matrix4x4 m_world_to_local_matrix;
+        bool m_change_notifying;
 
 		Transform();
 		void RemoveChild(std::weak_ptr<Transform> &child);

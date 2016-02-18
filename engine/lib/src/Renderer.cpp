@@ -9,7 +9,6 @@
 
 namespace Galaxy3D
 {
-    static const int TRANSPARENT_ORDER_MIN = 2500;
     std::list<RenderBatch> Renderer::m_batches;
     std::list<RenderBatch> Renderer::m_batches_renderable_opaque;
     std::list<RenderBatch> Renderer::m_batches_renderable_transparent;
@@ -337,9 +336,9 @@ namespace Galaxy3D
         }
     }
 
-    const std::list<RenderBatch> &Renderer::GetOpaqueGeometryRenderBatches()
+    const std::list<RenderBatch> &Renderer::GetRenderBatches()
     {
-        return m_batches_renderable_opaque;
+        return m_batches;
     }
 
     void Renderer::RenderOpaqueGeometry()
@@ -376,10 +375,21 @@ namespace Galaxy3D
                 float z_far = (m.m23 - 1) / m.m22;
 
                 auto frustum = FrustumBounds::FrustumBoundsOrtho(left, right, bottom, top, z_near, z_far);
-                auto &world_to_view = shadow_light->GetViewMatrix();
+                auto &world_to_light = shadow_light->GetWorldToLocalMatrix();
 
-                for(auto &i : m_batches_renderable_opaque)
+                auto camera = Camera::GetCurrent();
+                for(auto &i : m_batches)
                 {
+                    auto obj = i.renderer->GetGameObject();
+                    if( !(obj->IsActiveInHierarchy() &&
+                        i.renderer->IsEnable() &&
+                        !camera->IsCulling(obj) &&
+                        i.renderer->GetSharedMaterials()[i.material_index]->GetRenderQueue() <= TRANSPARENT_ORDER_MIN &&
+                        i.renderer->IsCastShadow()))
+                    {
+                        continue;
+                    }
+
                     auto bounds = i.renderer->GetBounds();
 
                     int contains;
@@ -403,18 +413,17 @@ namespace Galaxy3D
                         corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
                         corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
 
-                        contains = frustum.ContainsPoints(corners, &world_to_view);
+                        contains = frustum.ContainsPoints(corners, &world_to_light);
                     }
                     
-                    if( contains != ContainsResult::Out &&
-                        i.renderer->IsCastShadow())
+                    if(contains != ContainsResult::Out)
                     {
                         batches.push_back(i);
                     }
                 }
             }
             
-            RenderBatches(batches);
+            RenderBatches(batches, true);
         }
         else
         {
@@ -427,13 +436,13 @@ namespace Galaxy3D
         RenderBatches(m_batches_renderable_transparent);
     }
 
-    void Renderer::RenderBatches(const std::list<RenderBatch> &batches)
+    void Renderer::RenderBatches(const std::list<RenderBatch> &batches, bool ignore_frustum_culling)
     {
         const RenderBatch *last_batch = NULL;
         std::list<RenderBatch *> dynamic_batches;
         for(auto i=batches.begin(); i!=batches.end(); i++)
         {
-            if(i->renderer->IsVisible())
+            if(ignore_frustum_culling || i->renderer->IsVisible())
             {
                 if( i->IsStaticSinglePassMeshRenderer() &&
                     m_static_batching_vertex_buffer.buffer != NULL &&

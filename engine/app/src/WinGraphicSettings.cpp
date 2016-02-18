@@ -31,12 +31,13 @@ struct GraphicHeaderEventListener : public UIEventListener
 
     virtual void OnDrag(const Vector3 &delta)
     {
-        Vector3 pos = UICanvas::GetLastPosition();
-
         if(!win.expired())
         {
-            Vector3 offset = pos - down_pos;
-            win.lock()->GetTransform()->SetLocalPosition(down_pos_win + offset);
+            Vector3 pos = down_pos_win + UICanvas::GetLastPosition() - down_pos;
+            pos.x = Mathf::Round(pos.x);
+            pos.y = Mathf::Round(pos.y);
+
+            win.lock()->GetTransform()->SetLocalPosition(pos);
         }
     }
 };
@@ -573,7 +574,7 @@ void WinGraphicSettings::Init()
         slider->thumb->slider = slider;
         slider->value_min = 0;
         slider->value_max = 1;
-        slider->SetAmount(0.08f);
+        slider->SetAmount(0.12f);
     }
     {
         auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/cascade split 1/Slider")->GetGameObject()->AddComponent<CascadeSplit1SliderEventListener>();
@@ -583,7 +584,7 @@ void WinGraphicSettings::Init()
         slider->thumb->slider = slider;
         slider->value_min = 0;
         slider->value_max = 1;
-        slider->SetAmount(0.2f);
+        slider->SetAmount(0.24f);
     }
     {
         auto slider = GetTransform()->Find("Background/left tabs/lighting/hilight/scroll view/scroll target/cascade split 2/Slider")->GetGameObject()->AddComponent<CascadeSplit2SliderEventListener>();
@@ -623,7 +624,7 @@ void WinGraphicSettings::Init()
         auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/enable/Toggle")->GetGameObject()->AddComponent<FogEnableToggleEventListener>();
         toggle->checkmark = toggle->GetTransform()->Find("Checkmark")->GetGameObject();
         toggle->cam3d = cam3d;
-        toggle->SetValue(true);
+        toggle->SetValue(false);
     }
     {
         auto toggle = GetTransform()->Find("Background/left tabs/fog/hilight/scroll view/scroll target/far/Toggle")->GetGameObject()->AddComponent<FogExcludeFarPixelsToggleEventListener>();

@@ -35,7 +35,7 @@ namespace Galaxy3D
 
     protected:
         virtual void Start();
-        virtual void OnTranformChanged() {m_dirty = true;}
+        virtual void OnTranformChanged();
         virtual void OnEnable() {m_dirty = true;}
         virtual void OnDisable() {m_dirty = true;}
 

@@ -46,7 +46,7 @@ namespace Galaxy3D
         void PrepareForRenderShadowMap();
         const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrices[m_cascade_rendering_index];}
         const Matrix4x4 &GetProjectionMatrix() const {return m_projection_matrices[m_cascade_rendering_index];}
-        const Matrix4x4 &GetViewMatrix() const {return m_view_matrices[m_cascade_rendering_index];}
+        const Matrix4x4 &GetWorldToLocalMatrix() const {return m_world_to_local_matrices[m_cascade_rendering_index];}
         void SetShadowBias(float bias) {m_shadow_bias = bias;}
         void SetShadowStrength(float strength) {m_shadow_strength = strength;}
         void EnableCascade(bool enable) {m_cascade = enable;}
@@ -73,7 +73,7 @@ namespace Galaxy3D
         std::shared_ptr<RenderTexture> m_shadow_map;
         Matrix4x4 m_view_projection_matrices[CASCADE_SHADOW_COUNT];
         Matrix4x4 m_projection_matrices[CASCADE_SHADOW_COUNT];
-        Matrix4x4 m_view_matrices[CASCADE_SHADOW_COUNT];
+        Matrix4x4 m_world_to_local_matrices[CASCADE_SHADOW_COUNT];
 
         static void CreateVolumeMeshIfNeeded();
         static void ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material);
