@@ -49,6 +49,7 @@ namespace Galaxy3D
         ghost_object->setCollisionShape(shape);
         
         btKinematicCharacterController *character = new btKinematicCharacterController(ghost_object, shape, m_step_height);
+        character->setGravity(9.8f * 10);
 
         Physics::AddCharacter(character);
 

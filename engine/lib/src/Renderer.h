@@ -38,9 +38,11 @@ namespace Galaxy3D
 	class Renderer : public Component
 	{
 	public:
+        static const int TRANSPARENT_ORDER_MIN = 2500;
+
 		static void SortAllBatches();
         static void Prepare();
-        static const std::list<RenderBatch> &GetOpaqueGeometryRenderBatches();
+        static const std::list<RenderBatch> &GetRenderBatches();
 		static void RenderOpaqueGeometry();
         static void RenderTransparentGeometry();
         static void BuildOctree(const std::shared_ptr<GameObject> &obj);
@@ -93,7 +95,7 @@ namespace Galaxy3D
 
         static bool LessBatch(const RenderBatch &b1, const RenderBatch &b2);
         static void ViewFrustumCulling(const FrustumBounds &frustum, const std::shared_ptr<OctreeNode> &node);
-        static void RenderBatches(const std::list<RenderBatch> &batches);
+        static void RenderBatches(const std::list<RenderBatch> &batches, bool ignore_frustum_culling = false);
         void AddBatches();
         void RemoveBatches();
 	};

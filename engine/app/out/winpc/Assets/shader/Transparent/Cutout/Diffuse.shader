@@ -253,11 +253,10 @@ Transparent/Cutout/Diffuse
             float2 v_uv : TEXCOORD0;
         };
 
-        float4 main( PS_INPUT input) : SV_Target
+        void main( PS_INPUT input)
         {
             float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv) * _Color;
             clip(c.a - _Cutoff);
-            return c;
         }
     }
 

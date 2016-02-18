@@ -108,21 +108,26 @@ namespace Galaxy3D
 
         float top = size.y / 2;
         float bottom = - size.y / 2;
-        float plane_h = size.y;
-        float plane_w = size.x;
-        float plane_near = - size.z / 2;
-        float plane_far = size.z / 2;
+        float left = - size.x / 2;
+        float right = size.x / 2;
+        float z_near = - size.z / 2;
+        float z_far = size.z / 2;
 
-        // 把near扩展到最小，把光锥内能投影的物体都要包进去
-        auto world_to_view = Matrix4x4::LookTo(
-            GetTransform()->GetPosition(),
-            GetTransform()->GetRotation() * Vector3(0, 0, 1),
-            GetTransform()->GetRotation() * Vector3(0, 1, 0));
-        auto &batches = Renderer::GetOpaqueGeometryRenderBatches();
+        // 把near向后扩展到最小，把光锥内能投影的物体都要包进去
+        auto world_to_light = GetTransform()->GetWorldToLocalMatrix();
+        auto &batches = Renderer::GetRenderBatches();
         float min_z = Mathf::MaxFloatValue;
-        auto frustum = FrustumBounds::FrustumBoundsOrtho(-plane_w/2, plane_w/2, bottom, top, plane_near, plane_far);
         for(auto &i : batches)
         {
+            auto obj = i.renderer->GetGameObject();
+            if( !(obj->IsActiveInHierarchy() &&
+                i.renderer->IsEnable() &&
+                !camera->IsCulling(obj) &&
+                i.renderer->GetSharedMaterials()[i.material_index]->GetRenderQueue() <= Renderer::TRANSPARENT_ORDER_MIN))
+            {
+                continue;
+            }
+
             auto bounds = i.renderer->GetBounds();
 
             if( Mathf::FloatEqual(bounds.extents.x, Mathf::MaxFloatValue) ||
@@ -143,20 +148,27 @@ namespace Galaxy3D
             corners[j++] = bounds.center + Vector3(bounds.extents.x, -bounds.extents.y, bounds.extents.z);
             corners[j++] = bounds.center + Vector3(bounds.extents.x, bounds.extents.y, bounds.extents.z);
 
-            int contains = frustum.ContainsPoints(corners, &world_to_view);
-            if(contains != ContainsResult::Out)
+            auto frustum = FrustumBounds::FrustumBoundsOrtho(left, right, bottom, top, z_near, z_far);
+            auto contains = frustum.ContainsPoints(corners, &world_to_light);
+
+            for(j=0; j<8; j++)
             {
-                for(j=0; j<8; j++)
+                auto c = world_to_light.MultiplyPoint3x4(corners[j]);
+
+                if( contains != ContainsResult::Out ||
+                    (c.x > left &&
+                    c.x < right &&
+                    c.y > bottom &&
+                    c.y < top))
                 {
-                    auto c = world_to_view.MultiplyPoint3x4(corners[j]);
                     min_z = Mathf::Min(min_z, c.z);
                 }
             }
         }
 
         // build light orthographic matrix
-        min_z = Mathf::Min(min_z, plane_near);
-        return Matrix4x4::Ortho(-plane_w/2, plane_w/2, bottom, top, min_z, plane_far);
+        min_z = Mathf::Min(min_z, z_near);
+        return Matrix4x4::Ortho(left, right, bottom, top, min_z, z_far);
     }
 
     void Light::SetCascadeSplits(const std::vector<float> &splits)
@@ -206,7 +218,7 @@ namespace Galaxy3D
 
                     m_view_projection_matrices[i] = projection_matrix * view_matrix;
                     m_projection_matrices[i] = projection_matrix;
-                    m_view_matrices[i] = view_matrix;
+                    m_world_to_local_matrices[i] = GetTransform()->GetWorldToLocalMatrix();
                 }
             }
             else
@@ -220,7 +232,7 @@ namespace Galaxy3D
 
                 m_view_projection_matrices[0] = projection_matrix * view_matrix;
                 m_projection_matrices[0] = projection_matrix;
-                m_view_matrices[0] = view_matrix;
+                m_world_to_local_matrices[0] = GetTransform()->GetWorldToLocalMatrix();
             }
         }
         else if(m_type == LightType::Spot)
@@ -234,7 +246,7 @@ namespace Galaxy3D
 
             m_view_projection_matrices[0] = projection_matrix * view_matrix;
             m_projection_matrices[0] = projection_matrix;
-            m_view_matrices[0] = view_matrix;
+            m_world_to_local_matrices[0] = GetTransform()->GetWorldToLocalMatrix();
         }
     }
 

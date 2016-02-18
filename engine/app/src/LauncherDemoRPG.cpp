@@ -27,8 +27,8 @@ void LauncherDemoRPG::Start()
     RenderSettings::light_ambient = Color(67, 128, 200, 255) / 255.0f;
     RenderSettings::SetGlobalDirectionalLight(light);
     std::vector<float> cascade_splits;
-    cascade_splits.push_back(0.08f);
-    cascade_splits.push_back(0.20f);
+    cascade_splits.push_back(0.12f);
+    cascade_splits.push_back(0.24f);
     cascade_splits.push_back(0.50f);
     Light::SetCascadeSplits(cascade_splits);
 
@@ -65,7 +65,6 @@ void LauncherDemoRPG::Start()
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
 
-    /*
     auto scene = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/terrain/t1/static mesh/static mesh.mesh");
     scene->SetLayerRecursively(Layer::Scene);
     auto mrs = scene->GetComponentsInChildren<MeshRenderer>();
@@ -145,7 +144,6 @@ void LauncherDemoRPG::Start()
     static_skin_anim_state = static_skin_anim->GetAnimationState("cS1_wujian01_zm_piao");
     static_skin_anim_state->time = Mathf::RandomRange(0.0f, static_skin_anim_state->length);
     static_skin->GetComponent<Animation>()->Play("cS1_wujian01_zm_piao");
-    */
 
     ui->cam3d = cam3d;
 

@@ -1,6 +1,7 @@
 #include "SpriteNode.h"
 #include "GameObject.h"
 #include "UICanvas.h"
+#include "SpriteBatchRenderer.h"
 
 namespace Galaxy3D
 {
@@ -14,6 +15,30 @@ namespace Galaxy3D
         }
 
         m_dirty = true;
+    }
+
+    void SpriteNode::OnTranformChanged()
+    {
+        bool batch_chaging = false;
+        std::shared_ptr<Transform> t = GetTransform();
+        auto batch = m_batch.lock();
+
+        while(t && t->IsChangeNotifying())
+        {
+            auto batch_parent = t->GetGameObject()->GetComponent<SpriteBatchRenderer>();
+            if(batch_parent && batch_parent == batch)
+            {
+                batch_chaging = true;
+                break;
+            }
+
+            t = t->GetParent().lock();
+        }
+
+        if(!batch_chaging)
+        {
+            m_dirty = true;
+        }
     }
 
     void SpriteNode::SetSprite(const std::shared_ptr<Sprite> &sprite)
