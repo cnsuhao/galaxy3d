@@ -618,8 +618,7 @@ void LauncherDemoUI::Update()
 
 	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
 		"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
-        "ray hit ui:" + hit_name + "\n" +
-        "ray hit point:" + UICanvas::GetLastRayHit().point.ToString());
+        "ray hit ui:" + hit_name);
 
     if(Input::GetKeyUp(KeyCode::Escape))
     {
