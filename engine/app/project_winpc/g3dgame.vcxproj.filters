@@ -7,9 +7,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\g3dgame.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Launcher.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -32,6 +29,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WinGraphicSettings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\winpc\g3dgame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
