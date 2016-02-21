@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{081d5c9f-cc73-406f-93e3-c26c2e3dab96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\FT_MODULES">
+      <UniqueIdentifier>{84a60643-7ab0-4fae-9a16-feafaba139d7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\autofit\autofit.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\bdf\bdf.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cff\cff.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftbase.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftbitmap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cache\ftcache.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftdebug.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftfstype.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftgasp.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftglyph.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gzip\ftgzip.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lzw\ftlzw.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftinit.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftstroke.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftsystem.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\smooth\smooth.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftbbox.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftfntfmt.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftgxval.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftlcdfil.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftmm.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftotval.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftpatent.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftpfr.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftsynth.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\fttype1.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\base\ftwinfnt.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pcf\pcf.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pfr\pfr.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\psaux\psaux.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pshinter\pshinter.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\psnames\psmodule.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\raster\raster.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sfnt\sfnt.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\truetype\truetype.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\type1\type1.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cid\type1cid.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\type42\type42.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\winfonts\winfnt.c">
+      <Filter>源文件\FT_MODULES</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
