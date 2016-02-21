@@ -89,12 +89,12 @@ namespace Galaxy3D
 #endif
 
 #ifdef WINPHONE
-    std::vector<char> GTFile::ReadAllBytes(const std::string &path)
+    void *GTFile::ReadAllBytes(const std::string &path, int *size)
     {
         using namespace Windows::Storage;
         using namespace Concurrency;
 
-        std::vector<char> ret;
+        void *ret = NULL;
 
         GTString path_relative(path);
         path_relative = path_relative.Replace("/", "\\");
@@ -106,8 +106,8 @@ namespace Galaxy3D
         }
 
         wchar_t buffer[MAX_PATH];
-        int size = MultiByteToWideChar(CP_ACP, 0, path_relative.str.c_str(), path_relative.str.size(), buffer, MAX_PATH);
-        buffer[size] = 0;
+        int wsize = MultiByteToWideChar(CP_ACP, 0, path_relative.str.c_str(), path_relative.str.size(), buffer, MAX_PATH);
+        buffer[wsize] = 0;
         auto wpath = ref new Platform::String(buffer);
 
         try
@@ -128,8 +128,9 @@ namespace Galaxy3D
             auto fileData = ref new Platform::Array<byte>(fileBuffer->Length);
             Streams::DataReader::FromBuffer(fileBuffer)->ReadBytes(fileData);
 
-            ret.resize(fileData->Length);
-            memcpy(&ret[0], fileData->Data, ret.size());
+            *size = fileData->Length;
+            ret = malloc(*size);
+            memcpy(ret, fileData->Data, *size);
 
             return ret;
         }

@@ -451,8 +451,10 @@ namespace Galaxy3D
 				ID3DBlob *p_blob = 0;
 				ID3DBlob *p_error = 0;
 
+#ifdef WINPC
 				hr = D3DCompile(i.block.c_str(), i.block.length(), 0, 0, 0, "main", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
 					&p_blob, &p_error);
+ #endif
 
 				if(FAILED(hr))
 				{
@@ -945,8 +947,10 @@ namespace Galaxy3D
 				ID3DBlob *p_blob = 0;
 				ID3DBlob *p_error = 0;
 
+#ifdef WINPC
 				hr = D3DCompile(i.block.c_str(), i.block.length(), 0, 0, 0, "main", "ps_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
 					&p_blob, &p_error);
+#endif
 
 				if(FAILED(hr))
 				{

@@ -3,8 +3,6 @@
 
 namespace Galaxy3D
 {
-    DEFINE_COM_BASE(Component);
-
 	Component::Component():
 		m_deleted(false),
 		m_started(false),
