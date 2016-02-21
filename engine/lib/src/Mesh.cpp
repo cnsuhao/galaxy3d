@@ -714,7 +714,7 @@ namespace Galaxy3D
         if(m_vertex_buffer.buffer == NULL)
         {
             int buffer_size;
-            char *buffer;
+            char *buffer = NULL;
 
             if(!m_vertices.empty())
             {

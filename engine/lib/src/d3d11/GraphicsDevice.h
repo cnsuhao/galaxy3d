@@ -7,6 +7,14 @@
 #include <memory>
 #include <vector>
 
+#define SAFE_RELEASE(p) \
+	do { \
+		if(p != NULL) { \
+			p->Release(); \
+			p = NULL; \
+		} \
+	}while(false)
+
 namespace Galaxy3D
 {
     class RenderTexture;
@@ -52,6 +60,35 @@ namespace Galaxy3D
 
 	class GraphicsDevice
 	{
+#ifdef WINPHONE
+    public:
+        void SetDeviceResources(ID3D11Device *device, ID3D11DeviceContext *context)
+        {
+            SAFE_RELEASE(m_d3d_device);
+            m_d3d_device = device;
+            m_d3d_device->AddRef();
+            SAFE_RELEASE(m_immediate_context);
+            m_immediate_context = context;
+            m_immediate_context->AddRef();
+        }
+
+        void SetWindowSizeDependentResources(
+            IDXGISwapChain *swap_chain,
+            ID3D11RenderTargetView *render_target,
+            ID3D11DepthStencilView *depth_stencil)
+        {
+            SAFE_RELEASE(m_swap_chain);
+            m_swap_chain = swap_chain;
+            m_swap_chain->AddRef();
+            SAFE_RELEASE(m_render_target_view);
+            m_render_target_view = render_target;
+            m_render_target_view->AddRef();
+            SAFE_RELEASE(m_depth_stencil_view);
+            m_depth_stencil_view = depth_stencil;
+            m_depth_stencil_view->AddRef();
+        }
+#endif
+
 	public:
 		static GraphicsDevice *GetInstance();
         static void Done();
@@ -78,10 +115,9 @@ namespace Galaxy3D
 
 	private:
 		ID3D11Device *m_d3d_device;
-		IDXGISwapChain *m_swap_chain;
 		ID3D11DeviceContext *m_immediate_context;
+        IDXGISwapChain *m_swap_chain;
 		ID3D11RenderTargetView *m_render_target_view;
-		ID3D11Texture2D *m_depth_stencil_texture;
 		ID3D11DepthStencilView *m_depth_stencil_view;
         std::shared_ptr<RenderTexture> m_screen_buffer;
         std::shared_ptr<Mesh> m_blit_mesh;
@@ -94,13 +130,5 @@ namespace Galaxy3D
         void CreateBlitMaterialIfNeeded();
 	};
 }
-
-#define SAFE_RELEASE(p) \
-	do { \
-		if(p != NULL) { \
-			p->Release(); \
-			p = NULL; \
-		} \
-	}while(false)
 
 #endif

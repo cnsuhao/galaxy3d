@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #endif
 
-#ifdef WIN32
+#ifdef WINPC
 #include <Windows.h>
 extern HWND g_hwnd;
 #endif

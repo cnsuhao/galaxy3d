@@ -1,6 +1,6 @@
 #include "Guid.h"
 
-#ifdef WINPC
+#if defined(WINPC) || defined(WINPHONE)
 #include <objbase.h>
 
 static std::string new_guid_winpc()
@@ -22,7 +22,7 @@ namespace Galaxy3D
 {
     std::string Guid::NewGuid()
     {
-#ifdef WINPC
+#if defined(WINPC) || defined(WINPHONE)
         return new_guid_winpc();
 #endif
     }

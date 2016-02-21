@@ -1,6 +1,6 @@
 #include "Thread.h"
 
-#ifdef WINPC
+#if defined(WINPC) || defined(WINPHONE)
 #include <Windows.h>
 #endif
 
@@ -12,7 +12,7 @@ namespace Galaxy3D
         void *param;
     };
 
-#ifdef WINPC
+#if defined(WINPC) || defined(WINPHONE)
     static DWORD WINAPI ThreadProc(_In_ LPVOID lpParameter)
     {
         ThreadParam *p = (ThreadParam *) lpParameter;

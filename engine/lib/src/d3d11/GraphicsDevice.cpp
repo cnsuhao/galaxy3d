@@ -34,7 +34,6 @@ namespace Galaxy3D
 		m_swap_chain(NULL),
 		m_immediate_context(NULL),
 		m_render_target_view(NULL),
-		m_depth_stencil_texture(NULL),
 		m_depth_stencil_view(NULL)
 	{
 	}
@@ -65,12 +64,11 @@ namespace Galaxy3D
         m_immediate_context->ClearState();
 
         SAFE_RELEASE(m_depth_stencil_view);
-        SAFE_RELEASE(m_depth_stencil_texture);
         SAFE_RELEASE(m_render_target_view);
         SAFE_RELEASE(m_immediate_context);
         SAFE_RELEASE(m_swap_chain);
         
-#if false //_DEBUG
+#if 0 //_DEBUG
         ID3D11Debug *debug;
         HRESULT hr = m_d3d_device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
         SAFE_RELEASE(m_d3d_device);
@@ -87,9 +85,10 @@ namespace Galaxy3D
 
 	void GraphicsDevice::Init(void *param)
 	{
+#ifdef WINPC
 		HRESULT hr = S_OK;
 
-		UINT flag = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+		UINT flag = 0;
 #if _DEBUG
 		flag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
@@ -117,16 +116,19 @@ namespace Galaxy3D
 
 		DXGI_SWAP_CHAIN_DESC sd;
 		ZeroMemory(&sd, sizeof(sd));
-		sd.BufferCount = 1;
 		sd.BufferDesc.Width = Screen::GetWidth();
 		sd.BufferDesc.Height = Screen::GetHeight();
 		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        sd.SampleDesc.Count = 1;
+        sd.SampleDesc.Quality = 0;
+        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        sd.BufferCount = 1;
+        sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+        sd.Flags = 0;
 		sd.BufferDesc.RefreshRate.Numerator = 60;
 		sd.BufferDesc.RefreshRate.Denominator = 1;
-		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.OutputWindow = hwnd;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
+		
 		sd.Windowed = TRUE;
 
 		for(int i=0; i<numDriverTypes; i++)
@@ -154,9 +156,6 @@ namespace Galaxy3D
 		if(FAILED(hr))
 			return;
 
-		//set primitive topology
-		m_immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 		//depth stencil texture
         D3D11_TEXTURE2D_DESC dtd =
         {
@@ -171,9 +170,13 @@ namespace Galaxy3D
             0,//UINT CPUAccessFlags;
             0//UINT MiscFlags;
         };
-		m_d3d_device->CreateTexture2D(&dtd, NULL, &m_depth_stencil_texture);
-		m_d3d_device->CreateDepthStencilView(m_depth_stencil_texture, NULL, &m_depth_stencil_view);
+        ID3D11Texture2D *depth_stencil_texture;
+		m_d3d_device->CreateTexture2D(&dtd, NULL, &depth_stencil_texture);
+		m_d3d_device->CreateDepthStencilView(depth_stencil_texture, NULL, &m_depth_stencil_view);
+        depth_stencil_texture->Release();
+#endif
 
+        m_immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_screen_buffer = std::shared_ptr<RenderTexture>(
             new RenderTexture(Screen::GetWidth(), Screen::GetHeight(), m_render_target_view, m_depth_stencil_view));
 	}
@@ -327,7 +330,9 @@ namespace Galaxy3D
 
     void GraphicsDevice::Present()
     {
+#ifdef WINPC
         m_swap_chain->Present(0, 0);
+#endif
     }
 
     void GraphicsDevice::SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer)

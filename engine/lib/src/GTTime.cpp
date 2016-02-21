@@ -5,7 +5,7 @@
 static long long g_frequency = -1L;
 #endif
 
-#ifdef WIN32
+#ifdef WINPC
 #include <windows.h>
 #endif
 
@@ -36,7 +36,7 @@ namespace Galaxy3D
 #endif
 
 #ifdef WINPHONE
-		if (g_frequency < 0)
+		if(g_frequency < 0)
 		{
 			QueryPerformanceFrequency((LARGE_INTEGER *) &g_frequency);
 		}
