@@ -8,5 +8,6 @@ namespace Galaxy3D
     void LauncherMerged::Start()
     {
         auto cam = GameObject::Create("")->AddComponent<Camera>();
+        cam->SetOrthographic(true);
     }
 }
