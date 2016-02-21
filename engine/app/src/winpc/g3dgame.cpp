@@ -7,14 +7,14 @@
 #include "GraphicsDevice.h"
 #include "Screen.h"
 #include "Camera.h"
-#include "Launcher.h"
-#include "LauncherDemoUI.h"
-#include "LauncherDemoTerrain.h"
-#include "LauncherDemoRPG.h"
-#include "LauncherDemoDef.h"
-#include "LauncherDemoTemple.h"
-#include "LauncherDemoDeferredShading.h"
 #include "Debug.h"
+#include "../Launcher.h"
+#include "../LauncherDemoUI.h"
+#include "../LauncherDemoTerrain.h"
+#include "../LauncherDemoRPG.h"
+#include "../LauncherDemoDef.h"
+#include "../LauncherDemoTemple.h"
+#include "../LauncherDemoDeferredShading.h"
 
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")
