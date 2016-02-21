@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\g3dgame.cpp" />
     <ClCompile Include="..\src\Launcher.cpp" />
     <ClCompile Include="..\src\LauncherDemoDef.cpp" />
     <ClCompile Include="..\src\LauncherDemoRPG.cpp" />
@@ -20,6 +19,7 @@
     <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
     <ClCompile Include="..\src\LauncherDemoUI.cpp" />
     <ClCompile Include="..\src\WinGraphicSettings.cpp" />
+    <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Launcher.h" />
@@ -64,14 +64,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
     <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)\..\out\winpc\</OutDir>
+    <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
