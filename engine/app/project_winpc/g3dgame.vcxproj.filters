@@ -7,57 +7,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Launcher.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoUI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoTerrain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoTemple.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoDeferredShading.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoRPG.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoDef.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WinGraphicSettings.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\winpc\g3dgame.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LauncherMerged.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Launcher.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoUI.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoTerrain.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoTemple.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoDeferredShading.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoRPG.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LauncherDemoDef.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WinGraphicSettings.h">
+    <ClInclude Include="..\src\LauncherMerged.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

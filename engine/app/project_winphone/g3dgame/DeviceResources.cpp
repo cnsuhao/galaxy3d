@@ -20,6 +20,7 @@ using namespace Galaxy3D;
 void DX::DeviceResources::InitEngine()
 {
     Screen::SetSize((int) m_outputSize.Width, (int) m_outputSize.Height);
+	Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
     GraphicsDevice::GetInstance()->SetDeviceResources(GetD3DDevice(), GetD3DDeviceContext());
     GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
         GetSwapChain(),
@@ -37,45 +38,8 @@ bool DX::DeviceResources::HasInit()
     return m_init;
 }
 
-//用于计算屏幕旋转的常量。
-namespace ScreenRotation
-{
-	// 0 度 Z 旋转
-	static const XMFLOAT4X4 Rotation0( 
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 90 度 Z 旋转
-	static const XMFLOAT4X4 Rotation90(
-		0.0f, 1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 180 度 Z 旋转
-	static const XMFLOAT4X4 Rotation180(
-		-1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, -1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 270 度 Z 旋转
-	static const XMFLOAT4X4 Rotation270( 
-		0.0f, -1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-};
-
 // DeviceResources 的构造函数。
-DX::DeviceResources::DeviceResources() : 
-	m_screenViewport(),
+DX::DeviceResources::DeviceResources():
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_d3dRenderTargetSize(),
 	m_outputSize(),
@@ -86,7 +50,8 @@ DX::DeviceResources::DeviceResources() :
 	m_compositionScaleX(1.0f),
 	m_compositionScaleY(1.0f),
 	m_deviceNotify(nullptr),
-    m_init(false)
+    m_init(false),
+	m_displayRotation(DXGI_MODE_ROTATION_UNSPECIFIED)
 {
 	CreateDeviceResources();
 }
@@ -285,37 +250,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			);
 	}
 
-	// 为交换链设置正确方向，并生成 2D 和 3D 矩阵
-	// 转换以渲染到旋转交换链。
-	// 请注意，2D 和 3D 转换的旋转角度不同。
-	// 这是由坐标空间的差异引起的。此外，
-	// 显式指定 3D 矩阵可以避免舍入误差。
-
-	switch (displayRotation)
-	{
-	case DXGI_MODE_ROTATION_IDENTITY:
-		m_orientationTransform3D = ScreenRotation::Rotation0;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE90:
-		m_orientationTransform3D = ScreenRotation::Rotation270;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE180:
-		m_orientationTransform3D = ScreenRotation::Rotation180;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE270:
-		m_orientationTransform3D = ScreenRotation::Rotation90;
-		break;
-
-	default:
-		throw ref new FailureException();
-	}
-
 	DX::ThrowIfFailed(
 		m_swapChain->SetRotation(displayRotation)
 		);
+
+	m_displayRotation = displayRotation;
 
 	//在交换链上设置反向缩放
 	DXGI_MATRIX_3X2_F inverseScale = { 0 };
@@ -330,7 +269,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		spSwapChain2->SetMatrixTransform(&inverseScale)
 		);
 	
-
 	// 创建交换链后台缓冲区的渲染目标视图。
 	ComPtr<ID3D11Texture2D> backBuffer;
 	DX::ThrowIfFailed(
@@ -372,19 +310,12 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			&m_d3dDepthStencilView
 			)
 		);
-	
-	// 设置用于确定整个窗口的 3D 渲染视区。
-	m_screenViewport = CD3D11_VIEWPORT(
-		0.0f,
-		0.0f,
-		m_d3dRenderTargetSize.Width,
-		m_d3dRenderTargetSize.Height
-		);
 
-	m_d3dContext->RSSetViewports(1, &m_screenViewport);
-
+	static int s_count = 0;
     auto bounds = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView()->VisibleBounds;
-    if(Mathf::FloatEqual(bounds.X, 0) && Mathf::FloatEqual(bounds.Y, 0))
+    if(	(m_displayRotation == DXGI_MODE_ROTATION_IDENTITY && Mathf::FloatEqual(bounds.Y, 0)) ||
+		(m_displayRotation == DXGI_MODE_ROTATION_ROTATE90 && Mathf::FloatEqual(bounds.X, 0)) ||
+		s_count++ == 2)
     {
         if(!m_init)
         {

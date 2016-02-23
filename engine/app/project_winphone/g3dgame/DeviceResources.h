@@ -38,8 +38,6 @@ namespace DX
 		D3D_FEATURE_LEVEL		GetDeviceFeatureLevel() const			{ return m_d3dFeatureLevel; }
 		ID3D11RenderTargetView*	GetBackBufferRenderTargetView() const	{ return m_d3dRenderTargetView.Get(); }
 		ID3D11DepthStencilView* GetDepthStencilView() const				{ return m_d3dDepthStencilView.Get(); }
-		D3D11_VIEWPORT			GetScreenViewport() const				{ return m_screenViewport; }
-		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return m_orientationTransform3D; }
 
 	private:
 		void CreateDeviceResources();
@@ -55,7 +53,6 @@ namespace DX
 		// Direct3D 渲染对象。3D 所必需的。
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_d3dRenderTargetView;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
-		D3D11_VIEWPORT									m_screenViewport;
 
 		//对 XAML 面板的缓存引用。
 		Windows::UI::Xaml::Controls::SwapChainPanel^    m_swapChainPanel;
@@ -71,11 +68,9 @@ namespace DX
 		float											m_compositionScaleX;
 		float											m_compositionScaleY;
 
-		// 用于显示方向的转换。
-		DirectX::XMFLOAT4X4	m_orientationTransform3D;
-
 		// IDeviceNotify 可直接保留，因为它拥有 DeviceResources。
 		IDeviceNotify* m_deviceNotify;
         bool m_init;
+		DXGI_MODE_ROTATION m_displayRotation;
 	};
 }

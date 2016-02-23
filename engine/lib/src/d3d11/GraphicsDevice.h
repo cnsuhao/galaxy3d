@@ -112,12 +112,14 @@ namespace Galaxy3D
         void SetVertexBuffer(BufferObject &bo, int stride, int offset);
         void SetIndexBuffer(BufferObject &bo, IndexType::Enum bits);
         void DrawIndexed(int count, int offset);
+		bool IsRenderTargetScreen() const {return m_render_target_view_current == m_render_target_view;}
 
 	private:
 		ID3D11Device *m_d3d_device;
 		ID3D11DeviceContext *m_immediate_context;
         IDXGISwapChain *m_swap_chain;
 		ID3D11RenderTargetView *m_render_target_view;
+		ID3D11RenderTargetView *m_render_target_view_current;
 		ID3D11DepthStencilView *m_depth_stencil_view;
         std::shared_ptr<RenderTexture> m_screen_buffer;
         std::shared_ptr<Mesh> m_blit_mesh;

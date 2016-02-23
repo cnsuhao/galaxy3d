@@ -11,25 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Launcher.cpp" />
-    <ClCompile Include="..\src\LauncherDemoDef.cpp" />
-    <ClCompile Include="..\src\LauncherDemoRPG.cpp" />
-    <ClCompile Include="..\src\LauncherDemoDeferredShading.cpp" />
-    <ClCompile Include="..\src\LauncherDemoTemple.cpp" />
-    <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
-    <ClCompile Include="..\src\LauncherDemoUI.cpp" />
-    <ClCompile Include="..\src\WinGraphicSettings.cpp" />
+    <ClCompile Include="..\src\LauncherMerged.cpp" />
     <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Launcher.h" />
-    <ClInclude Include="..\src\LauncherDemoDef.h" />
-    <ClInclude Include="..\src\LauncherDemoRPG.h" />
-    <ClInclude Include="..\src\LauncherDemoDeferredShading.h" />
-    <ClInclude Include="..\src\LauncherDemoTemple.h" />
-    <ClInclude Include="..\src\LauncherDemoTerrain.h" />
-    <ClInclude Include="..\src\LauncherDemoUI.h" />
-    <ClInclude Include="..\src\WinGraphicSettings.h" />
+    <ClInclude Include="..\src\LauncherMerged.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>
@@ -66,11 +52,11 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\src;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
     <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

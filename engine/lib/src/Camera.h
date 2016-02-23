@@ -43,7 +43,7 @@ namespace Galaxy3D
         float GetAspect() const;
         int GetPixelWidth() const;
         int GetPixelHeight() const;
-		const Matrix4x4 &GetViewProjectionMatrix() const {return m_view_projection_matrix;}
+		Matrix4x4 GetViewProjectionMatrix() const;
         Vector3 ScreenToViewportPoint(const Vector3 &position);
         Vector3 ViewportToWorldPoint(const Vector3 &position);
         Vector3 WorldToViewportPoint(const Vector3 &position);

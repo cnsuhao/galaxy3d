@@ -34,6 +34,7 @@ namespace Galaxy3D
 		m_swap_chain(NULL),
 		m_immediate_context(NULL),
 		m_render_target_view(NULL),
+		m_render_target_view_current(NULL),
 		m_depth_stencil_view(NULL)
 	{
 	}
@@ -325,6 +326,19 @@ namespace Galaxy3D
         vp.TopLeftX = (float) left;
         vp.TopLeftY = (float) top;
 
+#ifdef WINPHONE
+		if(IsRenderTargetScreen())
+		{
+			auto orientation = Screen::GetOrientation();
+			if( orientation == ScreenOrientation::Orientation90 ||
+				orientation == ScreenOrientation::Orientation270)
+			{
+				vp.Width = (float) height;
+				vp.Height = (float) width;
+			}
+		}
+#endif
+
         m_immediate_context->RSSetViewports(1, &vp);
     }
 
@@ -355,10 +369,14 @@ namespace Galaxy3D
         if(color_count > 0)
         {
             m_immediate_context->OMSetRenderTargets(color_count, &colors[0], depth_stencil);
+
+			m_render_target_view_current = colors[0];
         }
         else
         {
             m_immediate_context->OMSetRenderTargets(0, NULL, depth_stencil);
+
+			m_render_target_view_current = NULL;
         }
     }
 

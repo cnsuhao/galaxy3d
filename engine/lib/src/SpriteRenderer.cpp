@@ -64,6 +64,8 @@ namespace Galaxy3D
 		mat->SetMatrix("WorldViewProjection", wvp);
 		mat->SetMainTexture(m_sprite->GetTexture());
         mat->SetMainColor(m_color);
+		mat->SetVector("ClipRect", Vector4(-1, 1, 1, -1));
+		mat->SetVector("ClipSoft", Vector4(-1, 1, 1, -1));
 		
 		mat->ReadyPass(0);
 		pass->rs->Apply();
