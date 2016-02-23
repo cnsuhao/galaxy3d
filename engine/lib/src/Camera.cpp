@@ -813,4 +813,56 @@ namespace Galaxy3D
             return Ray(origin, dir);
         }
     }
+
+	// ºáÆÁ£¬°´¼üÔÚÓÒ
+	static const Matrix4x4 ScreenRotation90(
+		0.0f, 1.0f, 0.0f, 0.0f,
+		-1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+	// ÊúÆÁ·­×ª
+	static const Matrix4x4 ScreenRotation180(
+		-1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+	// ºáÆÁ·­×ª
+	static const Matrix4x4 ScreenRotation270( 
+		0.0f, -1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+	Matrix4x4 Camera::GetViewProjectionMatrix() const
+	{
+		Matrix4x4 m(m_view_projection_matrix);
+
+#ifdef WINPHONE
+		if(GraphicsDevice::GetInstance()->IsRenderTargetScreen())
+		{
+			auto orientation = Screen::GetOrientation();
+			switch(orientation)
+			{
+			case ScreenOrientation::Orientation90:
+				m = ScreenRotation90 * m;
+				break;
+
+			case ScreenOrientation::Orientation180:
+				m = ScreenRotation180 * m;
+				break;
+
+			case ScreenOrientation::Orientation270:
+				m = ScreenRotation270 * m;
+				break;
+			}
+		}
+#endif
+
+		return m;
+	}
 }

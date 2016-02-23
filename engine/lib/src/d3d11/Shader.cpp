@@ -451,10 +451,9 @@ namespace Galaxy3D
 				ID3DBlob *p_blob = 0;
 				ID3DBlob *p_error = 0;
 
-#ifdef WINPC
+#if defined(WINPC)
 				hr = D3DCompile(i.block.c_str(), i.block.length(), 0, 0, 0, "main", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
 					&p_blob, &p_error);
- #endif
 
 				if(FAILED(hr))
 				{
@@ -477,6 +476,25 @@ namespace Galaxy3D
 				}
 
 				CreateInputLayout(p_blob->GetBufferPointer(), p_blob->GetBufferSize(), i.block, &vs, m_name);
+#elif defined(WINPHONE)
+				GTString file = GetName();
+				file = file.Replace("/", ".");
+				file = Application::GetDataPath() + "/" + file.str + "." + i.name + ".cso";
+				int size;
+				void *bytes = GTFile::ReadAllBytes(file.str, &size);
+				if(bytes != NULL)
+				{
+					hr = device->CreateVertexShader(bytes, size, NULL, &vs.shader);
+					CreateInputLayout(bytes, size, i.block, &vs, m_name);
+					
+					free(bytes);
+				}
+				else
+				{
+					Debug::Log("can't find shader %s cso", file);
+				}
+#endif
+
 				CreateConstantBuffers(i.block, vs.cbuffers);
 
 				SAFE_RELEASE(p_blob);
@@ -947,10 +965,9 @@ namespace Galaxy3D
 				ID3DBlob *p_blob = 0;
 				ID3DBlob *p_error = 0;
 
-#ifdef WINPC
+#if defined(WINPC)
 				hr = D3DCompile(i.block.c_str(), i.block.length(), 0, 0, 0, "main", "ps_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0,
 					&p_blob, &p_error);
-#endif
 
 				if(FAILED(hr))
 				{
@@ -971,7 +988,22 @@ namespace Galaxy3D
 					p_blob->Release();
 					return;
 				}
-
+#elif defined(WINPHONE)
+				GTString file = GetName();
+				file = file.Replace("/", ".");
+				file = Application::GetDataPath() + "/" + file.str + "." + i.name + ".cso";
+				int size;
+				void *bytes = GTFile::ReadAllBytes(file.str, &size);
+				if(bytes != NULL)
+				{
+					hr = device->CreatePixelShader(bytes, size, NULL, &ps.shader);
+					free(bytes);
+				}
+				else
+				{
+					Debug::Log("can't find shader %s cso", file);
+				}
+#endif
 				CreateConstantBuffers(i.block, ps.cbuffers);
 				find_textures("Texture2D", i.block, &ps);
 				find_textures("TextureCube", i.block, &ps);

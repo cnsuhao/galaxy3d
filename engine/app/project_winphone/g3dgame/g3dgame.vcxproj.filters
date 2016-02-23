@@ -8,6 +8,15 @@
     <Filter Include="源文件">
       <UniqueIdentifier>740ddcdd-c77a-48b8-aafe-2a1c3489166c</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\image">
+      <UniqueIdentifier>{1b973765-3f2d-4430-a28e-9ee96680fd7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader">
+      <UniqueIdentifier>{94970142-fabf-4bde-bf0c-5ffbd5f21d76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\UI">
+      <UniqueIdentifier>{634c1906-2e13-44f3-b675-c9f1f6fa1f28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.xaml.h" />
@@ -66,6 +75,9 @@
     <Image Include="Assets\WideLogo.scale-240.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\image\bg.png">
+      <Filter>Assets\image</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -79,5 +91,24 @@
     <Page Include="DirectXPage.xaml">
       <Filter>源文件</Filter>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\shader\UI\Sprite.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Text.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="StoreManifest.xml" />
   </ItemGroup>
 </Project>

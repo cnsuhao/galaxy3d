@@ -33,26 +33,19 @@ namespace Galaxy3D
 
         std::vector<char> ret;
 
-        GTString path_relative(path);
-        path_relative = path_relative.Replace("/", "\\");
-        GTString data_path = Application::GetDataPath();
-        data_path = data_path.Replace("/", "\\");
-        if(path_relative.StartsWith(data_path.str))
-        {
-            path_relative = path_relative.str.substr(data_path.str.size() + 1);
-        }
+        GTString path_full(path);
+		path_full = path_full.Replace("/", "\\");
 
         wchar_t buffer[MAX_PATH];
-        int size = MultiByteToWideChar(CP_ACP, 0, path_relative.str.c_str(), path_relative.str.size(), buffer, MAX_PATH);
-        buffer[size] = 0;
+        int wsize = MultiByteToWideChar(CP_ACP, 0, path_full.str.c_str(), path_full.str.size(), buffer, MAX_PATH);
+        buffer[wsize] = 0;
         auto wpath = ref new Platform::String(buffer);
 
         try
         {
-            auto find_async = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(wpath);
-            wait_for_async(find_async);
-
-            auto file = find_async->GetResults();
+            auto file_async = StorageFile::GetFileFromPathAsync(wpath);
+            wait_for_async(file_async);
+			auto file = file_async->GetResults();
             return true;
         }
         catch(Platform::InvalidArgumentException ^e)
@@ -96,30 +89,24 @@ namespace Galaxy3D
 
         void *ret = NULL;
 
-        GTString path_relative(path);
-        path_relative = path_relative.Replace("/", "\\");
-        GTString data_path = Application::GetDataPath();
-        data_path = data_path.Replace("/", "\\");
-        if(path_relative.StartsWith(data_path.str))
-        {
-            path_relative = path_relative.str.substr(data_path.str.size() + 1);
-        }
+        GTString path_full(path);
+		path_full = path_full.Replace("/", "\\");
 
-        wchar_t buffer[MAX_PATH];
-        int wsize = MultiByteToWideChar(CP_ACP, 0, path_relative.str.c_str(), path_relative.str.size(), buffer, MAX_PATH);
-        buffer[wsize] = 0;
-        auto wpath = ref new Platform::String(buffer);
+		wchar_t buffer[MAX_PATH];
+		int wsize = MultiByteToWideChar(CP_ACP, 0, path_full.str.c_str(), path_full.str.size(), buffer, MAX_PATH);
+		buffer[wsize] = 0;
+		auto wpath = ref new Platform::String(buffer);
 
         try
         {
-            auto find_async = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(wpath);
-            wait_for_async(find_async);
+			auto file_async = StorageFile::GetFileFromPathAsync(wpath);
+			wait_for_async(file_async);
+			auto file = file_async->GetResults();
 
-            auto file = find_async->GetResults();
             auto open_async = file->OpenReadAsync();
             wait_for_async(open_async);
-
             auto stream = open_async->GetResults();
+
             int bufferSize = (int) stream->Size;
             auto fileBuffer = ref new Streams::Buffer(bufferSize);
             auto read_async = stream->ReadAsync(fileBuffer, bufferSize, Streams::InputStreamOptions::None);
