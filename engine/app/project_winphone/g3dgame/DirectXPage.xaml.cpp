@@ -60,6 +60,9 @@ DirectXPage::DirectXPage():
 	m_deviceResources = std::make_shared<DX::DeviceResources>();
 	m_deviceResources->SetSwapChainPanel(swapChainPanel);
 
+	m_main = std::unique_ptr<Main>(new Main(m_deviceResources));
+	m_main->StartRenderLoop();
+
 	// 注册我们的 SwapChainPanel 以获取独立的输入指针事件
 	auto workItemHandler = ref new WorkItemHandler([this] (IAsyncAction ^)
 	{
@@ -81,9 +84,6 @@ DirectXPage::DirectXPage():
 
 	// 在高优先级的专用后台线程上运行任务。
 	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
-
-	m_main = std::unique_ptr<Main>(new Main(m_deviceResources));
-	m_main->StartRenderLoop();
 }
 
 DirectXPage::~DirectXPage()
@@ -159,14 +159,17 @@ void DirectXPage::OnBackPressed(Platform::Object^ sender, BackPressedEventArgs^ 
 
 void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
 {
+	m_main->OnPointerPressed(sender, e);
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
 {
+	m_main->OnPointerMoved(sender, e);
 }
 
 void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 {
+	m_main->OnPointerReleased(sender, e);
 }
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)

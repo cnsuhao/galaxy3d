@@ -29,6 +29,15 @@ namespace Galaxy3D
         m_started = false;
     }
 
+	void Component::SetName(const std::string &value)
+	{
+		if(GetName() != value)
+		{
+			Object::SetName(value);
+			GetGameObject()->SetName(value);
+		}
+	}
+
 	void Component::Delete()
 	{
 		if(!m_deleted)

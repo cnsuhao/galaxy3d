@@ -14,6 +14,7 @@ namespace Galaxy3D
         static std::weak_ptr<GameObject> GetRayHitObject();
         static Vector2 GetLastPosition();
         static RaycastHit GetLastRayHit();
+		static bool IsPressStarted();
         UICanvas():
             m_width(0),
             m_height(0)

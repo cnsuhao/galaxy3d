@@ -22,6 +22,10 @@ namespace g3dgame
 		virtual void OnDeviceRestored();
         virtual void OnInitEngine();
 
+		void OnPointerPressed(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+
 	private:
 		void Update();
 		bool Render();

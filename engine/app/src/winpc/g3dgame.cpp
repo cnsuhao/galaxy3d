@@ -27,8 +27,8 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static int g_screen_w = 1600;
-static int g_screen_h = 900;
+static int g_screen_w = 540;
+static int g_screen_h = 960;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;
@@ -143,7 +143,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 
 extern std::vector<Touch> g_input_touches;
 extern std::list<Touch> g_input_touch_buffer;
-bool g_input_down = false;
+static bool g_input_down = false;
 extern bool g_key_down[KeyCode::COUNT];
 extern bool g_key[KeyCode::COUNT];
 extern bool g_key_up[KeyCode::COUNT];

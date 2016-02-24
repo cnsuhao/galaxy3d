@@ -39,6 +39,9 @@ namespace DX
 		ID3D11RenderTargetView*	GetBackBufferRenderTargetView() const	{ return m_d3dRenderTargetView.Get(); }
 		ID3D11DepthStencilView* GetDepthStencilView() const				{ return m_d3dDepthStencilView.Get(); }
 
+		float GetCompositionScaleX() const {return m_compositionScaleX;}
+		float GetCompositionScaleY() const {return m_compositionScaleY;}
+
 	private:
 		void CreateDeviceResources();
 		void CreateWindowSizeDependentResources();

@@ -99,6 +99,16 @@ namespace Galaxy3D
         return g_last_hit;
     }
 
+	bool UICanvas::IsPressStarted()
+	{
+		if(g_current_touch != NULL)
+		{
+			return g_current_touch->press_started;
+		}
+		
+		return false;
+	}
+
     static bool raycast(Vector3 &in_pos)
     {
         auto cam = g_camera.lock();
