@@ -17,6 +17,9 @@
     <Filter Include="Assets\shader\UI">
       <UniqueIdentifier>{634c1906-2e13-44f3-b675-c9f1f6fa1f28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\font">
+      <UniqueIdentifier>{47ef2512-609e-42f3-89e1-09d98e805ee7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.xaml.h" />
@@ -75,7 +78,7 @@
     <Image Include="Assets\WideLogo.scale-240.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\image\bg.png">
+    <Image Include="Assets\image\merged.png">
       <Filter>Assets\image</Filter>
     </Image>
   </ItemGroup>
@@ -99,12 +102,24 @@
     <None Include="Assets\shader\UI\Text.shader">
       <Filter>Assets\shader\UI</Filter>
     </None>
+    <None Include="Assets\font\heiti.ttc">
+      <Filter>Assets\font</Filter>
+    </None>
+    <None Include="Assets\image\merged.json">
+      <Filter>Assets\image</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
       <Filter>Assets\shader\UI</Filter>
     </FxCompile>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
       <Filter>Assets\shader\UI</Filter>
     </FxCompile>
   </ItemGroup>

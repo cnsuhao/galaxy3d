@@ -6,6 +6,7 @@ using namespace g3dgame;
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
 using namespace Concurrency;
+using namespace Windows::UI::Core;
 
 #include "Screen.h"
 #include "GraphicsDevice.h"
@@ -136,4 +137,40 @@ void Main::OnDeviceLost()
 void Main::OnDeviceRestored()
 {
 	CreateWindowSizeDependentResources();
+}
+
+extern bool g_mouse_button_down[3];
+extern bool g_mouse_button_up[3];
+extern Vector3 g_mouse_position;
+extern bool g_mouse_button_held[3];
+
+void Main::OnPointerPressed(Platform::Object^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	g_mouse_button_down[0] = true;
+    g_mouse_position.x = (float) x;
+    g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+    g_mouse_button_held[0] = true;
+}
+
+void Main::OnPointerMoved(Platform::Object^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	g_mouse_position.x = (float) x;
+	g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+}
+
+void Main::OnPointerReleased(Platform::Object^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	g_mouse_button_up[0] = true;
+    g_mouse_position.x = (float) x;
+    g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+    g_mouse_button_held[0] = false;
 }

@@ -67,6 +67,24 @@ namespace Galaxy3D
         m_static = src_obj->m_static;
     }
 
+	void GameObject::SetName(const std::string &value)
+	{
+		if(GetName() != value)
+		{
+			Object::SetName(value);
+
+			for(auto i=m_components.begin(); i!=m_components.end(); i++)
+			{
+				(*i)->SetName(value);
+			}
+
+			for(auto i=m_components_new.begin(); i!=m_components_new.end(); i++)
+			{
+				(*i)->SetName(value);
+			}
+		}
+	}
+
     std::shared_ptr<GameObject> GameObject::Instantiate(std::shared_ptr<GameObject> &source)
     {
         std::shared_ptr<GameObject> clone = GameObject::Create(source->GetName());

@@ -3,13 +3,13 @@
 
 #include "Component.h"
 
-namespace Galaxy3D
+using namespace Galaxy3D;
+
+class LauncherMerged : public Component
 {
-    class LauncherMerged : public Component
-    {
-    protected:
-        virtual void Start();
-    };
-}
+protected:
+    virtual void Start();
+	virtual void Update();
+};
 
 #endif
