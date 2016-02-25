@@ -1,9 +1,9 @@
-#include "TweenPosition.h"
+#include "TweenScale.h"
 #include "Transform.h"
 
 namespace Galaxy3D
 {
-    void TweenPosition::SetValue(float t)
+    void TweenScale::SetValue(float t)
     {
         float value = curve.Evaluate(t);
 
@@ -16,11 +16,11 @@ namespace Galaxy3D
         {
             if(is_world)
             {
-                GetTransform()->SetPosition(pos);
+                GetTransform()->SetScale(pos);
             }
             else
             {
-                GetTransform()->SetLocalPosition(pos);
+                GetTransform()->SetLocalScale(pos);
             }
         }
     }

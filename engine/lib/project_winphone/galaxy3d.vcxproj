@@ -109,6 +109,7 @@
     <ClInclude Include="..\src\Tweenner.h" />
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
+    <ClInclude Include="..\src\TweenScale.h" />
     <ClInclude Include="..\src\UIAtlas.h" />
     <ClInclude Include="..\src\UIButton.h" />
     <ClInclude Include="..\src\UICanvas.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="..\src\Tweenner.cpp" />
     <ClCompile Include="..\src\TweenPosition.cpp" />
     <ClCompile Include="..\src\TweenRotation.cpp" />
+    <ClCompile Include="..\src\TweenScale.cpp" />
     <ClCompile Include="..\src\UIAtlas.cpp" />
     <ClCompile Include="..\src\UICanvas.cpp" />
     <ClCompile Include="..\src\UIScrollBar.cpp" />

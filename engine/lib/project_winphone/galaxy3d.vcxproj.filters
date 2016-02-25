@@ -322,6 +322,9 @@
     <ClInclude Include="..\src\d3d11\VertexShader.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\TweenScale.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\TweenPosition.cpp">
@@ -565,6 +568,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\d3d11\Cubemap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TweenScale.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

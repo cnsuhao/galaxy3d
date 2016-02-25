@@ -249,6 +249,9 @@
     <ClCompile Include="..\src\UISelectView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\TweenScale.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -561,6 +564,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\UISelectView.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenScale.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
