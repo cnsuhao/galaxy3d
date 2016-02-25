@@ -15,7 +15,7 @@ namespace Galaxy3D
         }
         else
         {
-            euler = Vector3::Lerp(from, to, value);
+            euler = Vector3::Lerp(from, to, value, false);
             rot = Quaternion::Euler(euler);
         }
 
