@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\GameMerged.hpp" />
     <ClInclude Include="..\src\LauncherMerged.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

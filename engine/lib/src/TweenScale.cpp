@@ -7,20 +7,20 @@ namespace Galaxy3D
     {
         float value = curve.Evaluate(t);
 
-        Vector3 pos = Vector3::Lerp(from, to, value, false);
+        Vector3 scale = Vector3::Lerp(from, to, value, false);
         if(on_set_value != NULL)
         {
-            on_set_value(this, target, &pos);
+            on_set_value(this, target, &scale);
         }
         else
         {
             if(is_world)
             {
-                GetTransform()->SetScale(pos);
+                GetTransform()->SetScale(scale);
             }
             else
             {
-                GetTransform()->SetLocalScale(pos);
+                GetTransform()->SetLocalScale(scale);
             }
         }
     }

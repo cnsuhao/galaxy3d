@@ -12,9 +12,24 @@ using namespace Windows::UI::Core;
 #include "GraphicsDevice.h"
 #include "World.h"
 #include "Camera.h"
+#include "Debug.h"
 #include "../../src/LauncherMerged.h"
 
 using namespace Galaxy3D;
+
+struct MouseEvent
+{
+	int type;
+	float x;
+	float y;
+};
+
+std::list<MouseEvent> g_event_queue;
+
+extern bool g_mouse_button_down[3];
+extern bool g_mouse_button_up[3];
+extern Vector3 g_mouse_position;
+extern bool g_mouse_button_held[3];
 
 // 加载应用程序时加载并初始化应用程序资产。
 Main::Main(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
@@ -77,6 +92,33 @@ void Main::StartRenderLoop()
 		while (action->Status == AsyncStatus::Started)
 		{
 			critical_section::scoped_lock lock(m_criticalSection);
+
+			if(!g_event_queue.empty())
+			{
+				auto e = g_event_queue.front();
+				g_event_queue.pop_front();
+
+				switch(e.type)
+				{
+				case 0:
+					g_mouse_button_down[0] = true;
+					g_mouse_position.x = (float) e.x;
+					g_mouse_position.y = (float) Screen::GetHeight() - e.y - 1;
+					g_mouse_button_held[0] = true;
+					break;
+				case 1:
+					g_mouse_position.x = (float) e.x;
+					g_mouse_position.y = (float) Screen::GetHeight() - e.y - 1;
+					break;
+				case 2:
+					g_mouse_button_up[0] = true;
+					g_mouse_position.x = (float) e.x;
+					g_mouse_position.y = (float) Screen::GetHeight() - e.y - 1;
+					g_mouse_button_held[0] = false;
+					break;
+				}
+			}
+
 			Update();
 			if (Render())
 			{
@@ -139,20 +181,19 @@ void Main::OnDeviceRestored()
 	CreateWindowSizeDependentResources();
 }
 
-extern bool g_mouse_button_down[3];
-extern bool g_mouse_button_up[3];
-extern Vector3 g_mouse_position;
-extern bool g_mouse_button_held[3];
-
 void Main::OnPointerPressed(Platform::Object^ sender, PointerEventArgs^ e)
 {
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
 
-	g_mouse_button_down[0] = true;
-    g_mouse_position.x = (float) x;
-    g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
-    g_mouse_button_held[0] = true;
+	Debug::Log("OnPointerPressed");
+
+	critical_section::scoped_lock lock(m_criticalSection);
+	MouseEvent me;
+	me.type = 0;
+	me.x = x;
+	me.y = y;
+	g_event_queue.push_back(me);
 }
 
 void Main::OnPointerMoved(Platform::Object^ sender, PointerEventArgs^ e)
@@ -160,8 +201,14 @@ void Main::OnPointerMoved(Platform::Object^ sender, PointerEventArgs^ e)
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
 
-	g_mouse_position.x = (float) x;
-	g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+	Debug::Log("OnPointerMoved");
+
+	critical_section::scoped_lock lock(m_criticalSection);
+	MouseEvent me;
+	me.type = 1;
+	me.x = x;
+	me.y = y;
+	g_event_queue.push_back(me);
 }
 
 void Main::OnPointerReleased(Platform::Object^ sender, PointerEventArgs^ e)
@@ -169,8 +216,12 @@ void Main::OnPointerReleased(Platform::Object^ sender, PointerEventArgs^ e)
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
 
-	g_mouse_button_up[0] = true;
-    g_mouse_position.x = (float) x;
-    g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
-    g_mouse_button_held[0] = false;
+	Debug::Log("OnPointerReleased");
+
+	critical_section::scoped_lock lock(m_criticalSection);
+	MouseEvent me;
+	me.type = 2;
+	me.x = x;
+	me.y = y;
+	g_event_queue.push_back(me);
 }

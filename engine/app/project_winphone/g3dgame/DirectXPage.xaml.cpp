@@ -185,11 +185,3 @@ void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventAr
 	m_deviceResources->SetLogicalSize(e->NewSize);
 	m_main->CreateWindowSizeDependentResources();
 }
-
-// 如果在电话应用程序中使用应用程序栏，则取消对其的注释。
-// 在单击应用程序栏按钮时调用。
-//void DirectXPage::AppBarButton_Click(Object^ sender, RoutedEventArgs^ e)
-//{
-//	// 如果应用程序栏适合您的应用程序，则使用它。设计应用程序栏，
-//	// 然后填充事件处理程序(与此示例类似)。
-//}

@@ -252,6 +252,12 @@
     <ClCompile Include="..\src\TweenScale.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\TweenColor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Localization.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Component.h">
@@ -567,6 +573,12 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\TweenScale.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenColor.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Localization.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

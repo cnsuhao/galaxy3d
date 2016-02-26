@@ -9,12 +9,4 @@
 
     <SwapChainPanel x:Name="swapChainPanel">
     </SwapChainPanel>
-
-  <!-- 如果使用手机应用程序中的应用程序栏，则将其取消注释。
-  <Page.BottomAppBar>
-        <CommandBar>
-            <AppBarButton Icon="Play" AutomationProperties.Name="Sample Button" 
-                            AutomationProperties.AutomationId="SampleAppBarButton" Click="AppBarButton_Click" />
-        </CommandBar>
-    </Page.BottomAppBar>-->
 </Page>

@@ -12,7 +12,7 @@ namespace Galaxy3D
 {
     class UIAtlas;
 
-	class Sprite : Object
+	class Sprite : public Object
 	{
     public:
         struct Type

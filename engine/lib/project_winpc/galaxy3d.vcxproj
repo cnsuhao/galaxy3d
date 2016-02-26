@@ -49,6 +49,7 @@
     <ClCompile Include="..\src\Label.cpp" />
     <ClCompile Include="..\src\Light.cpp" />
     <ClCompile Include="..\src\LightmapSettings.cpp" />
+    <ClCompile Include="..\src\Localization.cpp" />
     <ClCompile Include="..\src\Mathf.cpp" />
     <ClCompile Include="..\src\Matrix4x4.cpp" />
     <ClCompile Include="..\src\Mesh.cpp" />
@@ -79,6 +80,7 @@
     <ClCompile Include="..\src\TextRenderer.cpp" />
     <ClCompile Include="..\src\Thread.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
+    <ClCompile Include="..\src\TweenColor.cpp" />
     <ClCompile Include="..\src\Tweenner.cpp" />
     <ClCompile Include="..\src\TweenPosition.cpp" />
     <ClCompile Include="..\src\TweenRotation.cpp" />
@@ -145,6 +147,7 @@
     <ClInclude Include="..\src\LayerMask.h" />
     <ClInclude Include="..\src\Light.h" />
     <ClInclude Include="..\src\LightmapSettings.h" />
+    <ClInclude Include="..\src\Localization.h" />
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\Mesh.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="..\src\TextureWrapMode.h" />
     <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\Transform.h" />
+    <ClInclude Include="..\src\TweenColor.h" />
     <ClInclude Include="..\src\Tweenner.h" />
     <ClInclude Include="..\src\TweenPosition.h" />
     <ClInclude Include="..\src\TweenRotation.h" />
