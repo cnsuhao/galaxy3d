@@ -88,6 +88,7 @@ namespace Galaxy3D
             type,
             size);
         sprite->SetAtlas(std::dynamic_pointer_cast<UIAtlas>(GetComponentPtr()));
+		sprite->SetName(name);
 
         return sprite;
     }

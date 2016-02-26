@@ -22,9 +22,13 @@ namespace Galaxy3D
 		return !(*this == c);
 	}
 
-	Color Color::Lerp(const Color &from, const Color &to, float t)
+	Color Color::Lerp(const Color &from, const Color &to, float t, bool clamp_01)
 	{
-		t = Mathf::Clamp01(t);
+		if(clamp_01)
+		{
+			t = Mathf::Clamp01(t);
+		}
+		
 		return Color(
 			Mathf::Lerp(from.r, to.r, t),
 			Mathf::Lerp(from.g, to.g, t),

@@ -108,6 +108,7 @@
     <None Include="Assets\image\merged.json">
       <Filter>Assets\image</Filter>
     </None>
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
@@ -125,5 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="StoreManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\string.txt">
+      <Filter>Assets</Filter>
+    </Text>
   </ItemGroup>
 </Project>

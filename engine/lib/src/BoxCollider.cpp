@@ -85,12 +85,28 @@ namespace Galaxy3D
             auto rot = GetTransform()->GetRotation();
             auto sca = GetTransform()->GetScale();
 
+			btRigidBody *body = (btRigidBody *) m_rigidbody;
+			auto shape = body->getCollisionShape();
+            Vector3 size = m_size;
+            if(Mathf::FloatEqual(size.x, 0))
+            {
+                size.x = 1;
+            }
+            if(Mathf::FloatEqual(size.y, 0))
+            {
+                size.y = 1;
+            }
+            if(Mathf::FloatEqual(size.z, 0))
+            {
+                size.z = 1;
+            }
+            shape->setLocalScaling(btVector3(size.x * sca.x, size.y * sca.y, size.z * sca.z));
+
             btTransform transform;
             transform.setIdentity();
             transform.setOrigin(btVector3(pos.x + m_center.x * sca.x, pos.y + m_center.y * sca.y, pos.z + m_center.z * sca.z));
             transform.setRotation(btQuaternion(rot.x, rot.y, rot.z, rot.w));
 
-            btRigidBody *body = (btRigidBody *) m_rigidbody;
             body->setWorldTransform(transform);
         }
     }

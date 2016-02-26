@@ -6,7 +6,7 @@ namespace Galaxy3D
 	class Color
 	{
 	public:
-		static Color Lerp(const Color &from, const Color &to, float t);
+		static Color Lerp(const Color &from, const Color &to, float t, bool clamp_01 = true);
 		
 		Color(float r=0, float g=0, float b=0, float a=0);
 		bool operator ==(const Color &c) const;
