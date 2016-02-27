@@ -16,6 +16,32 @@ extern HWND g_hwnd;
 
 namespace Galaxy3D
 {
+	std::string Application::GetSavePath()
+	{
+		static std::string s_save_path;
+
+#ifdef WINPC
+		if(s_save_path.empty())
+		{
+			s_save_path = GetDataPath();
+		}
+#endif
+
+#ifdef WINPHONE
+		if(s_save_path.empty())
+		{
+			char buffer[MAX_PATH];
+			Platform::String^ path_name = Windows::Storage::ApplicationData::Current->LocalFolder->Path;
+			const wchar_t *wpath = path_name->Data();
+			WideCharToMultiByte(CP_ACP, 0, wpath, -1, buffer, MAX_PATH, NULL, NULL);
+			GTString path = GTString(buffer).Replace("\\", "/");
+			s_save_path = path.str;
+		}
+#endif
+
+		return s_save_path;
+	}
+
     std::string Application::GetDataPath()
     {
 		static std::string s_data_path;

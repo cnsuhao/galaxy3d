@@ -9,6 +9,7 @@ namespace Galaxy3D
     {
     public:
         static std::string GetDataPath();
+		static std::string GetSavePath();
         static void Quit();
     };
 }

@@ -66,6 +66,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
+    <ClInclude Include="..\..\src\GameMerged.hpp" />
     <ClInclude Include="..\..\src\LauncherMerged.h" />
     <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="Main.h" />

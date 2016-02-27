@@ -23,6 +23,26 @@ static void on_pause_tween_scale_finish(Component *tween, std::weak_ptr<Componen
 	g_window_pause->SetActive(false);
 }
 
+static void write_score_best()
+{
+	auto path = Application::GetSavePath() + "/score_best.bin";
+	GTFile::WriteAllBytes(path, &g_score_best, 4);
+}
+
+static void read_score_best()
+{
+	write_score_best();
+
+	auto path = Application::GetSavePath() + "/score_best.bin";
+	if(GTFile::Exist(path))
+	{
+		int size;
+		auto bytes = GTFile::ReadAllBytes(path, &size);
+		g_score_best = *(int *) bytes;
+		free(bytes);
+	}
+}
+
 static void on_lose()
 {
 	auto over = g_window_pause->GetTransform()->Find("over")->GetGameObject();
@@ -55,6 +75,8 @@ static void on_lose()
 	tc->to = Color(1, 1, 1, 0.7f);
 	tc->target = tc;
 	tc->on_set_value = on_pause_tween_color_set_value;
+
+	write_score_best();
 }
 
 struct PauseButtonEventListener : UIEventListener
@@ -153,7 +175,7 @@ static void create_pause_window(UICanvas *canvas, UIAtlas *atlas)
 		Vector2(0.5f, 0.5f),
 		100,
 		Sprite::Type::Simple,
-		Vector2(1080, 1920));
+		Vector2(3840, 3840));
 	auto node = GameObject::Create("cover")->AddComponent<SpriteNode>();
 	node->GetTransform()->SetParent(batch->GetTransform());
 	node->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
@@ -163,7 +185,7 @@ static void create_pause_window(UICanvas *canvas, UIAtlas *atlas)
 	node->SetSortingOrder(0);
 	batch->AddSprite(node);
 	auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
-	collider->SetSize(Vector3(1080, 1920, 0));
+	collider->SetSize(Vector3(3840, 3840, 0));
 
 	sprite = atlas->CreateSprite(
 		"window",
@@ -219,6 +241,8 @@ static void create_pause_window(UICanvas *canvas, UIAtlas *atlas)
 
 void LauncherMerged::Start()
 {
+	read_score_best();
+
 	GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 	Localization::LoadStrings(Application::GetDataPath() + "/Assets/string.txt");
 
@@ -245,6 +269,7 @@ void LauncherMerged::Start()
 	tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 	tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 	g_fps = tr.get();
+	g_fps->GetGameObject()->SetActive(false);
 
 	auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
 	batch->GetTransform()->SetParent(canvas->GetTransform());
@@ -266,6 +291,7 @@ void LauncherMerged::Start()
 	node->SetSprite(sprite);
 	node->SetAnchor(Vector4(0, 1, 0, 60));
 	batch->AddSprite(node);
+	node->GetGameObject()->SetActive(false);
 
 	auto destroy_price = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(135 / g_scale), Mathf::Round(34 / g_scale), 0), 40, LabelPivot::Center, 1);
 	destroy_price->GetLabel()->SetText(GTString::ToString(g_coin_destroy_price).str);
@@ -282,6 +308,7 @@ void LauncherMerged::Start()
 	node->SetSprite(sprite);
 	node->SetAnchor(Vector4(0, 0, 30, -100));
 	batch->AddSprite(node);
+	node->GetGameObject()->SetActive(false);
 
 	auto score_best = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(90 / g_scale), Mathf::Round(-30 / g_scale), 0), 40, LabelPivot::Left, 1);
 	score_best->GetLabel()->SetText(GTString::ToString(g_score_best).str);

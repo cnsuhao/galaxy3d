@@ -52,8 +52,10 @@ namespace Galaxy3D
     
 	#ifdef WIN32
 #ifdef WINPHONE
+#ifdef _DEBUG
 		OutputDebugStringA(buffer);
 		OutputDebugStringA("\n");
+#endif
 #else
 		std::cout << buffer << std::endl;
 #endif
