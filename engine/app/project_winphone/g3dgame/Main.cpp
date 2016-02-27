@@ -25,6 +25,7 @@ struct MouseEvent
 };
 
 std::list<MouseEvent> g_event_queue;
+std::shared_ptr<unsigned int> g_down_pointer_id;
 
 extern bool g_mouse_button_down[3];
 extern bool g_mouse_button_up[3];
@@ -193,7 +194,12 @@ void Main::OnPointerPressed(Platform::Object^ sender, PointerEventArgs^ e)
 	me.type = 0;
 	me.x = x;
 	me.y = y;
-	g_event_queue.push_back(me);
+
+	if(!g_down_pointer_id)
+	{
+		g_down_pointer_id = std::make_shared<unsigned int>(e->CurrentPoint->PointerId);
+		g_event_queue.push_back(me);
+	}
 }
 
 void Main::OnPointerMoved(Platform::Object^ sender, PointerEventArgs^ e)
@@ -208,7 +214,11 @@ void Main::OnPointerMoved(Platform::Object^ sender, PointerEventArgs^ e)
 	me.type = 1;
 	me.x = x;
 	me.y = y;
-	g_event_queue.push_back(me);
+
+	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
+	{
+		g_event_queue.push_back(me);
+	}
 }
 
 void Main::OnPointerReleased(Platform::Object^ sender, PointerEventArgs^ e)
@@ -223,5 +233,10 @@ void Main::OnPointerReleased(Platform::Object^ sender, PointerEventArgs^ e)
 	me.type = 2;
 	me.x = x;
 	me.y = y;
-	g_event_queue.push_back(me);
+	
+	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
+	{
+		g_down_pointer_id.reset();
+		g_event_queue.push_back(me);
+	}
 }

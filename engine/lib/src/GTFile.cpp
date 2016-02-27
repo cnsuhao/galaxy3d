@@ -136,6 +136,44 @@ namespace Galaxy3D
 
         return ret;
     }
+
+	void GTFile::WriteAllBytes(const std::string &path, void *data, int size)
+	{
+		using namespace Windows::Storage;
+
+		GTString path_local = path.substr(Application::GetSavePath().length());
+		auto splits = path_local.Split("/", true);
+
+		auto folder = ApplicationData::Current->LocalFolder;
+		for(size_t i=0; i<splits.size(); i++)
+		{
+			wchar_t buffer[MAX_PATH];
+			int wsize = MultiByteToWideChar(CP_ACP, 0, splits[i].str.c_str(), splits[i].str.size(), buffer, MAX_PATH);
+			buffer[wsize] = 0;
+			auto wname = ref new Platform::String(buffer);
+
+			if(i == splits.size() - 1)
+			{
+				// create or open file
+				auto file_async = folder->CreateFileAsync(wname, CreationCollisionOption::ReplaceExisting);
+				wait_for_async(file_async);
+				auto file = file_async->GetResults();
+
+				auto array = ref new Platform::Array<unsigned char>(size);
+				memcpy(array->Data, data, size);
+
+				auto write_async = FileIO::WriteBytesAsync(file, array);
+				wait_for_async(write_async);
+			}
+			else
+			{
+				// create or open folder
+				auto folder_async = folder->CreateFolderAsync(wname, CreationCollisionOption::OpenIfExists);
+				wait_for_async(folder_async);
+				folder = folder_async->GetResults();
+			}
+		}
+	}
 #else
     void *GTFile::ReadAllBytes(const std::string &path, int *size)
     {
@@ -163,6 +201,16 @@ namespace Galaxy3D
 
         return ret;
     }
+
+	void GTFile::WriteAllBytes(const std::string &path, void *data, int size)
+    {
+        std::ofstream os(path.c_str(), std::ios::out | std::ios::binary);
+        if(os)
+        {
+            os.write((const char *) data, size);
+            os.close();
+        }
+    }
 #endif
 
     void GTFile::ReadAllText(const std::string &path, std::string &str)
@@ -174,16 +222,6 @@ namespace Galaxy3D
             str.resize(size);
             memcpy(&str[0], buffer, size);
             free(buffer);
-        }
-    }
-
-    void GTFile::WriteAllBytes(const std::string &path, void *data, int size)
-    {
-        std::ofstream os(path.c_str(), std::ios::out | std::ios::binary);
-        if(os)
-        {
-            os.write((const char *) data, size);
-            os.close();
         }
     }
 }

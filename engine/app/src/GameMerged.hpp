@@ -22,6 +22,7 @@
 #include "TweenColor.h"
 #include "Localization.h"
 #include "Input.h"
+#include "GTFile.h"
 #include "Debug.h"
 
 struct Tile : public Component
