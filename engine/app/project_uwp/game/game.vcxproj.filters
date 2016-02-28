@@ -23,39 +23,51 @@
       <UniqueIdentifier>1385dee4-bc99-4125-bcc3-4064d9158d84</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
+    <Image Include="Assets\image\merged.png">
+      <Filter>Assets\image</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="DeviceResources.cpp">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\LauncherMerged.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="DeviceResources.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="DirectXHelper.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="StepTimer.h">
-      <Filter>源代码</Filter>
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameMerged.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\LauncherMerged.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +80,53 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="game_TemporaryKey.pfx" />
+    <None Include="Assets\font\heiti.ttc">
+      <Filter>Assets\font</Filter>
+    </None>
+    <None Include="Assets\image\merged.json">
+      <Filter>Assets\image</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Sprite.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Text.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="源代码">
+    <Filter Include="src">
       <UniqueIdentifier>{f4c6e9b4-e1ed-48bc-bdf1-1ba352bddf97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\font">
+      <UniqueIdentifier>{4c7a1d48-91cf-4279-931f-4646745d07c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\image">
+      <UniqueIdentifier>{bbf1f0fe-af3b-44ae-884d-e564a92b041d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader">
+      <UniqueIdentifier>{bf9c51a2-567e-4e5e-a490-00326f375421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\UI">
+      <UniqueIdentifier>{80f5b17b-a6d5-4fef-b772-fbc36e1df599}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\string.txt">
+      <Filter>Assets</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

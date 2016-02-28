@@ -18,6 +18,11 @@ namespace game
 		// IDeviceNotify
 		virtual void OnDeviceLost();
 		virtual void OnDeviceRestored();
+		virtual void OnInitEngine();
+
+		void OnPointerPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerMoved(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ e);
 
 	private:
 		// 缓存的设备资源指针。

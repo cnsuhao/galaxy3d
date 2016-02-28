@@ -66,6 +66,10 @@ void App::SetWindow(CoreWindow^ window)
 	window->Closed += 
 		ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &App::OnWindowClosed);
 
+	window->PointerPressed += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerPressed);
+	window->PointerMoved += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerMoved);
+	window->PointerReleased += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerReleased);
+
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
 	currentDisplayInformation->DpiChanged +=
@@ -77,16 +81,18 @@ void App::SetWindow(CoreWindow^ window)
 	DisplayInformation::DisplayContentsInvalidated +=
 		ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDisplayContentsInvalidated);
 
+	if(m_main == nullptr)
+	{
+		m_main = std::unique_ptr<Main>(new Main(m_deviceResources));
+	}
+
 	m_deviceResources->SetWindow(window);
 }
 
 // 初始化场景资源或加载之前保存的应用程序状态。
 void App::Load(Platform::String^ entryPoint)
 {
-	if (m_main == nullptr)
-	{
-		m_main = std::unique_ptr<Main>(new Main(m_deviceResources));
-	}
+	
 }
 
 // 将在窗口处于活动状态后调用此方法。
@@ -193,4 +199,28 @@ void App::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 {
 	m_deviceResources->ValidateDevice();
+}
+
+void App::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	if(m_main)
+	{
+		m_main->OnPointerPressed(sender, e);
+	}
+}
+
+void App::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	if(m_main)
+	{
+		m_main->OnPointerMoved(sender, e);
+	}
+}
+
+void App::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	if(m_main)
+	{
+		m_main->OnPointerReleased(sender, e);
+	}
 }
