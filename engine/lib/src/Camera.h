@@ -7,13 +7,14 @@
 #include "Matrix4x4.h"
 #include "Rect.h"
 #include "Material.h"
+#include "Screen.h"
 #include <list>
 
 namespace Galaxy3D
 {
     class RenderTexture;
 
-	class Camera : public Component
+	class Camera : public Component, public IScreenResizeEventListener
 	{
 	public:
 		static void RenderAll();
@@ -23,6 +24,8 @@ namespace Galaxy3D
         static void Done();
         Camera();
 		virtual ~Camera();
+		virtual void Awake();
+		virtual void OnScreenResize(int width, int height);
 		void SetClearFlags(CameraClearFlags::Enum flag) {m_clear_flags = flag;}
 		void SetClearColor(const Color &color) {m_clear_color = color;}
         Color GetClearColor() const {return m_clear_color;}
@@ -53,7 +56,7 @@ namespace Galaxy3D
         bool IsDeferredShading() const {return m_deferred_shading;}
         void SetRenderTexture(const std::shared_ptr<RenderTexture> &render_texture) {m_render_texture = render_texture;}
         void SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force = true, bool bind_depth = true);
-        std::shared_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
+        std::weak_ptr<RenderTexture> GetRenderTarget() const {return m_render_target_binding;}
         std::shared_ptr<RenderTexture> GetDepthTexture() const;
 
 	protected:
@@ -81,9 +84,9 @@ namespace Galaxy3D
 		Rect m_rect;
         bool m_hdr;
         bool m_deferred_shading;
-        bool m_transform_changed;
+        bool m_matrix_dirty;
         std::shared_ptr<RenderTexture> m_render_texture;
-        std::shared_ptr<RenderTexture> m_render_target_binding;
+        std::weak_ptr<RenderTexture> m_render_target_binding;
 		Matrix4x4 m_view_matrix;
 		Matrix4x4 m_projection_matrix;
 		Matrix4x4 m_view_projection_matrix;

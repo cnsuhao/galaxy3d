@@ -284,7 +284,7 @@ namespace Galaxy3D
 
         material->SetVector("LightDirection", Vector4(light->GetTransform()->GetRotation() * Vector3(0, 0, 1)));
         material->SetColor("LightColor", light->GetColor() * light->GetIntensity());
-        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 1);
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget().lock(), material, 1);
     }
 
     void Light::DeferredShadingLights(std::shared_ptr<Material> &material)
@@ -296,7 +296,7 @@ namespace Galaxy3D
         FrustumBounds frustum(camera->GetViewProjectionMatrix());
 
         // shading global ambient first with blend off
-        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 0);
+        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget().lock(), material, 0);
 
         material->SetZBufferParams(camera);
         material->SetVector("ShadowMapTexel", Vector4(1.0f / (SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT), 1.0f / SHADOW_MAP_SIZE));
@@ -340,7 +340,7 @@ namespace Galaxy3D
                     {
                         // bound sphere cross with far plane, stencil test will get error result
                         // so draw full screen quad like directional light
-                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 5);
+                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget().lock(), material, 5);
                     }
                     else
                     {
@@ -373,7 +373,7 @@ namespace Galaxy3D
                     {
                         // bound sphere cross with far plane, stencil test will get error result
                         // so draw full screen quad like directional light
-                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget(), material, 6);
+                        GraphicsDevice::GetInstance()->Blit(material->GetMainTexture(), camera->GetRenderTarget().lock(), material, 6);
                     }
                     else
                     {

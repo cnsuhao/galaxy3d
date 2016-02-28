@@ -92,6 +92,8 @@
     <None Include="Assets\shader\UI\Text.shader">
       <Filter>Assets\shader\UI</Filter>
     </None>
+    <None Include="Package.StoreAssociation.xml" />
+    <None Include="game_StoreKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

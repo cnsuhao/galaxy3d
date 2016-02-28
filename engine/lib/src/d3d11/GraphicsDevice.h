@@ -87,6 +87,14 @@ namespace Galaxy3D
             m_depth_stencil_view = depth_stencil;
             m_depth_stencil_view->AddRef();
         }
+
+		void ResetSizeDependentResources()
+		{
+			m_screen_buffer.reset();
+			SAFE_RELEASE(m_swap_chain);
+			SAFE_RELEASE(m_render_target_view);
+			SAFE_RELEASE(m_depth_stencil_view);
+		}
 #endif
 
 	public:
@@ -98,7 +106,7 @@ namespace Galaxy3D
 		ID3D11Device *GetDevice() const {return m_d3d_device;}
 		IDXGISwapChain *GetSwapChain() const {return m_swap_chain;}
 		ID3D11DeviceContext *GetDeviceContext() const {return m_immediate_context;}
-        std::shared_ptr<RenderTexture> GetScreenBuffer() const {return m_screen_buffer;}
+        std::weak_ptr<RenderTexture> GetScreenBuffer() const {return m_screen_buffer;}
         void Blit(const std::shared_ptr<Texture> &source, const std::shared_ptr<RenderTexture> &destination, const std::shared_ptr<Material> &material, int pass);
         void DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index);
         void SetViewport(int left, int top, int width, int height);

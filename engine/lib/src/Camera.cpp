@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "GTTime.h"
 #include "Debug.h"
-#include "Screen.h"
 #include "Renderer.h"
 #include "RenderTexture.h"
 #include "ImageEffect.h"
@@ -49,16 +48,26 @@ namespace Galaxy3D
 		m_rect(0, 0, 1, 1),
         m_hdr(false),
         m_deferred_shading(false),
-        m_transform_changed(true)
+        m_matrix_dirty(true)
 	{
 		m_cameras.push_back(this);
 		m_cameras.sort(Less);
 	}
 
+	void Camera::Awake()
+	{
+		Screen::AddResizeListener(std::dynamic_pointer_cast<IScreenResizeEventListener>(GetComponentPtr()));
+	}
+
     void Camera::OnTranformChanged()
     {
-        m_transform_changed = true;
+        m_matrix_dirty = true;
     }
+
+	void Camera::OnScreenResize(int width, int height)
+	{
+		m_matrix_dirty = true;
+	}
 
 	Camera::~Camera()
 	{
@@ -267,7 +276,7 @@ namespace Galaxy3D
                 }
                 else
                 {
-                    dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                    dest = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
                 }
             }
             else
@@ -303,7 +312,7 @@ namespace Galaxy3D
             }
             else
             {
-                dest = GraphicsDevice::GetInstance()->GetScreenBuffer();
+                dest = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
             }
 
             if(m_hdr)
@@ -340,9 +349,9 @@ namespace Galaxy3D
             {
                 m_current = std::dynamic_pointer_cast<Camera>(i->GetComponentPtr());
 
-                if(i->m_transform_changed)
+                if(i->m_matrix_dirty)
                 {
-                    i->m_transform_changed = false;
+                    i->m_matrix_dirty = false;
                     i->UpdateMatrix();
                 }
 
@@ -409,7 +418,7 @@ namespace Galaxy3D
         }
         else
         {
-            render_target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            render_target = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
         }
 
         width = render_target->GetWidth();
@@ -526,7 +535,7 @@ namespace Galaxy3D
 
     void Camera::SetRenderTarget(const std::shared_ptr<RenderTexture> &render_texture, bool force, bool bind_depth)
     {
-        if(!force && m_render_target_binding == render_texture)
+        if(!force && m_render_target_binding.lock() == render_texture)
         {
             return;
         }
@@ -552,7 +561,7 @@ namespace Galaxy3D
 
     void Camera::Clear()
     {
-        if(m_render_target_binding->IsKeepBuffer())
+        if(m_render_target_binding.lock()->IsKeepBuffer())
         {
             return;
         }
@@ -573,7 +582,7 @@ namespace Galaxy3D
         }
         else
         {
-            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
         }
 
         return target->GetWidth();
@@ -589,7 +598,7 @@ namespace Galaxy3D
         }
         else
         {
-            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
         }
 
         return target->GetHeight();
@@ -605,7 +614,7 @@ namespace Galaxy3D
         }
         else
         {
-            target = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            target = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
         }
 
         return target->GetWidth() / (float) target->GetHeight();
@@ -622,7 +631,7 @@ namespace Galaxy3D
         }
         else
         {
-            depth_texture = GraphicsDevice::GetInstance()->GetScreenBuffer();
+            depth_texture = GraphicsDevice::GetInstance()->GetScreenBuffer().lock();
         }
         
         if(m_hdr)

@@ -57,7 +57,6 @@ Main::~Main()
 
 void Main::OnInitEngine()
 {
-    GraphicsDevice::GetInstance()->Init(0);
     World::Init();
 
     GameObject::Create("")->AddComponent<LauncherMerged>();
