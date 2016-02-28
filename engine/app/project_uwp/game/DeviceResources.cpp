@@ -2,7 +2,6 @@
 #include "DeviceResources.h"
 #include "DirectXHelper.h"
 
-using namespace D2D1;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -11,62 +10,30 @@ using namespace Windows::UI::Core;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Platform;
 
-namespace DisplayMetrics
+#include "Mathf.h"
+#include "Screen.h"
+#include "GraphicsDevice.h"
+
+using namespace Galaxy3D;
+
+void DX::DeviceResources::InitEngine()
 {
-	// 高分辨率显示可能需要大量 GPU 和电池电源来呈现。
-	// 例如，出现以下情况时，高分辨率电话可能会缩短电池使用时间
-	// 游戏尝试以全保真度按 60 帧/秒的速度呈现。
-	// 跨所有平台和外形规格以全保真度呈现的决定
-	// 应当审慎考虑。
-	static const bool SupportHighResolutions = false;
+    Screen::SetSize((int) m_outputSize.Width, (int) m_outputSize.Height);
+	Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
+    GraphicsDevice::GetInstance()->SetDeviceResources(GetD3DDevice(), GetD3DDeviceContext());
+    GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
+        GetSwapChain(),
+        GetBackBufferRenderTargetView(),
+        GetDepthStencilView());
 
-	// 用于定义“高分辨率”显示的默认阈值，如果该阈值
-	// 超出范围，并且 SupportHighResolutions 为 false，将缩放尺寸
-	// 50%。
-	static const float DpiThreshold = 192.0f;		// 200% 标准桌面显示。
-	static const float WidthThreshold = 1920.0f;	// 1080p 宽。
-	static const float HeightThreshold = 1080.0f;	// 1080p 高。
-};
-
-// 用于计算屏幕旋转的常量
-namespace ScreenRotation
-{
-	// 0 度 Z 旋转
-	static const XMFLOAT4X4 Rotation0(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 90 度 Z 旋转
-	static const XMFLOAT4X4 Rotation90(
-		0.0f, 1.0f, 0.0f, 0.0f,
-		-1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 180 度 Z 旋转
-	static const XMFLOAT4X4 Rotation180(
-		-1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, -1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-	// 270 度 Z 旋转
-	static const XMFLOAT4X4 Rotation270(
-		0.0f, -1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-		);
-};
+    if(m_deviceNotify != nullptr)
+    {
+        m_deviceNotify->OnInitEngine();
+    }
+}
 
 // DeviceResources 的构造函数。
 DX::DeviceResources::DeviceResources() :
-	m_screenViewport(),
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_d3dRenderTargetSize(),
 	m_outputSize(),
@@ -74,61 +41,20 @@ DX::DeviceResources::DeviceResources() :
 	m_nativeOrientation(DisplayOrientations::None),
 	m_currentOrientation(DisplayOrientations::None),
 	m_dpi(-1.0f),
+	m_compositionScaleX(1.0f),
+	m_compositionScaleY(1.0f),
 	m_effectiveDpi(-1.0f),
-	m_deviceNotify(nullptr)
+	m_deviceNotify(nullptr),
+	m_init(false),
+	m_displayRotation(DXGI_MODE_ROTATION_UNSPECIFIED)
 {
-	CreateDeviceIndependentResources();
 	CreateDeviceResources();
-}
-
-// 配置不依赖于 Direct3D 设备的资源。
-void DX::DeviceResources::CreateDeviceIndependentResources()
-{
-	// 初始化 Direct2D 资源。
-	D2D1_FACTORY_OPTIONS options;
-	ZeroMemory(&options, sizeof(D2D1_FACTORY_OPTIONS));
-
-#if defined(_DEBUG)
-	// 如果项目处于调试生成阶段，请通过 SDK 层启用 Direct2D 调试。
-	options.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-#endif
-
-	// 初始化 Direct2D 工厂。
-	DX::ThrowIfFailed(
-		D2D1CreateFactory(
-			D2D1_FACTORY_TYPE_SINGLE_THREADED,
-			__uuidof(ID2D1Factory3),
-			&options,
-			&m_d2dFactory
-			)
-		);
-
-	// 初始化 DirectWrite 工厂。
-	DX::ThrowIfFailed(
-		DWriteCreateFactory(
-			DWRITE_FACTORY_TYPE_SHARED,
-			__uuidof(IDWriteFactory3),
-			&m_dwriteFactory
-			)
-		);
-
-	// 初始化 Windows 图像处理组件(WIC)工厂。
-	DX::ThrowIfFailed(
-		CoCreateInstance(
-			CLSID_WICImagingFactory2,
-			nullptr,
-			CLSCTX_INPROC_SERVER,
-			IID_PPV_ARGS(&m_wicFactory)
-			)
-		);
 }
 
 // 配置 Direct3D 设备，并存储设备句柄和设备上下文。
 void DX::DeviceResources::CreateDeviceResources() 
 {
-	// 此标志为颜色通道排序与 API 默认设置不同的图面
-	// 添加支持。要与 Direct2D 兼容，必须满足此要求。
-	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	UINT creationFlags = 0;
 
 #if defined(_DEBUG)
 	if (DX::SdkLayersAvailable())
@@ -163,7 +89,7 @@ void DX::DeviceResources::CreateDeviceResources()
 		nullptr,					// 指定 nullptr 以使用默认适配器。
 		D3D_DRIVER_TYPE_HARDWARE,	// 创建使用硬件图形驱动程序的设备。
 		0,							// 应为 0，除非驱动程序是 D3D_DRIVER_TYPE_SOFTWARE。
-		creationFlags,				// 设置调试和 Direct2D 兼容性标志。
+		creationFlags,				// 设置调试标志。
 		featureLevels,				// 此应用程序可以支持的功能级别的列表。
 		ARRAYSIZE(featureLevels),	// 上面的列表的大小。
 		D3D11_SDK_VERSION,			// 对于 Windows 应用商店应用，始终将此值设置为 D3D11_SDK_VERSION。
@@ -201,23 +127,6 @@ void DX::DeviceResources::CreateDeviceResources()
 	DX::ThrowIfFailed(
 		context.As(&m_d3dContext)
 		);
-
-	// 创建 Direct2D 设备对象和对应的上下文。
-	ComPtr<IDXGIDevice3> dxgiDevice;
-	DX::ThrowIfFailed(
-		m_d3dDevice.As(&dxgiDevice)
-		);
-
-	DX::ThrowIfFailed(
-		m_d2dFactory->CreateDevice(dxgiDevice.Get(), &m_d2dDevice)
-		);
-
-	DX::ThrowIfFailed(
-		m_d2dDevice->CreateDeviceContext(
-			D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
-			&m_d2dContext
-			)
-		);
 }
 
 // 每次更改窗口大小时需要重新创建这些资源。
@@ -227,8 +136,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	ID3D11RenderTargetView* nullViews[] = {nullptr};
 	m_d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	m_d3dRenderTargetView = nullptr;
-	m_d2dContext->SetTarget(nullptr);
-	m_d2dTargetBitmap = nullptr;
 	m_d3dDepthStencilView = nullptr;
 	m_d3dContext->Flush1(D3D11_CONTEXT_TYPE_ALL, nullptr);
 
@@ -271,7 +178,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	else
 	{
 		// 否则，使用与现有 Direct3D 设备相同的适配器新建一个。
-		DXGI_SCALING scaling = DisplayMetrics::SupportHighResolutions ? DXGI_SCALING_NONE : DXGI_SCALING_STRETCH;
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
 
 		swapChainDesc.Width = lround(m_d3dRenderTargetSize.Width);		// 匹配窗口的大小。
@@ -284,7 +190,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		swapChainDesc.BufferCount = 2;									// 使用双缓冲最大程度地减小延迟。
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;	// 所有 Windows 应用商店应用都必须使用此 SwapEffect。
 		swapChainDesc.Flags = 0;
-		swapChainDesc.Scaling = scaling;
+		swapChainDesc.Scaling = DXGI_SCALING_NONE;
 		swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
 		// 此序列获取用来创建上面的 Direct3D 设备的 DXGI 工厂。
@@ -324,47 +230,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			);
 	}
 
-	// 为交换链设置正确方向，并生成 2D 和 3D 矩阵
-	// 转换以渲染到旋转交换链。
-	// 请注意，2D 和 3D 转换的旋转角度不同。
-	// 这是由坐标空间的差异引起的。此外，
-	// 显式指定 3D 矩阵可以避免舍入误差。
-
-	switch (displayRotation)
-	{
-	case DXGI_MODE_ROTATION_IDENTITY:
-		m_orientationTransform2D = Matrix3x2F::Identity();
-		m_orientationTransform3D = ScreenRotation::Rotation0;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE90:
-		m_orientationTransform2D = 
-			Matrix3x2F::Rotation(90.0f) *
-			Matrix3x2F::Translation(m_logicalSize.Height, 0.0f);
-		m_orientationTransform3D = ScreenRotation::Rotation270;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE180:
-		m_orientationTransform2D = 
-			Matrix3x2F::Rotation(180.0f) *
-			Matrix3x2F::Translation(m_logicalSize.Width, m_logicalSize.Height);
-		m_orientationTransform3D = ScreenRotation::Rotation180;
-		break;
-
-	case DXGI_MODE_ROTATION_ROTATE270:
-		m_orientationTransform2D = 
-			Matrix3x2F::Rotation(270.0f) *
-			Matrix3x2F::Translation(0.0f, m_logicalSize.Width);
-		m_orientationTransform3D = ScreenRotation::Rotation90;
-		break;
-
-	default:
-		throw ref new FailureException();
-	}
-
 	DX::ThrowIfFailed(
 		m_swapChain->SetRotation(displayRotation)
 		);
+
+	m_displayRotation = displayRotation;
 
 	// 创建交换链后台缓冲区的渲染目标视图。
 	ComPtr<ID3D11Texture2D1> backBuffer;
@@ -407,45 +277,12 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			&m_d3dDepthStencilView
 			)
 		);
-	
-	// 设置用于确定整个窗口的 3D 渲染视区。
-	m_screenViewport = CD3D11_VIEWPORT(
-		0.0f,
-		0.0f,
-		m_d3dRenderTargetSize.Width,
-		m_d3dRenderTargetSize.Height
-		);
 
-	m_d3dContext->RSSetViewports(1, &m_screenViewport);
-
-	// 创建与交换链后台缓冲区关联的 Direct2D 目标位图
-	// 并将其设置为当前目标。
-	D2D1_BITMAP_PROPERTIES1 bitmapProperties = 
-		D2D1::BitmapProperties1(
-			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-			m_dpi,
-			m_dpi
-			);
-
-	ComPtr<IDXGISurface2> dxgiBackBuffer;
-	DX::ThrowIfFailed(
-		m_swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
-		);
-
-	DX::ThrowIfFailed(
-		m_d2dContext->CreateBitmapFromDxgiSurface(
-			dxgiBackBuffer.Get(),
-			&bitmapProperties,
-			&m_d2dTargetBitmap
-			)
-		);
-
-	m_d2dContext->SetTarget(m_d2dTargetBitmap.Get());
-	m_d2dContext->SetDpi(m_effectiveDpi, m_effectiveDpi);
-
-	// 建议将灰度文本抗锯齿用于所有 Windows 应用商店应用。
-	m_d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
+	if(!m_init)
+	{
+		m_init = true;
+		InitEngine();
+	}
 }
 
 // 确定呈现器目标的尺寸及其是否将缩小。
@@ -453,23 +290,12 @@ void DX::DeviceResources::UpdateRenderTargetSize()
 {
 	m_effectiveDpi = m_dpi;
 
-	// 为了延长高分辨率设备上的电池使用时间，请呈现到较小的呈现器目标
-	// 并允许 GPU 在显示输出时缩放输出。
-	if (!DisplayMetrics::SupportHighResolutions && m_dpi > DisplayMetrics::DpiThreshold)
-	{
-		float width = DX::ConvertDipsToPixels(m_logicalSize.Width, m_dpi);
-		float height = DX::ConvertDipsToPixels(m_logicalSize.Height, m_dpi);
-
-		if (width > DisplayMetrics::WidthThreshold && height > DisplayMetrics::HeightThreshold)
-		{
-			// 为了缩放应用，我们更改了有效 DPI。逻辑大小不变。
-			m_effectiveDpi /= 2.0f;
-		}
-	}
-
 	// 计算必要的呈现目标大小(以像素为单位)。
 	m_outputSize.Width = DX::ConvertDipsToPixels(m_logicalSize.Width, m_effectiveDpi);
 	m_outputSize.Height = DX::ConvertDipsToPixels(m_logicalSize.Height, m_effectiveDpi);
+	
+	m_compositionScaleX = m_outputSize.Width / m_logicalSize.Width;
+	m_compositionScaleY = m_outputSize.Height / m_logicalSize.Height;
 
 	// 防止创建大小为零的 DirectX 内容。
 	m_outputSize.Width = max(m_outputSize.Width, 1);
@@ -486,7 +312,6 @@ void DX::DeviceResources::SetWindow(CoreWindow^ window)
 	m_nativeOrientation = currentDisplayInformation->NativeOrientation;
 	m_currentOrientation = currentDisplayInformation->CurrentOrientation;
 	m_dpi = currentDisplayInformation->LogicalDpi;
-	m_d2dContext->SetDpi(m_dpi, m_dpi);
 
 	CreateWindowSizeDependentResources();
 }
@@ -511,7 +336,6 @@ void DX::DeviceResources::SetDpi(float dpi)
 		// 显示 DPI 更改时，窗口的逻辑大小(以 Dip 为单位)也将更改并且需要更新。
 		m_logicalSize = Windows::Foundation::Size(m_window->Bounds.Width, m_window->Bounds.Height);
 
-		m_d2dContext->SetDpi(m_dpi, m_dpi);
 		CreateWindowSizeDependentResources();
 	}
 }
@@ -589,7 +413,6 @@ void DX::DeviceResources::HandleDeviceLost()
 	}
 
 	CreateDeviceResources();
-	m_d2dContext->SetDpi(m_dpi, m_dpi);
 	CreateWindowSizeDependentResources();
 
 	if (m_deviceNotify != nullptr)

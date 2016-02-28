@@ -31,8 +31,6 @@ static void write_score_best()
 
 static void read_score_best()
 {
-	write_score_best();
-
 	auto path = Application::GetSavePath() + "/score_best.bin";
 	if(GTFile::Exist(path))
 	{

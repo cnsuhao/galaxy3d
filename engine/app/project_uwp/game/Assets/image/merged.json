@@ -1,0 +1,92 @@
+{"frames": [
+
+{
+	"filename": "best_and_coin.png",
+	"frame": {"x":397,"y":1730,"w":86,"h":164},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":164},
+	"sourceSize": {"w":86,"h":164}
+},
+{
+	"filename": "black.png",
+	"frame": {"x":219,"y":1912,"w":16,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+	"sourceSize": {"w":16,"h":16}
+},
+{
+	"filename": "button.png",
+	"frame": {"x":2,"y":1491,"w":989,"h":237},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":9,"w":989,"h":237},
+	"sourceSize": {"w":1013,"h":253}
+},
+{
+	"filename": "destroy.png",
+	"frame": {"x":2,"y":1145,"w":280,"h":344},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":344},
+	"sourceSize": {"w":280,"h":344}
+},
+{
+	"filename": "m.png",
+	"frame": {"x":289,"y":1912,"w":115,"h":116},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":115,"h":116},
+	"sourceSize": {"w":115,"h":116}
+},
+{
+	"filename": "pause.png",
+	"frame": {"x":219,"y":1730,"w":176,"h":180},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":176,"h":180},
+	"sourceSize": {"w":176,"h":180}
+},
+{
+	"filename": "point.png",
+	"frame": {"x":406,"y":1896,"w":42,"h":41},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":41},
+	"sourceSize": {"w":42,"h":41}
+},
+{
+	"filename": "rotate.png",
+	"frame": {"x":2,"y":1946,"w":285,"h":89},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":285,"h":89},
+	"sourceSize": {"w":285,"h":89}
+},
+{
+	"filename": "tile.png",
+	"frame": {"x":2,"y":1730,"w":215,"h":214},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":215,"h":214},
+	"sourceSize": {"w":215,"h":214}
+},
+{
+	"filename": "window.png",
+	"frame": {"x":2,"y":2,"w":1167,"h":1141},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1167,"h":1141},
+	"sourceSize": {"w":1167,"h":1141}
+}],
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "merged.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":2048},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:90863c304024bf8ebbac7e32cb037f5b$"
+}
+}

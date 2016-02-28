@@ -1,0 +1,585 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\Animation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AnimationCurve.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bounds.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BoxCollider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Camera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CharacterController.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Collider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Color.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Component.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Cubemap.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Cursor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Debug.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FrustumBounds.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GameObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\GraphicsDevice.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GTFile.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GTString.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GTStringUTF32.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GTTime.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GTUIManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Guid.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HighlightingObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Image.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ImageEffect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ImageEffectBloom.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ImageEffectGlobalFog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ImageEffectHighlighting.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ImageEffectToneMapping.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Input.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Label.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Light.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LightmapSettings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Localization.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Material.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Mathf.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Matrix4x4.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Mesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MeshCollider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MeshRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NavMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NavMeshAgent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Object.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Octree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ParticleSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ParticleSystemRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Physics.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Quaternion.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Ray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Rect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSettings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\RenderStates.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\RenderTexture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Screen.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SkinnedMeshRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SkyBox.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Sprite.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SpriteBatchRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SpriteNode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SpriteRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Terrain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TerrainCollider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TerrainRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TextRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\d3d11\Texture2D.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Thread.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TweenColor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Tweenner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TweenPosition.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TweenRotation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TweenScale.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIAtlas.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UICanvas.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIScrollBar.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIScrollView.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UISelectView.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UISlider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIToggle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Vector2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Vector3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\World.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Animation.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AnimationClip.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AnimationCurve.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AnimationState.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Application.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bounds.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BoxCollider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Camera.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CameraClearFlags.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CharacterController.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Collider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Color.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ColorGradient.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Component.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Cubemap.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Cursor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Debug.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FilterMode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FrustumBounds.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GameObject.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\GraphicsDevice.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GTFile.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GTString.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GTStringUTF32.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GTTime.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GTUIManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Guid.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HighlightingObject.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Image.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageEffect.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageEffectBloom.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageEffectGlobalFog.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageEffectHighlighting.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ImageEffectToneMapping.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Input.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Label.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Layer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LayerMask.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Light.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LightmapSettings.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Localization.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Material.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mathf.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Matrix4x4.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Mesh.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshCollider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MeshRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NavMesh.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NavMeshAgent.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Object.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Octree.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ParticleSystem.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ParticleSystemRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Physics.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\PixelShader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Quaternion.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Ray.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Rect.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Renderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSettings.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\RenderStates.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\RenderTexture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Screen.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ShaderNode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ShaderPass.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ShaderPropertyType.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\ShaderSampler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\ShaderTexture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SkinnedMeshRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SkyBox.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Sprite.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SpriteBatchRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SpriteNode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SpriteRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Terrain.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TerrainCollider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TerrainRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TextRenderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Texture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Texture2D.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TextureFormat.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TextureWrapMode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Thread.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Transform.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenColor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Tweenner.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenPosition.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenRotation.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TweenScale.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIAtlas.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIButton.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UICanvas.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIEventListener.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIScrollBar.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIScrollView.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UISelectView.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UISlider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UIToggle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Vector2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Vector3.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Vector4.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\VertexShader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VertexType.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\World.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WrapMode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{cb0e83d1-dee8-484a-a016-cee5add8956f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
