@@ -101,7 +101,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>game_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>game_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>E9F288E77AA23D2B181785AA473E79D6753BCD35</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\..\..\lib\src\d3d11\;..\..\..\lib\src\;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -281,6 +285,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </None>
+    <None Include="game_StoreKey.pfx" />
     <None Include="game_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +347,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

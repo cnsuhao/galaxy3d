@@ -3,4 +3,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <DebuggerFlavor>WindowsDeviceDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <DebuggerFlavor>WindowsDeviceDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AppxShowAllApps>False</AppxShowAllApps>
+    <AppxPackageIsForStore>True</AppxPackageIsForStore>
+    <AppxBuildConfigurationSelection>x86|x64|arm</AppxBuildConfigurationSelection>
+  </PropertyGroup>
 </Project>

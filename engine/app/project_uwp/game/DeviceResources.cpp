@@ -18,13 +18,14 @@ using namespace Galaxy3D;
 
 void DX::DeviceResources::InitEngine()
 {
-    Screen::SetSize((int) m_outputSize.Width, (int) m_outputSize.Height);
 	Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
+    Screen::SetSize((int) m_outputSize.Width, (int) m_outputSize.Height);
     GraphicsDevice::GetInstance()->SetDeviceResources(GetD3DDevice(), GetD3DDeviceContext());
     GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
         GetSwapChain(),
         GetBackBufferRenderTargetView(),
         GetDepthStencilView());
+	GraphicsDevice::GetInstance()->Init(0);
 
     if(m_deviceNotify != nullptr)
     {
@@ -133,6 +134,7 @@ void DX::DeviceResources::CreateDeviceResources()
 void DX::DeviceResources::CreateWindowSizeDependentResources() 
 {
 	// 清除特定于上一窗口大小的上下文。
+	GraphicsDevice::GetInstance()->ResetSizeDependentResources();
 	ID3D11RenderTargetView* nullViews[] = {nullptr};
 	m_d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	m_d3dRenderTargetView = nullptr;
@@ -282,6 +284,16 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	{
 		m_init = true;
 		InitEngine();
+	}
+	else
+	{
+		Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
+		Screen::Resize((int) m_outputSize.Width, (int) m_outputSize.Height);
+		GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
+			GetSwapChain(),
+			GetBackBufferRenderTargetView(),
+			GetDepthStencilView());
+		GraphicsDevice::GetInstance()->Init(0);
 	}
 }
 
