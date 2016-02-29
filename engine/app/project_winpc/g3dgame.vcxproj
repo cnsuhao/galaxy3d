@@ -15,8 +15,27 @@
     <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\GameMerged.hpp" />
-    <ClInclude Include="..\src\LauncherMerged.h" />
+    <ProjectReference Include="..\..\lib\depend\bullet3-2.83.6\project_winpc\bullet.vcxproj">
+      <Project>{489b358f-ddb9-4b16-8ccf-7d8848a8b9b4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\freetype-2.6\project_winpc\freetype.vcxproj">
+      <Project>{78779d5d-f28a-4521-a74d-6a5e4ab5334e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\jpeg-8d\project_winpc\jpeg.vcxproj">
+      <Project>{939830d9-f22d-47c3-9513-8cb60f28f8d1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\json\project_winpc\json.vcxproj">
+      <Project>{fb24b87f-4421-44c8-abc4-f6eb13a1b445}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\lpng1512\project_winpc\png.vcxproj">
+      <Project>{7ecebe1d-02d7-42b7-952d-28d609653ef6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\zlib-1.2.8\project_winpc\zlib.vcxproj">
+      <Project>{8551aba5-7d5b-4283-af7d-1418521eced9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\project_winpc\galaxy3d.vcxproj">
+      <Project>{ac93fc0a-71ec-44f8-ad28-5861e03fca3b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>

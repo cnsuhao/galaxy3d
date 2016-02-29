@@ -153,7 +153,7 @@ namespace Galaxy3D
         // remove disabled or default effects
         for(size_t i=0; i<effects.size(); )
         {
-            if(!effects[i]->IsEnable() || !effects[i]->IsOpaque())
+            if(!effects[i]->IsStarted() || !effects[i]->IsEnable() || !effects[i]->IsOpaque())
             {
                 effects.erase(effects.begin() + i);
             }
@@ -244,7 +244,7 @@ namespace Galaxy3D
         // remove disabled or opaque effects
         for(size_t i=0; i<effects.size(); )
         {
-            if(!effects[i]->IsEnable() || effects[i]->IsOpaque())
+            if(!effects[i]->IsStarted() || !effects[i]->IsEnable() || effects[i]->IsOpaque())
             {
                 effects.erase(effects.begin() + i);
             }
