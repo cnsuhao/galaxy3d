@@ -8,9 +8,9 @@
 #include <wrl/client.h>
 #include <ppl.h>
 #include <ppltasks.h>
-#endif
 
-#ifdef WINPHONE
+#define WIN_STORAGE 0
+
 template<class T>
 static void wait_for_async(T ^A)
 {
@@ -21,11 +21,12 @@ static void wait_for_async(T ^A)
 
     Windows::Foundation::AsyncStatus S = A->Status;
 }
+
 #endif
 
 namespace Galaxy3D
 {
-#ifdef WINPHONE
+#if WIN_STORAGE
     bool GTFile::Exist(const std::string &path)
     {
         using namespace Windows::Storage;
@@ -67,21 +68,7 @@ namespace Galaxy3D
 
         return false;
     }
-#else
-    bool GTFile::Exist(const std::string &path)
-    {
-        std::ifstream is(path.c_str(), std::ios::in | std::ios::binary);
-        if(is)
-        {
-            is.close();
-            return true;
-        }
 
-        return false;
-    }
-#endif
-
-#ifdef WINPHONE
     void *GTFile::ReadAllBytes(const std::string &path, int *size)
     {
         using namespace Windows::Storage;
@@ -175,6 +162,18 @@ namespace Galaxy3D
 		}
 	}
 #else
+	bool GTFile::Exist(const std::string &path)
+    {
+        std::ifstream is(path.c_str(), std::ios::in | std::ios::binary);
+        if(is)
+        {
+            is.close();
+            return true;
+        }
+
+        return false;
+    }
+
     void *GTFile::ReadAllBytes(const std::string &path, int *size)
     {
         void *ret = NULL;
@@ -204,6 +203,9 @@ namespace Galaxy3D
 
 	void GTFile::WriteAllBytes(const std::string &path, void *data, int size)
     {
+		auto folder = path.substr(0, path.rfind("/"));
+		CreateFolder(folder);
+
         std::ofstream os(path.c_str(), std::ios::out | std::ios::binary);
         if(os)
         {
@@ -224,4 +226,45 @@ namespace Galaxy3D
             free(buffer);
         }
     }
+
+#ifdef WINPHONE
+	void GTFile::CreateFolder(const std::string &path)
+	{
+		using namespace Windows::Storage;
+
+		GTString path_local = path.substr(Application::GetSavePath().length());
+		auto splits = path_local.Split("/", true);
+
+		auto folder = ApplicationData::Current->LocalFolder;
+		for(size_t i=0; i<splits.size(); i++)
+		{
+			wchar_t buffer[MAX_PATH];
+			int wsize = MultiByteToWideChar(CP_ACP, 0, splits[i].str.c_str(), splits[i].str.size(), buffer, MAX_PATH);
+			buffer[wsize] = 0;
+			auto wname = ref new Platform::String(buffer);
+
+			// create or open folder
+			auto folder_async = folder->CreateFolderAsync(wname, CreationCollisionOption::OpenIfExists);
+			wait_for_async(folder_async);
+			folder = folder_async->GetResults();
+		}
+	}
+#endif
 }
+
+#ifdef WINPC
+#include <Windows.h>
+void Galaxy3D::GTFile::CreateFolder(const std::string &path)
+{
+	GTString path_local = path.substr(Application::GetSavePath().length());
+	auto splits = path_local.Split("/", true);
+
+	auto folder = Application::GetSavePath();
+	for(size_t i=0; i<splits.size(); i++)
+	{
+		folder = folder + "/" + splits[i].str;
+
+		CreateDirectoryA(folder.c_str(), NULL);
+	}
+}
+#endif

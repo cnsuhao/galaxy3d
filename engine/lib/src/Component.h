@@ -25,6 +25,7 @@ namespace Galaxy3D
         std::shared_ptr<Component> GetComponentPtr() const;
 		void Enable(bool enable);
 		bool IsEnable() const {return m_enable;}
+		bool IsStarted() const {return m_started;}
 
 	protected:
 		std::weak_ptr<GameObject> m_gameobject;

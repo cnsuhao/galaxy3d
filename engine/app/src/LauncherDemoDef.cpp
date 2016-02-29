@@ -263,7 +263,7 @@ void LauncherDemoDef::Update()
     if(move_dir != Vector3(0, 0, 0))
     {
         move_dir.Normalize();
-        float speed = 6.0f;
+        float speed = 8.0f;
         Vector3 offset = move_dir * speed * GTTime::GetDeltaTime();
 
         auto agent = anim->GetTransform()->GetParent().lock()->GetGameObject()->GetComponent<NavMeshAgent>();

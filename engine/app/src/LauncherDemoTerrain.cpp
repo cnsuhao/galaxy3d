@@ -61,12 +61,13 @@ void LauncherDemoTerrain::Start()
         Application::GetDataPath() + "/Assets/terrain/t0/Terrain.raw",
         Application::GetDataPath() + "/Assets/terrain/t0/Terrain.png",
         terrain_texs, 3);
-    terrain_obj->AddComponent<TerrainRenderer>();
+    auto ter_renderer = terrain_obj->AddComponent<TerrainRenderer>();
     auto tc = terrain_obj->AddComponent<TerrainCollider>();
     tc->SetTerrain(ter);
 
     auto lightmap_ter = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t0/Lightmap-1_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
-    ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
+    ter->GetSharedMaterial()->SetShader(Shader::Find("Lightmap/Terrain/Diffuse"));
+	ter->GetSharedMaterial()->SetTexture("_Lightmap", lightmap_ter);
 
     auto lightmap = Texture2D::LoadFromFile(Application::GetDataPath() + "/Assets/terrain/t0/Lightmap-0_comp_light.png", FilterMode::Bilinear, TextureWrapMode::Clamp);
     LightmapSettings::lightmaps.push_back(lightmap);

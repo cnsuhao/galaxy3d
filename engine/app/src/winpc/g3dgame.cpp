@@ -13,13 +13,6 @@
 #include "Debug.h"
 #include "LauncherMerged.h"
 
-#pragma comment(lib, "jpeg.lib")
-#pragma comment(lib, "png.lib")
-#pragma comment(lib, "zlib.lib")
-#pragma comment(lib, "freetype.lib")
-#pragma comment(lib, "bullet.lib")
-#pragma comment(lib, "json.lib")
-#pragma comment(lib, "galaxy3d.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -27,8 +20,8 @@
 using namespace Galaxy3D;
 
 static const char g_title[] = "Galaxy3D Engine";
-static int g_screen_w = 540;
-static int g_screen_h = 960;
+static int g_screen_w = 1280;
+static int g_screen_h = 720;
 static HINSTANCE g_hinst;
 static HCURSOR g_cursor_default;
 HWND g_hwnd;

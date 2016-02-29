@@ -25,13 +25,13 @@ static void on_pause_tween_scale_finish(Component *tween, std::weak_ptr<Componen
 
 static void write_score_best()
 {
-	auto path = Application::GetSavePath() + "/score_best.bin";
+	auto path = Application::GetSavePath() + "/Save/score_best.bin";
 	GTFile::WriteAllBytes(path, &g_score_best, 4);
 }
 
 static void read_score_best()
 {
-	auto path = Application::GetSavePath() + "/score_best.bin";
+	auto path = Application::GetSavePath() + "/Save/score_best.bin";
 	if(GTFile::Exist(path))
 	{
 		int size;
@@ -446,17 +446,4 @@ void LauncherMerged::Update()
 	static float s_rot = 0;
 	s_rot += -60 * GTTime::GetDeltaTime();
 	g_rotate->GetTransform()->SetLocalRotation(Quaternion::Euler(0, 0, s_rot));
-
-	if(Input::GetMouseButtonDown(0))
-	{
-		Debug::Log("MouseButtonDown");
-	}
-	if(Input::GetMouseButton(0))
-	{
-		Debug::Log("GetMouseButton");
-	}
-	if(Input::GetMouseButtonUp(0))
-	{
-		Debug::Log("GetMouseButtonUp");
-	}
 }
