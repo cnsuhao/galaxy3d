@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\lib\depend\zl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "viry3d", "..\..\lib\project_uwp\viry3d.vcxproj", "{DC01E365-2866-42FA-B3EF-6840F8879D91}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "..\..\lib\depend\openal-soft-winphone-master\project_uwp\openal.vcxproj", "{2426FA60-4366-4A81-8FFD-4329FCDAA166}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -131,6 +133,18 @@ Global
 		{DC01E365-2866-42FA-B3EF-6840F8879D91}.Release|x64.Build.0 = Release|x64
 		{DC01E365-2866-42FA-B3EF-6840F8879D91}.Release|x86.ActiveCfg = Release|Win32
 		{DC01E365-2866-42FA-B3EF-6840F8879D91}.Release|x86.Build.0 = Release|Win32
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|ARM.Build.0 = Debug|ARM
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|x64.ActiveCfg = Debug|x64
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|x64.Build.0 = Debug|x64
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|x86.ActiveCfg = Debug|Win32
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Debug|x86.Build.0 = Debug|Win32
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|ARM.ActiveCfg = Release|ARM
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|ARM.Build.0 = Release|ARM
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|x64.ActiveCfg = Release|x64
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|x64.Build.0 = Release|x64
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|x86.ActiveCfg = Release|Win32
+		{2426FA60-4366-4A81-8FFD-4329FCDAA166}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

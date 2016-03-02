@@ -254,6 +254,8 @@ void LauncherMerged::Start()
 	cam->SetDepth(1);
 	cam->SetClearColor(Color(42, 42, 42, 255) / 255.0f);
 
+	cam->GetGameObject()->AddComponent<AudioListener>();
+
 	auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 	canvas->GetTransform()->SetParent(cam->GetTransform());
 	canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1.0f / pixel_per_unit * Screen::GetHeight() / 1920));

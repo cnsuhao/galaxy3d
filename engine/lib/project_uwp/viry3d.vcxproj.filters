@@ -253,6 +253,12 @@
     <ClCompile Include="..\src\World.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AudioListener.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Animation.h">
@@ -574,6 +580,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\WrapMode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioListener.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioManager.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

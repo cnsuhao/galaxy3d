@@ -7,6 +7,7 @@
 #include "Physics.h"
 #include "Cursor.h"
 #include "GTUIManager.h"
+#include "AudioManager.h"
 
 namespace Galaxy3D
 {
@@ -106,6 +107,8 @@ namespace Galaxy3D
 	void World::Init()
 	{
         srand((unsigned int) GTTime::GetTimeMS());
+
+		AudioManager::Init();
 		Label::InitFontLib();
         Renderer::Init();
         Physics::Init();
@@ -124,5 +127,6 @@ namespace Galaxy3D
 		Label::DoneFontLib();
         Physics::Done();
         Cursor::Done();
+		AudioManager::Done();
 	}
 }
