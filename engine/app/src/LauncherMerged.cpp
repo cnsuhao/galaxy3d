@@ -23,21 +23,35 @@ static void on_pause_tween_scale_finish(Component *tween, std::weak_ptr<Componen
 	g_window_pause->SetActive(false);
 }
 
+struct Save
+{
+	int score_best;
+	int coin;
+};
+
 static void write_score_best()
 {
-	auto path = Application::GetSavePath() + "/Save/score_best.bin";
-	GTFile::WriteAllBytes(path, &g_score_best, 4);
+	Save save;
+	save.score_best = g_score_best;
+	save.coin = g_coin;
+
+	auto path = Application::GetSavePath() + "/Save/save.bin";
+	GTFile::WriteAllBytes(path, &save, sizeof(save));
 }
 
 static void read_score_best()
 {
-	auto path = Application::GetSavePath() + "/Save/score_best.bin";
+	auto path = Application::GetSavePath() + "/Save/save.bin";
 	if(GTFile::Exist(path))
 	{
+		Save save;
 		int size;
 		auto bytes = GTFile::ReadAllBytes(path, &size);
-		g_score_best = *(int *) bytes;
+		save = *(Save *) bytes;
 		free(bytes);
+
+		g_score_best = save.score_best;
+		g_coin = save.coin;
 	}
 }
 
@@ -74,8 +88,33 @@ static void on_lose()
 	tc->target = tc;
 	tc->on_set_value = on_pause_tween_color_set_value;
 
+	g_coin += g_score / 10;
+	g_coin_label->SetText(GTString::ToString(g_coin).str);
+
 	write_score_best();
 }
+
+struct DestroyButtonEventListener : UIEventListener
+{
+	virtual void OnClick()
+	{
+		if(g_coin >= g_coin_destroy_price)
+		{
+			destroy_rotate_tiles();
+			int max = find_max_point();
+			new_tile(max);
+
+			g_coin -= g_coin_destroy_price;
+			g_coin_label->SetText(GTString::ToString(g_coin).str);
+			int next_price = (int) (g_coin_destroy_price * 1.5f);
+			if(next_price < 8192)
+			{
+				g_coin_destroy_price = next_price;
+				g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price).str);
+			}
+		}
+	}
+};
 
 struct PauseButtonEventListener : UIEventListener
 {
@@ -254,8 +293,6 @@ void LauncherMerged::Start()
 	cam->SetDepth(1);
 	cam->SetClearColor(Color(42, 42, 42, 255) / 255.0f);
 
-	cam->GetGameObject()->AddComponent<AudioListener>();
-
 	auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 	canvas->GetTransform()->SetParent(cam->GetTransform());
 	canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1.0f / pixel_per_unit * Screen::GetHeight() / 1920));
@@ -285,16 +322,20 @@ void LauncherMerged::Start()
 		100,
 		Sprite::Type::Simple,
 		Vector2(0, 0));
-	auto node = GameObject::Create("")->AddComponent<SpriteNode>();
+	auto node = GameObject::Create("destroy")->AddComponent<SpriteNode>();
 	node->GetTransform()->SetParent(batch->GetTransform());
 	node->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * g_scale);
 	node->SetSprite(sprite);
 	node->SetAnchor(Vector4(0, 1, 0, 60));
 	batch->AddSprite(node);
-	node->GetGameObject()->SetActive(false);
+	auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
+	collider->SetCenter(Vector3(140, 172, 0));
+	collider->SetSize(Vector3(280, 344, 0));
+	node->GetGameObject()->AddComponent<DestroyButtonEventListener>();
 
 	auto destroy_price = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(135 / g_scale), Mathf::Round(34 / g_scale), 0), 40, LabelPivot::Center, 1);
 	destroy_price->GetLabel()->SetText(GTString::ToString(g_coin_destroy_price).str);
+	g_coin_destroy_price_label = destroy_price->GetLabel().get();
 
 	sprite = atlas->CreateSprite(
 		"best_and_coin",
@@ -308,7 +349,6 @@ void LauncherMerged::Start()
 	node->SetSprite(sprite);
 	node->SetAnchor(Vector4(0, 0, 30, -100));
 	batch->AddSprite(node);
-	node->GetGameObject()->SetActive(false);
 
 	auto score_best = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(90 / g_scale), Mathf::Round(-30 / g_scale), 0), 40, LabelPivot::Left, 1);
 	score_best->GetLabel()->SetText(GTString::ToString(g_score_best).str);
@@ -316,6 +356,7 @@ void LauncherMerged::Start()
 
 	auto coin = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(90 / g_scale), Mathf::Round(-98 / g_scale), 0), 40, LabelPivot::Left, 1);
 	coin->GetLabel()->SetText(GTString::ToString(g_coin).str);
+	g_coin_label = coin->GetLabel().get();
 
 	sprite = atlas->CreateSprite(
 		"pause",
@@ -329,7 +370,7 @@ void LauncherMerged::Start()
 	node->SetSprite(sprite);
 	node->SetAnchor(Vector4(1, 0, -30, -100));
 	batch->AddSprite(node);
-	auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
+	collider = node->GetGameObject()->AddComponent<BoxCollider>();
 	collider->SetCenter(Vector3(-90, -90, 0));
 	collider->SetSize(Vector3(180, 180, 0));
 	node->GetGameObject()->AddComponent<PauseButtonEventListener>();

@@ -1,0 +1,140 @@
+{"frames": [
+
+{
+	"filename": "bag.png",
+	"frame": {"x":2,"y":274,"w":1688,"h":338},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":8,"w":1688,"h":338},
+	"sourceSize": {"w":1700,"h":346}
+},
+{
+	"filename": "bar_bottom.png",
+	"frame": {"x":1956,"y":125,"w":22,"h":87},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":22,"h":87},
+	"sourceSize": {"w":22,"h":89}
+},
+{
+	"filename": "card.png",
+	"frame": {"x":2,"y":614,"w":234,"h":321},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":234,"h":321},
+	"sourceSize": {"w":234,"h":321}
+},
+{
+	"filename": "carrot fruit.png",
+	"frame": {"x":1924,"y":125,"w":30,"h":82},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":30,"h":82},
+	"sourceSize": {"w":32,"h":82}
+},
+{
+	"filename": "carrot icon.png",
+	"frame": {"x":1692,"y":289,"w":214,"h":55},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":214,"h":55},
+	"sourceSize": {"w":214,"h":57}
+},
+{
+	"filename": "carrot tree.png",
+	"frame": {"x":1692,"y":274,"w":300,"h":13},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
+	"sourceSize": {"w":308,"h":13}
+},
+{
+	"filename": "destroy.png",
+	"frame": {"x":1924,"y":2,"w":118,"h":121},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":118,"h":121},
+	"sourceSize": {"w":118,"h":121}
+},
+{
+	"filename": "down.png",
+	"frame": {"x":1692,"y":400,"w":144,"h":71},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":144,"h":71},
+	"sourceSize": {"w":148,"h":73}
+},
+{
+	"filename": "grass_0.png",
+	"frame": {"x":238,"y":736,"w":1025,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":1025,"h":118},
+	"sourceSize": {"w":1025,"h":120}
+},
+{
+	"filename": "grass_1.png",
+	"frame": {"x":238,"y":614,"w":1025,"h":120},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1025,"h":120},
+	"sourceSize": {"w":1025,"h":120}
+},
+{
+	"filename": "ground.png",
+	"frame": {"x":2,"y":2,"w":1920,"h":270},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1920,"h":270},
+	"sourceSize": {"w":1920,"h":270}
+},
+{
+	"filename": "tab_0.png",
+	"frame": {"x":1893,"y":346,"w":145,"h":63},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":63},
+	"sourceSize": {"w":147,"h":65}
+},
+{
+	"filename": "tab_0_selected.png",
+	"frame": {"x":2,"y":937,"w":143,"h":73},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":143,"h":73},
+	"sourceSize": {"w":147,"h":73}
+},
+{
+	"filename": "up.png",
+	"frame": {"x":147,"y":937,"w":144,"h":71},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":144,"h":71},
+	"sourceSize": {"w":148,"h":73}
+},
+{
+	"filename": "wave.png",
+	"frame": {"x":1692,"y":346,"w":199,"h":52},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":52},
+	"sourceSize": {"w":199,"h":52}
+},
+{
+	"filename": "white.png",
+	"frame": {"x":1924,"y":209,"w":9,"h":9},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":9},
+	"sourceSize": {"w":9,"h":9}
+}],
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "plant.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":1024},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:900b54bf54f1581bddf846ccf8c45071$"
+}
+}

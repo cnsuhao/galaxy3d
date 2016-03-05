@@ -48,6 +48,10 @@ namespace Galaxy3D
 		{
 			return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 		}
+		Vector4 operator +(const Vector4 &v) const
+		{
+			return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+		}
 		Vector4 operator -(const Vector4 &v) const
 		{
 			return Vector4(x - v.x, y - v.y, z - v.z, w - v.w);

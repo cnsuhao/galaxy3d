@@ -1,0 +1,2 @@
+MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\x64\Release\game\Upload\game_1.1.6.0_x64.appx
+SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.6.0\game_1.1.6.0_x64.appxsym

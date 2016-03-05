@@ -216,9 +216,9 @@ namespace Galaxy3D
 
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
-
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+		
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
@@ -272,8 +272,8 @@ namespace Galaxy3D
         m_uv.resize(16);
         m_triangles.resize(9 * 2 * 3);
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
@@ -416,8 +416,8 @@ namespace Galaxy3D
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
 
         m_vertices.clear();
         m_uv.clear();
@@ -445,14 +445,14 @@ namespace Galaxy3D
                 {
                     float w = width - tile_w * (tile_count_x - 1);
                     max_v.x = min_v.x + w;
-                    max_uv.x = min_uv.x + w / tile_w;
+                    max_uv.x = min_uv.x + w / tile_w * (right_bottom_uv.x - left_top_uv.x);
                 }
 
                 if(i == tile_count_y - 1)
                 {
                     float h = height - tile_h * (tile_count_y - 1);
                     max_v.y = min_v.y + h;
-                    max_uv.y = min_uv.y + h / tile_h;
+                    max_uv.y = min_uv.y + h / tile_h * (right_bottom_uv.y - left_top_uv.y);
                 }
 
                 m_vertices.push_back(Vector2(min_v.x, -min_v.y));
@@ -511,8 +511,8 @@ namespace Galaxy3D
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
         float right = left + width;
         float bottom = top + height;
 
@@ -585,8 +585,8 @@ namespace Galaxy3D
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
         float right = left + width;
         float bottom = top + height;
 
@@ -816,8 +816,8 @@ namespace Galaxy3D
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
         float right = left + width;
         float bottom = top + height;
 
@@ -972,8 +972,8 @@ namespace Galaxy3D
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
-        float left = -m_pivot.x * width;
-        float top = -m_pivot.y * height;
+        float left = Mathf::Round(-m_pivot.x * width);
+        float top = Mathf::Round(-m_pivot.y * height);
         float right = left + width;
         float bottom = top + height;
 
