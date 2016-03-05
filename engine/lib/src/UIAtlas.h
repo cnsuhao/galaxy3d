@@ -25,7 +25,8 @@ namespace Galaxy3D
             const Vector2 &pivot,
             float pixels_per_unit,
             Sprite::Type::Enum type,
-            const Vector2 &size);
+            const Vector2 &size,
+			const Vector4 &rect_offset = Vector4());
         void SetSpriteData(std::shared_ptr<Sprite> &sprite, const std::string &name);
 
     private:

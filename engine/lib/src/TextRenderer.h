@@ -16,6 +16,7 @@ namespace Galaxy3D
 		void SetLabel(const std::shared_ptr<Label> &label);
 		std::shared_ptr<Label> GetLabel() const {return m_label;}
         void SetAnchor(const Vector4 &anchor);
+		std::shared_ptr<Vector4> GetAnchor() const {return m_anchor;}
         void SetColor(const Color &color) {m_color = color;}
         Color GetColor() const {return m_color;}
         void SetClip(bool clip) {m_clip = clip;}

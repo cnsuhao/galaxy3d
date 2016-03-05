@@ -53,9 +53,27 @@ static Label *g_score_label;
 static int g_score_best = 0;
 static Label *g_score_best_label;
 static int g_coin = 0;
-static int g_coin_destroy_price = 0;
+static Label *g_coin_label;
+static int g_coin_destroy_price = 2;
+static Label *g_coin_destroy_price_label;
 static Tile *g_tiles[25];
 static std::list<int> g_merge_check;
+
+static void destroy_rotate_tiles()
+{
+	int count = g_rotate_tiles->GetTransform()->GetChildCount();
+	for(int i=0; i<count; i++)
+	{
+		auto t = g_rotate_tiles->GetTransform()->GetChild(i)->GetGameObject()->GetComponent<Tile>();
+		for(auto j : t->nodes)
+		{
+			g_rotate_batch->RemoveSprite(j.lock());
+		}
+
+		GameObject::Destroy(g_rotate_tiles->GetTransform()->GetGameObject());
+	}
+	g_rotate_tiles = NULL;
+}
 
 static void restart()
 {
@@ -73,21 +91,14 @@ static void restart()
 		}
 	}
 
-	int count = g_rotate_tiles->GetTransform()->GetChildCount();
-	for(int i=0; i<count; i++)
-	{
-		auto t = g_rotate_tiles->GetTransform()->GetChild(i)->GetGameObject()->GetComponent<Tile>();
-		for(auto j : t->nodes)
-		{
-			g_rotate_batch->RemoveSprite(j.lock());
-		}
-
-		GameObject::Destroy(g_rotate_tiles->GetTransform()->GetGameObject());
-	}
-	g_rotate_tiles = NULL;
+	destroy_rotate_tiles();
+	
 	g_score = 0;
 	g_score_label->SetText(GTString::ToString(g_score).str);
 	g_merge_check.clear();
+
+	g_coin_destroy_price = 2;
+	g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price).str);
 
 	new_tile(2);
 }

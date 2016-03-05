@@ -234,7 +234,7 @@ namespace Galaxy3D
 
         float x = (anchor.x - 0.5f) * canvas_w + anchor.z;
         float y = ((1.0f - anchor.y) - 0.5f) * canvas_h + anchor.w;
-        Vector3 pos_local = Vector3(x, y, 0);
+        Vector3 pos_local = Vector3(Mathf::Round(x), Mathf::Round(y), 0);
 
         t->SetPosition(GetTransform()->TransformPoint(pos_local));
     }

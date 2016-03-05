@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="57065ViryTech.81332B3C1884" Publisher="CN=A9CC10D9-386A-4197-8DB7-6D2E225A0343" Version="1.1.3.0" />
+  <Identity Name="57065ViryTech.81332B3C1884" Publisher="CN=A9CC10D9-386A-4197-8DB7-6D2E225A0343" Version="1.1.8.0" />
   <mp:PhoneIdentity PhoneProductId="2f819ead-a72f-43db-883e-e1e6a2265e54" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>合并！</DisplayName>

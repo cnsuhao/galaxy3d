@@ -69,7 +69,8 @@ namespace Galaxy3D
         const Vector2 &pivot,
         float pixels_per_unit,
         Sprite::Type::Enum type,
-        const Vector2 &size)
+        const Vector2 &size,
+		const Vector4 &rect_offset)
     {
         std::shared_ptr<Sprite> sprite;
 
@@ -79,9 +80,15 @@ namespace Galaxy3D
             return sprite;
         }
 
+		Rect rect = find->second.rect;
+		rect.left += rect_offset.x;
+		rect.top += rect_offset.y;
+		rect.width = rect.width - rect_offset.x + rect_offset.z;
+		rect.height = rect.height - rect_offset.y + rect_offset.w;
+
         sprite = Sprite::Create(
             m_texture,
-            find->second.rect,
+            rect,
             pivot,
             pixels_per_unit,
             find->second.border,

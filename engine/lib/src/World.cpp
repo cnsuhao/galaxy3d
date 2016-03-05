@@ -108,7 +108,7 @@ namespace Galaxy3D
 	{
         srand((unsigned int) GTTime::GetTimeMS());
 
-		AudioManager::Init();
+		//AudioManager::Init();
 		Label::InitFontLib();
         Renderer::Init();
         Physics::Init();
@@ -127,6 +127,6 @@ namespace Galaxy3D
 		Label::DoneFontLib();
         Physics::Done();
         Cursor::Done();
-		AudioManager::Done();
+		//AudioManager::Done();
 	}
 }
