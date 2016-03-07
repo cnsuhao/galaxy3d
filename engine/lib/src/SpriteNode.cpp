@@ -5,6 +5,21 @@
 
 namespace Galaxy3D
 {
+	DEFINE_COM_CLASS(SpriteNode);
+
+	void SpriteNode::DeepCopy(std::shared_ptr<Object> &source)
+	{
+		auto src_node = std::dynamic_pointer_cast<SpriteNode>(source);
+
+		Component::DeepCopy(source);
+
+		m_sprite = src_node->m_sprite;
+		m_color = src_node->m_color;
+		m_anchor = src_node->m_anchor;
+		m_sorting_order = src_node->m_sorting_order;
+		m_dirty = true;
+	}
+
     void SpriteNode::Start()
     {
         auto canvas = GetGameObject()->GetComponentInParent<UICanvas>();

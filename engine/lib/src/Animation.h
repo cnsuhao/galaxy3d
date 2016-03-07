@@ -22,7 +22,6 @@ namespace Galaxy3D
 
     public:
         Animation() {}
-        virtual void DeepCopy(std::shared_ptr<Object> &source);
         virtual ~Animation() {}
         void SetAnimationStates(const std::unordered_map<std::string, AnimationState> &states) {m_states = states;}
         bool Play(const std::string &clip, PlayMode::Enum mode = PlayMode::StopSameLayer);

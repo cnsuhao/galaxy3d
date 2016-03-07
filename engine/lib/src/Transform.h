@@ -17,7 +17,6 @@ namespace Galaxy3D
 		friend class GameObject;
 
 	public:
-        virtual void DeepCopy(std::shared_ptr<Object> &source);
 		std::weak_ptr<Transform> GetParent() const {return m_parent;}
 		void SetParent(const std::weak_ptr<Transform> &parent);
 		bool IsRoot() const {return m_parent.expired();}

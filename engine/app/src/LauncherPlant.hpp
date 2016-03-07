@@ -68,11 +68,66 @@ protected:
 		node->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		node->SetSprite(sprite);
-		node->SetSortingOrder(4);
+		node->SetSortingOrder(0);
 		batch_ui->AddSprite(node);
 
+		sprite = atlas->CreateSprite(
+			"exp bar",
+			Vector2(0, 0.5f),
+			pixel_per_unit,
+			Sprite::Type::Sliced,
+			Vector2(300, 63));
+		sprite->SetBorder(Vector4(15, 0, 15, 0));
+		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(batch_ui->GetTransform());
+		node->GetTransform()->SetLocalPosition(Vector3(-940, 47, 0));
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		node->SetSprite(sprite);
+		node->SetSortingOrder(1);
+		batch_ui->AddSprite(node);
+
+		sprite = atlas->CreateSprite(
+			"exp",
+			Vector2(0, 0.5f),
+			pixel_per_unit,
+			Sprite::Type::Sliced,
+			Vector2(295, 56));
+		sprite->SetBorder(Vector4(8, 0, 8, 0));
+		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(batch_ui->GetTransform());
+		node->GetTransform()->SetLocalPosition(Vector3(-937, 47, 0));
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		node->SetSprite(sprite);
+		node->SetSortingOrder(2);
+		batch_ui->AddSprite(node);
+		g_sprite_exp = node.get();
+
+		auto label_level = CreateLabel(batch_ui->GetGameObject().get(), Vector3(-790, 47, 0), 40, LabelPivot::Center, 4);
+		label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level).str + "</outline>");
+		label_level->SetColor(Color(31, 255, 5, 255) / 255.0f);
+		g_label_level = label_level.get();
+
+		sprite = atlas->CreateSprite(
+			"gold",
+			Vector2(0.5f, 0.5f),
+			pixel_per_unit,
+			Sprite::Type::Simple,
+			Vector2(0, 0));
+		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(batch_ui->GetTransform());
+		node->GetTransform()->SetLocalPosition(Vector3(-550, 47, 0));
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		node->SetSprite(sprite);
+		node->SetSortingOrder(1);
+		batch_ui->AddSprite(node);
+
+		auto label_gold = CreateLabel(batch_ui->GetGameObject().get(), Vector3(-490, 47, 0), 40, LabelPivot::Left, 4);
+		label_gold->GetLabel()->SetText("<outline>" + GTString::ToString(g_gold).str + "</outline>");
+		label_gold->SetColor(Color(228, 255, 0, 255) / 255.0f);
+		g_label_gold = label_gold.get();
+
 		auto bag = GameObject::Create("bag");
-		bag->GetTransform()->SetParent(batch_ui->GetTransform());
+		bag->GetTransform()->SetParent(batch_bag->GetTransform());
 		bag->GetTransform()->SetLocalPosition(Vector3(0, 88, 0));
 		bag->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		g_bag = bag.get();
@@ -161,7 +216,9 @@ protected:
 				batch_bag->AddSprite(card);
 				collider = card->GetGameObject()->AddComponent<BoxCollider>();
 				collider->SetSize(Vector3(234, 321, 0));
-				card->GetGameObject()->AddComponent<CardEventListener>();
+				auto listener = card->GetGameObject()->AddComponent<CardEventListener>();
+				listener->type_0 = i / 5;
+				listener->type_1 = index;
 
 				sprite = atlas->CreateSprite(
 					item.name + " icon",
@@ -169,7 +226,7 @@ protected:
 					pixel_per_unit,
 					Sprite::Type::Simple,
 					Vector2(0, 0));
-				node = GameObject::Create(GTString::ToString(i).str)->AddComponent<SpriteNode>();
+				node = GameObject::Create("icon")->AddComponent<SpriteNode>();
 				node->GetTransform()->SetParent(card->GetTransform());
 				node->GetTransform()->SetLocalPosition(Vector3(0, -67, 0));
 				node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
@@ -180,10 +237,40 @@ protected:
 				auto label_price = CreateLabel(card->GetGameObject().get(), Vector3(-30, -115, 0), 40, LabelPivot::Left, 2);
 				label_price->GetLabel()->SetText("<outline>" + GTString::ToString(item.price_base).str + "</outline>");
 				label_price->SetColor(Color(228, 255, 0, 255) / 255.0f);
+				item.label_price = label_price;
 
-				auto label_count = CreateLabel(card->GetGameObject().get(), Vector3(40, 126, 0), 40, LabelPivot::Left, 2);
-				label_count->GetLabel()->SetText("<outline>" + GTString::ToString(item.planted).str + "</outline>");
-				label_count->SetColor(Color(202, 237, 255, 255) / 255.0f);
+				auto label_planted = CreateLabel(card->GetGameObject().get(), Vector3(40, 126, 0), 40, LabelPivot::Left, 2);
+				label_planted->GetLabel()->SetText("<outline>" + GTString::ToString(item.planted).str + "</outline>");
+				label_planted->SetColor(Color(202, 237, 255, 255) / 255.0f);
+				item.label_planted = label_planted;
+
+				sprite = atlas->CreateSprite(
+					item.name + " tree",
+					Vector2(0.5f, 1),
+					pixel_per_unit,
+					Sprite::Type::Simple,
+					Vector2(0, 0));
+				node = GameObject::Create("tree")->AddComponent<SpriteNode>();
+				node->GetTransform()->SetParent(card->GetTransform());
+				node->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+				node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+				node->SetSprite(sprite);
+				node->SetSortingOrder(1);
+				batch_ui->AddSprite(node);
+				node->GetGameObject()->SetActive(false);
+
+				sprite = atlas->CreateSprite(
+					item.name + " fruit",
+					Vector2(0.5f, 1),
+					pixel_per_unit,
+					Sprite::Type::Simple,
+					Vector2(0, 0));
+				node = GameObject::Create("fruit")->AddComponent<SpriteNode>();
+				node->GetTransform()->SetParent(card->GetTransform());
+				node->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+				node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+				node->SetSprite(sprite);
+				node->GetGameObject()->SetActive(false);
 
 				if(i / 5 != g_tab_current)
 				{
@@ -193,6 +280,10 @@ protected:
 		}
 
 		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(- Screen::GetHeight() / 2.0f), 0));
+
+		set_exp(g_exp, g_exp_full);
+		set_level(g_level);
+		set_gold(g_gold);
 	}
 
     virtual void Start()
@@ -342,7 +433,7 @@ protected:
 			Vector2(0.5f, 0),
 			pixel_per_unit,
 			Sprite::Type::Simple,
-			Vector2(1920, 500),
+			Vector2(1920, 1000),
 			Vector4(1, 1, -1, -1));
 
 		// transparent sprite for ground boxcollider
@@ -369,7 +460,7 @@ protected:
 		node->GetTransform()->SetLocalPosition(Vector3(0, -325, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		node->SetSprite(sprite);
-		node->SetSortingOrder(3);
+		node->SetSortingOrder(1000);
 		batch->AddSprite(node);
 		g_ground_node = node->GetGameObject().get();
 
@@ -378,7 +469,7 @@ protected:
 		node->GetTransform()->SetLocalPosition(Vector3(0, -325, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		node->SetSprite(sprite);
-		node->SetSortingOrder(3);
+		node->SetSortingOrder(1000);
 		batch->AddSprite(node);
 		g_ground_node_copy = node->GetGameObject().get();
 		g_ground_node_copy->SetActive(false);
@@ -391,19 +482,24 @@ protected:
 			Vector2(199, 50),
 			Vector4(1, 0, -1, -2));
 
-		auto wave_node_0 = GameObject::Create("");
-		wave_node_0->GetTransform()->SetParent(batch->GetTransform());
-		wave_node_0->GetTransform()->SetLocalPosition(Vector3(0, -410, 0));
-		wave_node_0->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		auto tp = wave_node_0->AddComponent<TweenPosition>();
+		auto wave = GameObject::Create("");
+		wave->GetTransform()->SetParent(batch->GetTransform());
+		wave->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+		wave->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		auto tp = wave->AddComponent<TweenPosition>();
 		tp->duration = 3.0f;
 		tp->loop = true;
 		tp->curve = AnimationCurve();
 		tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
 		tp->curve.keys.push_back(Keyframe(0.5f, 1, 1, -1));
 		tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
-		tp->from = Vector3(0, -410, 0);
-		tp->to = Vector3(0, -390, 0);
+		tp->from = Vector3(0, 0, 0);
+		tp->to = Vector3(0, 20, 0);
+
+		auto wave_node_0 = GameObject::Create("");
+		wave_node_0->GetTransform()->SetParent(wave->GetTransform());
+		wave_node_0->GetTransform()->SetLocalPosition(Vector3(0, -410, 0));
+		wave_node_0->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		g_wave_node_0 = wave_node_0.get();
 		
 		for(int i=0; i<11; i++)
@@ -413,7 +509,7 @@ protected:
 			node->GetTransform()->SetLocalPosition(Vector3(-1920 / 2.0f + (i - 1) * 199.0f, 0, 0));
 			node->GetTransform()->SetLocalScale(Vector3(1, 0.7f, 1));
 			node->SetSprite(sprite);
-			node->SetSortingOrder(5);
+			node->SetSortingOrder(1002);
 			batch->AddSprite(node);
 
 			auto ts = node->GetGameObject()->AddComponent<TweenScale>();
@@ -428,18 +524,9 @@ protected:
 		}
 
 		auto wave_node_1 = GameObject::Create("");
-		wave_node_1->GetTransform()->SetParent(batch->GetTransform());
+		wave_node_1->GetTransform()->SetParent(wave->GetTransform());
 		wave_node_1->GetTransform()->SetLocalPosition(Vector3(0, -440, 0));
 		wave_node_1->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		tp = wave_node_1->AddComponent<TweenPosition>();
-		tp->duration = 3.0f;
-		tp->loop = true;
-		tp->curve = AnimationCurve();
-		tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-		tp->curve.keys.push_back(Keyframe(0.5f, 1, 1, -1));
-		tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
-		tp->from = Vector3(0, -440, 0);
-		tp->to = Vector3(0, -420, 0);
 		g_wave_node_1 = wave_node_1.get();
 		
 		for(int i=0; i<11; i++)
@@ -449,7 +536,7 @@ protected:
 			node->GetTransform()->SetLocalPosition(Vector3(-1920 / 2.0f + (i - 1) * 199.0f, 0, 0));
 			node->GetTransform()->SetLocalScale(Vector3(1, 0.7f, 1));
 			node->SetSprite(sprite);
-			node->SetSortingOrder(5);
+			node->SetSortingOrder(1002);
 			batch->AddSprite(node);
 
 			auto ts = node->GetGameObject()->AddComponent<TweenScale>();
@@ -466,23 +553,13 @@ protected:
 		// for water
 		float water_offset = 2;
 		node = GameObject::Create("")->AddComponent<SpriteNode>();
-		node->GetTransform()->SetParent(batch->GetTransform());
+		node->GetTransform()->SetParent(wave->GetTransform());
 		node->GetTransform()->SetLocalPosition(Vector3(0, -410 + water_offset, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		node->SetSprite(sprite_white);
-		node->SetSortingOrder(4);
+		node->SetSortingOrder(1001);
 		node->SetColor(Color(57, 131, 254, 255) / 255.0f);
 		batch->AddSprite(node);
-		tp = node->GetGameObject()->AddComponent<TweenPosition>();
-		tp->duration = 3.0f;
-		tp->loop = true;
-		tp->curve = AnimationCurve();
-		tp->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-		tp->curve.keys.push_back(Keyframe(0.5f, 1, 1, -1));
-		tp->curve.keys.push_back(Keyframe(1, 0, -1, -1));
-		tp->from = Vector3(0, -410 + water_offset, 0);
-		tp->to = Vector3(0, -390 + water_offset, 0);
-		
 		g_batch_game->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(1080 / 2.0f - Screen::GetHeight() / 2.0f), 0));
 
 		CreateUI(canvas.get(), atlas.get());
@@ -507,6 +584,8 @@ protected:
 		g_ground_pos_init = g_ground_pos;
 		g_wave_pos_0_init = g_wave_pos_0;
 		g_wave_pos_1_init = g_wave_pos_1;
+
+		g_plants[0].resize(101);
 	}
 
 	virtual void Update()

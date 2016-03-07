@@ -265,6 +265,15 @@ namespace Galaxy3D
             height = m_size.y;
         }
 
+		if(	width < m_border.x + m_border.z ||
+			height < m_border.y + m_border.w)
+		{
+			m_vertices.clear();
+			m_uv.clear();
+			m_triangles.clear();
+			return;
+		}
+
         float v_w = 1.0f / m_texture->GetWidth();
         float v_h = 1.0f / m_texture->GetHeight();
 
@@ -1098,6 +1107,15 @@ namespace Galaxy3D
             m_dirty = true;
         }
     }
+
+	void Sprite::SetBorder(const Vector4 &border)
+	{
+		if(m_border != border)
+		{
+			m_border = border;
+			m_dirty = true;
+		}
+	}
 
     void Sprite::SetSpriteData(const Rect &rect, const Vector4 &border)
     {

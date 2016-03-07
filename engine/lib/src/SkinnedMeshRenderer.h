@@ -11,7 +11,6 @@ namespace Galaxy3D
         DECLARE_COM_CLASS(SkinnedMeshRenderer, Component);
 
     public:
-        virtual void DeepCopy(std::shared_ptr<Object> &source);
         void SetMesh(const std::shared_ptr<Mesh> &mesh) {m_mesh = mesh;}
         void SetBones(const std::vector<std::shared_ptr<Transform>> &bones) {m_bones = bones;}
         std::vector<std::shared_ptr<Transform>> &GetBones() {return m_bones;}

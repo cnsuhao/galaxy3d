@@ -7,7 +7,7 @@ namespace Galaxy3D
         float value = curve.Evaluate(t);
 
         Color color = Color::Lerp(from, to, value, false);
-        if(on_set_value != NULL)
+        if(on_set_value)
         {
             on_set_value(this, target, &color);
         }
