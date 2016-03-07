@@ -19,7 +19,7 @@ namespace Galaxy3D
             rot = Quaternion::Euler(euler);
         }
 
-        if(on_set_value != NULL)
+        if(on_set_value)
         {
             if(quaternion_slerp)
             {

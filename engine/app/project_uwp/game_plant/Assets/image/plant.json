@@ -10,7 +10,7 @@
 },
 {
 	"filename": "bar_bottom.png",
-	"frame": {"x":1956,"y":125,"w":22,"h":87},
+	"frame": {"x":1924,"y":199,"w":22,"h":87},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2,"w":22,"h":87},
@@ -26,7 +26,7 @@
 },
 {
 	"filename": "carrot fruit.png",
-	"frame": {"x":1924,"y":125,"w":30,"h":82},
+	"frame": {"x":2003,"y":186,"w":30,"h":82},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":0,"w":30,"h":82},
@@ -34,7 +34,7 @@
 },
 {
 	"filename": "carrot icon.png",
-	"frame": {"x":1692,"y":289,"w":214,"h":55},
+	"frame": {"x":1692,"y":274,"w":214,"h":55},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2,"w":214,"h":55},
@@ -42,7 +42,7 @@
 },
 {
 	"filename": "carrot tree.png",
-	"frame": {"x":1692,"y":274,"w":300,"h":13},
+	"frame": {"x":1692,"y":331,"w":300,"h":13},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
@@ -58,11 +58,35 @@
 },
 {
 	"filename": "down.png",
-	"frame": {"x":1692,"y":400,"w":144,"h":71},
+	"frame": {"x":1692,"y":455,"w":144,"h":71},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":144,"h":71},
 	"sourceSize": {"w":148,"h":73}
+},
+{
+	"filename": "exp bar.png",
+	"frame": {"x":2003,"y":125,"w":33,"h":59},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":33,"h":59},
+	"sourceSize": {"w":37,"h":63}
+},
+{
+	"filename": "exp.png",
+	"frame": {"x":1948,"y":199,"w":18,"h":56},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":56},
+	"sourceSize": {"w":18,"h":56}
+},
+{
+	"filename": "gold.png",
+	"frame": {"x":1924,"y":125,"w":77,"h":72},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":72},
+	"sourceSize": {"w":77,"h":72}
 },
 {
 	"filename": "grass_0.png",
@@ -90,7 +114,7 @@
 },
 {
 	"filename": "tab_0.png",
-	"frame": {"x":1893,"y":346,"w":145,"h":63},
+	"frame": {"x":1893,"y":401,"w":145,"h":63},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":63},
@@ -114,15 +138,31 @@
 },
 {
 	"filename": "wave.png",
-	"frame": {"x":1692,"y":346,"w":199,"h":52},
+	"frame": {"x":1692,"y":401,"w":199,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":52},
 	"sourceSize": {"w":199,"h":52}
 },
 {
+	"filename": "white carrot icon.png",
+	"frame": {"x":1692,"y":346,"w":214,"h":53},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":214,"h":53},
+	"sourceSize": {"w":214,"h":57}
+},
+{
+	"filename": "white carrot tree.png",
+	"frame": {"x":1692,"y":331,"w":300,"h":13},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
+	"sourceSize": {"w":308,"h":13}
+},
+{
 	"filename": "white.png",
-	"frame": {"x":1924,"y":209,"w":9,"h":9},
+	"frame": {"x":2035,"y":186,"w":9,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":9},
@@ -135,6 +175,6 @@
 	"format": "RGBA8888",
 	"size": {"w":2048,"h":1024},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:900b54bf54f1581bddf846ccf8c45071$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ec8225bab8270916604bc38fecd45af2$"
 }
 }

@@ -3,27 +3,24 @@
 
 #include "Component.h"
 #include "AnimationCurve.h"
+#include <functional>
 
 namespace Galaxy3D
 {
-    typedef void (*OnTweenFinished)(Component *tween, std::weak_ptr<Component> &target);
-    typedef void (*OnTweenSetValue)(Component *tween, std::weak_ptr<Component> &target, void *value);
-
     class Tweenner : public Component
     {
     public:
         Tweenner():
             delay(0),
             duration(0),
-            loop(false),
-            on_set_value(NULL),
-            on_finished(NULL)
+            loop(false)
         {}
         void Reset();
+		void SetTime(float t);
 
     protected:
         virtual void SetValue(float t) {}
-        virtual void Start();
+        virtual void Awake();
         virtual void Update();
 
     public:
@@ -32,9 +29,8 @@ namespace Galaxy3D
         AnimationCurve curve;
         bool loop;
         std::weak_ptr<Component> target;
-        OnTweenSetValue on_set_value;
-        OnTweenFinished on_finished;
-
+        std::function<void(Component *tween, std::weak_ptr<Component> &target, void *value)> on_set_value;
+		std::function<void(Component *tween, std::weak_ptr<Component> &target)> on_finished;
     protected:
         float m_time_start;
     };

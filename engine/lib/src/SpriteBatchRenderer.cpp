@@ -53,7 +53,7 @@ namespace Galaxy3D
 	void SpriteBatchRenderer::AddSprite(const std::shared_ptr<SpriteNode> &sprite)
 	{
 		if(	m_sprites.empty() ||
-			(m_sprites.front()->GetSprite() && sprite && m_sprites.front()->GetSprite()->GetTexture() == sprite->GetSprite()->GetTexture()))
+			(m_sprites.front()->GetSprite() && sprite && sprite->GetSprite() && m_sprites.front()->GetSprite()->GetTexture() == sprite->GetSprite()->GetTexture()))
 		{
 			m_sprites.push_back(sprite);
 			m_sprites.sort(SpriteNode::Less);

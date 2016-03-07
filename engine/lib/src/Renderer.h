@@ -51,7 +51,7 @@ namespace Galaxy3D
         static void BuildStaticBatches();
         static void DrawIndexed(int count, int offset);
         virtual ~Renderer();
-        virtual void DeepCopy(std::shared_ptr<Object> &source);
+		void DeepCopy(std::shared_ptr<Object> &source);
 		void SetVisible(bool visible) {m_visible = visible;}
 		bool IsVisible() const {return m_visible;}
 		void SetSortingOrder(int layer, int order);

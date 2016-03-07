@@ -34,7 +34,10 @@ namespace Galaxy3D
             m_in_world = true;
 
             btRigidBody *body = (btRigidBody *) m_rigidbody;
-            Physics::AddRigidBody(body);
+			if(body != NULL)
+			{
+				Physics::AddRigidBody(body);
+			}
         }
     }
 

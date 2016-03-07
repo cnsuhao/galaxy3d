@@ -11,6 +11,8 @@ namespace Galaxy3D
 
 	class SpriteNode : public Component
 	{
+		DECLARE_COM_CLASS(SpriteNode, Component);
+
 	public:
 		static bool Less(const std::shared_ptr<SpriteNode> &s1, const std::shared_ptr<SpriteNode> &s2)
 		{

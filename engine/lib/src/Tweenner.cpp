@@ -3,10 +3,15 @@
 
 namespace Galaxy3D
 {
-    void Tweenner::Start()
+    void Tweenner::Awake()
     {
-        Reset();
-    }
+		Reset();
+	}
+
+	void Tweenner::SetTime(float t)
+	{
+		m_time_start = GTTime::GetRealTimeSinceStartup() - t;
+	}
 
     void Tweenner::Reset()
     {
@@ -26,7 +31,7 @@ namespace Galaxy3D
             }
             else
             {
-                if(on_finished != NULL)
+                if(on_finished)
                 {
                     on_finished(this, target);
                 }

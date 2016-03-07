@@ -8,7 +8,7 @@ namespace Galaxy3D
         float value = curve.Evaluate(t);
 
         Vector3 scale = Vector3::Lerp(from, to, value, false);
-        if(on_set_value != NULL)
+        if(on_set_value)
         {
             on_set_value(this, target, &scale);
         }
