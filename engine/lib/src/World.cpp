@@ -38,6 +38,11 @@ namespace Galaxy3D
 
 	void World::Update()
 	{
+		if(!AudioManager::IsInitComplete())
+		{
+			return;
+		}
+
 		float time = GTTime::GetRealTimeSinceStartup();
         GTTime::m_time_delta = time - GTTime::m_time;
         GTTime::m_time = time;
@@ -108,7 +113,7 @@ namespace Galaxy3D
 	{
         srand((unsigned int) GTTime::GetTimeMS());
 
-		//AudioManager::Init();
+		AudioManager::Init();
 		Label::InitFontLib();
         Renderer::Init();
         Physics::Init();
@@ -127,6 +132,6 @@ namespace Galaxy3D
 		Label::DoneFontLib();
         Physics::Done();
         Cursor::Done();
-		//AudioManager::Done();
+		AudioManager::Done();
 	}
 }

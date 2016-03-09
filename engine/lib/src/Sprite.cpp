@@ -200,6 +200,16 @@ namespace Galaxy3D
         }
     }
 
+	Vector2 Sprite::GetSize() const
+	{
+		if(m_size == Vector2(0, 0))
+		{
+			return Vector2(m_rect.width, m_rect.height);
+		}
+
+		return m_size;
+	}
+
     void Sprite::FillMeshSimple()
     {
         float width, height;

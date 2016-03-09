@@ -193,7 +193,8 @@ AL_API ALvoid AL_APIENTRY alGenBuffers(ALsizei n, ALuint *buffers)
     ALsizei i=0;
 
     Context = GetContextRef();
-    if(!Context) return;
+    if(!Context)
+		return;
 
     /* Check that we are actually generating some Buffers */
     if(n < 0 || IsBadWritePtr((void*)buffers, n * sizeof(ALuint)))

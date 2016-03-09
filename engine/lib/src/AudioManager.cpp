@@ -1,17 +1,23 @@
 #include "AudioManager.h"
 #include "AudioListener.h"
+#include "AudioClip.h"
+#include "AudioSource.h"
 #include "Transform.h"
 #include "Debug.h"
 #include "AL/al.h"
 #include "AL/alc.h"
 #include <vector>
+#include <mutex>
 
 #define OAL_DEVICE_ID 0
 
 namespace Galaxy3D
 {
+	typedef std::lock_guard<std::mutex> MutexLock;
+
 	static ALCdevice *g_device;
 	static ALCcontext *g_context;
+	static std::mutex g_context_mutex;
 
 	static std::vector<std::string> get_devices()
 	{
@@ -32,14 +38,24 @@ namespace Galaxy3D
 		return devices;
 	}
 
+	bool AudioManager::IsInitComplete()
+	{
+		MutexLock lock(g_context_mutex);
+		return g_context != NULL;
+	}
+
 	void AudioManager::Init()
 	{
+		MutexLock lock(g_context_mutex);
+
 		auto devices = get_devices();
 
 		auto result = alcOpenDeviceAsync(
 			devices[OAL_DEVICE_ID].c_str(),
-			[=](ALCdevice *device)->void
+			[=](ALCdevice *device)
 			{
+				MutexLock lock(g_context_mutex);
+
 				if(device != NULL)
 				{
 					g_device = device;
@@ -54,8 +70,6 @@ namespace Galaxy3D
 						{
 							Debug::Log("alcMakeContextCurrent failed");
 						}
-
-						alcMakeContextCurrent(NULL);
 					}
 					else
 					{
@@ -112,5 +126,113 @@ namespace Galaxy3D
 		alListenerfv(AL_POSITION, (float *) &pos);
 		alListenerfv(AL_ORIENTATION, orientation);
 		alListenerfv(AL_VELOCITY, velocity);
+	}
+
+	void *AudioManager::CreateClipBuffer(AudioClip *clip, void *data)
+	{
+		ALenum format = 0;
+
+		int bits = clip->GetBits();
+		switch(clip->GetChannels())
+		{
+		case 1:
+			if(bits == 8)
+				format = AL_FORMAT_MONO8;
+			else
+				format = AL_FORMAT_MONO16;
+			break;
+		case 2:
+			if(bits == 8)
+				format = AL_FORMAT_STEREO8;
+			else
+				format = AL_FORMAT_STEREO16;
+			break;
+		}
+
+		ALuint buffer = 0;
+		alGenBuffers(1, &buffer);
+		if(buffer > 0)
+		{
+			alBufferData(buffer, format, data, clip->GetBufferSize(), clip->GetFrequency());
+		}
+		else
+		{
+			Debug::Log("alGenBuffers failed");
+		}
+
+		return (void *) buffer;
+	}
+
+	void AudioManager::DeleteClipBuffer(AudioClip *clip)
+	{
+		ALuint buffer = (ALuint) clip->GetBuffer();
+		alDeleteBuffers(1, &buffer);
+	}
+
+	void *AudioManager::CreateSource(AudioSource *source)
+	{
+		ALuint src = 0;
+		alGenSources(1, &src);
+
+		SetSourcePosition(source);
+		SetSourceLoop(source);
+		SetSourceVolume(source);
+		if(source->GetClip())
+		{
+			SetSourceBuffer(source);
+		}
+
+		return (void *) src;
+	}
+
+	void AudioManager::DeleteSource(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alDeleteSources(1, &src);
+	}
+
+	void AudioManager::SetSourcePosition(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcefv(src, AL_POSITION, (ALfloat *) &source->GetTransform()->GetPosition());
+	}
+
+	void AudioManager::SetSourceLoop(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcei(src, AL_LOOPING, source->IsLoop());
+	}
+
+	void AudioManager::SetSourceBuffer(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcei(src, AL_BUFFER, (ALuint) source->GetClip()->GetBuffer());
+	}
+
+	void AudioManager::SetSourceVolume(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcef(src, AL_GAIN, source->GetVolume());
+	}
+
+	void AudioManager::SetSourceOffset(AudioSource *source, float time)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcef(src, AL_SEC_OFFSET, time);
+	}
+
+	float AudioManager::GetSourceOffset(AudioSource *source)
+	{
+		float time;
+		ALuint src = (ALuint) source->GetSource();
+		alGetSourcef(src, AL_SEC_OFFSET, &time);
+
+		return time;
+	}
+
+	void AudioManager::PlaySource(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		alSourcePlay(src);
 	}
 }

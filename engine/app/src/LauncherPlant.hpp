@@ -166,6 +166,10 @@ protected:
 		collider->SetSize(Vector3(148, 73, 0));
 		node->GetGameObject()->AddComponent<ButtonUpEventListener>();
 
+		auto audio_src = node->GetGameObject()->AddComponent<AudioSource>();
+		auto sound_click = AudioClip::LoadFromFile(Application::GetDataPath() + "/Assets/audio/click.wav");
+		audio_src->SetClip(sound_click);
+
 		auto tabs = GameObject::Create("tabs");
 		tabs->GetTransform()->SetParent(bag->GetTransform());
 		tabs->GetTransform()->SetLocalPosition(Vector3(-740, -7, 0));
@@ -300,6 +304,13 @@ protected:
 		cam->SetDepth(0);
 		cam->SetClearColor(Color(142, 239, 255, 255) / 255.0f);
 		m_cam = cam.get();
+
+		cam->GetGameObject()->AddComponent<AudioListener>();
+		auto audio_src = cam->GetGameObject()->AddComponent<AudioSource>();
+		auto bgm = AudioClip::LoadFromFile(Application::GetDataPath() + "/Assets/audio/bgm.wav");
+		audio_src->SetClip(bgm);
+		audio_src->SetLoop(true);
+		audio_src->Play();
 
 		auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 		canvas->GetTransform()->SetParent(cam->GetTransform());

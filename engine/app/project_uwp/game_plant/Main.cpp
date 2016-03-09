@@ -139,20 +139,22 @@ void Main::Update()
 // 如果帧已呈现并且已准备好显示，则返回 true。
 bool Main::Render() 
 {
+	bool rendered = false;
+
 	// 在首次更新前，请勿尝试呈现任何内容。
-	if (m_timer.GetFrameCount() == 0)
+	if(m_timer.GetFrameCount() == 0)
 	{
-		return false;
+		return rendered;
 	}
 
 	// 呈现场景对象。
 	// TODO: 将此替换为应用程序内容的渲染函数。
 	if(m_deviceResources->HasInit())
 	{
-		Camera::RenderAll();
+		rendered = Camera::RenderAll();
 	}
 
-	return true;
+	return rendered;
 }
 
 // 通知呈现器，需要释放设备资源。

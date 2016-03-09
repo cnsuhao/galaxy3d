@@ -14,6 +14,9 @@
 #include "TweenRotation.h"
 #include "BoxCollider.h"
 #include "UIEventListener.h"
+#include "AudioListener.h"
+#include "AudioClip.h"
+#include "AudioSource.h"
 #include <deque>
 
 using namespace Galaxy3D;
@@ -394,6 +397,9 @@ struct ButtonUpEventListener : public UIEventListener
 			tpt->from = tpt->GetTransform()->GetLocalPosition();
 			tpt->to = tpt->from - Vector3(0, 75, 0);
 		}
+
+		auto sound = GetGameObject()->GetComponent<AudioSource>();
+		sound->Play();
 	}
 };
 
