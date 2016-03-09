@@ -259,6 +259,12 @@
     <ClCompile Include="..\src\AudioManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AudioClip.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioSource.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Animation.h">
@@ -586,6 +592,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\AudioManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioClip.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioSource.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

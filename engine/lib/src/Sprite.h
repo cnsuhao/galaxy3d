@@ -85,7 +85,7 @@ namespace Galaxy3D
         std::weak_ptr<UIAtlas> GetAtlas() const {return m_atlas;}
         void SetSize(const Vector2 &size);
 		void SetBorder(const Vector4 &border);
-        Vector2 GetSize() const {return m_size;}
+        Vector2 GetSize() const;
 
 	private:
         std::weak_ptr<UIAtlas> m_atlas;

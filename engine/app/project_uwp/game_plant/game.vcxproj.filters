@@ -120,6 +120,9 @@
     <Filter Include="Assets\zh-CN">
       <UniqueIdentifier>{a15b2b70-a28e-4e07-b72d-35e3c626fae3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\audio">
+      <UniqueIdentifier>{285ac585-efd0-4e5d-91ee-a0c5520197e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\en-US\string.txt">
@@ -142,5 +145,13 @@
     <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
       <Filter>Assets\shader\UI</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\audio\bgm.wav">
+      <Filter>Assets\audio</Filter>
+    </Media>
+    <Media Include="Assets\audio\click.wav">
+      <Filter>Assets\audio</Filter>
+    </Media>
   </ItemGroup>
 </Project>

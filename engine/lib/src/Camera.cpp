@@ -336,8 +336,9 @@ namespace Galaxy3D
         }
     }
 
-	void Camera::RenderAll()
+	bool Camera::RenderAll()
 	{
+		bool rendered = false;
 		float time = GTTime::GetRealTimeSinceStartup();
 
         GTTime::m_draw_call = 0;
@@ -360,6 +361,8 @@ namespace Galaxy3D
                 i->Render();
 
                 m_current.reset();
+
+				rendered = true;
             }
         }
 
@@ -368,6 +371,8 @@ namespace Galaxy3D
 		GTTime::m_render_time = GTTime::GetRealTimeSinceStartup() - time;
 
 		UpdateTime();
+
+		return rendered;
 	}
 
     bool Camera::IsCulling(std::shared_ptr<GameObject> &obj) const

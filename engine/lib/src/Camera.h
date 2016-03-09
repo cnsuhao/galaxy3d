@@ -17,7 +17,7 @@ namespace Galaxy3D
 	class Camera : public Component, public IScreenResizeEventListener
 	{
 	public:
-		static void RenderAll();
+		static bool RenderAll();
 		static std::shared_ptr<Camera> GetCurrent() {return m_current;}
         static std::shared_ptr<RenderTexture> GetGBuffer(int index) {return m_g_buffer[index];}
         static void SetViewport(const Rect &rect);
