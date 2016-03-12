@@ -2,7 +2,6 @@
 #define __ShaderConstantBuffer_h__
 
 #include "GraphicsDevice.h"
-#include <d3d11.h>
 
 namespace Galaxy3D
 {

@@ -1,4 +1,5 @@
 #include "Guid.h"
+#include "Mathf.h"
 
 #if defined(WINPC) || defined(WINPHONE)
 #include <objbase.h>
@@ -24,6 +25,14 @@ namespace Galaxy3D
     {
 #if defined(WINPC) || defined(WINPHONE)
         return new_guid_winpc();
+#else
+		char buffer[64];
+		sprintf(buffer, "%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x",
+			Mathf::RandomRange(0, 1 << 24), Mathf::RandomRange(0, 1 << 16), Mathf::RandomRange(0, 1 << 16),
+			Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8),
+			Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8), Mathf::RandomRange(0, 1 << 8));
+
+		return buffer;
 #endif
     }
 }

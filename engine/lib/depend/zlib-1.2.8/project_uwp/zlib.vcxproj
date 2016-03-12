@@ -29,6 +29,10 @@
   <ItemGroup>
     <ClCompile Include="..\adler32.c" />
     <ClCompile Include="..\compress.c" />
+    <ClCompile Include="..\contrib\minizip\ioapi.c" />
+    <ClCompile Include="..\contrib\minizip\miniunz.c" />
+    <ClCompile Include="..\contrib\minizip\unzip.c" />
+    <ClCompile Include="..\contrib\minizip\zip.c" />
     <ClCompile Include="..\crc32.c" />
     <ClCompile Include="..\deflate.c" />
     <ClCompile Include="..\gzclose.c" />
@@ -117,21 +121,27 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>../;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -15,7 +15,7 @@
             return NULL; \
         } \
         virtual std::string GetTypeName() {return #CBase;} \
-		virtual void DeepCopy(std::shared_ptr<Object> &source); \
+		virtual void DeepCopy(const std::shared_ptr<Object> &source); \
     protected: \
         static void Register(const std::string &class_name, ClassGen class_gen) \
         { \
@@ -31,7 +31,7 @@
 #define DECLARE_COM_CLASS(CDerived, CBase) \
     public: \
         virtual std::string GetTypeName() {return #CDerived;} \
-		virtual void DeepCopy(std::shared_ptr<Object> &source); \
+		virtual void DeepCopy(const std::shared_ptr<Object> &source); \
     private: \
         struct CDerived##Register \
         { \

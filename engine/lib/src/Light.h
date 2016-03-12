@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Color.h"
 #include "Matrix4x4.h"
+#include <list>
 
 namespace Galaxy3D
 {

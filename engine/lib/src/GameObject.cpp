@@ -46,7 +46,7 @@ namespace Galaxy3D
         }
     }
 
-    void GameObject::DeepCopy(std::shared_ptr<Object> &source)
+    void GameObject::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_obj = std::dynamic_pointer_cast<GameObject>(source);
 
@@ -85,7 +85,7 @@ namespace Galaxy3D
 		}
 	}
 
-    std::shared_ptr<GameObject> GameObject::Instantiate(std::shared_ptr<GameObject> &source)
+    std::shared_ptr<GameObject> GameObject::Instantiate(const std::shared_ptr<GameObject> &source)
     {
         std::shared_ptr<GameObject> clone = GameObject::Create(source->GetName());
         

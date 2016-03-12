@@ -7,6 +7,7 @@
 #include "AL/al.h"
 #include "AL/alc.h"
 #include <vector>
+#include <list>
 #include <mutex>
 
 #define OAL_DEVICE_ID 0
@@ -18,6 +19,8 @@ namespace Galaxy3D
 	static ALCdevice *g_device;
 	static ALCcontext *g_context;
 	static std::mutex g_context_mutex;
+	static std::list<ALuint> g_sources;
+	static std::list<ALuint> g_sources_paused;
 
 	static std::vector<std::string> get_devices()
 	{
@@ -44,15 +47,35 @@ namespace Galaxy3D
 		return g_context != NULL;
 	}
 
+	void AudioManager::OnPause()
+	{
+		for(auto &i : g_sources)
+		{
+			ALint state;
+			alGetSourcei(i, AL_SOURCE_STATE, &state);
+
+			if(state == AL_PLAYING)
+			{
+				alSourcePause(i);
+				g_sources_paused.push_back(i);
+			}
+		}
+	}
+
+	void AudioManager::OnResume()
+	{
+		for(auto &i : g_sources_paused)
+		{
+			alSourcePlay(i);
+		}
+		g_sources_paused.clear();
+	}
+
 	void AudioManager::Init()
 	{
-		MutexLock lock(g_context_mutex);
-
 		auto devices = get_devices();
 
-		auto result = alcOpenDeviceAsync(
-			devices[OAL_DEVICE_ID].c_str(),
-			[=](ALCdevice *device)
+		auto callback = [=](ALCdevice *device)
 			{
 				MutexLock lock(g_context_mutex);
 
@@ -80,13 +103,24 @@ namespace Galaxy3D
 				{
 					Debug::Log("alcOpenDeviceAsync get NULL device");
 				}
-			}
+			};
+
+#ifdef WINPHONE
+		MutexLock lock(g_context_mutex);
+
+		auto result = alcOpenDeviceAsync(
+			devices[OAL_DEVICE_ID].c_str(),
+			callback
 		);
 
 		if(result == ALC_FALSE)
 		{
 			Debug::Log("alcOpenDeviceAsync failed");
 		}
+#else
+		auto device = alcOpenDevice(devices[OAL_DEVICE_ID].c_str());
+		callback(device);
+#endif
 	}
 
 	void AudioManager::Done()
@@ -182,6 +216,8 @@ namespace Galaxy3D
 			SetSourceBuffer(source);
 		}
 
+		g_sources.push_back(src);
+
 		return (void *) src;
 	}
 
@@ -189,6 +225,8 @@ namespace Galaxy3D
 	{
 		ALuint src = (ALuint) source->GetSource();
 		alDeleteSources(1, &src);
+
+		g_sources.remove(src);
 	}
 
 	void AudioManager::SetSourcePosition(AudioSource *source)

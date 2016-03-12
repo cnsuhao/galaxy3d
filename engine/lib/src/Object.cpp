@@ -10,7 +10,7 @@ namespace Galaxy3D
 	{
 	}
 
-    void Object::DeepCopy(std::shared_ptr<Object> &source)
+    void Object::DeepCopy(const std::shared_ptr<Object> &source)
     {
         m_name = source->m_name;
     }

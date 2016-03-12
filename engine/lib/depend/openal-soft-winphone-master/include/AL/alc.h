@@ -28,7 +28,7 @@ extern "C" {
  #pragma export on
 #endif
 
-#if defined __ALC_HAS_CPP11__
+#if defined(__cplusplus)
 }//escape extern "C"
 #include <functional>//std::function
 extern "C" {//re-enter extern "C"
@@ -217,7 +217,7 @@ ALC_API ALCdevice *     ALC_APIENTRY alcOpenDevice( const ALCchar *devicename );
 * Asynchronously open device
 */
 ALC_API ALCboolean      ALC_APIENTRY alcOpenDeviceAsync(const ALCchar *devicename, void(*_open_device_callback_)(ALCdevice * resultDevice, ALCvoid* user_args), ALCvoid* user_args);
-#ifdef __ALC_HAS_CPP11__
+#ifdef __cplusplus
 }
 /*
 * Asynchronously open device using C++11 std::function

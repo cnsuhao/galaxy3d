@@ -7,7 +7,7 @@ namespace Galaxy3D
 {
 	DEFINE_COM_CLASS(SpriteNode);
 
-	void SpriteNode::DeepCopy(std::shared_ptr<Object> &source)
+	void SpriteNode::DeepCopy(const std::shared_ptr<Object> &source)
 	{
 		auto src_node = std::dynamic_pointer_cast<SpriteNode>(source);
 
@@ -26,7 +26,8 @@ namespace Galaxy3D
 
         if(canvas && m_anchor)
         {
-            canvas->AnchorTransform(GetTransform(), *m_anchor);
+			auto t = GetTransform();
+            canvas->AnchorTransform(t, *m_anchor);
         }
 
         m_dirty = true;

@@ -1,8 +1,6 @@
 #include "GTString.h"
 #include <algorithm>
-#include <stdarg.h>
-
-#pragma warning (disable: 4996) 
+#include <stdarg.h> 
 
 namespace Galaxy3D
 {

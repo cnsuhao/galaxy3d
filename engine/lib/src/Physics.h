@@ -3,6 +3,7 @@
 
 #include "Vector3.h"
 #include "Collider.h"
+#include <vector>
 
 namespace Galaxy3D
 {

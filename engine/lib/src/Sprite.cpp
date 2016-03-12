@@ -447,9 +447,9 @@ namespace Galaxy3D
         int tile_count_x = (int) ceil(width / tile_w);
         int tile_count_y = (int) ceil(height / tile_h);
         Vector2 left_top_uv = Vector2((m_rect.left + m_border.x) * v_w, (m_rect.top + m_border.y) * v_h);
-        Vector2 left_bottom_uv = Vector2((m_rect.left + m_border.x) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
+        //Vector2 left_bottom_uv = Vector2((m_rect.left + m_border.x) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
         Vector2 right_bottom_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_rect.height - m_border.w) * v_h);
-        Vector2 right_top_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_border.y) * v_h);
+        //Vector2 right_top_uv = Vector2((m_rect.left + m_rect.width - m_border.z) * v_w, (m_rect.top + m_border.y) * v_h);
 
         for(int i = 0; i < tile_count_y; i++)
         {
@@ -500,18 +500,21 @@ namespace Galaxy3D
             m_fill_direction == FillDirection::Radial_180 ||
             m_fill_direction == FillDirection::Radial_360)
         {
-            switch(m_fill_direction)
-            {
-                case FillDirection::Radial_90:
-                    FillMeshFilledRadial90();
-                    break;
-                case FillDirection::Radial_180:
-                    FillMeshFilledRadial180();
-                    break;
-                case FillDirection::Radial_360:
-                    FillMeshFilledRadial360();
-                    break;
-            }
+			switch(m_fill_direction)
+			{
+			case FillDirection::Radial_90:
+				FillMeshFilledRadial90();
+				break;
+			case FillDirection::Radial_180:
+				FillMeshFilledRadial180();
+				break;
+			case FillDirection::Radial_360:
+				FillMeshFilledRadial360();
+				break;
+
+			default:
+				break;
+			}
             return;
         }
 
@@ -532,8 +535,8 @@ namespace Galaxy3D
 
         float left = Mathf::Round(-m_pivot.x * width);
         float top = Mathf::Round(-m_pivot.y * height);
-        float right = left + width;
-        float bottom = top + height;
+        //float right = left + width;
+        //float bottom = top + height;
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
@@ -606,8 +609,8 @@ namespace Galaxy3D
 
         float left = Mathf::Round(-m_pivot.x * width);
         float top = Mathf::Round(-m_pivot.y * height);
-        float right = left + width;
-        float bottom = top + height;
+        //float right = left + width;
+        //float bottom = top + height;
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
@@ -837,8 +840,8 @@ namespace Galaxy3D
 
         float left = Mathf::Round(-m_pivot.x * width);
         float top = Mathf::Round(-m_pivot.y * height);
-        float right = left + width;
-        float bottom = top + height;
+        //float right = left + width;
+        //float bottom = top + height;
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);
@@ -993,8 +996,8 @@ namespace Galaxy3D
 
         float left = Mathf::Round(-m_pivot.x * width);
         float top = Mathf::Round(-m_pivot.y * height);
-        float right = left + width;
-        float bottom = top + height;
+        //float right = left + width;
+        //float bottom = top + height;
 
         Rect vertices(left, top, width, height);
         Rect uv(m_rect.left * v_w, m_rect.top * v_h, m_rect.width * v_w, m_rect.height * v_h);

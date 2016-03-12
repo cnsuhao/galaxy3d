@@ -9,7 +9,7 @@ namespace Galaxy3D
     void MeshRenderer::CalculateBounds()
     {
         auto &vertices = m_mesh->GetVertices();
-        auto &tran = GetTransform();
+        auto tran = GetTransform();
 
         Vector3 box_max = Vector3(1, 1, 1) * Mathf::MinFloatValue;
         Vector3 box_min = Vector3(1, 1, 1) * Mathf::MaxFloatValue;
@@ -26,7 +26,7 @@ namespace Galaxy3D
         SetBounds(bounds);
     }
 
-    void MeshRenderer::DeepCopy(std::shared_ptr<Object> &source)
+    void MeshRenderer::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_renderer = std::dynamic_pointer_cast<MeshRenderer>(source);
 
@@ -91,7 +91,7 @@ namespace Galaxy3D
                 if(j == 0)
                 {
                     GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-                    GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+                    GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs);
                     GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UShort);
                 }
 
@@ -224,7 +224,7 @@ namespace Galaxy3D
         if(set_buffer)
         {
             GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-            GraphicsDevice::GetInstance()->SetVertexBuffer(m_static_batching_vertex_buffer, pass->vs->vertex_stride, 0);
+            GraphicsDevice::GetInstance()->SetVertexBuffer(m_static_batching_vertex_buffer, pass->vs);
             GraphicsDevice::GetInstance()->SetIndexBuffer(m_static_batching_index_buffer, IndexType::UInt);
         }
 

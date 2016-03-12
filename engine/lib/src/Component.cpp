@@ -10,6 +10,16 @@ namespace Galaxy3D
 	{
 	}
 
+	std::shared_ptr<GameObject> Component::GetGameObject() const
+	{
+		return m_gameobject.lock();
+	}
+
+	std::shared_ptr<Transform> Component::GetTransform() const
+	{
+		return m_transform.lock();
+	}
+
 	void Component::Destroy(std::shared_ptr<Component> &com)
 	{
 		if(com)
@@ -19,7 +29,7 @@ namespace Galaxy3D
 		}
 	}
 
-    void Component::DeepCopy(std::shared_ptr<Object> &source)
+    void Component::DeepCopy(const std::shared_ptr<Object> &source)
     {
         Object::DeepCopy(source);
 

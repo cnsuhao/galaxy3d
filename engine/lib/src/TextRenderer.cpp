@@ -7,10 +7,10 @@ namespace Galaxy3D
 {
 	TextRenderer::TextRenderer():
         m_color(1, 1, 1, 1),
+		m_vertex_count(0),
         m_clip(false),
         m_clip_rect(),
         m_clip_soft(),
-		m_vertex_count(0),
         m_dirty(true)
 	{
 		m_sorting_layer = 0;
@@ -31,7 +31,8 @@ namespace Galaxy3D
 
         if(canvas && m_anchor)
         {
-            canvas->AnchorTransform(GetTransform(), *m_anchor);
+			auto t = GetTransform();
+            canvas->AnchorTransform(t, *m_anchor);
         }
     }
 
@@ -100,7 +101,7 @@ namespace Galaxy3D
 		}
 		else
 		{
-			if(m_label->GetImageCount() != m_vertex_buffer_img.size())
+			if(m_label->GetImageCount() != (int) m_vertex_buffer_img.size())
 			{
 				ReleaseBufferLabelImage();
 
@@ -142,7 +143,7 @@ namespace Galaxy3D
         auto pass = shader->GetPass(0);
 
         GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs);
         GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
 
         auto camera = Camera::GetCurrent();
@@ -205,7 +206,7 @@ namespace Galaxy3D
 				auto pass = shader->GetPass(0);
 
                 GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-                GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer_img[c], pass->vs->vertex_stride, 0);
+                GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer_img[c], pass->vs);
                 GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer_img[c], IndexType::UShort);
 		
 				auto camera = Camera::GetCurrent();
@@ -554,7 +555,6 @@ namespace Galaxy3D
 
 	void TextRenderer::CreateIndexBufferLabelImage()
 	{
-		int c = 0;
 		auto &lines = m_label->GetLines();
 		for(size_t i=0; i<lines.size(); i++)
 		{

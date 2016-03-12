@@ -1,4 +1,5 @@
 #include "Mathf.h"
+#include <stdlib.h>
 
 namespace Galaxy3D
 {
@@ -167,9 +168,10 @@ namespace Galaxy3D
 
     float Mathf::RandomRange(float min, float max)
     {
-        float rand_01 = rand() / (float) (RAND_MAX + 1);
+		long long rand_max = (long long) RAND_MAX + 1;
+        double rand_01 = rand() / (double) rand_max;
         
-        return min + rand_01 * (max - min);
+        return (float) (min + rand_01 * (max - min));
     }
 
     int Mathf::RandomRange(int min, int max)

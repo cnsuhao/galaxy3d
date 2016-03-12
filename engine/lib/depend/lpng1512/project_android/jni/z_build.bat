@@ -1,4 +1,4 @@
 @echo off
 cls
-ndk-build -j8
+F:\Data\Program\Android\android-ndk-r10\ndk-build -j8
 pause

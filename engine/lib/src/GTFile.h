@@ -17,6 +17,7 @@ namespace Galaxy3D
 		static void ReadAllText(const std::string &path, std::string &str);
 		static void WriteAllBytes(const std::string &path, void *data, int size);
 		static void CreateFolder(const std::string &path);
+		static void Unzip(const std::string &zip_path, const std::string &source, const std::string &dest, bool directory);
 	};
 }
 

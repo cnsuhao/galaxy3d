@@ -17,7 +17,7 @@ namespace Galaxy3D
     public:
         static void ClearAllCachedObjects() {m_cached_objects.clear();}
         virtual ~Object() {}
-        virtual void DeepCopy(std::shared_ptr<Object> &source);
+        virtual void DeepCopy(const std::shared_ptr<Object> &source);
 		virtual void SetName(const std::string &value) {m_name = value;}
 		std::string GetName() const {return m_name;}
 

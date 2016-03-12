@@ -8,6 +8,7 @@
 #include "Cursor.h"
 #include "GTUIManager.h"
 #include "AudioManager.h"
+#include <stdlib.h>
 
 namespace Galaxy3D
 {
@@ -107,6 +108,16 @@ namespace Galaxy3D
         Physics::Step();
 
 		GTTime::m_update_time = GTTime::GetRealTimeSinceStartup() - time;
+	}
+
+	void World::OnPause()
+	{
+		AudioManager::OnPause();
+	}
+
+	void World::OnResume()
+	{
+		AudioManager::OnResume();
 	}
 
 	void World::Init()

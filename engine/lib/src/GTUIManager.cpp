@@ -66,7 +66,7 @@ namespace Galaxy3D
 
     static std::shared_ptr<GameObject> read_window_json_node(
         const Json::Value &node,
-        std::shared_ptr<Transform> &parent,
+        const std::shared_ptr<Transform> &parent,
         int sorting_layer,
         SpriteBatchRenderer *batch,
         float pixel_per_unit)

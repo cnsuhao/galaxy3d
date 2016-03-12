@@ -390,9 +390,6 @@
     <ClInclude Include="..\src\Localization.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\Material.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Mathf.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -456,16 +453,10 @@
     <ClInclude Include="..\src\Screen.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d3d11\Shader.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ShaderNode.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ShaderPass.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ShaderPropertyType.h">
@@ -505,9 +496,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\TextRenderer.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Texture.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\d3d11\Texture2D.h">
@@ -598,6 +586,18 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\AudioSource.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Material.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\Texture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d3d11\ShaderPass.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

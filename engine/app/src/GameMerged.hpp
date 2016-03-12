@@ -25,6 +25,7 @@
 #include "GTFile.h"
 #include "Debug.h"
 #include "AudioListener.h"
+#include <algorithm>
 
 struct Tile : public Component
 {
@@ -70,7 +71,8 @@ static void destroy_rotate_tiles()
 			g_rotate_batch->RemoveSprite(j.lock());
 		}
 
-		GameObject::Destroy(g_rotate_tiles->GetTransform()->GetGameObject());
+		auto obj = g_rotate_tiles->GetTransform()->GetGameObject();
+		GameObject::Destroy(obj);
 	}
 	g_rotate_tiles = NULL;
 }
@@ -86,7 +88,8 @@ static void restart()
 				g_root_batch->RemoveSprite(j.lock());
 			}
 
-			GameObject::Destroy(g_tiles[i]->nodes[0].lock()->GetGameObject());
+			auto obj = g_tiles[i]->nodes[0].lock()->GetGameObject();
+			GameObject::Destroy(obj);
 			g_tiles[i] = NULL;
 		}
 	}
@@ -107,14 +110,14 @@ struct MergeOutTweenScale : public TweenScale
 {
 	static void OnFinished(Component *tween, std::weak_ptr<Component> &target)
 	{
-		auto thiz = (MergeOutTweenScale *) tween;
 		auto tile = tween->GetGameObject()->GetComponent<Tile>();
 
 		for(auto &i : tile->nodes)
 		{
 			g_root_batch->RemoveSprite(i.lock());
 		}
-		GameObject::Destroy(tween->GetGameObject());
+		auto obj = tween->GetGameObject();
+		GameObject::Destroy(obj);
 	}
 };
 
@@ -304,7 +307,7 @@ static void merge()
 					t_out->curve.keys.push_back(Keyframe(1, 1, 0, 0));
 				}
 				t_out->from = t_out->GetTransform()->GetLocalScale();
-				t_out->to = t_out->from * 0.1f;
+				t_out->to = t_out->from * 0.01f;
 				t_out->target = t_out;
 				t_out->on_finished = MergeOutTweenScale::OnFinished;
 				g_score += point;
@@ -322,7 +325,7 @@ static void merge()
 					auto tile_next = create_tile(point + 1);
 
 					join_tile(index, tile_next.get());
-					tile_next->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * g_scale * 0.1f);
+					tile_next->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * g_scale * 0.01f);
 					
 					auto t_in = g_tiles[index]->GetGameObject()->AddComponent<MergeInTweenScale>();
 					t_in->duration = 0.2f;
@@ -459,7 +462,8 @@ struct RotateTileEventListener : UIEventListener
 					t = tile->GetGameObject()->GetComponent<TweenRotation>();
 					if(!t)
 					{
-						Component::Destroy(std::dynamic_pointer_cast<Component>(t));
+						auto c = std::dynamic_pointer_cast<Component>(t);
+						Component::Destroy(c);
 					}
 					t = tile->GetGameObject()->AddComponent<TweenRotation>();
 
@@ -943,7 +947,7 @@ static void new_tile(int max_point)
 		t->curve = AnimationCurve();
 		t->curve.keys.push_back(Keyframe(0, 0, 0, 0));
 		t->curve.keys.push_back(Keyframe(1, 1, 0, 0));
-		t->from = Vector3(1, 1, 1) * 0.1f;
+		t->from = Vector3(1, 1, 1) * 0.01f;
 		t->to = Vector3(1, 1, 1) * g_scale;
 	}
 }

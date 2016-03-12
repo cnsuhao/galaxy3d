@@ -52,7 +52,7 @@ namespace Galaxy3D
         RemoveBatches();
 	}
 
-    void Renderer::DeepCopy(std::shared_ptr<Object> &source)
+    void Renderer::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_renderer = std::dynamic_pointer_cast<Renderer>(source);
 
@@ -265,7 +265,7 @@ namespace Galaxy3D
         {
             for(size_t i=0; i<node->renderers.size(); i++)
             {
-                auto &renderer = node->renderers[i].lock();
+                auto renderer = node->renderers[i].lock();
                 auto obj = renderer->GetGameObject();
 
                 if(	obj->IsActiveInHierarchy() &&

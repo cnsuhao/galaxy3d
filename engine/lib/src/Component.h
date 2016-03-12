@@ -7,6 +7,7 @@
 namespace Galaxy3D
 {
 	class Transform;
+	class GameObject;
 
 	class Component : public Object
 	{
@@ -19,8 +20,8 @@ namespace Galaxy3D
 		static void Destroy(std::shared_ptr<Component> &com);
         virtual ~Component() {}
 		virtual void SetName(const std::string &value);
-		std::shared_ptr<GameObject> GetGameObject() const {return m_gameobject.lock();}
-		std::shared_ptr<Transform> GetTransform() const {return m_transform.lock();}
+		std::shared_ptr<GameObject> GetGameObject() const;
+		std::shared_ptr<Transform> GetTransform() const;
         std::shared_ptr<Component> GetComponentPtr() const;
 		void Enable(bool enable);
 		bool IsEnable() const {return m_enable;}

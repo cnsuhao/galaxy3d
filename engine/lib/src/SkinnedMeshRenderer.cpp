@@ -5,7 +5,7 @@ namespace Galaxy3D
 {
     DEFINE_COM_CLASS(SkinnedMeshRenderer);
 
-    void SkinnedMeshRenderer::DeepCopy(std::shared_ptr<Object> &source)
+    void SkinnedMeshRenderer::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_renderer = std::dynamic_pointer_cast<SkinnedMeshRenderer>(source);
 
@@ -75,7 +75,7 @@ namespace Galaxy3D
                 if(j == 0)
                 {
                     GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-                    GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+                    GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs);
                     GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UShort);
                 }
 

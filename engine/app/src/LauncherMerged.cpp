@@ -65,7 +65,7 @@ static void on_lose()
 	over->SetActive(true);
 	g_window_pause->GetTransform()->Find("continue")->GetGameObject()->SetActive(false);
 	g_window_pause->SetActive(true);
-	g_window_pause->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.1f);
+	g_window_pause->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
 		
 	auto t = g_window_pause->AddComponent<TweenScale>();
 	t->duration = 0.2f;
@@ -123,7 +123,7 @@ struct PauseButtonEventListener : UIEventListener
 		g_window_pause->GetTransform()->Find("over")->GetGameObject()->SetActive(false);
 		g_window_pause->GetTransform()->Find("continue")->GetGameObject()->SetActive(true);
 		g_window_pause->SetActive(true);
-		g_window_pause->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.1f);
+		g_window_pause->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
 		
 		auto t = g_window_pause->AddComponent<TweenScale>();
 		t->duration = 0.2f;
@@ -158,7 +158,7 @@ struct ContinueEventListener : UIEventListener
 		t->curve.keys.push_back(Keyframe(0, 0, 0, 0));
 		t->curve.keys.push_back(Keyframe(1, 1, 0, 0));
 		t->from = t->GetTransform()->GetLocalScale();
-		t->to = Vector3(1, 1, 1) * 0.1f;
+		t->to = Vector3(1, 1, 1) * 0.01f;
 		t->target = t;
 		t->on_set_value = on_pause_tween_scale_set_value;
 		t->on_finished = on_pause_tween_scale_finish;
@@ -186,7 +186,7 @@ struct RestartEventListener : ContinueEventListener
 	}
 };
 
-static std::shared_ptr<TextRenderer> create_label(GameObject *parent, Vector3 &pos, int font_size, LabelPivot::Enum pivot, int order)
+static std::shared_ptr<TextRenderer> create_label(GameObject *parent, const Vector3 &pos, int font_size, LabelPivot::Enum pivot, int order)
 {
 	auto label = Label::Create("", "heiti", font_size, pivot, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("")->AddComponent<TextRenderer>();

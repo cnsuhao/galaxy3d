@@ -72,6 +72,9 @@
     <ClInclude Include="..\..\src\LauncherPlant.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GameMerged.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">

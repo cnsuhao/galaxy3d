@@ -4,7 +4,7 @@
 
 #include "alMain.h"
 
-#ifdef __ALC_HAS_CPP11__
+#ifdef __cplusplus
 #include <string>
 
 typedef std::function<void(ALCdevice * resultDevice)> __callback_t;

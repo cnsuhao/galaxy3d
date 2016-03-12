@@ -36,7 +36,8 @@ namespace Galaxy3D
                     on_finished(this, target);
                 }
 
-                Component::Destroy(GetComponentPtr());
+				auto c = GetComponentPtr();
+                Component::Destroy(c);
             }
         }
         else if(now - m_time_start >= delay)

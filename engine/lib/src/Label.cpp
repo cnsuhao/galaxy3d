@@ -2,6 +2,7 @@
 #include "GTStringUTF32.h"
 #include "GTString.h"
 #include "Mathf.h"
+#include "Debug.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "ftoutln.h"
@@ -279,7 +280,10 @@ namespace Galaxy3D
             
             FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
 
-			_ASSERT(slot->bitmap.width == slot->bitmap.pitch);
+			if((int) slot->bitmap.width != slot->bitmap.pitch)
+			{
+				Debug::Log("font bitmap width not equal with pitch");
+			}
 
 			info.glyph_index = glyph_index;
 			info.uv_pixel_w = slot->bitmap.width;
@@ -331,7 +335,10 @@ namespace Galaxy3D
                 }
                 else
                 {
-                    _ASSERT(g_texture_y + info.uv_pixel_h <= TEXTURE_SIZE_MAX);
+                    if(g_texture_y + info.uv_pixel_h > TEXTURE_SIZE_MAX)
+					{
+						Debug::Log("font texture size over than 2048");
+					}
                 }
             }
 		}
@@ -807,7 +814,7 @@ namespace Galaxy3D
 				}
 
 				str.Erase(i, 7);
-				str[i] = 0xffffffff;//	在图片位置插入标识符
+				str[i] = -1;//	在图片位置插入标识符
 				i--;
 			}
 		}
@@ -870,6 +877,7 @@ namespace Galaxy3D
 			Color color_outline(0, 0, 0, 1);
 			bool underline = false;
 			int origin = origin_y;
+			origin = origin;
             bool bold = false;
             bool italic = false;
 
@@ -1161,7 +1169,7 @@ namespace Galaxy3D
                 }
 			}
 
-			bool visible = (c != '\n' && c != 0xffffffff);
+			bool visible = (c != (int) '\n' && c != -1);
 
 			CharInfo info = get_char_info(font, c, font_size, bold, italic);
 

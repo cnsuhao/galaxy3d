@@ -16,6 +16,8 @@ extern HWND g_hwnd;
 
 namespace Galaxy3D
 {
+	std::string Application::m_data_path;
+
 	std::string Application::GetSavePath()
 	{
 		static std::string s_save_path;
@@ -39,51 +41,53 @@ namespace Galaxy3D
 		}
 #endif
 
+#ifdef ANDROID
+		if(s_save_path.empty())
+		{
+			s_save_path = GetDataPath();
+		}
+#endif
+
 		return s_save_path;
 	}
 
     std::string Application::GetDataPath()
     {
-		static std::string s_data_path;
-
 #ifdef WINPC
-		if(s_data_path.empty())
+		if(m_data_path.empty())
 		{
 			char buffer[MAX_PATH];
 			GetModuleFileNameA(0, buffer, MAX_PATH);
 			GTString path = GTString(buffer).Replace("\\", "/");
-			s_data_path = path.str;
-			s_data_path = s_data_path.substr(0, path.str.rfind('/'));
+			m_data_path = path.str;
+			m_data_path = m_data_path.substr(0, path.str.rfind('/'));
 		}
 #endif
 
 #ifdef WINPHONE
-		if(s_data_path.empty())
+		if(m_data_path.empty())
 		{
 			char buffer[MAX_PATH];
 			Platform::String^ path_name = Windows::ApplicationModel::Package::Current->InstalledLocation->Path;
 			const wchar_t *wpath = path_name->Data();
 			WideCharToMultiByte(CP_ACP, 0, wpath, -1, buffer, MAX_PATH, NULL, NULL);
 			GTString path = GTString(buffer).Replace("\\", "/");
-			s_data_path = path.str;
+			m_data_path = path.str;
 		}
 #endif
 
 #ifdef IOS
-		if(s_data_path.empty())
+		if(m_data_path.empty())
 		{
-			s_data_path = [[[NSBundle mainBundle] resourcePath] UTF8String];
+			m_data_path = [[[NSBundle mainBundle] resourcePath] UTF8String];
 		}
 #endif
 
 #ifdef ANDROID
-		if(s_data_path.empty())
-		{
-			s_data_path = "/sdcard/com.dj.galaxy3d";
-		}
+
 #endif
 
-		return s_data_path;
+		return m_data_path;
     }
 
     void Application::Quit()

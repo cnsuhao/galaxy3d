@@ -17,6 +17,16 @@ namespace Galaxy3D
 		z(0)
 	{}
 
+	Vector3 Vector3::Zero()
+	{
+		return Vector3(0, 0, 0);
+	}
+
+	Vector3 Vector3::One()
+	{
+		return Vector3(1, 1, 1);
+	}
+
 	void Vector3::Normalize()
 	{
         float sqr_magnitude = SqrMagnitude();
