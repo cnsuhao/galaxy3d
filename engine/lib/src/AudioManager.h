@@ -15,6 +15,8 @@ namespace Galaxy3D
 		static void Init();
 		static bool IsInitComplete();
 		static void Done();
+		static void OnPause();
+		static void OnResume();
 		static void SetVolume(float volume);
 		static void SetListener(AudioListener *listener);
 		static void *CreateClipBuffer(AudioClip *clip, void *data);

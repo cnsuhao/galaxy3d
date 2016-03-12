@@ -20,9 +20,6 @@
 #import <Foundation/Foundation.h>
 #endif
 
-#pragma warning(push)
-#pragma warning(disable:4996)
-
 namespace Galaxy3D
 {
 	void Debug::Log(const char *format, ...)
@@ -43,7 +40,7 @@ namespace Galaxy3D
 		of.close();
 #else
 	#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "Galaxy3D", buffer);
+		__android_log_print(ANDROID_LOG_ERROR, "Galaxy3D", "%s", buffer);
 	#endif
 
 	#ifdef IOS
@@ -63,5 +60,3 @@ namespace Galaxy3D
 #endif
 	}
 }
-
-#pragma warning(pop)

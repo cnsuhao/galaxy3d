@@ -117,7 +117,7 @@ namespace Galaxy3D
         void UpdateBufferObject(BufferObject &bo, void *data, int size);
         void ReleaseBufferObject(BufferObject &bo);
         void SetInputLayout(VertexShader *shader);
-        void SetVertexBuffer(BufferObject &bo, int stride, int offset);
+        void SetVertexBuffer(BufferObject &bo, VertexShader *shader);
         void SetIndexBuffer(BufferObject &bo, IndexType::Enum bits);
         void DrawIndexed(int count, int offset);
 		bool IsRenderTargetScreen() const {return m_render_target_view_current == m_render_target_view;}

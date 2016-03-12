@@ -203,7 +203,7 @@ namespace Galaxy3D
             {
                 return ContainsResult::Out;
             }
-            else if(in_count == ps.size())
+            else if(in_count == (int) ps.size())
             {
                 in_plane_count++;
             }

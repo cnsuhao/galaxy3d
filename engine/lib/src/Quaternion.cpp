@@ -5,7 +5,10 @@
 
 namespace Galaxy3D
 {
-	Quaternion Quaternion::m_identity = Quaternion(0, 0, 0, 1);
+	Quaternion Quaternion::Identity()
+	{
+		return Quaternion(0, 0, 0, 1);
+	}
 
 	Quaternion::Quaternion(float x, float y, float z, float w):
 		x(x), y(y), z(z), w(w)

@@ -375,7 +375,7 @@ namespace Galaxy3D
 		return rendered;
 	}
 
-    bool Camera::IsCulling(std::shared_ptr<GameObject> &obj) const
+    bool Camera::IsCulling(const std::shared_ptr<GameObject> &obj) const
     {
         return (m_culling_mask & LayerMask::GetMask(obj->GetLayer())) == 0;
     }
@@ -641,7 +641,7 @@ namespace Galaxy3D
         
         if(m_hdr)
         {
-            if(m_hdr_render_target->GetDepthStencilView() != NULL)
+            if(m_hdr_render_target->HasDepth())
             {
                 depth_texture = m_hdr_render_target;
             }
@@ -654,7 +654,7 @@ namespace Galaxy3D
         {
             if(!effects.empty())
             {
-                if(m_image_effect_buffer->GetDepthStencilView() != NULL)
+                if(m_image_effect_buffer->HasDepth())
                 {
                     depth_texture = m_image_effect_buffer;
                 }

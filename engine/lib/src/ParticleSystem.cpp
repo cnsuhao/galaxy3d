@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "ParticleSystemRenderer.h"
 #include "Debug.h"
+#include "Mathf.h"
 
 namespace Galaxy3D
 {
@@ -91,7 +92,7 @@ namespace Galaxy3D
 
                         if(texture_sheet_animation_random_row)
                         {
-                            y = (int) ((rand() - 1) / (float) RAND_MAX * texture_sheet_animation_tile_y);
+                            y = Mathf::RandomRange(0, texture_sheet_animation_tile_y);
                         }
                         else
                         {
@@ -240,13 +241,13 @@ namespace Galaxy3D
         float dx, dy, dz;
         do
         {
-            dx = rand() / (float) RAND_MAX - 0.5f;
-            dy = rand() / (float) RAND_MAX - 0.5f;
-            dz = rand() / (float) RAND_MAX - 0.5f;
+            dx = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+            dy = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+            dz = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
         }
         while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
 
-        float radius = (rand() / (float) RAND_MAX) * emitter_shape_sphere_radius;
+        float radius = Mathf::RandomRange(0.0f, emitter_shape_sphere_radius);
         Vector3 dir = Vector3::Normalize(Vector3(dx, dy, dz));
         position = dir * radius;
 
@@ -254,9 +255,9 @@ namespace Galaxy3D
         {
             do
             {
-                dx = rand() / (float) RAND_MAX - 0.5f;
-                dy = rand() / (float) RAND_MAX - 0.5f;
-                dz = rand() / (float) RAND_MAX - 0.5f;
+                dx = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+                dy = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+                dz = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
             }
             while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
 
@@ -270,8 +271,8 @@ namespace Galaxy3D
 
     void ParticleSystem::EmitShapeCone(Vector3 &position, Vector3 &velocity, float speed)
     {
-        float y = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
-        float theta = (rand() / (float) RAND_MAX) * 360;
+        float y = Mathf::RandomRange(0.0f, emitter_shape_cone_radius);
+        float theta = Mathf::RandomRange(0.0f, 360.0f);
 
         Vector3 pos(0, y, 0);
         Quaternion rot = Quaternion::Euler(0, 0, theta);
@@ -288,8 +289,8 @@ namespace Galaxy3D
 
         if(emitter_random_direction)
         {
-            float y_dir = (rand() / (float) RAND_MAX) * emitter_shape_cone_radius;
-            float theta_dir = (rand() / (float) RAND_MAX) * 360;
+            float y_dir = Mathf::RandomRange(0.0f, emitter_shape_cone_radius);
+            float theta_dir = Mathf::RandomRange(0.0f, 360.0f);
             Vector3 pos_dir = Vector3(0, y_dir, 0);
             Quaternion rot_dir = Quaternion::Euler(0, 0, theta_dir);
             pos_dir = rot_dir * pos_dir;
@@ -304,9 +305,9 @@ namespace Galaxy3D
 
     void ParticleSystem::EmitShapeBox(Vector3 &position, Vector3 &velocity, float speed)
     {
-        float x = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.x;
-        float y = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.y;
-        float z = (rand() / (float) RAND_MAX - 0.5f) * emitter_shape_box_size.z;
+        float x = (Mathf::RandomRange(0.0f, 1.0f) - 0.5f) * emitter_shape_box_size.x;
+        float y = (Mathf::RandomRange(0.0f, 1.0f) - 0.5f) * emitter_shape_box_size.y;
+        float z = (Mathf::RandomRange(0.0f, 1.0f) - 0.5f) * emitter_shape_box_size.z;
 
         position = Vector3(x, y, z);
 
@@ -315,9 +316,9 @@ namespace Galaxy3D
             float dx, dy, dz;
             do
             {
-                dx = rand() / (float) RAND_MAX - 0.5f;
-                dy = rand() / (float) RAND_MAX - 0.5f;
-                dz = rand() / (float) RAND_MAX - 0.5f;
+                dx = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+                dy = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
+                dz = Mathf::RandomRange(0.0f, 1.0f) - 0.5f;
             }
             while(Mathf::FloatEqual(dx, 0) && Mathf::FloatEqual(dy, 0) && Mathf::FloatEqual(dz, 0));
 
@@ -363,7 +364,7 @@ namespace Galaxy3D
 
                         if(start_speed_type == ValueType::RandomConstants)
                         {
-                            speed = rand() / (float) RAND_MAX * (start_speed_random_contants.y - start_speed_random_contants.x) + start_speed_random_contants.x;
+                            speed = Mathf::RandomRange(0.0f, 1.0f) * (start_speed_random_contants.y - start_speed_random_contants.x) + start_speed_random_contants.x;
                         }
                         else
                         {
@@ -399,7 +400,7 @@ namespace Galaxy3D
 
                         if(start_lifetime_type == ValueType::RandomConstants)
                         {
-                            lifetime = rand() / (float) RAND_MAX * (start_lifetime_random_contants.y - start_lifetime_random_contants.x) + start_lifetime_random_contants.x;
+                            lifetime = Mathf::RandomRange(0.0f, 1.0f) * (start_lifetime_random_contants.y - start_lifetime_random_contants.x) + start_lifetime_random_contants.x;
                         }
                         else
                         {

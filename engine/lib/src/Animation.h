@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "AnimationState.h"
 #include <unordered_map>
+#include <list>
 
 namespace Galaxy3D
 {

@@ -65,7 +65,7 @@ namespace Galaxy3D
 
         auto pass = shader->GetPass(pass_index);
         GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-        GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs);
         GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UInt);
 
         mat->ReadyPass(pass_index);

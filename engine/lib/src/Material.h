@@ -2,7 +2,6 @@
 #define __Material_h__
 
 #include "Object.h"
-#include "ShaderPropertyType.h"
 #include "Shader.h"
 #include "Color.h"
 #include "Matrix4x4.h"

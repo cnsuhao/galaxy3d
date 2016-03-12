@@ -17,6 +17,7 @@
 #include "AudioListener.h"
 #include "AudioClip.h"
 #include "AudioSource.h"
+#include "GTFile.h"
 #include <deque>
 
 using namespace Galaxy3D;
@@ -311,11 +312,23 @@ struct GroundEventListener : public UIEventListener
 {
 	float m_down_x;
 	float m_down_map_pos;
+	const float momentum_amount = 30;
+	Vector3 m_momentum;
+	bool m_drag_end;
+	bool m_draged;
+
+	GroundEventListener():
+		m_momentum(),
+		m_drag_end(true),
+		m_draged(false)
+	{}
 
 	virtual void OnDragStart()
 	{
 		m_down_x = UICanvas::GetLastPosition().x;
 		m_down_map_pos = g_map_pos;
+		m_drag_end = false;
+		m_draged = false;
 	}
 
 	virtual void OnDrag(const Vector3 &delta)
@@ -324,6 +337,49 @@ struct GroundEventListener : public UIEventListener
 		float map_pos = m_down_map_pos + offset;
 
 		set_map_pos(map_pos);
+
+		m_draged = true;
+		m_momentum = Vector3::Lerp(m_momentum, m_momentum + delta * (0.01f * momentum_amount), 0.67f);
+	}
+
+	virtual void OnDragEnd()
+	{
+		m_drag_end = true;
+		m_draged = false;
+	}
+
+	static Vector3 SpringDampen(Vector3 &velocity, float strength, float delta_time)
+	{
+		if (delta_time > 1.0f) delta_time = 1.0f;
+		float dampening_factor = 1.0f - strength * 0.001f;
+		int ms = Mathf::RoundToInt(delta_time * 1000.0f);
+		float total_dampening = pow(dampening_factor, ms);
+		Vector3 total = velocity * ((total_dampening - 1.0f) / log(dampening_factor));
+		velocity = velocity * total_dampening;
+		return total * 0.06f;
+	}
+
+	virtual void LateUpdate()
+	{
+		if(m_drag_end)
+		{
+			float dampen_strength = 9;
+			float delta = GTTime::GetDeltaTime();
+			Vector3 offset = SpringDampen(m_momentum, dampen_strength, delta);
+
+			set_map_pos(g_map_pos - offset.x);
+		}
+		else
+		{
+			if(m_draged)
+			{
+				m_draged = false;
+			}
+			else
+			{
+				m_momentum *= 0.5f;
+			}
+		}
 	}
 };
 

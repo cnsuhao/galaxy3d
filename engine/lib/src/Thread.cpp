@@ -32,7 +32,9 @@ namespace Galaxy3D
         p->func = func;
         p->param = param;
 
+#if defined(WINPC) || defined(WINPHONE)
         auto thread = CreateThread(NULL, 0, ThreadProc, p, 0, NULL);
         CloseHandle(thread);
+#endif
     }
 }

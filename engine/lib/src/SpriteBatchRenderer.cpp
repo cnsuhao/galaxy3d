@@ -106,7 +106,7 @@ namespace Galaxy3D
 		auto pass = shader->GetPass(0);
 
         GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(m_vertex_buffer, pass->vs);
         GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
 		
 		auto camera = Camera::GetCurrent();

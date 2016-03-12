@@ -109,7 +109,7 @@ namespace Galaxy3D
 		return false;
 	}
 
-    static bool raycast(Vector3 &in_pos)
+    static bool raycast(const Vector3 &in_pos)
     {
         auto cam = g_camera.lock();
 
@@ -251,7 +251,7 @@ namespace Galaxy3D
         ProcessMouse();
     }
 
-    void UICanvas::SetHoveredObject(std::weak_ptr<GameObject> &obj)
+    void UICanvas::SetHoveredObject(const std::weak_ptr<GameObject> &obj)
     {
         if(g_hover_object.lock() == obj.lock())
         {

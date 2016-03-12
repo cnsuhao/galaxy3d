@@ -33,7 +33,7 @@ namespace Galaxy3D
         int GetDepth() const {return m_depth;}
 		void SetCullingMask(int mask) {m_culling_mask = mask;}
         int GetCullingMask() const {return m_culling_mask;}
-        bool IsCulling(std::shared_ptr<GameObject> &obj) const;
+        bool IsCulling(const std::shared_ptr<GameObject> &obj) const;
 		void SetOrthographic(bool ortho) {m_orthographic = ortho;}
 		void SetOrthographicSize(float ortho_size) {m_orthographic_size = ortho_size;}
 		void SetFieldOfView(float fov) {m_field_of_view = fov;}
@@ -91,7 +91,7 @@ namespace Galaxy3D
 		Matrix4x4 m_projection_matrix;
 		Matrix4x4 m_view_projection_matrix;
 
-		static bool Camera::Less(const Camera *c1, const Camera *c2);
+		static bool Less(const Camera *c1, const Camera *c2);
 		static void UpdateTime();
         static void CreateHDRTargetIfNeeded(int w, int h);
         static void CreateImageEffectBufferIfNeeded(int w, int h);

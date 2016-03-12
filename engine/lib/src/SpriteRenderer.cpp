@@ -2,6 +2,7 @@
 #include "Vector4.h"
 #include "GameObject.h"
 #include "UICanvas.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -10,7 +11,7 @@ namespace Galaxy3D
 	{
 		m_sorting_layer = 0;
 		m_sorting_order = 0;
-
+		
         auto mat = Material::Create("UI/Sprite");
 		SetSharedMaterial(mat);
 	}
@@ -21,7 +22,8 @@ namespace Galaxy3D
 
         if(canvas && m_anchor)
         {
-            canvas->AnchorTransform(GetTransform(), *m_anchor);
+			auto t = GetTransform();
+            canvas->AnchorTransform(t, *m_anchor);
         }
     }
 
@@ -55,7 +57,7 @@ namespace Galaxy3D
 		auto pass = shader->GetPass(0);
 
         GraphicsDevice::GetInstance()->SetInputLayout(pass->vs);
-        GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+        GraphicsDevice::GetInstance()->SetVertexBuffer(vertex_buffer, pass->vs);
         GraphicsDevice::GetInstance()->SetIndexBuffer(index_buffer, IndexType::UShort);
 		
 		auto camera = Camera::GetCurrent();

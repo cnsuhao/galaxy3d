@@ -138,14 +138,14 @@
     <ClInclude Include="..\src\Cursor.h" />
     <ClInclude Include="..\src\d3d11\Cubemap.h" />
     <ClInclude Include="..\src\d3d11\GraphicsDevice.h" />
-    <ClInclude Include="..\src\d3d11\Material.h" />
     <ClInclude Include="..\src\d3d11\PixelShader.h" />
     <ClInclude Include="..\src\d3d11\RenderStates.h" />
     <ClInclude Include="..\src\d3d11\RenderTexture.h" />
-    <ClInclude Include="..\src\d3d11\Shader.h" />
     <ClInclude Include="..\src\d3d11\ShaderConstantBuffer.h" />
+    <ClInclude Include="..\src\d3d11\ShaderPass.h" />
     <ClInclude Include="..\src\d3d11\ShaderSampler.h" />
     <ClInclude Include="..\src\d3d11\ShaderTexture.h" />
+    <ClInclude Include="..\src\d3d11\Texture.h" />
     <ClInclude Include="..\src\d3d11\Texture2D.h" />
     <ClInclude Include="..\src\d3d11\VertexShader.h" />
     <ClInclude Include="..\src\Debug.h" />
@@ -172,6 +172,7 @@
     <ClInclude Include="..\src\Light.h" />
     <ClInclude Include="..\src\LightmapSettings.h" />
     <ClInclude Include="..\src\Localization.h" />
+    <ClInclude Include="..\src\Material.h" />
     <ClInclude Include="..\src\Mathf.h" />
     <ClInclude Include="..\src\Matrix4x4.h" />
     <ClInclude Include="..\src\Mesh.h" />
@@ -190,8 +191,8 @@
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\RenderSettings.h" />
     <ClInclude Include="..\src\Screen.h" />
+    <ClInclude Include="..\src\Shader.h" />
     <ClInclude Include="..\src\ShaderNode.h" />
-    <ClInclude Include="..\src\ShaderPass.h" />
     <ClInclude Include="..\src\ShaderPropertyType.h" />
     <ClInclude Include="..\src\SkinnedMeshRenderer.h" />
     <ClInclude Include="..\src\SkyBox.h" />
@@ -203,7 +204,6 @@
     <ClInclude Include="..\src\TerrainCollider.h" />
     <ClInclude Include="..\src\TerrainRenderer.h" />
     <ClInclude Include="..\src\TextRenderer.h" />
-    <ClInclude Include="..\src\Texture.h" />
     <ClInclude Include="..\src\TextureFormat.h" />
     <ClInclude Include="..\src\TextureWrapMode.h" />
     <ClInclude Include="..\src\Thread.h" />

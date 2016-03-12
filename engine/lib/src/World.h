@@ -15,6 +15,8 @@ namespace Galaxy3D
 		static void Init();
 		static void Update();
 		static void Done();
+		static void OnPause();
+		static void OnResume();
 
 	private:
 		static std::unordered_map<GameObject *, std::shared_ptr<GameObject>> m_gameobjects;

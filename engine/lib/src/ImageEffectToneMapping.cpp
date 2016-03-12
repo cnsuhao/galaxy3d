@@ -1,4 +1,5 @@
 #include "ImageEffectToneMapping.h"
+#include "Mathf.h"
 
 namespace Galaxy3D
 {
@@ -17,7 +18,7 @@ namespace Galaxy3D
         // down sample
         GraphicsDevice::GetInstance()->Blit(source, adaptive_texture, mat_empty, 0);
         
-        int lum_tex_count = (int) log2f((float) m_adaptive_texture_size);
+        int lum_tex_count = (int) Mathf::Log2((float) m_adaptive_texture_size);
         int div = 2;
         std::vector<std::shared_ptr<RenderTexture>> rts(lum_tex_count);
         for(int i=0; i<lum_tex_count; i++)

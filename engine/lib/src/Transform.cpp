@@ -18,7 +18,7 @@ namespace Galaxy3D
 	{
 	}
 
-    void Transform::DeepCopy(std::shared_ptr<Object> &source)
+    void Transform::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_tran = std::dynamic_pointer_cast<Transform>(source);
 

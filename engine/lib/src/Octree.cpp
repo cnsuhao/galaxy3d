@@ -9,8 +9,7 @@ namespace Galaxy3D
     {
         for(size_t i=0; i<renderers.size(); i++)
         {
-            auto &renderer = renderers[i].lock();
-            renderer->SetVisible(visible);
+            renderers[i].lock()->SetVisible(visible);
         }
 
         for(int i=0; i<8; i++)
@@ -35,7 +34,7 @@ namespace Galaxy3D
         
         for(size_t i=0; i<renderers.size(); i++)
         {
-            auto &bounds = renderers[i]->GetBounds();
+            auto bounds = renderers[i]->GetBounds();
             
             box_max = Vector3::Max(box_max, bounds.GetMax());
             box_min = Vector3::Min(box_min, bounds.GetMin());

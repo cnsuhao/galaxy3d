@@ -49,8 +49,8 @@ namespace Galaxy3D
     {
         AnimationState(){}
         AnimationState(std::shared_ptr<AnimationClip> &clip):
+			name(clip->GetName()),
             clip(clip),
-            name(clip->GetName()),
             blend_mode(AnimationBlendMode::Blend),
             enabled(false),
             layer(0),

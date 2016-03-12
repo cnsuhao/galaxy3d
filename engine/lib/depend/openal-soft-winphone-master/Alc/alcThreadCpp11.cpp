@@ -79,13 +79,18 @@ typedef std::mutex _MutexType;
 #endif//#ifdef NO_STD_MUTEX
 
 /*--------thread local storage---------*/
-class _ThreadLocalData: public std::unordered_map<ULONG, void*> {
+class _ThreadLocalData: public std::unordered_map<unsigned long, void*> {
 public :
-	typedef std::unordered_map<ULONG, void*> ParentType;
+	typedef std::unordered_map<unsigned long, void*> ParentType;
 	_ThreadLocalData();
 	~_ThreadLocalData();
 };
+
+#ifdef WIN32
 static __declspec( thread )  _ThreadLocalData* currentThreadLocalData = nullptr;
+#else
+static _ThreadLocalData* currentThreadLocalData = nullptr;
+#endif
 
 static _MutexType& GetTlsAllocLock(){
 	static _MutexType _tlsLock;
@@ -98,13 +103,13 @@ static std::unordered_set<_ThreadLocalData*>& GetAllThreadData()
 	return _allThreadData;
 }
 
-static std::set<DWORD>& GetReusableAllocIds() {
-	static std::set<DWORD> _reuseAllocID;
+static std::set<unsigned long>& GetReusableAllocIds() {
+	static std::set<unsigned long> _reuseAllocID;
 	return _reuseAllocID;
 }
 
-static DWORD& GetTlsAllocSeed(){
-	static DWORD _seed = 0;
+static unsigned long& GetTlsAllocSeed(){
+	static unsigned long _seed = 0;
 	return _seed;
 }
 
@@ -126,9 +131,9 @@ _ThreadLocalData::~_ThreadLocalData()
 
 //public "C" interfaces
 extern "C"{
-DWORD cpp11_TlsAlloc()
+unsigned long cpp11_TlsAlloc()
 {
-	DWORD id;
+	unsigned long id;
 	auto & _tlsAllocLock = TLS_ALLOC_LOCK;
 	auto & _reuseAllocID = REUSABLE_ALLOC_IDS;
 	auto& _tlsAllocSeed = TLS_ALLOC_SEED;
@@ -149,9 +154,9 @@ DWORD cpp11_TlsAlloc()
 	return id;
 }
 
-BOOL cpp11_TlsFree(DWORD id)
+bool cpp11_TlsFree(unsigned long id)
 {
-	BOOL re = TRUE;
+	bool re = true;
 	auto & _tlsAllocLock = TLS_ALLOC_LOCK;
 	auto & _reuseAllocID = REUSABLE_ALLOC_IDS;
 	auto & _tlsAllocSeed = TLS_ALLOC_SEED;
@@ -171,12 +176,12 @@ BOOL cpp11_TlsFree(DWORD id)
 		}
 	}
 	else 
-		re = FALSE;
+		re = false;
 	_tlsAllocLock.unlock();
 	return re;
 }
 
-void* cpp11_TlsGetValue(DWORD id)
+void* cpp11_TlsGetValue(unsigned long id)
 {
 	void* re = NULL;
 
@@ -190,9 +195,9 @@ void* cpp11_TlsGetValue(DWORD id)
 	return re;
 }
 
-BOOL cpp11_TlsSetValue(DWORD id, void* value)
+bool cpp11_TlsSetValue(unsigned long id, void* value)
 {
-	BOOL re = FALSE;
+	bool re = false;
 	auto & _reuseAllocID = REUSABLE_ALLOC_IDS;
 	auto & _tlsAllocSeed = TLS_ALLOC_SEED;
 
@@ -206,7 +211,7 @@ BOOL cpp11_TlsSetValue(DWORD id, void* value)
 		{
 			(*currentThreadLocalData)[id] = value;
 
-			re = TRUE;
+			re = true;
 		}
 	}
 

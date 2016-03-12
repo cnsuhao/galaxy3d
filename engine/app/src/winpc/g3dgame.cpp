@@ -134,16 +134,16 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, int width, int height)
 	return S_OK;
 }
 
+static bool g_input_down = false;
 extern std::vector<Touch> g_input_touches;
 extern std::list<Touch> g_input_touch_buffer;
-static bool g_input_down = false;
 extern bool g_key_down[KeyCode::COUNT];
 extern bool g_key[KeyCode::COUNT];
 extern bool g_key_up[KeyCode::COUNT];
 extern bool g_key_held[KeyCode::COUNT];
 extern bool g_mouse_button_down[3];
 extern bool g_mouse_button_up[3];
-extern Galaxy3D::Vector3 g_mouse_position;
+extern Vector3 g_mouse_position;
 extern bool g_mouse_button_held[3];
 
 static int get_key_code(int wParam)

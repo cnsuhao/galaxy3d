@@ -9,7 +9,7 @@ namespace Galaxy3D
 {
     DEFINE_COM_CLASS(Animation);
 
-    void Animation::DeepCopy(std::shared_ptr<Object> &source)
+    void Animation::DeepCopy(const std::shared_ptr<Object> &source)
     {
         auto src_anim = std::dynamic_pointer_cast<Animation>(source);
 
@@ -253,6 +253,9 @@ namespace Galaxy3D
                                 case CurveProperty::LocalScaZ:
                                     sca.z = value;
                                     break;
+
+								default:
+									break;
                             }
                         }
                     }

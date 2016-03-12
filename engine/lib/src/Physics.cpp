@@ -18,7 +18,7 @@ namespace Galaxy3D
     static btDiscreteDynamicsWorld *g_dynamics_world = NULL;
     static Vector3 g_hit_from;
 
-    static bool hit_less(RaycastHit &a, RaycastHit &b)
+    static bool hit_less(const RaycastHit &a, const RaycastHit &b)
     {
         return (a.point - g_hit_from).SqrMagnitude() < (b.point - g_hit_from).SqrMagnitude();
     }

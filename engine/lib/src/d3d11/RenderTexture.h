@@ -3,6 +3,7 @@
 
 #include "Texture.h"
 #include "GraphicsDevice.h"
+#include <list>
 
 namespace Galaxy3D
 {
@@ -82,6 +83,7 @@ namespace Galaxy3D
         ID3D11SamplerState *GetSamplerState() const {return m_sampler_state;}
         void MarkKeepBuffer(bool keep) {m_keep_buffer = keep;}
         bool IsKeepBuffer() const {return m_keep_buffer;}
+		bool HasDepth() const {return m_depth_stencil_view != NULL;}
 
     private:
         static std::list<std::shared_ptr<RenderTexture>> m_textures_idle;

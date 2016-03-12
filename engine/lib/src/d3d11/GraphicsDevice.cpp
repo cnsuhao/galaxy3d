@@ -271,7 +271,7 @@ namespace Galaxy3D
             if(i == pass_begin)
             {
                 SetInputLayout(pass->vs);
-                SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+                SetVertexBuffer(vertex_buffer, pass->vs);
                 SetIndexBuffer(index_buffer, IndexType::UShort);
             }
 
@@ -282,7 +282,7 @@ namespace Galaxy3D
             Renderer::DrawIndexed(6, 0);
         }
 
-        GraphicsDevice::GetInstance()->ClearShaderResources();
+		ClearShaderResources();
     }
 
     void GraphicsDevice::DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index)
@@ -301,11 +301,10 @@ namespace Galaxy3D
             int index_count = mesh->GetIndexCount(sub_mesh_index);
             auto shader = material->GetShader();
 
-            auto pass_count = shader->GetPassCount();
             auto pass = shader->GetPass(pass_index);
 
             SetInputLayout(pass->vs);
-            SetVertexBuffer(vertex_buffer, pass->vs->vertex_stride, 0);
+            SetVertexBuffer(vertex_buffer, pass->vs);
             SetIndexBuffer(index_buffer, IndexType::UShort);
 
             material->ReadyPass(pass_index);
@@ -481,10 +480,10 @@ namespace Galaxy3D
         m_immediate_context->IASetInputLayout(shader->input_layout);
     }
 
-    void GraphicsDevice::SetVertexBuffer(BufferObject &bo, int stride, int offset)
+    void GraphicsDevice::SetVertexBuffer(BufferObject &bo, VertexShader *shader)
     {
-        UINT strides[1] = {(UINT) stride};
-        UINT offsets[1] = {(UINT) offset};
+        UINT strides[1] = {(UINT) shader->vertex_stride};
+        UINT offsets[1] = {(UINT) 0};
         ID3D11Buffer *buffer = (ID3D11Buffer *) bo.buffer;
         m_immediate_context->IASetVertexBuffers(0, 1, &buffer, strides, offsets);
     }

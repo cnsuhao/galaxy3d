@@ -28,8 +28,6 @@ namespace Galaxy3D
 		
 	private:
 		std::list<std::shared_ptr<SpriteNode>> m_sprites;
-        int m_vertex_count_old;
-        int m_index_count_old;
 		Color m_color;
         std::shared_ptr<Vector4> m_anchor;
 		BufferObject m_vertex_buffer;
@@ -38,6 +36,8 @@ namespace Galaxy3D
         Vector4 m_clip_rect;
         Vector2 m_clip_soft;
         bool m_dirty;
+		int m_vertex_count_old;
+        int m_index_count_old;
 
         bool IsDirty();
         void UpdateSprites();

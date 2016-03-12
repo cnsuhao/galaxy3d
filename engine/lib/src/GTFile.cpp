@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "GTString.h"
 #include "Application.h"
+#include "contrib/minizip/unzip.h"
 
 #ifdef WINPHONE
 #include <wrl/client.h>
@@ -250,10 +251,88 @@ namespace Galaxy3D
 		}
 	}
 #endif
+
+	static void unzip_file(unzFile file, const std::string &path)
+	{
+		auto folder = path.substr(0, path.rfind("/"));
+		GTFile::CreateFolder(folder);
+
+		int result = unzOpenCurrentFilePassword(file, 0);
+
+		int buffer_size = 8192;
+		char *buffer = (char *) calloc(1, buffer_size);
+
+        std::ofstream os(path.c_str(), std::ios::out | std::ios::binary);
+
+		do
+		{
+			result = unzReadCurrentFile(file, buffer, buffer_size);
+			if(result > 0)
+			{
+				if(os)
+				{
+					os.write(buffer, result);
+				}
+			}
+		}while(result > 0);
+
+		if(os)
+        {
+            os.close();
+        }
+		
+		free(buffer);
+
+		unzCloseCurrentFile(file);
+	}
+
+	void GTFile::Unzip(const std::string &zip_path, const std::string &source, const std::string &dest, bool directory)
+	{
+		unzFile file = unzOpen64(zip_path.c_str());
+
+		if(file != NULL)
+		{
+			unz_file_info64 file_info;
+			char filename_inzip[256];
+
+			int result = unzGoToFirstFile(file);
+			while(result == UNZ_OK)
+			{
+				result = unzGetCurrentFileInfo64(file, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+				if(result != UNZ_OK)
+				{
+					break;
+				}
+
+				if(directory)
+				{
+					GTString filename(filename_inzip);
+					if(filename.StartsWith(source))
+					{
+						std::string dest_filename = dest + filename.str.substr(source.size());
+						unzip_file(file, dest_filename);
+					}
+				}
+				else
+				{
+					if(source == filename_inzip)
+					{
+						unzip_file(file, dest);
+						break;
+					}
+				}
+
+				result = unzGoToNextFile(file);
+			}
+
+			unzClose(file);
+		}
+	}
 }
 
 #ifdef WINPC
 #include <Windows.h>
+
 void Galaxy3D::GTFile::CreateFolder(const std::string &path)
 {
 	GTString path_local = path.substr(Application::GetSavePath().length());
@@ -265,6 +344,25 @@ void Galaxy3D::GTFile::CreateFolder(const std::string &path)
 		folder = folder + "/" + splits[i].str;
 
 		CreateDirectoryA(folder.c_str(), NULL);
+	}
+}
+#endif
+
+#if defined(ANDROID) || defined(IOS)
+#include <sys/types.h>
+#include <sys/stat.h>
+
+void Galaxy3D::GTFile::CreateFolder(const std::string &path)
+{
+	GTString path_local = path.substr(Application::GetSavePath().length());
+	auto splits = path_local.Split("/", true);
+
+	auto folder = Application::GetSavePath();
+	for(size_t i=0; i<splits.size(); i++)
+	{
+		folder = folder + "/" + splits[i].str;
+
+		mkdir(folder.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	}
 }
 #endif
