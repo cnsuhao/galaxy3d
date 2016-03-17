@@ -11,6 +11,8 @@ namespace Galaxy3D
 	class Texture : public Object
 	{
 	public:
+		static const GLenum *FILTER_MODES;
+        static const GLenum *ADDRESS_MODES;
         static const int PIXEL_BITS_SIZE[20];
 
 		virtual ~Texture() {}

@@ -1,2 +1,3 @@
-MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\ARM\Release\game\Upload\game_1.1.8.0_ARM.appx
-SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.8.0\game_1.1.8.0_ARM.appxsym
+MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\ARM\Release\game\Upload\game_1.1.11.0_ARM.appx
+SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.11.0\game_1.1.11.0_ARM.appxsym
+ResourcePack=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\game_merged\_language-en.appx

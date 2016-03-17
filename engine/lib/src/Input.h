@@ -297,6 +297,7 @@ namespace Galaxy3D
         static bool GetMouseButton(int index);
         static bool GetMouseButtonUp(int index);
         static Vector3 GetMousePosition();
+		static void SetMousePositionScaleOffset(const Vector3 &scale, const Vector3 &offset);
 		static void ResetInputAxes();
         
 	private:

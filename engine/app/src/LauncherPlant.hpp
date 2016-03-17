@@ -9,7 +9,18 @@ protected:
 	UICanvas *m_canvas;
 	SpriteBatchRenderer *m_batch_ui;
 
-	std::shared_ptr<TextRenderer> CreateLabel(GameObject *parent, Vector3 &pos, int font_size, LabelPivot::Enum pivot, int order)
+	virtual void OnScreenResize(int width, int height)
+	{
+		m_cam->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
+		m_cam->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / pixel_per_unit));
+	
+		float input_scale = 1080.f / Screen::GetHeight();
+		float input_offset_x = (1920 - Screen::GetWidth() * input_scale) * 0.5f;
+		float input_offset_y = (1080 - Screen::GetHeight() * input_scale) * 0.5f;
+		Input::SetMousePositionScaleOffset(Vector3::One() * input_scale, Vector3(input_offset_x, input_offset_y, 0));
+	}
+
+	std::shared_ptr<TextRenderer> CreateLabel(GameObject *parent, const Vector3 &pos, int font_size, LabelPivot::Enum pivot, int order)
 	{
 		auto label = Label::Create("", "heiti", font_size, pivot, LabelAlign::Auto, true);
 		auto tr = GameObject::Create("")->AddComponent<TextRenderer>();
@@ -20,28 +31,6 @@ protected:
 		tr->GetTransform()->SetLocalPosition(pos);
 
 		return tr;
-	}
-
-	virtual void OnScreenResize(int width, int height)
-	{
-		m_cam->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
-		m_canvas->SetSize(width, height);
-		m_canvas->AnchorTransform(m_fps->GetTransform(), *m_fps->GetAnchor());
-		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(- Screen::GetHeight() / 2.0f), 0));
-
-		auto tp = g_batch_game->GetGameObject()->GetComponent<TweenPosition>();
-		if(tp)
-		{
-			Component::Destroy(std::dynamic_pointer_cast<Component>(tp));
-		}
-		if(g_ui_bag_up)
-		{
-			g_batch_game->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(1080 / 2.0f - Screen::GetHeight() / 2.0f), 0));
-		}
-		else
-		{
-			g_batch_game->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(1080 / 2.0f - Screen::GetHeight() / 2.0f) + 290, 0));
-		}
 	}
 	
 	virtual void CreateUI(UICanvas *canvas, UIAtlas *atlas)
@@ -283,7 +272,7 @@ protected:
 			}
 		}
 
-		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(- Screen::GetHeight() / 2.0f), 0));
+		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, -540, 0));
 
 		set_exp(g_exp, g_exp_full);
 		set_level(g_level);
@@ -296,14 +285,41 @@ protected:
 
 		GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 
+		auto screen_buffer = RenderTexture::Create(1920, 1080, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Bilinear, TextureWrapMode::Clamp);
+		auto cam_screen = GameObject::Create("")->AddComponent<Camera>();
+		cam_screen->SetOrthographic(true);
+		cam_screen->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
+		cam_screen->SetClipPlane(-1, 1);
+		cam_screen->SetCullingMask(LayerMask::GetMask(Layer::Default));
+		cam_screen->SetDepth(1);
+		cam_screen->SetClearColor(Color(0, 0, 0, 1));
+		cam_screen->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / pixel_per_unit));
+		m_cam = cam_screen.get();
+
+		auto screen_sprite = Sprite::Create(std::dynamic_pointer_cast<Texture>(screen_buffer));
+
+		auto screen_renderer = GameObject::Create("")->AddComponent<SpriteRenderer>();
+		screen_renderer->GetTransform()->SetParent(cam_screen->GetTransform());
+#ifdef WINPHONE
+		screen_renderer->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+#else
+		screen_renderer->GetTransform()->SetLocalScale(Vector3(1, -1, 1));
+#endif
+		screen_renderer->SetSprite(screen_sprite);
+
+		float input_scale = 1080.f / Screen::GetHeight();
+		float input_offset_x = (1920 - Screen::GetWidth() * input_scale) * 0.5f;
+		float input_offset_y = (1080 - Screen::GetHeight() * input_scale) * 0.5f;
+		Input::SetMousePositionScaleOffset(Vector3::One() * input_scale, Vector3(input_offset_x, input_offset_y, 0));
+
 		auto cam = GameObject::Create("")->AddComponent<Camera>();
 		cam->SetOrthographic(true);
-		cam->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
+		cam->SetOrthographicSize(1 / pixel_per_unit * 1080 / 2);
 		cam->SetClipPlane(-1, 1);
 		cam->SetCullingMask(LayerMask::GetMask(Layer::UI));
 		cam->SetDepth(0);
 		cam->SetClearColor(Color(142, 239, 255, 255) / 255.0f);
-		m_cam = cam.get();
+		cam->SetRenderTexture(screen_buffer);
 
 		cam->GetGameObject()->AddComponent<AudioListener>();
 		auto audio_src = cam->GetGameObject()->AddComponent<AudioSource>();
@@ -314,7 +330,8 @@ protected:
 
 		auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 		canvas->GetTransform()->SetParent(cam->GetTransform());
-		canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1.0f / pixel_per_unit));
+		canvas->GetTransform()->SetLocalScale(Vector3::One() * (1.0f / pixel_per_unit));
+		canvas->SetSize(1920, 1080);
 		m_canvas = canvas.get();
 
 		auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
@@ -571,7 +588,7 @@ protected:
 		node->SetSortingOrder(1001);
 		node->SetColor(Color(57, 131, 254, 255) / 255.0f);
 		batch->AddSprite(node);
-		g_batch_game->GetTransform()->SetLocalPosition(Vector3(0, Mathf::Round(1080 / 2.0f - Screen::GetHeight() / 2.0f), 0));
+		g_batch_game->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
 
 		CreateUI(canvas.get(), atlas.get());
 

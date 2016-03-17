@@ -1,6 +1,0 @@
-{
-    "continue": "回到游戏",
-    "restart": "重新开始",
-    "score": "得分",
-    "score_best": "最高纪录"
-}

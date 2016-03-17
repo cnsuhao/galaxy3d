@@ -40,9 +40,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\LauncherMerged.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -63,16 +60,10 @@
     <ClInclude Include="StepTimer.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\LauncherMerged.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\GamePlant.hpp">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\LauncherPlant.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GameMerged.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -117,23 +108,9 @@
     <Filter Include="Assets\shader\UI">
       <UniqueIdentifier>{80f5b17b-a6d5-4fef-b772-fbc36e1df599}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Assets\en-US">
-      <UniqueIdentifier>{2dee3275-73f8-4e34-8e0a-2b92dc322a19}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Assets\zh-CN">
-      <UniqueIdentifier>{a15b2b70-a28e-4e07-b72d-35e3c626fae3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Assets\audio">
       <UniqueIdentifier>{285ac585-efd0-4e5d-91ee-a0c5520197e0}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\en-US\string.txt">
-      <Filter>Assets\en-US</Filter>
-    </Text>
-    <Text Include="Assets\zh-CN\string.txt">
-      <Filter>Assets\zh-CN</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">

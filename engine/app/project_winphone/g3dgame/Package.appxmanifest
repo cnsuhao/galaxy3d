@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="57065ViryTech.81332B3C1884" Publisher="CN=A9CC10D9-386A-4197-8DB7-6D2E225A0343" Version="1.1.7.0" />
+  <Identity Name="57065ViryTech.81332B3C1884" Publisher="CN=A9CC10D9-386A-4197-8DB7-6D2E225A0343" Version="1.1.7.1" />
   <mp:PhoneIdentity PhoneProductId="2b78836f-8b4b-4279-a87d-98a63bc324a1" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>合并！</DisplayName>

@@ -1,2 +1,2 @@
-MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\Release\game\game_1.1.8.0_Win32.appx
-SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.8.0_Test\game_1.1.8.0_Win32.appxsym
+MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\Release\game\game_1.1.11.0_Win32.appx
+SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.11.0_Test\game_1.1.11.0_Win32.appxsym

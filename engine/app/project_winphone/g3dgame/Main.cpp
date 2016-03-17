@@ -13,9 +13,16 @@ using namespace Windows::UI::Core;
 #include "World.h"
 #include "Camera.h"
 #include "Debug.h"
+#include "AudioManager.h"
 #include "../../src/LauncherMerged.h"
 
 using namespace Galaxy3D;
+
+bool AudioManager::IsInitComplete(){return true;}
+void AudioManager::OnPause(){}
+void AudioManager::OnResume(){}
+void AudioManager::Init(){}
+void AudioManager::Done(){}
 
 struct MouseEvent
 {
@@ -59,7 +66,6 @@ Main::~Main()
 
 void Main::OnInitEngine()
 {
-    GraphicsDevice::GetInstance()->Init(0);
     World::Init();
 
     GameObject::Create("")->AddComponent<LauncherMerged>();
@@ -140,11 +146,16 @@ void Main::StopRenderLoop()
 // 每帧更新一次应用程序状态。
 void Main::Update()
 {
+	if(!m_deviceResources->HasInit())
+	{
+		return;
+	}
+
 	// 更新场景对象。
 	m_timer.Tick([&]()
 	{
 		// TODO: 将此替换为应用程序内容的更新函数。
-        if(m_deviceResources->HasInit() && !m_done)
+        if(!m_done)
         {
             World::Update();
         }

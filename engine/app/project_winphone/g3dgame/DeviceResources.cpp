@@ -19,13 +19,14 @@ using namespace Galaxy3D;
 
 void DX::DeviceResources::InitEngine()
 {
+    Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
     Screen::SetSize((int) m_outputSize.Width, (int) m_outputSize.Height);
-	Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
     GraphicsDevice::GetInstance()->SetDeviceResources(GetD3DDevice(), GetD3DDeviceContext());
     GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
         GetSwapChain(),
         GetBackBufferRenderTargetView(),
         GetDepthStencilView());
+	GraphicsDevice::GetInstance()->Init(0);
 
     if(m_deviceNotify != nullptr)
     {
@@ -136,6 +137,7 @@ void DX::DeviceResources::CreateDeviceResources()
 void DX::DeviceResources::CreateWindowSizeDependentResources() 
 {
 	// 清除特定于上一窗口大小的上下文。
+	GraphicsDevice::GetInstance()->ResetSizeDependentResources();
 	ID3D11RenderTargetView* nullViews[] = {nullptr};
 	m_d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	m_d3dRenderTargetView = nullptr;
@@ -311,18 +313,24 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			)
 		);
 
-	static int s_count = 0;
-    auto bounds = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView()->VisibleBounds;
-    if(	(m_displayRotation == DXGI_MODE_ROTATION_IDENTITY && Mathf::FloatEqual(bounds.Y, 0)) ||
-		(m_displayRotation == DXGI_MODE_ROTATION_ROTATE90 && Mathf::FloatEqual(bounds.X, 0)) ||
-		s_count++ == 2)
-    {
-        if(!m_init)
-        {
-            m_init = true;
-            InitEngine();
-        }
-    }
+	if(m_deviceNotify != nullptr)
+	{
+		if(!m_init)
+		{
+			m_init = true;
+			InitEngine();
+		}
+		else
+		{
+			Screen::SetOrientation((ScreenOrientation::Enum) (m_displayRotation - 1));
+			Screen::Resize((int) m_outputSize.Width, (int) m_outputSize.Height);
+			GraphicsDevice::GetInstance()->SetWindowSizeDependentResources(
+				GetSwapChain(),
+				GetBackBufferRenderTargetView(),
+				GetDepthStencilView());
+			GraphicsDevice::GetInstance()->Init(0);
+		}
+	}
 }
 
 //创建(或重新创建) XAML 控件时调用此方法。

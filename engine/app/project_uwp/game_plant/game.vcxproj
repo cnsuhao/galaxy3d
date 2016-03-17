@@ -226,9 +226,7 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\GameMerged.hpp" />
     <ClInclude Include="..\..\src\GamePlant.hpp" />
-    <ClInclude Include="..\..\src\LauncherMerged.h" />
     <ClInclude Include="..\..\src\LauncherPlant.hpp" />
     <ClInclude Include="App.h" />
     <ClInclude Include="DeviceResources.h" />
@@ -238,7 +236,6 @@
     <ClInclude Include="StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\LauncherMerged.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -315,10 +312,6 @@
     <ProjectReference Include="..\..\..\lib\project_uwp\viry3d.vcxproj">
       <Project>{dc01e365-2866-42fa-b3ef-6840f8879d91}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\en-US\string.txt" />
-    <Text Include="Assets\zh-CN\string.txt" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">

@@ -93,6 +93,7 @@ namespace Galaxy3D
         if(m_format != RenderTextureFormat::Depth)
         {
             DXGI_FORMAT fmt;
+
             if(m_format == RenderTextureFormat::RGBA32)
             {
                 fmt = DXGI_FORMAT_R8G8B8A8_UNORM;
