@@ -128,32 +128,40 @@ UI/Text
 		uniform mat4 WorldViewProjection;
 
 		attribute vec4 Position;
-		attribute vec2 Texcoord0;
 		attribute vec4 Color;
+		attribute vec2 Texcoord0;
 
 		varying vec2 v_uv;
 		varying vec4 v_color;
+		varying vec4 v_pos_proj;
 
 		void main()
 		{
-			gl_Position = WorldViewProjection * Position;
+			gl_Position = Position * WorldViewProjection;
 			v_uv = Texcoord0;
 			v_color = Color;
+			v_pos_proj = gl_Position;
 		}
 	}
 
 	GLPS ps
 	{
+		precision mediump float;
+		uniform vec4 _Color;
+		uniform vec4 ClipRect;
+		uniform vec4 ClipSoft;
 		uniform sampler2D _MainTex;
 
 		varying vec2 v_uv;
 		varying vec4 v_color;
+		varying vec4 v_pos_proj;
 
 		void main()
 		{
-			vec4 color = texture2D(_MainTex, v_uv) * v_color;
+			vec4 c = v_color * _Color;
+			c.a *= texture2D(_MainTex, v_uv).a;
 
-			gl_FragColor = color;
+			gl_FragColor = c;
 		}
 	}
 }

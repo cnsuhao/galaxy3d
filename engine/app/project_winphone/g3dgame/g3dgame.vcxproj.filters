@@ -20,6 +20,15 @@
     <Filter Include="Assets\font">
       <UniqueIdentifier>{47ef2512-609e-42f3-89e1-09d98e805ee7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\language">
+      <UniqueIdentifier>{85f24b79-959f-44bd-949c-16d91906969d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-CN">
+      <UniqueIdentifier>{2e63bed6-72cf-4477-ad83-2816dbe32fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\en-US">
+      <UniqueIdentifier>{05cd77ef-ade3-47c4-8eb2-ab6f74c788b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.xaml.h" />
@@ -131,8 +140,11 @@
     <Xml Include="StoreManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Assets\string.txt">
-      <Filter>Assets</Filter>
+    <Text Include="Assets\language\en-US\string.txt">
+      <Filter>Assets\language\en-US</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-CN\string.txt">
+      <Filter>Assets\language\zh-CN</Filter>
     </Text>
   </ItemGroup>
 </Project>

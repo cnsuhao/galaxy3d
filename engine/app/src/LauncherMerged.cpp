@@ -280,8 +280,19 @@ void LauncherMerged::Start()
 {
 	read_score_best();
 
+	GTString lan = Localization::GetLanguage();
+	std::string lan_path;
+	if(lan.StartsWith("zh"))
+	{
+		lan_path = "zh-CN";
+	}
+	else
+	{
+		lan_path = "en-US";
+	}
+
 	GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
-	Localization::LoadStrings(Application::GetDataPath() + "/Assets/string.txt");
+	Localization::LoadStrings(Application::GetDataPath() + "/Assets/language/" + lan_path + "/string.txt");
 
 	float pixel_per_unit = 100;
 

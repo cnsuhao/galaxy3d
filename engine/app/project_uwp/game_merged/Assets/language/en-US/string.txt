@@ -1,0 +1,7 @@
+{
+    "continue": "Continue",
+    "restart": "Restart",
+    "score": "Score",
+    "score_best": "Top",
+	"app_name": "Merged 7!"
+}

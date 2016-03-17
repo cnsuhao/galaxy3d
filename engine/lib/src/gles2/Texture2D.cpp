@@ -78,7 +78,8 @@ namespace Galaxy3D
 		GL_LINEAR,
 		GL_LINEAR,
 	};
-
+	const GLenum *Texture::FILTER_MODES = Galaxy3D::FILTER_MODES;
+	
 	static const GLenum FILTER_MODES_MIP[3] =
 	{
 		GL_NEAREST_MIPMAP_NEAREST,
@@ -91,6 +92,7 @@ namespace Galaxy3D
 		GL_REPEAT,
 		GL_CLAMP_TO_EDGE,
 	};
+	const GLenum *Texture::ADDRESS_MODES = Galaxy3D::ADDRESS_MODES;
 
 	Texture2D::~Texture2D()
 	{

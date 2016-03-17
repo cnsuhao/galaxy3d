@@ -111,11 +111,15 @@
     <Filter Include="Assets\shader\UI">
       <UniqueIdentifier>{80f5b17b-a6d5-4fef-b772-fbc36e1df599}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\string.txt">
-      <Filter>Assets</Filter>
-    </Text>
+    <Filter Include="Assets\language">
+      <UniqueIdentifier>{edd93f8d-5fc4-419a-aa91-5ab528802f2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\en-US">
+      <UniqueIdentifier>{00dc2100-1d4c-477e-a6ba-5d01adfa06d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-CN">
+      <UniqueIdentifier>{5f43b36d-8bde-4161-b8e0-86be0574f3be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
@@ -130,5 +134,13 @@
     <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
       <Filter>Assets\shader\UI</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\language\en-US\string.txt">
+      <Filter>Assets\language\en-US</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-CN\string.txt">
+      <Filter>Assets\language\zh-CN</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,1 +1,1 @@
-F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.8.0\game_1.1.8.0_x86_x64_arm.appxbundle
+F:\Projects\Galaxy3D\svn\engine\app\project_uwp\AppPackages\game\game_1.1.11.0\game_1.1.11.0_x86_x64_arm.appxbundle

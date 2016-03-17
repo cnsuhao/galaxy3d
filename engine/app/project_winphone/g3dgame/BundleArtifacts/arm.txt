@@ -1,0 +1,3 @@
+MainPackage=F:\Projects\Galaxy3D\svn\engine\app\project_winphone\ARM\Release\g3dgame\g3dgame_1.1.7.1_ARM.appx
+SymbolPackage=F:\Projects\Galaxy3D\svn\engine\app\project_winphone\AppPackages\g3dgame\g3dgame_1.1.7.1_Test\g3dgame_1.1.7.1_ARM.appxsym
+ResourcePack=F:\Projects\Galaxy3D\svn\engine\app\project_winphone\ARM\Release\g3dgame\g3dgame_1.1.7.1_language-en.appx

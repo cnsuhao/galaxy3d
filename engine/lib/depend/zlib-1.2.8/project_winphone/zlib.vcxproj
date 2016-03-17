@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="..\adler32.c" />
     <ClCompile Include="..\compress.c" />
+    <ClCompile Include="..\contrib\minizip\ioapi.c" />
+    <ClCompile Include="..\contrib\minizip\unzip.c" />
+    <ClCompile Include="..\contrib\minizip\zip.c" />
     <ClCompile Include="..\crc32.c" />
     <ClCompile Include="..\deflate.c" />
     <ClCompile Include="..\gzclose.c" />
@@ -86,22 +89,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>..\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IntDir>$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\src;$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
+    <IncludePath>..\;$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IntDir>$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\src;$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
+    <IncludePath>..\;$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

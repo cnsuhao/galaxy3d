@@ -315,9 +315,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Assets\string.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -353,6 +350,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\language\en-US\string.txt" />
+    <Text Include="Assets\language\zh-CN\string.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,6 +7,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>WindowsPhoneEmulatorDebugger</DebuggerFlavor>
-    <WindowsPhoneEmulatorID>57B0267A-6444-41EB-9127-2ED594284A2D;Emulator 8.1 WXGA 4.5 inch(ZH-HANS)</WindowsPhoneEmulatorID>
+    <WindowsPhoneEmulatorID>33D7CE1E-0D98-4E5C-89B9-4AD2183E2DB6;Emulator 8.1 1080P 5.5 inch(ZH-HANS)</WindowsPhoneEmulatorID>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <DebuggerFlavor>WindowsPhoneEmulatorDebugger</DebuggerFlavor>
+    <WindowsPhoneEmulatorID>D363CCA4-0764-4F2C-9EE1-12E55E13C0FC;Emulator 8.1 720P 4.7 inch(ZH-HANS)</WindowsPhoneEmulatorID>
   </PropertyGroup>
 </Project>

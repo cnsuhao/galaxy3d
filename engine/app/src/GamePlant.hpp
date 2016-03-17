@@ -18,6 +18,9 @@
 #include "AudioClip.h"
 #include "AudioSource.h"
 #include "GTFile.h"
+#include "RenderTexture.h"
+#include "SpriteRenderer.h"
+#include "Input.h"
 #include <deque>
 
 using namespace Galaxy3D;
@@ -121,7 +124,7 @@ static void set_exp(int exp, int exp_full)
 
 static void on_grow_finished(Component *tween, std::weak_ptr<Component> &target)
 {
-	auto plant = (Plant *) target.lock().get();
+	//auto plant = (Plant *) target.lock().get();
 	auto fruit = tween->GetGameObject();
 
 	auto collider = fruit->GetComponent<BoxCollider>();
@@ -164,7 +167,8 @@ struct FruitEventListener : public UIEventListener
 		auto tr = GetGameObject()->GetComponent<TweenRotation>();
 		if(tr)
 		{
-			Component::Destroy(std::dynamic_pointer_cast<Component>(tr));
+			auto com = std::dynamic_pointer_cast<Component>(tr);
+			Component::Destroy(com);
 			GetTransform()->SetRotation(Quaternion::Identity());
 		}
 	}
@@ -517,7 +521,7 @@ struct CardEventListener : public UIEventListener
 				int pos_x = Mathf::RoundToInt((x + g_map_pos * 0.9f) / 380);
 				auto &plants = g_plants[type_0];
 
-				size_t target_size = abs(pos_x) * 2 + 1;
+				size_t target_size = Mathf::Abs(pos_x) * 2 + 1;
 				if(plants.size() >= target_size)
 				{
 					int index = pos_x + (plants.size() - 1) / 2;

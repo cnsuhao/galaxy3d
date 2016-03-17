@@ -258,7 +258,8 @@
     <Xml Include="StoreManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Assets\string.txt" />
+    <Text Include="Assets\language\en-US\string.txt" />
+    <Text Include="Assets\language\zh-CN\string.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

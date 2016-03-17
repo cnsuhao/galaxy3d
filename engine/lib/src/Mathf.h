@@ -42,6 +42,7 @@ namespace Galaxy3D
         static float RandomRange(float min, float max);
         static int RandomRange(int min, int max);
 		static float Log2(float x) {return logf(x) / 0.3010299956639f;}
+		static int Abs(int v) {return (int) fabsf((float) v);}
 	};
 
 	template<class T>
