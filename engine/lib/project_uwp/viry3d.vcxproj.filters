@@ -202,9 +202,6 @@
     <ClCompile Include="..\src\d3d11\Texture2D.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Thread.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Transform.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -505,9 +502,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\TextureWrapMode.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Thread.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Transform.h">

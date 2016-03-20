@@ -127,10 +127,10 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Assets\audio\bgm.wav">
+    <Media Include="Assets\audio\click.wav">
       <Filter>Assets\audio</Filter>
     </Media>
-    <Media Include="Assets\audio\click.wav">
+    <Media Include="Assets\audio\bgm.mp3">
       <Filter>Assets\audio</Filter>
     </Media>
   </ItemGroup>

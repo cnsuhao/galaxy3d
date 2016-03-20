@@ -44,6 +44,13 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE				:=	libMad
+LOCAL_SRC_FILES				:=	../../../lib/depend/mad/project_android/obj/local/$(TARGET_ARCH_ABI)/libMad.a
+
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE				:=	libViry3D
 LOCAL_SRC_FILES				:=	../../../lib/project_android/obj/local/$(TARGET_ARCH_ABI)/libViry3D.a
 
@@ -60,10 +67,9 @@ LOCAL_C_INCLUDES			:=	\
 	../../../lib/src/gles2
 
 LOCAL_SRC_FILES				:=	\
-	jni.cpp \
-	../../src/LauncherMerged.cpp
+	jni.cpp
 
-LOCAL_STATIC_LIBRARIES		:=	libViry3D libJSON libBullet libOpenAL libPNG libJPEG libFreeType
+LOCAL_STATIC_LIBRARIES		:=	libViry3D libJSON libBullet libPNG libJPEG libFreeType libOpenAL libMad
 LOCAL_LDLIBS				:=	-llog -lGLESv2 -lz -lOpenSLES
 
 include $(BUILD_SHARED_LIBRARY)

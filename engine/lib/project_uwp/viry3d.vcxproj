@@ -98,7 +98,6 @@
     <ClCompile Include="..\src\TerrainCollider.cpp" />
     <ClCompile Include="..\src\TerrainRenderer.cpp" />
     <ClCompile Include="..\src\TextRenderer.cpp" />
-    <ClCompile Include="..\src\Thread.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
     <ClCompile Include="..\src\TweenColor.cpp" />
     <ClCompile Include="..\src\Tweenner.cpp" />
@@ -206,7 +205,6 @@
     <ClInclude Include="..\src\TextRenderer.h" />
     <ClInclude Include="..\src\TextureFormat.h" />
     <ClInclude Include="..\src\TextureWrapMode.h" />
-    <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\Transform.h" />
     <ClInclude Include="..\src\TweenColor.h" />
     <ClInclude Include="..\src\Tweenner.h" />
@@ -303,27 +301,27 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\mad;..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

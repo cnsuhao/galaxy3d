@@ -274,13 +274,17 @@ protected:
 
 		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, -540, 0));
 
-		set_exp(g_exp, g_exp_full);
+		set_exp(g_exp);
 		set_level(g_level);
 		set_gold(g_gold);
 	}
 
     virtual void Start()
 	{
+		auto bgm = GameObject::Create("")->AddComponent<AudioSource>();
+		bgm->SetLoop(true);
+		bgm->PlayMp3File(Application::GetDataPath() + "/Assets/audio/bgm.mp3");
+
 		Screen::AddResizeListener(std::dynamic_pointer_cast<IScreenResizeEventListener>(GetComponentPtr()));
 
 		GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
@@ -320,13 +324,6 @@ protected:
 		cam->SetDepth(0);
 		cam->SetClearColor(Color(142, 239, 255, 255) / 255.0f);
 		cam->SetRenderTexture(screen_buffer);
-
-		cam->GetGameObject()->AddComponent<AudioListener>();
-		auto audio_src = cam->GetGameObject()->AddComponent<AudioSource>();
-		auto bgm = AudioClip::LoadFromFile(Application::GetDataPath() + "/Assets/audio/bgm.wav");
-		audio_src->SetClip(bgm);
-		audio_src->SetLoop(true);
-		audio_src->Play();
 
 		auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 		canvas->GetTransform()->SetParent(cam->GetTransform());
