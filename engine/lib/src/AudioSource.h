@@ -13,7 +13,8 @@ namespace Galaxy3D
 		AudioSource():
 			m_source(NULL),
 			m_loop(false),
-			m_volume(1.0f)
+			m_volume(1.0f),
+			m_mp3_buffer(NULL)
 		{}
 		virtual ~AudioSource();
 		void SetClip(const std::shared_ptr<AudioClip> &clip);
@@ -26,9 +27,11 @@ namespace Galaxy3D
 		void SetTime(float time);
 		float GetTime();
 		void Play();
+		void PlayMp3File(const std::string &file);
 
 	protected:
 		virtual void Awake();
+		virtual void Update();
 		virtual void OnTranformChanged();
 
 	private:
@@ -36,6 +39,7 @@ namespace Galaxy3D
 		void *m_source;
 		bool m_loop;
 		float m_volume;
+		void *m_mp3_buffer;
 	};
 }
 

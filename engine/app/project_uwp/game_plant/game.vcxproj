@@ -303,6 +303,9 @@
     <ProjectReference Include="..\..\..\lib\depend\lpng1512\project_uwp\png.vcxproj">
       <Project>{bc776c8e-9efa-4670-bd3a-958245a848de}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\lib\depend\mad\project_uwp\mad.vcxproj">
+      <Project>{95fb4dab-e4d4-49b5-aeb2-e7f1f84bff76}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\lib\depend\openal-soft-winphone-master\project_uwp\openal.vcxproj">
       <Project>{2426fa60-4366-4a81-8ffd-4329fcdaa166}</Project>
     </ProjectReference>
@@ -351,7 +354,7 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Assets\audio\bgm.wav" />
+    <Media Include="Assets\audio\bgm.mp3" />
     <Media Include="Assets\audio\click.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

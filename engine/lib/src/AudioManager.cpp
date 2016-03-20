@@ -162,12 +162,11 @@ namespace Galaxy3D
 		alListenerfv(AL_VELOCITY, velocity);
 	}
 
-	void *AudioManager::CreateClipBuffer(AudioClip *clip, void *data)
+	void *AudioManager::CreateBuffer(int channel, int frequency, int bits, void *data, int size)
 	{
 		ALenum format = 0;
 
-		int bits = clip->GetBits();
-		switch(clip->GetChannels())
+		switch(channel)
 		{
 		case 1:
 			if(bits == 8)
@@ -187,7 +186,7 @@ namespace Galaxy3D
 		alGenBuffers(1, &buffer);
 		if(buffer > 0)
 		{
-			alBufferData(buffer, format, data, clip->GetBufferSize(), clip->GetFrequency());
+			alBufferData(buffer, format, data, size, frequency);
 		}
 		else
 		{
@@ -195,6 +194,11 @@ namespace Galaxy3D
 		}
 
 		return (void *) buffer;
+	}
+
+	void *AudioManager::CreateClipBuffer(AudioClip *clip, void *data)
+	{
+		return CreateBuffer(clip->GetChannels(), clip->GetFrequency(), clip->GetBits(), data, clip->GetBufferSize());
 	}
 
 	void AudioManager::DeleteClipBuffer(AudioClip *clip)
@@ -245,6 +249,64 @@ namespace Galaxy3D
 	{
 		ALuint src = (ALuint) source->GetSource();
 		alSourcei(src, AL_BUFFER, (ALuint) source->GetClip()->GetBuffer());
+	}
+
+	void AudioManager::SetSourceQueueBuffer(AudioSource *source, void *buffer)
+	{
+		ALuint src = (ALuint) source->GetSource();
+		ALuint b = (ALuint) buffer;
+
+		if(source->IsLoop())
+		{
+			ALint loop;
+			alGetSourcei(src, AL_LOOPING, &loop);
+			if(loop)
+			{
+				alSourcei(src, AL_LOOPING, AL_FALSE);
+			}
+		}
+
+		alSourceQueueBuffers(src, 1, &b);
+	}
+
+	int AudioManager::GetSourceBufferQueued(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+
+		int queued;
+		alGetSourceiv(src, AL_BUFFERS_QUEUED, &queued);
+
+		return queued;
+	}
+
+	void AudioManager::ProcessSourceBufferQueue(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+
+		int processed;
+		alGetSourceiv(src, AL_BUFFERS_PROCESSED, &processed);
+		if(processed > 0)
+		{
+			ALuint *buffers = new ALuint[processed];
+			alSourceUnqueueBuffers(src, processed, buffers);
+			alDeleteBuffers(processed, buffers);
+			delete [] buffers;
+		}
+	}
+
+	void AudioManager::DeleteSourceBufferQueue(AudioSource *source)
+	{
+		ALuint src = (ALuint) source->GetSource();
+
+		int queued;
+		alGetSourceiv(src, AL_BUFFERS_QUEUED, &queued);
+		if(queued > 0)
+		{
+			ALuint *buffers = new ALuint[queued];
+			alSourceUnqueueBuffers(src, queued, buffers);
+			alDeleteBuffers(queued, buffers);
+			delete [] buffers;
+		}
 	}
 
 	void AudioManager::SetSourceVolume(AudioSource *source)

@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{8063bfb1-2c5d-422c-970e-cfcca302bb4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\id3tag">
+      <UniqueIdentifier>{fed9c8ad-e582-433d-9bfc-bca36d456a77}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\fixed.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\frame.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\huffman.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\layer3.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\layer12.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stream.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\synth.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\timer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\version.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bit.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\decoder.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\field.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\file.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\frametype.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\genre.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\latin1.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\parse.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\render.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\tag.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\ucs4.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\utf8.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\utf16.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\util.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\compat.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\crc.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\id3_frame.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\id3tag\id3_version.c">
+      <Filter>src\id3tag</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

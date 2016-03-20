@@ -13,7 +13,8 @@ LOCAL_C_INCLUDES			:= \
 	../../depend/bullet3-2.83.6/src \
 	../../depend/json/src/json \
 	../../depend/freetype-2.6/include \
-	../../depend/zlib-1.2.8
+	../../depend/zlib-1.2.8 \
+	../../depend/mad
 
 LOCAL_SRC_FILES			:= \
 	../../depend/zlib-1.2.8/contrib/minizip/ioapi.c \
@@ -89,7 +90,6 @@ LOCAL_SRC_FILES			:= \
     ../../src/TerrainCollider.cpp \
     ../../src/TerrainRenderer.cpp \
     ../../src/TextRenderer.cpp \
-    ../../src/Thread.cpp \
     ../../src/Transform.cpp \
     ../../src/TweenColor.cpp \
     ../../src/Tweenner.cpp \

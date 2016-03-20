@@ -31,6 +31,7 @@ struct Item
 	int type_1;
 	std::string name;
 	int price_base;
+	int price_sale;
 	int level;
 	int planted;
 	std::weak_ptr<TextRenderer> label_price;
@@ -44,11 +45,12 @@ struct Item
 		level(-1),
 		planted(-1)
 	{}
-	Item(int type_0, int type_1, const std::string &name, int price_base, int level, int planted):
+	Item(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted):
 		type_0(type_0),
 		type_1(type_1),
 		name(name),
 		price_base(price_base),
+		price_sale(price_sale),
 		level(level),
 		planted(planted)
 	{}
@@ -87,14 +89,13 @@ static float g_wave_pos_1 = 0;
 static bool g_ui_bag_up = true;
 static int g_tab_current = 0;
 static Item g_cards[25] = {
-	Item(0, 0, "carrot", 3, 0, 0),
-	Item(0, 0, "white carrot", 9, 0, 0)
+	Item(0, 0, "carrot", 3, 1, 0, 0),
+	Item(0, 1, "white carrot", 9, 2, 0, 0)
 };
 static std::deque<std::shared_ptr<Plant>> g_plants[3];
 static int g_gold = 10;
 static TextRenderer *g_label_gold;
 static int g_exp = 0;
-static int g_exp_full = 10;
 static SpriteNode *g_sprite_exp;
 static int g_level = 1;
 static TextRenderer *g_label_level;
@@ -113,13 +114,29 @@ static void set_level(int level)
 	g_label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level).str + "</outline>");
 }
 
-static void set_exp(int exp, int exp_full)
+static void set_exp(int exp)
 {
 	g_exp = exp;
-	g_exp_full = exp_full;
+	int exp_full = g_level * 10;
 
-	float w = Mathf::Round(295 * g_exp / (float) g_exp_full);
+	float w = Mathf::Round(295 * g_exp / (float) exp_full);
 	g_sprite_exp->GetSprite()->SetSize(Vector2(w, 56));
+}
+
+static void add_exp(int exp)
+{
+	int exp_full = g_level * 10;
+	g_exp += exp;
+
+	while(g_exp >= exp_full)
+	{
+		g_exp -= exp_full;
+		g_level += 1;
+		exp_full = g_level * 10;
+	}
+
+	set_level(g_level);
+	set_exp(g_exp);
 }
 
 static void on_grow_finished(Component *tween, std::weak_ptr<Component> &target)
@@ -149,8 +166,33 @@ struct FruitEventListener : public UIEventListener
 
 	virtual void OnClick()
 	{
+		Sell();
+		FreshNew();
+	}
+
+	void Sell()
+	{
+		auto p = plant.lock();
+		int index = p->type_0 * 5 + p->type_1;
+
+		int sale = g_cards[index].price_sale;
+
+		set_gold(g_gold + sale);
+		add_exp(sale);
+	}
+
+	void FreshNew()
+	{
 		auto collider = GetGameObject()->GetComponent<BoxCollider>();
 		collider->Enable(false);
+
+		auto tr = GetGameObject()->GetComponent<TweenRotation>();
+		if(tr)
+		{
+			auto com = std::dynamic_pointer_cast<Component>(tr);
+			Component::Destroy(com);
+			GetTransform()->SetRotation(Quaternion::Identity());
+		}
 
 		GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
 
@@ -163,14 +205,6 @@ struct FruitEventListener : public UIEventListener
 		ts->to = Vector3(1, 1, 1);
 		ts->target = plant;
 		ts->on_finished = on_grow_finished;
-
-		auto tr = GetGameObject()->GetComponent<TweenRotation>();
-		if(tr)
-		{
-			auto com = std::dynamic_pointer_cast<Component>(tr);
-			Component::Destroy(com);
-			GetTransform()->SetRotation(Quaternion::Identity());
-		}
 	}
 };
 
@@ -524,8 +558,11 @@ struct CardEventListener : public UIEventListener
 				size_t target_size = Mathf::Abs(pos_x) * 2 + 1;
 				if(plants.size() >= target_size)
 				{
+					auto &card = g_cards[type_0 * 5 + type_1];
+
 					int index = pos_x + (plants.size() - 1) / 2;
-					if(!plants[index])
+					if( !plants[index] &&
+						card.price_base <= g_gold)
 					{
 						auto obj = GameObject::Instantiate(tree);
 						std::shared_ptr<Plant> p;
@@ -551,9 +588,12 @@ struct CardEventListener : public UIEventListener
 
 						set_plants_pos();
 
-						auto &card = g_cards[type_0 * 5 + type_1];
+						// add planted
 						card.planted++;
 						card.label_planted.lock()->GetLabel()->SetText("<outline>" + GTString::ToString(card.planted).str + "</outline>");
+					
+						// spend gold
+						set_gold(g_gold - card.price_base);
 					}
 				}
 			}
