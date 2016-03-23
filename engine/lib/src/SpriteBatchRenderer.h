@@ -15,6 +15,7 @@ namespace Galaxy3D
 		void AddSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void RemoveSprite(const std::shared_ptr<SpriteNode> &sprite);
 		void SetColor(const Color &color) {m_color = color;}
+		Color GetColor() const {return m_color;}
         void SetClip(bool clip) {m_clip = clip;}
         bool IsClip() const {return m_clip;}
         void SetClipRect(const Vector4 &rect) {m_clip_rect = rect;}

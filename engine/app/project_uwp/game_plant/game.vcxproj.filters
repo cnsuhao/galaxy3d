@@ -26,6 +26,12 @@
     <Image Include="Assets\image\plant.png">
       <Filter>Assets\image</Filter>
     </Image>
+    <Image Include="Assets\logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -64,6 +70,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\LauncherPlant.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SplashScreen.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

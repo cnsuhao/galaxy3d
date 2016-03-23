@@ -9,7 +9,7 @@
 #include "Input.h"
 #include "GTFile.h"
 #include "Application.h"
-#include "../../src/LauncherPlant.hpp"
+#include "../../src/SplashScreen.hpp"
 #include <vector>
 #include <list>
 
@@ -57,7 +57,7 @@ static int native_on_start(JNIEnv *env, jobject thiz, int w, int h)
 	GraphicsDevice::GetInstance()->Init(0);
 	World::Init();
 
-	GameObject::Create("")->AddComponent<LauncherPlant>();
+	GameObject::Create("")->AddComponent<SplashScreen>();
 
 	return 0;
 }

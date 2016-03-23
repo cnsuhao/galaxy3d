@@ -25,7 +25,7 @@
 
 using namespace Galaxy3D;
 
-struct Item
+struct Card
 {
 	int type_0;
 	int type_1;
@@ -37,7 +37,7 @@ struct Item
 	std::weak_ptr<TextRenderer> label_price;
 	std::weak_ptr<TextRenderer> label_planted;
 
-	Item():
+	Card():
 		type_0(-1),
 		type_1(-1),
 		name(""),
@@ -45,7 +45,7 @@ struct Item
 		level(-1),
 		planted(-1)
 	{}
-	Item(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted):
+	Card(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted):
 		type_0(type_0),
 		type_1(type_1),
 		name(name),
@@ -63,6 +63,8 @@ struct Plant : public Component
 	int pos;
 	std::shared_ptr<SpriteNode> tree;
 	std::shared_ptr<SpriteNode> fruit;
+
+	void InitFruits(const Vector3 *pos, int count);
 };
 
 static GameObject *g_grass_node_0;
@@ -71,9 +73,12 @@ static GameObject *g_grass_node_1;
 static GameObject *g_grass_node_1_copy;
 static GameObject *g_ground_node;
 static GameObject *g_ground_node_copy;
+static GameObject *g_map_limit_left;
+static GameObject *g_map_limit_right;
 static GameObject *g_wave_node_0;
 static GameObject *g_wave_node_1;
 static GameObject *g_bag;
+static GameObject *g_win_settings;
 static SpriteBatchRenderer *g_batch_game;
 static float g_grass_pos_0_init;
 static float g_grass_pos_1_init;
@@ -81,6 +86,7 @@ static float g_ground_pos_init;
 static float g_wave_pos_0_init;
 static float g_wave_pos_1_init;
 static float g_map_pos = 0;
+static float g_map_pos_limit = 0;
 static float g_grass_pos_0;
 static float g_grass_pos_1;
 static float g_ground_pos = 0;
@@ -88,9 +94,24 @@ static float g_wave_pos_0 = 0;
 static float g_wave_pos_1 = 0;
 static bool g_ui_bag_up = true;
 static int g_tab_current = 0;
-static Item g_cards[25] = {
-	Item(0, 0, "carrot", 3, 1, 0, 0),
-	Item(0, 1, "white carrot", 9, 2, 0, 0)
+static Card g_cards[25] = {
+	Card(0, 0, "carrot", 3, 1, 0, 0),
+	Card(0, 1, "turnip", 4, 2, 0, 0),
+	Card(0, 2, "pumpkin", 5, 3, 0, 0),
+	Card(0, 3, "radish", 6, 4, 0, 0),
+	Card(0, 4, "cabbage", 7, 5, 0, 0),
+
+	Card(1, 0, "blueberry", 8, 6, 0, 0),
+	Card(1, 1, "raspberry", 9, 7, 0, 0),
+	Card(1, 2, "tomato", 10, 8, 0, 0),
+	Card(1, 3, "bell pepper", 11, 9, 0, 0),
+	Card(1, 4, "eggplant", 12, 10, 0, 0),
+
+	Card(2, 0, "apple", 30, 2, 0, 0),
+	Card(2, 1, "pear", 80, 4, 0, 0),
+	Card(2, 2, "orange", 250, 6, 0, 0),
+	Card(2, 3, "cherry", 800, 8, 0, 0),
+	Card(2, 4, "lemon", 2000, 8, 0, 0),
 };
 static std::deque<std::shared_ptr<Plant>> g_plants[3];
 static int g_gold = 10;
@@ -208,38 +229,102 @@ struct FruitEventListener : public UIEventListener
 	}
 };
 
-struct Plant4 : public Plant
+void Plant::InitFruits(const Vector3 *pos, int count)
+{
+	for(int i=0; i<count; i++)
+	{
+		auto node = GameObject::Create("fruit_" + GTString::ToString(type_0).str + "_" + GTString::ToString(type_1).str)->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(GetTransform());
+		node->GetTransform()->SetLocalPosition(pos[i]);
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
+		node->SetSprite(fruit->GetSprite());
+		if(type_0 == 0)
+		{
+			node->SetSortingOrder(7);
+		}
+		else
+		{
+			node->SetSortingOrder(8 - type_0 * 2);
+		}
+		tree->GetBatch().lock()->AddSprite(node);
+
+		auto ts = node->GetGameObject()->AddComponent<TweenScale>();
+		ts->duration = 10.0f;
+		ts->curve = AnimationCurve();
+		ts->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+		ts->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+		ts->from = Vector3(1, 1, 1) * 0.01f;
+		ts->to = Vector3(1, 1, 1);
+		ts->target = GetComponentPtr();
+		ts->on_finished = on_grow_finished;
+
+		node->GetGameObject()->SetLayer(Layer::UI);
+		auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
+		auto size = fruit->GetSprite()->GetSize();
+		collider->SetSize(Vector3(size));
+		if(type_0 == 0)
+		{
+			collider->SetCenter(Vector3(0, size.y * 0.5f, 0));
+		}
+		else
+		{
+			collider->SetCenter(Vector3(0, -size.y * 0.5f, 0));
+		}
+		collider->Enable(false);
+		auto listener = node->GetGameObject()->AddComponent<FruitEventListener>();
+		listener->plant = std::dynamic_pointer_cast<Plant>(GetComponentPtr());
+	}
+}
+
+struct PlantBig : public Plant
 {
 	virtual void Start()
 	{
-		for(int i=0; i<4; i++)
-		{
-			auto node = GameObject::Create("Plant4")->AddComponent<SpriteNode>();
-			node->GetTransform()->SetParent(GetTransform());
-			node->GetTransform()->SetLocalPosition(Vector3(-120.0f + i * 79, -15, 0));
-			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
-			node->SetSprite(fruit->GetSprite());
-			node->SetSortingOrder(7);
-			tree->GetBatch().lock()->AddSprite(node);
+		const Vector3 fruit_pos[5][5] = {
+			{Vector3(-110, 280), Vector3(-50, 380), Vector3(0, 310), Vector3(70, 370), Vector3(110, 270)},
+			{Vector3(-90, 230), Vector3(-50, 360), Vector3(0, 270), Vector3(70, 370), Vector3(110, 220)},
+			{Vector3(-100, 240), Vector3(-50, 340), Vector3(10, 230), Vector3(60, 360), Vector3(110, 260)},
+			{Vector3(-100, 360), Vector3(-50, 260), Vector3(10, 320), Vector3(80, 250), Vector3(110, 370)},
+			{Vector3(0, 200), Vector3(0, 200), Vector3(0, 200), Vector3(0, 200), Vector3(0, 200)}
+		};
 
-			auto ts = node->GetGameObject()->AddComponent<TweenScale>();
-			ts->duration = 10.0f;
-			ts->curve = AnimationCurve();
-			ts->curve.keys.push_back(Keyframe(0, 0, 1, 1));
-			ts->curve.keys.push_back(Keyframe(1, 1, 1, 1));
-			ts->from = Vector3(1, 1, 1) * 0.01f;
-			ts->to = Vector3(1, 1, 1);
-			ts->target = GetComponentPtr();
-			ts->on_finished = on_grow_finished;
+		InitFruits(fruit_pos[type_1], 5);
+	}
+};
 
-			node->GetGameObject()->SetLayer(Layer::UI);
-			auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
-			collider->SetSize(Vector3(40, 82, 0));
-			collider->SetCenter(Vector3(0, 41, 0));
-			collider->Enable(false);
-			auto listener = node->GetGameObject()->AddComponent<FruitEventListener>();
-			listener->plant = std::dynamic_pointer_cast<Plant>(GetComponentPtr());
-		}
+struct PlantMiddle : public Plant
+{
+	virtual void Start()
+	{
+		
+	}
+};
+
+struct PlantSmall4 : public Plant
+{
+	virtual void Start()
+	{
+		const Vector3 fruit_pos[4] = {
+			Vector3(-120.f, -15),
+			Vector3(-41.f, -15),
+			Vector3(38.f, -15),
+			Vector3(117.f, -15)
+		};
+
+		InitFruits(fruit_pos, 4);
+	}
+};
+
+struct PlantSmall2 : public Plant
+{
+	virtual void Start()
+	{
+		const Vector3 fruit_pos[2] = {
+			Vector3(-120.f, -15),
+			Vector3(-41.f, -15)
+		};
+
+		InitFruits(fruit_pos, 2);
 	}
 };
 
@@ -315,21 +400,79 @@ static void set_grass_pos(int x, GameObject *node, GameObject *node_copy)
 	node->GetTransform()->SetLocalPosition(Vector3(pos_x, pos_y, 0));
 }
 
+static int map_pos_to_plant(int type_0, float pos)
+{
+	int x = 0;
+
+	if(type_0 == 0)
+	{
+		x = Mathf::RoundToInt((pos + g_map_pos * 0.9f) / 380);
+	}
+	else if(type_0 == 1)
+	{
+		x = Mathf::RoundToInt((pos + 150 + g_map_pos * 0.8f) / 300);
+	}
+	else if(type_0 == 2)
+	{
+		x = Mathf::RoundToInt((pos + 230 + g_map_pos * 0.7f) / 460);
+	}
+
+	return x;
+}
+
+static float plant_pos_to_map(int type_0, int pos)
+{
+	float x = 0;
+
+	if(type_0 == 0)
+	{
+		x = pos * 380 - g_map_pos * 0.9f;
+	}
+	else if(type_0 == 1)
+	{
+		x = pos * 300 - g_map_pos * 0.8f - 150;
+	}
+	else if(type_0 == 2)
+	{
+		x = pos * 460 - g_map_pos * 0.7f - 230;
+	}
+
+	return x;
+}
+
 static void set_plants_pos()
 {
-	auto &plants = g_plants[0];
-
-	for(size_t i=0; i<plants.size(); i++)
+	for(auto &plants : g_plants)
 	{
-		if(plants[i])
+		for(size_t i=0; i<plants.size(); i++)
 		{
-			plants[i]->GetTransform()->SetLocalPosition(Vector3(plants[i]->pos * 380 - g_map_pos * 0.9f, -326, 0));
+			if(plants[i])
+			{
+				plants[i]->GetTransform()->SetLocalPosition(Vector3(plant_pos_to_map(plants[i]->type_0, plants[i]->pos), -326, 0));
+			}
 		}
 	}
 }
 
 static void set_map_pos(float x)
 {
+	float limit_pos_left = -g_map_pos_limit - x;
+	float limit_pos_right = g_map_pos_limit - x;
+	if(limit_pos_left > -800)
+	{
+		x = 800 - g_map_pos_limit;
+	}
+	else if(limit_pos_right < 800)
+	{
+		x = g_map_pos_limit - 800;
+	}
+	limit_pos_left = -g_map_pos_limit - x;
+	limit_pos_right = g_map_pos_limit - x;
+
+	float y = g_map_limit_left->GetTransform()->GetLocalPosition().y;
+	g_map_limit_left->GetTransform()->SetLocalPosition(Vector3(limit_pos_left, y, 0));
+	g_map_limit_right->GetTransform()->SetLocalPosition(Vector3(limit_pos_right, y, 0));
+
 	g_map_pos = x;
 
 	g_grass_pos_0 = g_grass_pos_0_init + g_map_pos * 0.4f;
@@ -348,8 +491,6 @@ static void set_map_pos(float x)
 
 struct GroundEventListener : public UIEventListener
 {
-	float m_down_x;
-	float m_down_map_pos;
 	const float momentum_amount = 30;
 	Vector3 m_momentum;
 	bool m_drag_end;
@@ -363,16 +504,13 @@ struct GroundEventListener : public UIEventListener
 
 	virtual void OnDragStart()
 	{
-		m_down_x = UICanvas::GetLastPosition().x;
-		m_down_map_pos = g_map_pos;
 		m_drag_end = false;
 		m_draged = false;
 	}
 
 	virtual void OnDrag(const Vector3 &delta)
 	{
-		float offset = m_down_x - UICanvas::GetLastPosition().x;
-		float map_pos = m_down_map_pos + offset;
+		float map_pos = g_map_pos - delta.x;
 
 		set_map_pos(map_pos);
 
@@ -399,7 +537,7 @@ struct GroundEventListener : public UIEventListener
 
 	virtual void LateUpdate()
 	{
-		if(m_drag_end)
+		if(m_drag_end && m_momentum.SqrMagnitude() > 1)
 		{
 			float dampen_strength = 9;
 			float delta = GTTime::GetDeltaTime();
@@ -418,6 +556,66 @@ struct GroundEventListener : public UIEventListener
 				m_momentum *= 0.5f;
 			}
 		}
+	}
+};
+
+struct ButtonSettingsEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		g_win_settings->SetActive(true);
+
+		auto cover = g_win_settings->GetTransform()->GetParent().lock()->Find("window settings cover")->GetGameObject()->GetComponent<SpriteNode>();
+		cover->GetGameObject()->SetActive(true);
+		cover->SetColor(Color(0, 0, 0, 0));
+
+		auto tc = cover->GetGameObject()->AddComponent<TweenColor>();
+		tc->duration = 0.2f;
+		tc->from = Color(0, 0, 0, 0);
+		tc->to = Color(0, 0, 0, 0.7f);
+		tc->curve = AnimationCurve();
+		tc->curve.keys.push_back(Keyframe(0, 0, 0, 0));
+		tc->curve.keys.push_back(Keyframe(1, 1, 0, 0));
+		tc->target = GetComponentPtr();
+		tc->on_set_value =
+			[cover](Component *tween, std::weak_ptr<Component> &target, void *value)
+			{
+				Color c = *(Color *) value;
+
+				cover->SetColor(c);
+			};
+	}
+};
+
+struct ButtonResumeEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		auto cover = g_win_settings->GetTransform()->GetParent().lock()->Find("window settings cover")->GetGameObject()->GetComponent<SpriteNode>();
+		cover->GetGameObject()->SetActive(false);
+		g_win_settings->SetActive(false);
+	}
+};
+
+struct ButtonAboutEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		auto settings_main = g_win_settings->GetTransform()->Find("settings_main");
+		settings_main->GetGameObject()->SetActive(false);
+		auto settings_about = g_win_settings->GetTransform()->Find("settings_about");
+		settings_about->GetGameObject()->SetActive(true);
+	}
+};
+
+struct ButtonAboutBackEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		auto settings_main = g_win_settings->GetTransform()->Find("settings_main");
+		settings_main->GetGameObject()->SetActive(true);
+		auto settings_about = g_win_settings->GetTransform()->Find("settings_about");
+		settings_about->GetGameObject()->SetActive(false);
 	}
 };
 
@@ -499,9 +697,44 @@ struct ButtonUpEventListener : public UIEventListener
 
 struct TabEventListener : public UIEventListener
 {
+	int index;
+	int selected;
+	std::vector<SpriteNode *> tab_group;
+
 	virtual void OnClick()
 	{
-		
+		if(selected != index)
+		{
+			auto tab_name = std::string("tab_") + GTString::ToString(selected).str;
+			auto sprite = tab_group[selected]->GetSprite();
+			sprite->GetAtlas().lock()->SetSpriteData(sprite, tab_name);
+
+			tab_name = std::string("tab_") + GTString::ToString(index).str;
+			sprite = tab_group[index]->GetSprite();
+			sprite->GetAtlas().lock()->SetSpriteData(sprite, tab_name + "_selected");
+
+			for(int i=0; i<5; i++)
+			{
+				auto card = tab_group[selected]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(selected * 5 + i).str);
+				if(card)
+				{
+					card->GetGameObject()->SetActive(false);
+				}
+
+				card = tab_group[index]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(index * 5 + i).str);
+				if(card)
+				{
+					card->GetGameObject()->SetActive(true);
+				}
+			}
+
+			// set selected tab
+			for(int i=0; i<5; i++)
+			{
+				auto handler = tab_group[i]->GetGameObject()->GetComponent<TabEventListener>();
+				handler->selected = index;
+			}
+		}
 	}
 };
 
@@ -527,8 +760,10 @@ struct CardEventListener : public UIEventListener
 			
 			// 去掉tabs card的偏移
 			float x = pos_local.x + (200 + 270.0f * type_1) - 740;
-			int pos_x = Mathf::RoundToInt((x + g_map_pos * 0.9f) / 380);
-			pos_local.x = pos_x * 380 - g_map_pos * 0.9f;
+
+			int pos_x = map_pos_to_plant(type_0, x);
+			pos_local.x = plant_pos_to_map(type_0, pos_x);
+
 			// 加上tabs card的偏移
 			pos_local.x = pos_local.x - (200 + 270.0f * type_1) + 740;
 		}
@@ -536,6 +771,7 @@ struct CardEventListener : public UIEventListener
 		pos_local.y = Mathf::Max(pos_local.y, -162.0f);
 
 		tree->GetTransform()->SetLocalPosition(pos_local);
+		tree->GetComponent<SpriteNode>()->SetColor(Color(1, 1, 1, 0.7f));
 	}
 
 	virtual void OnDragEnd()
@@ -545,15 +781,18 @@ struct CardEventListener : public UIEventListener
 
 		auto tree = GetTransform()->Find("tree")->GetGameObject();
 		tree->SetActive(false);
+		tree->GetComponent<SpriteNode>()->SetColor(Color(1, 1, 1, 1));
 
-		if(pos_local.y > 253.0f)
+		if( pos_local.y > 253.0f
+			&& type_0 < 3)
 		{
-			if(type_0 == 0)
+			// 去掉tabs card的偏移
+			float x = pos_local.x + (200 + 270.0f * type_1) - 740;
+			if( x > g_map_limit_left->GetTransform()->GetLocalPosition().x &&
+				x < g_map_limit_right->GetTransform()->GetLocalPosition().x)
 			{
-				// 去掉tabs card的偏移
-				float x = pos_local.x + (200 + 270.0f * type_1) - 740;
-				int pos_x = Mathf::RoundToInt((x + g_map_pos * 0.9f) / 380);
 				auto &plants = g_plants[type_0];
+				int pos_x = map_pos_to_plant(type_0, x);
 
 				size_t target_size = Mathf::Abs(pos_x) * 2 + 1;
 				if(plants.size() >= target_size)
@@ -561,15 +800,31 @@ struct CardEventListener : public UIEventListener
 					auto &card = g_cards[type_0 * 5 + type_1];
 
 					int index = pos_x + (plants.size() - 1) / 2;
-					if( !plants[index] &&
-						card.price_base <= g_gold)
+					if( !plants[index] 
+						//&& card.price_base <= g_gold
+						)
 					{
 						auto obj = GameObject::Instantiate(tree);
 						std::shared_ptr<Plant> p;
-						
-						if(type_1 == 0 || type_1 == 1 || type_1 == 3)
+					
+						if(type_0 == 0)
 						{
-							p = obj->AddComponent<Plant4>();
+							if(type_1 == 0 || type_1 == 1 || type_1 == 3)
+							{
+								p = obj->AddComponent<PlantSmall4>();
+							}
+							else
+							{
+								p = obj->AddComponent<PlantSmall2>();
+							}
+						}
+						else if(type_0 == 1)
+						{
+							p = obj->AddComponent<PlantMiddle>();
+						}
+						else if(type_0 == 2)
+						{
+							p = obj->AddComponent<PlantBig>();
 						}
 
 						p->type_0 = type_0;
@@ -583,7 +838,14 @@ struct CardEventListener : public UIEventListener
 						obj->SetActive(true);
 						p->GetTransform()->SetParent(g_batch_game->GetTransform());
 						auto s = obj->GetComponent<SpriteNode>();
-						s->SetSortingOrder(8);
+						if(type_0 == 0)
+						{
+							s->SetSortingOrder(8);
+						}
+						else
+						{
+							s->SetSortingOrder(7 - type_0 * 2);
+						}
 						g_batch_game->AddSprite(s);
 
 						set_plants_pos();

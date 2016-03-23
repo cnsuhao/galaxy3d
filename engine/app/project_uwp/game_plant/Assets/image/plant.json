@@ -1,6 +1,38 @@
 {"frames": [
 
 {
+	"filename": "apple fruit.png",
+	"frame": {"x":653,"y":1965,"w":63,"h":66},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":63,"h":66},
+	"sourceSize": {"w":69,"h":70}
+},
+{
+	"filename": "apple icon.png",
+	"frame": {"x":867,"y":1046,"w":155,"h":190},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":155,"h":190},
+	"sourceSize": {"w":155,"h":190}
+},
+{
+	"filename": "apple tree.png",
+	"frame": {"x":2,"y":1509,"w":378,"h":462},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":378,"h":462},
+	"sourceSize": {"w":380,"h":464}
+},
+{
+	"filename": "back.png",
+	"frame": {"x":1908,"y":479,"w":112,"h":116},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":112,"h":116},
+	"sourceSize": {"w":116,"h":120}
+},
+{
 	"filename": "bag.png",
 	"frame": {"x":2,"y":274,"w":1688,"h":338},
 	"rotated": false,
@@ -10,15 +42,95 @@
 },
 {
 	"filename": "bar_bottom.png",
-	"frame": {"x":1924,"y":199,"w":22,"h":87},
+	"frame": {"x":2022,"y":479,"w":22,"h":87},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2,"w":22,"h":87},
 	"sourceSize": {"w":22,"h":89}
 },
 {
+	"filename": "bell pepper fruit.png",
+	"frame": {"x":955,"y":1370,"w":60,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
+	"sourceSize": {"w":60,"h":47}
+},
+{
+	"filename": "bell pepper icon.png",
+	"frame": {"x":1924,"y":179,"w":119,"h":175},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":175},
+	"sourceSize": {"w":119,"h":175}
+},
+{
+	"filename": "bell pepper tree.png",
+	"frame": {"x":1683,"y":631,"w":173,"h":250},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":250},
+	"sourceSize": {"w":173,"h":250}
+},
+{
+	"filename": "blueberry fruit.png",
+	"frame": {"x":955,"y":1370,"w":60,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
+	"sourceSize": {"w":60,"h":47}
+},
+{
+	"filename": "blueberry icon.png",
+	"frame": {"x":1853,"y":1014,"w":164,"h":168},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":164,"h":168},
+	"sourceSize": {"w":164,"h":168}
+},
+{
+	"filename": "blueberry tree.png",
+	"frame": {"x":1683,"y":631,"w":173,"h":250},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":250},
+	"sourceSize": {"w":173,"h":250}
+},
+{
+	"filename": "button big green.png",
+	"frame": {"x":1029,"y":614,"w":416,"h":126},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":416,"h":126},
+	"sourceSize": {"w":418,"h":128}
+},
+{
+	"filename": "cabbage fruit.png",
+	"frame": {"x":762,"y":856,"w":99,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":99,"h":88},
+	"sourceSize": {"w":99,"h":88}
+},
+{
+	"filename": "cabbage icon.png",
+	"frame": {"x":1692,"y":346,"w":214,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":214,"h":60},
+	"sourceSize": {"w":214,"h":60}
+},
+{
+	"filename": "cabbage tree.png",
+	"frame": {"x":2,"y":1419,"w":307,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":307,"h":82},
+	"sourceSize": {"w":307,"h":82}
+},
+{
 	"filename": "card.png",
-	"frame": {"x":2,"y":614,"w":234,"h":321},
+	"frame": {"x":1447,"y":614,"w":234,"h":321},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":234,"h":321},
@@ -26,7 +138,7 @@
 },
 {
 	"filename": "carrot fruit.png",
-	"frame": {"x":2003,"y":186,"w":30,"h":82},
+	"frame": {"x":1858,"y":776,"w":30,"h":82},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":0,"w":30,"h":82},
@@ -34,7 +146,7 @@
 },
 {
 	"filename": "carrot icon.png",
-	"frame": {"x":1692,"y":274,"w":214,"h":55},
+	"frame": {"x":1692,"y":465,"w":214,"h":55},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2,"w":214,"h":55},
@@ -42,15 +154,39 @@
 },
 {
 	"filename": "carrot tree.png",
-	"frame": {"x":1692,"y":331,"w":300,"h":13},
+	"frame": {"x":653,"y":2033,"w":300,"h":13},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
 	"sourceSize": {"w":308,"h":13}
 },
 {
+	"filename": "cherry fruit.png",
+	"frame": {"x":1793,"y":1056,"w":44,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":46},
+	"sourceSize": {"w":44,"h":46}
+},
+{
+	"filename": "cherry icon.png",
+	"frame": {"x":2,"y":1033,"w":162,"h":190},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":162,"h":190},
+	"sourceSize": {"w":162,"h":190}
+},
+{
+	"filename": "cherry tree.png",
+	"frame": {"x":382,"y":1509,"w":378,"h":454},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":378,"h":454},
+	"sourceSize": {"w":380,"h":454}
+},
+{
 	"filename": "destroy.png",
-	"frame": {"x":1924,"y":2,"w":118,"h":121},
+	"frame": {"x":1908,"y":356,"w":118,"h":121},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":118,"h":121},
@@ -58,15 +194,39 @@
 },
 {
 	"filename": "down.png",
-	"frame": {"x":1692,"y":455,"w":144,"h":71},
+	"frame": {"x":372,"y":1973,"w":144,"h":71},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":144,"h":71},
 	"sourceSize": {"w":148,"h":73}
 },
 {
+	"filename": "eggplant fruit.png",
+	"frame": {"x":955,"y":1370,"w":60,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
+	"sourceSize": {"w":60,"h":47}
+},
+{
+	"filename": "eggplant icon.png",
+	"frame": {"x":1924,"y":2,"w":120,"h":175},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":175},
+	"sourceSize": {"w":120,"h":175}
+},
+{
+	"filename": "eggplant tree.png",
+	"frame": {"x":1683,"y":631,"w":173,"h":250},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":250},
+	"sourceSize": {"w":173,"h":250}
+},
+{
 	"filename": "exp bar.png",
-	"frame": {"x":2003,"y":125,"w":33,"h":59},
+	"frame": {"x":1858,"y":631,"w":33,"h":59},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":33,"h":59},
@@ -74,7 +234,7 @@
 },
 {
 	"filename": "exp.png",
-	"frame": {"x":1948,"y":199,"w":18,"h":56},
+	"frame": {"x":2028,"y":356,"w":18,"h":56},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":56},
@@ -82,7 +242,7 @@
 },
 {
 	"filename": "gold.png",
-	"frame": {"x":1924,"y":125,"w":77,"h":72},
+	"frame": {"x":147,"y":1973,"w":77,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":72},
@@ -90,7 +250,7 @@
 },
 {
 	"filename": "grass_0.png",
-	"frame": {"x":238,"y":736,"w":1025,"h":118},
+	"frame": {"x":2,"y":736,"w":1025,"h":118},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":2,"w":1025,"h":118},
@@ -98,7 +258,7 @@
 },
 {
 	"filename": "grass_1.png",
-	"frame": {"x":238,"y":614,"w":1025,"h":120},
+	"frame": {"x":2,"y":614,"w":1025,"h":120},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":1025,"h":120},
@@ -113,8 +273,168 @@
 	"sourceSize": {"w":1920,"h":270}
 },
 {
+	"filename": "lemon fruit.png",
+	"frame": {"x":582,"y":1965,"w":69,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":70},
+	"sourceSize": {"w":69,"h":70}
+},
+{
+	"filename": "lemon icon.png",
+	"frame": {"x":1890,"y":822,"w":155,"h":190},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":155,"h":190},
+	"sourceSize": {"w":155,"h":190}
+},
+{
+	"filename": "lemon tree.png",
+	"frame": {"x":1029,"y":742,"w":380,"h":464},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":464},
+	"sourceSize": {"w":380,"h":464}
+},
+{
+	"filename": "limit.png",
+	"frame": {"x":1411,"y":937,"w":106,"h":99},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":106,"h":99},
+	"sourceSize": {"w":106,"h":99}
+},
+{
+	"filename": "orange fruit.png",
+	"frame": {"x":955,"y":1304,"w":62,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":62,"h":64},
+	"sourceSize": {"w":62,"h":64}
+},
+{
+	"filename": "orange icon.png",
+	"frame": {"x":867,"y":856,"w":159,"h":188},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":159,"h":188},
+	"sourceSize": {"w":159,"h":190}
+},
+{
+	"filename": "orange tree.png",
+	"frame": {"x":1024,"y":1208,"w":380,"h":440},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":8,"w":380,"h":440},
+	"sourceSize": {"w":380,"h":448}
+},
+{
+	"filename": "pear fruit.png",
+	"frame": {"x":518,"y":1965,"w":62,"h":74},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":62,"h":74},
+	"sourceSize": {"w":62,"h":74}
+},
+{
+	"filename": "pear icon.png",
+	"frame": {"x":112,"y":1225,"w":163,"h":188},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":163,"h":188},
+	"sourceSize": {"w":163,"h":190}
+},
+{
+	"filename": "pear tree.png",
+	"frame": {"x":1411,"y":1056,"w":380,"h":451},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":380,"h":451},
+	"sourceSize": {"w":380,"h":451}
+},
+{
+	"filename": "pumpkin fruit.png",
+	"frame": {"x":762,"y":856,"w":99,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":99,"h":88},
+	"sourceSize": {"w":99,"h":88}
+},
+{
+	"filename": "pumpkin icon.png",
+	"frame": {"x":1692,"y":274,"w":214,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":214,"h":70},
+	"sourceSize": {"w":214,"h":70}
+},
+{
+	"filename": "pumpkin tree.png",
+	"frame": {"x":2,"y":1419,"w":307,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":307,"h":82},
+	"sourceSize": {"w":307,"h":82}
+},
+{
+	"filename": "radish fruit.png",
+	"frame": {"x":1858,"y":692,"w":32,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":82},
+	"sourceSize": {"w":32,"h":82}
+},
+{
+	"filename": "radish icon.png",
+	"frame": {"x":1692,"y":408,"w":214,"h":55},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":2,"w":214,"h":55},
+	"sourceSize": {"w":214,"h":57}
+},
+{
+	"filename": "radish tree.png",
+	"frame": {"x":653,"y":2033,"w":300,"h":13},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
+	"sourceSize": {"w":308,"h":13}
+},
+{
+	"filename": "raspberry fruit.png",
+	"frame": {"x":955,"y":1370,"w":60,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
+	"sourceSize": {"w":60,"h":47}
+},
+{
+	"filename": "raspberry icon.png",
+	"frame": {"x":1683,"y":883,"w":168,"h":171},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":168,"h":171},
+	"sourceSize": {"w":168,"h":171}
+},
+{
+	"filename": "raspberry tree.png",
+	"frame": {"x":1683,"y":631,"w":173,"h":250},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":250},
+	"sourceSize": {"w":173,"h":250}
+},
+{
+	"filename": "settings.png",
+	"frame": {"x":762,"y":946,"w":97,"h":85},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":85},
+	"sourceSize": {"w":97,"h":85}
+},
+{
 	"filename": "tab_0.png",
-	"frame": {"x":1893,"y":401,"w":145,"h":63},
+	"frame": {"x":867,"y":1620,"w":145,"h":63},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":63},
@@ -122,15 +442,127 @@
 },
 {
 	"filename": "tab_0_selected.png",
-	"frame": {"x":2,"y":937,"w":143,"h":73},
+	"frame": {"x":2,"y":1973,"w":143,"h":73},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":143,"h":73},
 	"sourceSize": {"w":147,"h":73}
 },
 {
+	"filename": "tab_1.png",
+	"frame": {"x":867,"y":1553,"w":147,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":65},
+	"sourceSize": {"w":147,"h":65}
+},
+{
+	"filename": "tab_1_selected.png",
+	"frame": {"x":1519,"y":937,"w":147,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":73},
+	"sourceSize": {"w":147,"h":73}
+},
+{
+	"filename": "tab_2.png",
+	"frame": {"x":867,"y":1486,"w":147,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":65},
+	"sourceSize": {"w":147,"h":65}
+},
+{
+	"filename": "tab_2_selected.png",
+	"frame": {"x":1892,"y":747,"w":147,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":73},
+	"sourceSize": {"w":147,"h":73}
+},
+{
+	"filename": "tab_3.png",
+	"frame": {"x":867,"y":1419,"w":147,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":65},
+	"sourceSize": {"w":147,"h":65}
+},
+{
+	"filename": "tab_3_selected.png",
+	"frame": {"x":1893,"y":672,"w":147,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":73},
+	"sourceSize": {"w":147,"h":73}
+},
+{
+	"filename": "tab_4.png",
+	"frame": {"x":718,"y":1965,"w":147,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":65},
+	"sourceSize": {"w":147,"h":65}
+},
+{
+	"filename": "tab_4_selected.png",
+	"frame": {"x":1893,"y":597,"w":147,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":147,"h":73},
+	"sourceSize": {"w":147,"h":73}
+},
+{
+	"filename": "tomato fruit.png",
+	"frame": {"x":955,"y":1370,"w":60,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
+	"sourceSize": {"w":60,"h":47}
+},
+{
+	"filename": "tomato icon.png",
+	"frame": {"x":2,"y":1238,"w":108,"h":176},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":108,"h":176},
+	"sourceSize": {"w":108,"h":176}
+},
+{
+	"filename": "tomato tree.png",
+	"frame": {"x":1683,"y":631,"w":173,"h":250},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":250},
+	"sourceSize": {"w":173,"h":250}
+},
+{
+	"filename": "turnip fruit.png",
+	"frame": {"x":1858,"y":692,"w":32,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":82},
+	"sourceSize": {"w":32,"h":82}
+},
+{
+	"filename": "turnip icon.png",
+	"frame": {"x":1692,"y":522,"w":214,"h":53},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":214,"h":53},
+	"sourceSize": {"w":214,"h":57}
+},
+{
+	"filename": "turnip tree.png",
+	"frame": {"x":653,"y":2033,"w":300,"h":13},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
+	"sourceSize": {"w":308,"h":13}
+},
+{
 	"filename": "up.png",
-	"frame": {"x":147,"y":937,"w":144,"h":71},
+	"frame": {"x":226,"y":1973,"w":144,"h":71},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":144,"h":71},
@@ -138,43 +570,35 @@
 },
 {
 	"filename": "wave.png",
-	"frame": {"x":1692,"y":401,"w":199,"h":52},
+	"frame": {"x":1692,"y":577,"w":199,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":199,"h":52},
 	"sourceSize": {"w":199,"h":52}
 },
 {
-	"filename": "white carrot icon.png",
-	"frame": {"x":1692,"y":346,"w":214,"h":53},
-	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":0,"y":4,"w":214,"h":53},
-	"sourceSize": {"w":214,"h":57}
-},
-{
-	"filename": "white carrot tree.png",
-	"frame": {"x":1692,"y":331,"w":300,"h":13},
-	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":4,"y":0,"w":300,"h":13},
-	"sourceSize": {"w":308,"h":13}
-},
-{
 	"filename": "white.png",
-	"frame": {"x":2035,"y":186,"w":9,"h":9},
+	"frame": {"x":1908,"y":274,"w":9,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":9},
 	"sourceSize": {"w":9,"h":9}
+},
+{
+	"filename": "window.png",
+	"frame": {"x":955,"y":1238,"w":65,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":65,"h":64},
+	"sourceSize": {"w":65,"h":64}
 }],
 "meta": {
 	"app": "http://www.texturepacker.com",
 	"version": "1.0",
 	"image": "plant.png",
 	"format": "RGBA8888",
-	"size": {"w":2048,"h":1024},
+	"size": {"w":2048,"h":2048},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:ec8225bab8270916604bc38fecd45af2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:9ee52f3f15e61061fea0f8e5b91d7ddf$"
 }
 }
