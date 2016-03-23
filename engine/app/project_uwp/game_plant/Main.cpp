@@ -13,8 +13,7 @@ using namespace Concurrency;
 #include "World.h"
 #include "Camera.h"
 #include "Debug.h"
-#include "../../src/LauncherMerged.h"
-#include "../../src/LauncherPlant.hpp"
+#include "../../src/SplashScreen.hpp"
 
 using namespace Galaxy3D;
 
@@ -60,7 +59,7 @@ void Main::OnInitEngine()
 {
     World::Init();
 
-    GameObject::Create("")->AddComponent<LauncherPlant>();
+    GameObject::Create("")->AddComponent<SplashScreen>();
 }
 
 // 在窗口大小更改(例如，设备方向更改)时更新应用程序状态
