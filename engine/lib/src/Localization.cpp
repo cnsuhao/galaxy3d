@@ -26,6 +26,7 @@ namespace Galaxy3D
 				{
 					auto keys = root.getMemberNames();
 
+					m_map.clear();
 					for(auto &i : keys)
 					{
 						m_map[i] = root[i].asString();

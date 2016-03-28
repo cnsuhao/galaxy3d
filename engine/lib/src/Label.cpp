@@ -3,6 +3,7 @@
 #include "GTString.h"
 #include "Mathf.h"
 #include "Debug.h"
+#include "Matrix4x4.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "ftoutln.h"
@@ -118,6 +119,245 @@ namespace Galaxy3D
 		}
 
 		return tex;
+	}
+
+	int Label::FillIndexBuffer(char *buffer, const std::shared_ptr<Label> &label)
+	{
+		char *p = buffer;
+		auto &lines = label->GetLines();
+		for(size_t i=0; i<lines.size(); i++)
+		{
+			auto &indices = lines[i].indices;
+			int size = sizeof(unsigned short) * indices.size();
+			
+			if(size > 0)
+			{
+				memcpy(p, &indices[0], size);
+				p += size;
+			}
+		}
+
+		return p - buffer;
+	}
+
+	int Label::FillVertexBuffer(char *buffer, const std::shared_ptr<Label> &label, Matrix4x4 *mat)
+	{
+		char *p = buffer;
+		auto pivot = label->GetPivot();
+		auto align = label->GetAlign();
+		auto aw = label->GetWidthActual();
+		auto ah = label->GetHeightActual();
+		auto w = label->GetWidth();
+		auto h = label->GetHeight();
+        auto offset_y = label->GetOffsetY();
+
+		if(w < 0)
+		{
+			w = aw;
+		}
+		if(h < 0)
+		{
+			h = ah;
+		}
+
+		if(align == LabelAlign::Auto)
+		{
+			if(	pivot == LabelPivot::TopLeft ||
+				pivot == LabelPivot::Left ||
+				pivot == LabelPivot::BottomLeft)
+			{
+				align = LabelAlign::Left;
+			}
+			else if(
+				pivot == LabelPivot::Top ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Bottom)
+			{
+				align = LabelAlign::Center;
+			}
+			else if(
+				pivot == LabelPivot::TopRight ||
+				pivot == LabelPivot::Right ||
+				pivot == LabelPivot::BottomRight)
+			{
+				align = LabelAlign::Right;
+			}
+		}
+
+		auto &lines = label->GetLines();
+		for(size_t i=0; i<lines.size(); i++)
+		{
+			auto &line = lines[i];
+			auto &vertices = line.vertices;
+			auto &colors = line.colors;
+			auto &uv = line.uv;
+			int vertex_count = vertices.size();
+
+			for(int i=0; i<vertex_count; i++)
+			{
+				Vector3 pos = vertices[i];
+
+				if(	pivot == LabelPivot::Top ||
+					pivot == LabelPivot::Center ||
+					pivot == LabelPivot::Bottom)
+				{
+					pos.x -= Mathf::Round(w * 0.5f);
+				}
+
+				if(	pivot == LabelPivot::TopRight ||
+					pivot == LabelPivot::Right ||
+					pivot == LabelPivot::BottomRight)
+				{
+					pos.x -= w;
+				}
+
+				if(	pivot == LabelPivot::Left ||
+					pivot == LabelPivot::Center ||
+					pivot == LabelPivot::Right)
+				{
+					pos.y += Mathf::Round(h * 0.5f);
+				}
+
+				if(	pivot == LabelPivot::BottomLeft ||
+					pivot == LabelPivot::Bottom ||
+					pivot == LabelPivot::BottomRight)
+				{
+					pos.y += h;
+				}
+
+				if(align == LabelAlign::Center)
+				{
+					pos.x += Mathf::Round((w - line.width) * 0.5f);
+				}
+				else if(align == LabelAlign::Right)
+				{
+					pos.x += (w - line.width);
+				}
+
+                pos.y += offset_y;
+
+				if(mat != NULL)
+				{
+					pos = mat->MultiplyPoint3x4(pos);
+				}
+				memcpy(p, &pos, sizeof(Vector3));
+				p += sizeof(Vector3);
+
+				Color c = colors[i];
+				memcpy(p, &c, sizeof(Color));
+				p += sizeof(Color);
+
+				Vector2 v1 = uv[i];
+				memcpy(p, &v1, sizeof(Vector2));
+				p += sizeof(Vector2);
+			}
+		}
+
+		return p - buffer;
+	}
+
+	int Label::FillVertexBuffer(char *buffer, LabelImageItem &item, const std::shared_ptr<Label> &label, const LabelLine &line)
+	{
+		char *p = buffer;
+		Vector2 *vertices = &item.vertices[0];
+		Vector2 *uv = &item.uv[0];
+		auto pivot = label->GetPivot();
+		auto align = label->GetAlign();
+		auto aw = label->GetWidthActual();
+		auto ah = label->GetHeightActual();
+		auto w = label->GetWidth();
+		auto h = label->GetHeight();
+        auto offset_y = label->GetOffsetY();
+
+		if(w < 0)
+		{
+			w = aw;
+		}
+		if(h < 0)
+		{
+			h = ah;
+		}
+
+		if(align == LabelAlign::Auto)
+		{
+			if(	pivot == LabelPivot::TopLeft ||
+				pivot == LabelPivot::Left ||
+				pivot == LabelPivot::BottomLeft)
+			{
+				align = LabelAlign::Left;
+			}
+			else if(
+				pivot == LabelPivot::Top ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Bottom)
+			{
+				align = LabelAlign::Center;
+			}
+			else if(
+				pivot == LabelPivot::TopRight ||
+				pivot == LabelPivot::Right ||
+				pivot == LabelPivot::BottomRight)
+			{
+				align = LabelAlign::Right;
+			}
+		}
+
+		for(int i=0; i<4; i++)
+		{
+			Vector3 pos = vertices[i];
+
+			if(	pivot == LabelPivot::Top ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Bottom)
+			{
+				pos.x -= Mathf::Round(w * 0.5f);
+			}
+
+			if(	pivot == LabelPivot::TopRight ||
+				pivot == LabelPivot::Right ||
+				pivot == LabelPivot::BottomRight)
+			{
+				pos.x -= w;
+			}
+
+			if(	pivot == LabelPivot::Left ||
+				pivot == LabelPivot::Center ||
+				pivot == LabelPivot::Right)
+			{
+				pos.y += Mathf::Round(h * 0.5f);
+			}
+
+			if(	pivot == LabelPivot::BottomLeft ||
+				pivot == LabelPivot::Bottom ||
+				pivot == LabelPivot::BottomRight)
+			{
+				pos.y += h;
+			}
+
+			if(align == LabelAlign::Center)
+			{
+				pos.x += Mathf::Round((w - line.width) * 0.5f);
+			}
+			else if(align == LabelAlign::Right)
+			{
+				pos.x += (w - line.width);
+			}
+
+            pos.y += offset_y;
+
+			memcpy(p, &pos, sizeof(Vector3));
+			p += sizeof(Vector3);
+
+			Color c(1, 1, 1, 1);
+			memcpy(p, &c, sizeof(Color));
+			p += sizeof(Color);
+
+			Vector2 v1 = uv[i];
+			memcpy(p, &v1, sizeof(Vector2));
+			p += sizeof(Vector2);
+		}
+
+		return p - buffer;
 	}
 
 	std::shared_ptr<Label> Label::Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot, LabelAlign::Enum align, bool rich)

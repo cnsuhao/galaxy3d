@@ -23,6 +23,7 @@ namespace Galaxy3D
     {
         std::vector<Keyframe> keys;
 
+		static AnimationCurve DefaultLinear();
         float Evaluate(float time);
     };
 }

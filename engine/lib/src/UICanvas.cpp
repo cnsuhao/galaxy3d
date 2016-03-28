@@ -9,6 +9,8 @@
 #include "SpriteNode.h"
 #include "SpriteBatchRenderer.h"
 #include "TextRenderer.h"
+#include "LabelNode.h"
+#include "LabelBatchRenderer.h"
 
 namespace Galaxy3D
 {
@@ -146,6 +148,22 @@ namespace Galaxy3D
                             renderer.reset();
                         }
                     }
+					else
+					{
+						auto label_node = go->GetComponent<LabelNode>();
+						if(label_node)
+						{
+							auto batch = label_node->GetBatch().lock();
+							renderer = batch;
+							hit.second_order = label_node->GetSortingOrder();
+
+							auto clip_panel = batch->GetClipPanel().lock();
+							if(batch->IsClip() && clip_panel && !clip_panel->IsPointInClipRect(hits[i].point))
+							{
+								renderer.reset();
+							}
+						}
+					}
                 }
                 else
                 {
@@ -159,6 +177,7 @@ namespace Galaxy3D
                         }
                     }
                 }
+
                 if(renderer)
                 {
                     long long layer = renderer->GetSortingLayer();

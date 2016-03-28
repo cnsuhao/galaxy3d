@@ -120,6 +120,18 @@
     <Filter Include="Assets\audio">
       <UniqueIdentifier>{285ac585-efd0-4e5d-91ee-a0c5520197e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\language">
+      <UniqueIdentifier>{33da86a5-a11a-4e9e-8256-b4aacf22c1b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\en-US">
+      <UniqueIdentifier>{1324b1ff-5edf-4121-9704-0431a7205c22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-CN">
+      <UniqueIdentifier>{fe424fcf-7ebe-4f54-8e12-7eb3e86704cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-TW">
+      <UniqueIdentifier>{308b9d36-0125-48c3-ad05-64be53d6e69e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
@@ -142,5 +154,16 @@
     <Media Include="Assets\audio\bgm.mp3">
       <Filter>Assets\audio</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\language\en-US\string.txt">
+      <Filter>Assets\language\en-US</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-CN\string.txt">
+      <Filter>Assets\language\zh-CN</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-TW\string.txt">
+      <Filter>Assets\language\zh-TW</Filter>
+    </Text>
   </ItemGroup>
 </Project>

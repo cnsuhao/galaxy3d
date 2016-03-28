@@ -262,6 +262,12 @@
     <ClCompile Include="..\src\AudioSource.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\LabelNode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabelBatchRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Animation.h">
@@ -592,6 +598,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\d3d11\ShaderPass.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabelNode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabelBatchRenderer.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

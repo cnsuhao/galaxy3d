@@ -21,7 +21,9 @@
 #include "RenderTexture.h"
 #include "SpriteRenderer.h"
 #include "Input.h"
+#include "Localization.h"
 #include <deque>
+#include <unordered_map>
 
 using namespace Galaxy3D;
 
@@ -34,6 +36,7 @@ struct Card
 	int price_sale;
 	int level;
 	int planted;
+	int unlock_level;
 	std::weak_ptr<TextRenderer> label_price;
 	std::weak_ptr<TextRenderer> label_planted;
 
@@ -43,16 +46,18 @@ struct Card
 		name(""),
 		price_base(-1),
 		level(-1),
-		planted(-1)
+		planted(-1),
+		unlock_level(-1)
 	{}
-	Card(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted):
+	Card(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted, int unlock_level):
 		type_0(type_0),
 		type_1(type_1),
 		name(name),
 		price_base(price_base),
 		price_sale(price_sale),
 		level(level),
-		planted(planted)
+		planted(planted),
+		unlock_level(unlock_level)
 	{}
 };
 
@@ -67,6 +72,19 @@ struct Plant : public Component
 	void InitFruits(const Vector3 *pos, int count);
 };
 
+struct PressOn
+{
+	enum Enum
+	{
+		None,
+		Card,
+		Ground,
+		Fruit,
+	};
+};
+
+static const float FRUIT_GROW_TIME = 1;
+static const float g_pixel_per_unit = 100;
 static GameObject *g_grass_node_0;
 static GameObject *g_grass_node_0_copy;
 static GameObject *g_grass_node_1;
@@ -94,24 +112,25 @@ static float g_wave_pos_0 = 0;
 static float g_wave_pos_1 = 0;
 static bool g_ui_bag_up = true;
 static int g_tab_current = 0;
+static std::vector<SpriteNode *> g_tab_group;
 static Card g_cards[25] = {
-	Card(0, 0, "carrot", 3, 1, 0, 0),
-	Card(0, 1, "turnip", 4, 2, 0, 0),
-	Card(0, 2, "pumpkin", 5, 3, 0, 0),
-	Card(0, 3, "radish", 6, 4, 0, 0),
-	Card(0, 4, "cabbage", 7, 5, 0, 0),
+	Card(0, 0, "carrot", 3, 10000, 0, 0, 1),
+	Card(0, 1, "turnip", 4, 2, 0, 0, 5),
+	Card(0, 2, "pumpkin", 5, 3, 0, 0, 9),
+	Card(0, 3, "radish", 6, 4, 0, 0, 13),
+	Card(0, 4, "cabbage", 7, 5, 0, 0, 17),
 
-	Card(1, 0, "blueberry", 8, 6, 0, 0),
-	Card(1, 1, "raspberry", 9, 7, 0, 0),
-	Card(1, 2, "tomato", 10, 8, 0, 0),
-	Card(1, 3, "bell pepper", 11, 9, 0, 0),
-	Card(1, 4, "eggplant", 12, 10, 0, 0),
+	Card(1, 0, "blueberry", 8, 6, 0, 0, 2),
+	Card(1, 1, "raspberry", 9, 7, 0, 0, 6),
+	Card(1, 2, "tomato", 10, 8, 0, 0, 10),
+	Card(1, 3, "bell pepper", 11, 9, 0, 0, 14),
+	Card(1, 4, "eggplant", 12, 10, 0, 0, 18),
 
-	Card(2, 0, "apple", 30, 2, 0, 0),
-	Card(2, 1, "pear", 80, 4, 0, 0),
-	Card(2, 2, "orange", 250, 6, 0, 0),
-	Card(2, 3, "cherry", 800, 8, 0, 0),
-	Card(2, 4, "lemon", 2000, 8, 0, 0),
+	Card(2, 0, "apple", 30, 10, 0, 0, 3),
+	Card(2, 1, "pear", 80, 100, 0, 0, 7),
+	Card(2, 2, "orange", 250, 1000, 0, 0, 11),
+	Card(2, 3, "cherry", 800, 10000, 0, 0, 15),
+	Card(2, 4, "lemon", 2000, 100000, 0, 0, 19),
 };
 static std::deque<std::shared_ptr<Plant>> g_plants[3];
 static int g_gold = 10;
@@ -120,19 +139,59 @@ static int g_exp = 0;
 static SpriteNode *g_sprite_exp;
 static int g_level = 1;
 static TextRenderer *g_label_level;
+static int g_gold_limit_increase = 100;
+static TextRenderer *g_label_gold_limit_increase_left;
+static TextRenderer *g_label_gold_limit_increase_right;
+static int g_language = 0;
+static SpriteNode *g_sprite_node_lan;
+static std::weak_ptr<Sprite> g_sprite_lan[3];
+static std::unordered_map<std::string, TextRenderer *> g_localized_text;
+static UIAtlas *g_atlas;
+static std::weak_ptr<Sprite> g_sprite_coin_anim[8];
+static PressOn::Enum g_press_on = PressOn::None;
+
+static void set_language(int lan)
+{
+	g_language = lan;
+
+	const char *lans[3] = {"en-US", "zh-CN", "zh-TW"};
+	Localization::LoadStrings(Application::GetDataPath() + "/Assets/language/" + lans[lan] + "/string.txt");
+
+	for(auto &i : g_localized_text)
+	{
+		i.second->GetLabel()->SetText(Localization::GetString(i.first));
+	}
+}
 
 static void set_gold(int gold)
 {
 	g_gold = gold;
 
-	g_label_gold->GetLabel()->SetText("<outline>" + GTString::ToString(g_gold).str + "</outline>");
+	g_label_gold->GetLabel()->SetText("<outline>" + GTString::ToString(g_gold) + "</outline>");
+
+	auto text_limit = "<outline><bold>" +
+		GTString::ToString(g_gold) + "/" + GTString::ToString(g_gold_limit_increase)
+		+ "</bold></outline>";
+	g_label_gold_limit_increase_left->GetLabel()->SetText(text_limit);
+	g_label_gold_limit_increase_right->GetLabel()->SetText(text_limit);
+
+	if(g_gold >= g_gold_limit_increase)
+	{
+		g_label_gold_limit_increase_left->SetColor(Color(0, 1, 0, 1));
+		g_label_gold_limit_increase_right->SetColor(Color(0, 1, 0, 1));
+	}
+	else
+	{
+		g_label_gold_limit_increase_left->SetColor(Color(1, 0, 0, 1));
+		g_label_gold_limit_increase_right->SetColor(Color(1, 0, 0, 1));
+	}
 }
 
 static void set_level(int level)
 {
 	g_level = level;
 
-	g_label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level).str + "</outline>");
+	g_label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level) + "</outline>");
 }
 
 static void set_exp(int exp)
@@ -142,6 +201,24 @@ static void set_exp(int exp)
 
 	float w = Mathf::Round(295 * g_exp / (float) exp_full);
 	g_sprite_exp->GetSprite()->SetSize(Vector2(w, 56));
+}
+
+static void unlock_card()
+{
+	for(int i=0; i<5; i++)
+	{
+		auto card = g_tab_group[g_tab_current]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(g_tab_current * 5 + i));
+		if(card)
+		{
+			auto card_locked = card->GetTransform()->GetParent().lock()->Find("card_locked_" + GTString::ToString(g_tab_current * 5 + i));
+
+			if(g_level >= g_cards[g_tab_current * 5 + i].unlock_level)
+			{
+				card->GetGameObject()->SetActive(true);
+				card_locked->GetGameObject()->SetActive(false);
+			}
+		}
+	}
 }
 
 static void add_exp(int exp)
@@ -154,6 +231,8 @@ static void add_exp(int exp)
 		g_exp -= exp_full;
 		g_level += 1;
 		exp_full = g_level * 10;
+
+		unlock_card();
 	}
 
 	set_level(g_level);
@@ -184,22 +263,270 @@ static void on_grow_finished(Component *tween, std::weak_ptr<Component> &target)
 struct FruitEventListener : public UIEventListener
 {
 	std::weak_ptr<Plant> plant;
+	std::shared_ptr<SpriteNode> coin_anim;
+	int anim_frame = 0;
+	float anim_update_time;
 
-	virtual void OnClick()
+	virtual void OnPress(bool press)
 	{
-		Sell();
-		FreshNew();
+		if(press)
+		{
+			g_press_on = PressOn::Fruit;
+			Collect();
+		}
 	}
 
-	void Sell()
+	virtual void OnDragOver(std::weak_ptr<GameObject> &dragged)
+	{
+		if(g_press_on == PressOn::Fruit)
+		{
+			Collect();
+		}
+	}
+
+	void Collect()
+	{
+		if(Sell())
+		{
+			FreshNew();
+		}
+	}
+
+	virtual void Update()
+	{
+		if(coin_anim && coin_anim->GetGameObject()->IsActiveSelf())
+		{
+			auto now = GTTime::GetTime();
+			if(now - anim_update_time > 0.033f)
+			{
+				anim_update_time = now;
+				anim_frame++;
+				if(anim_frame >= 8)
+				{
+					anim_frame = 0;
+				}
+				coin_anim->SetSprite(g_sprite_coin_anim[anim_frame].lock());
+			}
+		}
+	}
+
+	bool ShowSellEffect(int sale)
 	{
 		auto p = plant.lock();
 		int index = p->type_0 * 5 + p->type_1;
+		
+		if(!coin_anim)
+		{
+			auto group = GameObject::Create("group_sell_anim");
+			group->GetTransform()->SetParent(GetTransform()->GetParent().lock());
+			group->GetTransform()->SetLocalPosition(Vector3::Zero());
+			group->GetTransform()->SetLocalScale(Vector3::One());
 
+			auto node = GameObject::Create("coin")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(group->GetTransform());
+			node->GetTransform()->SetLocalPosition(GetTransform()->GetLocalPosition() + Vector3(0, 75, 0));
+			node->GetTransform()->SetLocalScale(Vector3::One());
+			node->SetSortingOrder(9);
+			node->SetSprite(g_sprite_coin_anim[0].lock());
+			g_batch_game->AddSprite(node);
+			coin_anim = node;
+
+			auto name = g_cards[index].name;
+			auto sprite = g_atlas->CreateSprite(
+				name + " fruit",
+				Vector2(0.5f, 0.5f),
+				g_pixel_per_unit,
+				Sprite::Type::Simple,
+				Vector2(0, 0));
+			node = GameObject::Create("fruit")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(group->GetTransform());
+			node->GetTransform()->SetLocalPosition(GetTransform()->GetLocalPosition() + Vector3(0, sprite->GetSize().y * 3 * 0.33f, 0));
+			node->GetTransform()->SetLocalScale(Vector3::One());
+			node->SetSortingOrder(10);
+			node->SetSprite(sprite);
+			g_batch_game->AddSprite(node);
+			node->GetGameObject()->SetActive(false);
+
+			auto label = Label::Create("<outline><bold>" + GTString::ToString(sale) + "</bold></outline>", "heiti", 40, LabelPivot::Bottom, LabelAlign::Auto, true);
+			auto tr = GameObject::Create("sale")->AddComponent<TextRenderer>();
+			tr->GetTransform()->SetParent(group->GetTransform());
+			tr->GetTransform()->SetLocalPosition(GetTransform()->GetLocalPosition() + Vector3(0, 220, 0));
+			tr->GetTransform()->SetLocalScale(Vector3::One());
+			tr->SetLabel(label);
+			tr->SetSortingOrder(0, 0);
+			tr->SetColor(Color(228, 255, 0, 255) / 255.0f);
+			tr->GetGameObject()->SetActive(false);
+
+			group->SetLayerRecursively(Layer::UI);
+		}
+		else
+		{
+			auto group = coin_anim->GetTransform()->GetParent().lock()->GetGameObject();
+			if(group->IsActiveSelf())
+			{
+				return false;
+			}
+			else
+			{
+				group->SetActive(true);
+			}
+			coin_anim->GetTransform()->SetLocalPosition(GetTransform()->GetLocalPosition() + Vector3(0, 75, 0));
+			coin_anim->SetSprite(g_sprite_coin_anim[0].lock());
+		}
+
+		anim_update_time = GTTime::GetTime();
+		
+		auto tp = coin_anim->GetGameObject()->AddComponent<TweenPosition>();
+		tp->duration = 0.15f;
+		tp->from = coin_anim->GetTransform()->GetLocalPosition();
+		tp->to = tp->from + Vector3(0, 100, 0);
+		tp->curve = AnimationCurve::DefaultLinear();
+		tp->target = GetComponentPtr();
+		tp->on_finished =
+			[this](Component *tween, std::weak_ptr<Component> &target)
+			{
+				auto fruit = this->coin_anim->GetTransform()->GetParent().lock()->Find("fruit")->GetGameObject();
+				fruit->GetTransform()->SetLocalScale(Vector3(1.5f, 3, 1));
+				fruit->SetActive(true);
+
+				auto tc = fruit->AddComponent<TweenScale>();
+				tc->duration = 0.15f;
+				tc->from = Vector3(1.5f, 3, 1);
+				tc->to = Vector3(1.5f, 0.1f, 1);
+				tc->curve = AnimationCurve::DefaultLinear();
+				tc->target = this->GetComponentPtr();
+				tc->on_finished =
+					[this, fruit](Component *tween, std::weak_ptr<Component> &target)
+					{
+						auto tc = fruit->AddComponent<TweenScale>();
+						tc->duration = 0.1f;
+						tc->from = Vector3(1.5f, 0.1f, 1);
+						tc->to = Vector3(0.7f, 1, 1);
+						tc->curve = AnimationCurve::DefaultLinear();
+						tc->target = this->GetComponentPtr();
+						tc->on_finished =
+							[this, fruit](Component *tween, std::weak_ptr<Component> &target)
+							{
+								auto tc = fruit->AddComponent<TweenScale>();
+								tc->duration = 0.1f;
+								tc->from = Vector3(0.7f, 1, 1);
+								tc->to = Vector3(1, 1, 1);
+								tc->curve = AnimationCurve::DefaultLinear();
+								tc->target = this->GetComponentPtr();
+								tc->on_finished =
+									[this, fruit](Component *tween, std::weak_ptr<Component> &target)
+									{
+										auto group = fruit->GetTransform()->GetParent().lock()->GetGameObject();
+										group->GetTransform()->SetLocalPosition(Vector3::Zero());
+
+										auto tp = group->AddComponent<TweenPosition>();
+										tp->delay = 0.2f;
+										tp->duration = 0.5f;
+										tp->from = Vector3::Zero();
+										tp->to = Vector3(0, 40, 0);
+										tp->curve = AnimationCurve::DefaultLinear();
+
+										auto tc = group->AddComponent<TweenColor>();
+										tc->delay = 0.2f;
+										tc->duration = 0.5f;
+										tc->from = Color(1, 1, 1, 1);
+										tc->to = Color(1, 1, 1, 0);
+										tc->curve = AnimationCurve::DefaultLinear();
+										tc->target = this->GetComponentPtr();
+										tc->on_set_value =
+											[group](Component *tween, std::weak_ptr<Component> &target, void *value)
+											{
+												Color c = *(Color *) value;
+												
+												auto sprites = group->GetComponentsInChildren<SpriteNode>();
+												for(auto &i : sprites)
+												{
+													i->SetColor(c);
+												}
+
+												auto labels = group->GetComponentsInChildren<TextRenderer>();
+												for(auto &i : labels)
+												{
+													auto old = i->GetColor();
+													old.a = c.a;
+													i->SetColor(old);
+												}
+											};
+										tc->on_finished =
+											[this, group, fruit](Component *tween, std::weak_ptr<Component> &target)
+											{
+												group->GetTransform()->SetLocalPosition(Vector3::Zero());
+												group->SetActive(false);
+												fruit->SetActive(false);
+												group->GetTransform()->Find("sale")->GetGameObject()->SetActive(false);
+
+												auto sprites = group->GetComponentsInChildren<SpriteNode>();
+												for(auto &i : sprites)
+												{
+													i->SetColor(Color(1, 1, 1, 1));
+												}
+
+												auto labels = group->GetComponentsInChildren<TextRenderer>();
+												for(auto &i : labels)
+												{
+													auto old = i->GetColor();
+													old.a = 1;
+													i->SetColor(old);
+												}
+											};
+									};
+							};
+					};
+
+				auto sale_label = this->coin_anim->GetTransform()->GetParent().lock()->Find("sale")->GetGameObject();
+				sale_label->GetTransform()->SetLocalScale(Vector3(1.5f, 4, 1));
+				sale_label->SetActive(true);
+
+				tc = sale_label->AddComponent<TweenScale>();
+				tc->duration = 0.15f;
+				tc->from = Vector3(1.5f, 4, 1);
+				tc->to = Vector3(1.5f, 0.1f, 1);
+				tc->curve = AnimationCurve::DefaultLinear();
+				tc->target = this->GetComponentPtr();
+				tc->on_finished =
+					[this, sale_label](Component *tween, std::weak_ptr<Component> &target)
+					{
+						auto tc = sale_label->AddComponent<TweenScale>();
+						tc->duration = 0.1f;
+						tc->from = Vector3(1.5f, 0.1f, 1);
+						tc->to = Vector3(0.7f, 1, 1);
+						tc->curve = AnimationCurve::DefaultLinear();
+						tc->target = this->GetComponentPtr();
+						tc->on_finished =
+							[this, sale_label](Component *tween, std::weak_ptr<Component> &target)
+							{
+								auto tc = sale_label->AddComponent<TweenScale>();
+								tc->duration = 0.1f;
+								tc->from = Vector3(0.7f, 1, 1);
+								tc->to = Vector3(1, 1, 1);
+								tc->curve = AnimationCurve::DefaultLinear();
+							};
+					};
+			};
+
+		return true;
+	}
+
+	bool Sell()
+	{
+		auto p = plant.lock();
+		int index = p->type_0 * 5 + p->type_1;
 		int sale = g_cards[index].price_sale;
 
-		set_gold(g_gold + sale);
-		add_exp(sale);
+		if(ShowSellEffect(sale))
+		{
+			set_gold(g_gold + sale);
+			add_exp(sale);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	void FreshNew()
@@ -218,7 +545,7 @@ struct FruitEventListener : public UIEventListener
 		GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
 
 		auto ts = GetGameObject()->AddComponent<TweenScale>();
-		ts->duration = 10.0f;
+		ts->duration = FRUIT_GROW_TIME;
 		ts->curve = AnimationCurve();
 		ts->curve.keys.push_back(Keyframe(0, 0, 1, 1));
 		ts->curve.keys.push_back(Keyframe(1, 1, 1, 1));
@@ -233,7 +560,7 @@ void Plant::InitFruits(const Vector3 *pos, int count)
 {
 	for(int i=0; i<count; i++)
 	{
-		auto node = GameObject::Create("fruit_" + GTString::ToString(type_0).str + "_" + GTString::ToString(type_1).str)->AddComponent<SpriteNode>();
+		auto node = GameObject::Create("fruit_" + GTString::ToString(type_0) + "_" + GTString::ToString(type_1))->AddComponent<SpriteNode>();
 		node->GetTransform()->SetParent(GetTransform());
 		node->GetTransform()->SetLocalPosition(pos[i]);
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.01f);
@@ -249,7 +576,7 @@ void Plant::InitFruits(const Vector3 *pos, int count)
 		tree->GetBatch().lock()->AddSprite(node);
 
 		auto ts = node->GetGameObject()->AddComponent<TweenScale>();
-		ts->duration = 10.0f;
+		ts->duration = FRUIT_GROW_TIME;
 		ts->curve = AnimationCurve();
 		ts->curve.keys.push_back(Keyframe(0, 0, 1, 1));
 		ts->curve.keys.push_back(Keyframe(1, 1, 1, 1));
@@ -281,11 +608,11 @@ struct PlantBig : public Plant
 	virtual void Start()
 	{
 		const Vector3 fruit_pos[5][5] = {
-			{Vector3(-110, 280), Vector3(-50, 380), Vector3(0, 310), Vector3(70, 370), Vector3(110, 270)},
-			{Vector3(-90, 230), Vector3(-50, 360), Vector3(0, 270), Vector3(70, 370), Vector3(110, 220)},
-			{Vector3(-100, 240), Vector3(-50, 340), Vector3(10, 230), Vector3(60, 360), Vector3(110, 260)},
-			{Vector3(-100, 360), Vector3(-50, 260), Vector3(10, 320), Vector3(80, 250), Vector3(110, 370)},
-			{Vector3(0, 200), Vector3(0, 200), Vector3(0, 200), Vector3(0, 200), Vector3(0, 200)}
+			{Vector3(-110, 290), Vector3(-50, 430), Vector3(0, 340), Vector3(80, 420), Vector3(110, 280)},
+			{Vector3(-100, 260), Vector3(-60, 410), Vector3(0, 320), Vector3(70, 420), Vector3(110, 250)},
+			{Vector3(-110, 290), Vector3(-50, 390), Vector3(10, 280), Vector3(60, 410), Vector3(120, 310)},
+			{Vector3(-110, 400), Vector3(-60, 290), Vector3(10, 350), Vector3(80, 280), Vector3(120, 410)},
+			{Vector3(-120, 290), Vector3(-60, 400), Vector3(10, 260), Vector3(70, 420), Vector3(130, 310)}
 		};
 
 		InitFruits(fruit_pos[type_1], 5);
@@ -296,7 +623,15 @@ struct PlantMiddle : public Plant
 {
 	virtual void Start()
 	{
-		
+		const Vector3 fruit_pos[5][4] = {
+			{Vector3(-40, 100), Vector3(-30, 165), Vector3(40, 155), Vector3(40, 100)},
+			{Vector3(-40, 90), Vector3(-30, 165), Vector3(40, 160), Vector3(40, 90)},
+			{Vector3(-25, 95), Vector3(0, 180), Vector3(20, 130), Vector3(40, 80)},
+			{Vector3(-40, 80), Vector3(-35, 150), Vector3(20, 160), Vector3(30, 90)},
+			{Vector3(-30, 90), Vector3(-30, 165), Vector3(30, 170), Vector3(40, 100)}
+		};
+
+		InitFruits(fruit_pos[type_1], 4);
 	}
 };
 
@@ -320,8 +655,8 @@ struct PlantSmall2 : public Plant
 	virtual void Start()
 	{
 		const Vector3 fruit_pos[2] = {
-			Vector3(-120.f, -15),
-			Vector3(-41.f, -15)
+			Vector3(-85.f, -15),
+			Vector3(85.f, -15)
 		};
 
 		InitFruits(fruit_pos, 2);
@@ -502,6 +837,14 @@ struct GroundEventListener : public UIEventListener
 		m_draged(false)
 	{}
 
+	virtual void OnPress(bool press)
+	{
+		if(press)
+		{
+			g_press_on = PressOn::Ground;
+		}
+	}
+
 	virtual void OnDragStart()
 	{
 		m_drag_end = false;
@@ -555,6 +898,71 @@ struct GroundEventListener : public UIEventListener
 			{
 				m_momentum *= 0.5f;
 			}
+		}
+	}
+};
+
+struct MapLimitIncreaseEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		if(g_gold >= g_gold_limit_increase)
+		{
+			set_gold(g_gold - g_gold_limit_increase);
+
+			g_map_pos_limit += 658;
+			set_map_pos(g_map_pos);
+		}
+		else
+		{
+			auto info = GetTransform()->Find("limit_info")->GetGameObject();
+			if(info->GetComponent<TweenColor>())
+			{
+				return;
+			}
+
+			info->SetActive(true);
+			auto sprites = info->GetComponentsInChildren<SpriteNode>();
+			for(auto &i : sprites)
+			{
+				i->SetColor(Color(1, 1, 1, 1));
+			}
+
+			auto lables = info->GetComponentsInChildren<TextRenderer>();
+			for(auto &i : lables)
+			{
+				i->SetColor(Color(1, 0, 0, 1));
+			}
+
+			auto tc = info->AddComponent<TweenColor>();
+			tc->delay = 1.5f;
+			tc->duration = 0.5f;
+			tc->from = Color(1, 1, 1, 1);
+			tc->to = Color(1, 1, 1, 0);
+			tc->curve = AnimationCurve();
+			tc->curve.keys.push_back(Keyframe(0, 0, 1, 1));
+			tc->curve.keys.push_back(Keyframe(1, 1, 1, 1));
+			tc->target = GetComponentPtr();
+			tc->on_set_value =
+				[sprites, lables](Component *tween, std::weak_ptr<Component> &target, void *value)
+				{
+					Color c = *(Color *) value;
+					
+					for(auto &i : sprites)
+					{
+						i->SetColor(c);
+					}
+
+					for(auto &i : lables)
+					{
+						i->SetColor(Color(1, 0, 0, c.a));
+					}
+				};
+			tc->on_finished =
+				[info](Component *tween, std::weak_ptr<Component> &target)
+				{
+					info->SetActive(false);
+				};
 		}
 	}
 };
@@ -616,6 +1024,45 @@ struct ButtonAboutBackEventListener : public UIEventListener
 		settings_main->GetGameObject()->SetActive(true);
 		auto settings_about = g_win_settings->GetTransform()->Find("settings_about");
 		settings_about->GetGameObject()->SetActive(false);
+	}
+};
+
+struct ButtonLanEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		auto settings_main = g_win_settings->GetTransform()->Find("settings_main");
+		settings_main->GetGameObject()->SetActive(false);
+		auto settings_lan = g_win_settings->GetTransform()->Find("settings_lan");
+		settings_lan->GetGameObject()->SetActive(true);
+	}
+};
+
+struct ButtonLanSelectEventListener : public UIEventListener
+{
+	int index;
+
+	virtual void OnClick()
+	{
+		set_language(index);
+		
+		g_sprite_node_lan->SetSprite(g_sprite_lan[index].lock());
+
+		auto settings_main = g_win_settings->GetTransform()->Find("settings_main");
+		settings_main->GetGameObject()->SetActive(true);
+		auto settings_lan = g_win_settings->GetTransform()->Find("settings_lan");
+		settings_lan->GetGameObject()->SetActive(false);
+	}
+};
+
+struct ButtonLanBackEventListener : public UIEventListener
+{
+	virtual void OnClick()
+	{
+		auto settings_main = g_win_settings->GetTransform()->Find("settings_main");
+		settings_main->GetGameObject()->SetActive(true);
+		auto settings_lan = g_win_settings->GetTransform()->Find("settings_lan");
+		settings_lan->GetGameObject()->SetActive(false);
 	}
 };
 
@@ -698,42 +1145,47 @@ struct ButtonUpEventListener : public UIEventListener
 struct TabEventListener : public UIEventListener
 {
 	int index;
-	int selected;
-	std::vector<SpriteNode *> tab_group;
 
 	virtual void OnClick()
 	{
-		if(selected != index)
+		if(g_tab_current != index)
 		{
-			auto tab_name = std::string("tab_") + GTString::ToString(selected).str;
-			auto sprite = tab_group[selected]->GetSprite();
+			auto tab_name = std::string("tab_") + GTString::ToString(g_tab_current);
+			auto sprite = g_tab_group[g_tab_current]->GetSprite();
 			sprite->GetAtlas().lock()->SetSpriteData(sprite, tab_name);
 
-			tab_name = std::string("tab_") + GTString::ToString(index).str;
-			sprite = tab_group[index]->GetSprite();
+			tab_name = std::string("tab_") + GTString::ToString(index);
+			sprite = g_tab_group[index]->GetSprite();
 			sprite->GetAtlas().lock()->SetSpriteData(sprite, tab_name + "_selected");
 
 			for(int i=0; i<5; i++)
 			{
-				auto card = tab_group[selected]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(selected * 5 + i).str);
+				auto card = g_tab_group[g_tab_current]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(g_tab_current * 5 + i));
 				if(card)
 				{
 					card->GetGameObject()->SetActive(false);
+
+					auto card_locked = card->GetTransform()->GetParent().lock()->Find("card_locked_" + GTString::ToString(g_tab_current * 5 + i));
+					card_locked->GetGameObject()->SetActive(false);
 				}
 
-				card = tab_group[index]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(index * 5 + i).str);
+				card = g_tab_group[index]->GetTransform()->GetParent().lock()->Find("card_" + GTString::ToString(index * 5 + i));
 				if(card)
 				{
-					card->GetGameObject()->SetActive(true);
+					if(g_level >= g_cards[index * 5 + i].unlock_level)
+					{
+						card->GetGameObject()->SetActive(true);
+					}
+					else
+					{
+						auto card_locked = card->GetTransform()->GetParent().lock()->Find("card_locked_" + GTString::ToString(index * 5 + i));
+						card_locked->GetGameObject()->SetActive(true);
+					}
+					
 				}
 			}
 
-			// set selected tab
-			for(int i=0; i<5; i++)
-			{
-				auto handler = tab_group[i]->GetGameObject()->GetComponent<TabEventListener>();
-				handler->selected = index;
-			}
+			g_tab_current = index;
 		}
 	}
 };
@@ -742,6 +1194,14 @@ struct CardEventListener : public UIEventListener
 {
 	int type_0;
 	int type_1;
+
+	virtual void OnPress(bool press)
+	{
+		if(press)
+		{
+			g_press_on = PressOn::Card;
+		}
+	}
 
 	virtual void OnDrag(const Vector3 &delta)
 	{
@@ -788,12 +1248,15 @@ struct CardEventListener : public UIEventListener
 		{
 			// È¥µôtabs cardµÄÆ«ÒÆ
 			float x = pos_local.x + (200 + 270.0f * type_1) - 740;
-			if( x > g_map_limit_left->GetTransform()->GetLocalPosition().x &&
-				x < g_map_limit_right->GetTransform()->GetLocalPosition().x)
+			int pos_x = map_pos_to_plant(type_0, x);
+			float x_normalized = plant_pos_to_map(type_0, pos_x);
+
+			const float limit_border = 200;
+			if( x_normalized > g_map_limit_left->GetTransform()->GetLocalPosition().x + limit_border &&
+				x_normalized < g_map_limit_right->GetTransform()->GetLocalPosition().x - limit_border)
 			{
 				auto &plants = g_plants[type_0];
-				int pos_x = map_pos_to_plant(type_0, x);
-
+				
 				size_t target_size = Mathf::Abs(pos_x) * 2 + 1;
 				if(plants.size() >= target_size)
 				{
@@ -852,7 +1315,7 @@ struct CardEventListener : public UIEventListener
 
 						// add planted
 						card.planted++;
-						card.label_planted.lock()->GetLabel()->SetText("<outline>" + GTString::ToString(card.planted).str + "</outline>");
+						card.label_planted.lock()->GetLabel()->SetText("<outline>" + GTString::ToString(card.planted) + "</outline>");
 					
 						// spend gold
 						set_gold(g_gold - card.price_base);

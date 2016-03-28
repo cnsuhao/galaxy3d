@@ -88,6 +88,9 @@ namespace Galaxy3D
 		static void LoadImage(const std::string &name, const std::string &file);
 		static void LoadImages(const std::string &name, const std::vector<std::string> &files);
 		static std::shared_ptr<Texture2D> GetRichImageTexture(const std::string &name, int index);
+		static int FillVertexBuffer(char *buffer, const std::shared_ptr<Label> &label, Matrix4x4 *mat);
+		static int FillVertexBuffer(char *buffer, LabelImageItem &item, const std::shared_ptr<Label> &label, const LabelLine &line);
+		static int FillIndexBuffer(char *buffer, const std::shared_ptr<Label> &label);
 		static std::shared_ptr<Label> Create(const std::string &text, const std::string &font, int font_size, LabelPivot::Enum pivot = LabelPivot::TopLeft, LabelAlign::Enum align = LabelAlign::Auto, bool rich = false);
 		void SetText(const std::string &text);
 		std::string GetText() const {return m_text;}
@@ -105,6 +108,7 @@ namespace Galaxy3D
 		float GetPixelsPerUnit() const {return m_pixels_per_unit;}
 		std::vector<LabelLine> &GetLines() {return m_lines;}
 		int GetVertexCount() const {return m_vertex_count;}
+		int GetIndexCount() const {return m_vertex_count / 4 * 6;}
 		int GetImageCount() const {return m_image_count;}
         bool IsDirty() const {return m_dirty;}
         void SetDirty(bool dirty) {m_dirty = dirty;}

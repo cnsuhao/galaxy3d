@@ -11,12 +11,12 @@ namespace Galaxy3D
 	{
 	public:
 		template<typename T>
-		static GTString ToString(T value)
+		static std::string ToString(T value)
 		{
 			std::stringstream ss;
 			ss << value;
 		
-			return GTString(ss.str());
+			return ss.str();
 		}
         template<typename T>
         static T ToType(const std::string &str)

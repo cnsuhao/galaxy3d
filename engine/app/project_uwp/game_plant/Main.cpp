@@ -73,8 +73,6 @@ void Main::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ e)
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
 
-	Debug::Log("OnPointerPressed");
-
 	if(!g_down_pointer_id)
 	{
 		g_down_pointer_id = std::make_shared<unsigned int>(e->CurrentPoint->PointerId);
@@ -91,8 +89,6 @@ void Main::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ e)
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
 
-	Debug::Log("OnPointerMoved");
-
 	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
 	{
 		g_mouse_position.x = (float) x;
@@ -104,8 +100,6 @@ void Main::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ e)
 {
 	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
 	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
-
-	Debug::Log("OnPointerReleased");
 
 	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
 	{

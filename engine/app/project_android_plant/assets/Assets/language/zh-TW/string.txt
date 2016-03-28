@@ -1,0 +1,8 @@
+{
+    "resume": "<outline>恢復</outline>",
+	"about": "<outline>關於</outline>",
+	"lan en": "<outline>English</outline>",
+	"lan zh-hans": "<outline>简体中文</outline>",
+	"lan zh-hant": "<outline>繁體中文</outline>",
+	"about_info": "<outline>引擎 & 遊戲程式\n杜晶\n\n策劃 & 美術\n李航飛</outline>"
+}

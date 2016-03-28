@@ -66,7 +66,7 @@ namespace Galaxy3D
             Type::Enum type,
             const Vector2 &size);
         virtual ~Sprite();
-        bool IsDirdy() const {return m_dirty;}
+        bool IsDirty() const {return m_dirty;}
         BufferObject GetVertexBuffer();
         BufferObject GetIndexBuffer();
         int GetVertexCount() {FillMeshIfNeeded(); return m_vertices.size();}

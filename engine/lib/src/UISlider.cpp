@@ -71,11 +71,11 @@ namespace Galaxy3D
                 std::string text;
                 if(type == UISliderValueType::Int)
                 {
-                    text = GTString::ToString(GetValue<int>()).str;
+                    text = GTString::ToString(GetValue<int>());
                 }
                 else
                 {
-                    text = GTString::ToString(GetValue<float>()).str;
+                    text = GTString::ToString(GetValue<float>());
                 }
                 label->SetText(text);
             }

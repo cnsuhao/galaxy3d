@@ -3,16 +3,16 @@
 class LauncherPlant : public Component, public IScreenResizeEventListener
 {
 protected:
-	float pixel_per_unit = 100;
 	TextRenderer *m_fps;
 	Camera *m_cam;
 	UICanvas *m_canvas;
 	SpriteBatchRenderer *m_batch_ui;
+	std::shared_ptr<Sprite> m_sprite_coin_anim[8];
 
 	virtual void OnScreenResize(int width, int height)
 	{
-		m_cam->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
-		m_cam->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / pixel_per_unit));
+		m_cam->SetOrthographicSize(1 / g_pixel_per_unit * Screen::GetHeight() / 2);
+		m_cam->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / g_pixel_per_unit));
 	
 		float input_scale = 1080.f / Screen::GetHeight();
 		float input_offset_x = (1920 - Screen::GetWidth() * input_scale) * 0.5f;
@@ -27,8 +27,8 @@ protected:
 		tr->SetLabel(label);
 		tr->SetSortingOrder(order, 0);
 		tr->GetTransform()->SetParent(parent->GetTransform());
-		tr->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		tr->GetTransform()->SetLocalPosition(pos);
+		tr->GetTransform()->SetLocalScale(Vector3::One());
 
 		return tr;
 	}
@@ -43,7 +43,7 @@ protected:
 		auto sprite = atlas->CreateSprite(
 			"white",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(2048, 2048),
 			Vector4(1, 1, -1, -1));
@@ -62,7 +62,7 @@ protected:
 		sprite = atlas->CreateSprite(
 			"window",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Sliced,
 			Vector2(910, 584));
 		sprite->SetBorder(Vector4(30, 30, 30, 30));
@@ -76,77 +76,170 @@ protected:
 		g_win_settings = node->GetGameObject().get();
 		g_win_settings->SetActive(false);
 
-		auto settings_main = GameObject::Create("settings_main");
-		settings_main->GetTransform()->SetParent(g_win_settings->GetTransform());
-		settings_main->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
-		settings_main->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-
+		std::shared_ptr<Sprite> lans[3];
 		sprite = atlas->CreateSprite(
-			"button big green",
+			"lan en",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
-		node = GameObject::Create("button resume")->AddComponent<SpriteNode>();
-		node->GetTransform()->SetParent(settings_main->GetTransform());
-		node->GetTransform()->SetLocalPosition(Vector3(0, 100, 0));
-		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		node->SetSprite(sprite);
-		node->SetSortingOrder(2);
-		batch_win->AddSprite(node);
-		collider = node->GetGameObject()->AddComponent<BoxCollider>();
-		collider->SetSize(sprite->GetSize());
-		node->GetGameObject()->AddComponent<ButtonResumeEventListener>();
-
-		std::string text = "RESUME";
-		auto label = CreateLabel(node->GetGameObject().get(), Vector3(0, 0, 0), 50, LabelPivot::Center, 6);
-		label->GetLabel()->SetText("<outline>" + text + "</outline>");
-
-		node = GameObject::Create("button about")->AddComponent<SpriteNode>();
-		node->GetTransform()->SetParent(settings_main->GetTransform());
-		node->GetTransform()->SetLocalPosition(Vector3(0, -100, 0));
-		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		node->SetSprite(sprite);
-		node->SetSortingOrder(2);
-		batch_win->AddSprite(node);
-		collider = node->GetGameObject()->AddComponent<BoxCollider>();
-		collider->SetSize(sprite->GetSize());
-		node->GetGameObject()->AddComponent<ButtonAboutEventListener>();
-
-		text = "ABOUT";
-		label = CreateLabel(node->GetGameObject().get(), Vector3(0, 0, 0), 50, LabelPivot::Center, 6);
-		label->GetLabel()->SetText("<outline>" + text + "</outline>");
-
-		auto settings_about = GameObject::Create("settings_about");
-		settings_about->GetTransform()->SetParent(g_win_settings->GetTransform());
-		settings_about->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
-		settings_about->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		settings_about->SetActive(false);
-
-		text = "Engine & Game Program\nDu Jing\n\nDesign & Artist\nLi Hang Fei";
-		label = CreateLabel(settings_about.get(), Vector3(0, 0, 0), 40, LabelPivot::Center, 6);
-		label->GetLabel()->SetText("<outline>" + text + "</outline>");
-
-		text = "Produced by <color=#00ff00ff>ViryTech</color>";
-		label = CreateLabel(settings_about.get(), Vector3(420, -250, 0), 32, LabelPivot::Right, 6);
-		label->GetLabel()->SetText("<outline>" + text + "</outline>");
-
+		lans[0] = sprite;
 		sprite = atlas->CreateSprite(
-			"back",
+			"lan zh",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
-		node = GameObject::Create("button back")->AddComponent<SpriteNode>();
-		node->GetTransform()->SetParent(settings_about->GetTransform());
-		node->GetTransform()->SetLocalPosition(Vector3(-370, -210, 0));
-		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		node->SetSprite(sprite);
-		node->SetSortingOrder(2);
-		batch_win->AddSprite(node);
-		collider = node->GetGameObject()->AddComponent<BoxCollider>();
-		collider->SetSize(sprite->GetSize());
-		node->GetGameObject()->AddComponent<ButtonAboutBackEventListener>();
+		lans[1] = sprite;
+		lans[2] = sprite;
+		
+		for(int i=0; i<3; i++)
+		{
+			g_sprite_lan[i] = lans[i];
+		}
+
+		sprite = atlas->CreateSprite(
+				"button big green",
+				Vector2(0.5f, 0.5f),
+				g_pixel_per_unit,
+				Sprite::Type::Simple,
+				Vector2(0, 0));
+		std::shared_ptr<Sprite> button = sprite;
+
+		sprite = atlas->CreateSprite(
+				"back",
+				Vector2(0.5f, 0.5f),
+				g_pixel_per_unit,
+				Sprite::Type::Simple,
+				Vector2(0, 0));
+		std::shared_ptr<Sprite> back = sprite;
+
+		{
+			auto settings_main = GameObject::Create("settings_main");
+			settings_main->GetTransform()->SetParent(g_win_settings->GetTransform());
+			settings_main->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+			settings_main->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+
+			node = GameObject::Create("button resume")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(settings_main->GetTransform());
+			node->GetTransform()->SetLocalPosition(Vector3(0, 100, 0));
+			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			node->SetSprite(button);
+			node->SetSortingOrder(2);
+			batch_win->AddSprite(node);
+			collider = node->GetGameObject()->AddComponent<BoxCollider>();
+			collider->SetSize(button->GetSize());
+			node->GetGameObject()->AddComponent<ButtonResumeEventListener>();
+			
+			std::string text = Localization::GetString("resume");
+			auto label = CreateLabel(node->GetGameObject().get(), Vector3(0, 0, 0), 50, LabelPivot::Center, 6);
+			label->GetLabel()->SetText(text);
+			g_localized_text["resume"] = label.get();
+
+			node = GameObject::Create("button about")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(settings_main->GetTransform());
+			node->GetTransform()->SetLocalPosition(Vector3(0, -100, 0));
+			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			node->SetSprite(button);
+			node->SetSortingOrder(2);
+			batch_win->AddSprite(node);
+			collider = node->GetGameObject()->AddComponent<BoxCollider>();
+			collider->SetSize(button->GetSize());
+			node->GetGameObject()->AddComponent<ButtonAboutEventListener>();
+
+			text = Localization::GetString("about");
+			label = CreateLabel(node->GetGameObject().get(), Vector3(0, 0, 0), 50, LabelPivot::Center, 6);
+			label->GetLabel()->SetText(text);
+			g_localized_text["about"] = label.get();
+
+			node = GameObject::Create("lan")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(settings_main->GetTransform());
+			node->GetTransform()->SetLocalPosition(Vector3(370, -210, 0));
+			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			node->SetSprite(lans[g_language]);
+			node->SetSortingOrder(2);
+			batch_win->AddSprite(node);
+			collider = node->GetGameObject()->AddComponent<BoxCollider>();
+			collider->SetSize(lans[g_language]->GetSize());
+			node->GetGameObject()->AddComponent<ButtonLanEventListener>();
+			g_sprite_node_lan = node.get();
+		}
+
+		{
+			auto settings_about = GameObject::Create("settings_about");
+			settings_about->GetTransform()->SetParent(g_win_settings->GetTransform());
+			settings_about->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+			settings_about->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			settings_about->SetActive(false);
+
+			std::string text = Localization::GetString("about_info");
+			auto label = CreateLabel(settings_about.get(), Vector3(0, 0, 0), 40, LabelPivot::Center, 6);
+			label->GetLabel()->SetText(text);
+			g_localized_text["about_info"] = label.get();
+
+			text = "Produced by <color=#00ff00ff>ViryTech</color>";
+			label = CreateLabel(settings_about.get(), Vector3(420, -250, 0), 32, LabelPivot::Right, 6);
+			label->GetLabel()->SetText("<outline>" + text + "</outline>");
+
+			node = GameObject::Create("button back")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(settings_about->GetTransform());
+			node->GetTransform()->SetLocalPosition(Vector3(-370, -210, 0));
+			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			node->SetSprite(back);
+			node->SetSortingOrder(2);
+			batch_win->AddSprite(node);
+			collider = node->GetGameObject()->AddComponent<BoxCollider>();
+			collider->SetSize(back->GetSize());
+			node->GetGameObject()->AddComponent<ButtonAboutBackEventListener>();
+		}
+
+		{
+			auto settings_lan = GameObject::Create("settings_lan");
+			settings_lan->GetTransform()->SetParent(g_win_settings->GetTransform());
+			settings_lan->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+			settings_lan->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			settings_lan->SetActive(false);
+
+			const char *lan_keys[3] = {"lan en", "lan zh-hans", "lan zh-hant"};
+			for(int i=0; i<3; i++)
+			{
+				node = GameObject::Create("button lan " + GTString::ToString(i))->AddComponent<SpriteNode>();
+				node->GetTransform()->SetParent(settings_lan->GetTransform());
+				node->GetTransform()->SetLocalPosition(Vector3(-220.f + 430 * (i % 2), 200.f - 160 * (i / 2), 0));
+				node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+				node->SetSprite(button);
+				node->SetSortingOrder(2);
+				batch_win->AddSprite(node);
+				collider = node->GetGameObject()->AddComponent<BoxCollider>();
+				collider->SetSize(button->GetSize());
+				auto handler = node->GetGameObject()->AddComponent<ButtonLanSelectEventListener>();
+				handler->index = i;
+				auto lan = node;
+
+				node = GameObject::Create("en")->AddComponent<SpriteNode>();
+				node->GetTransform()->SetParent(lan->GetTransform());
+				node->GetTransform()->SetLocalPosition(Vector3(-145, 0, 0));
+				node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+				node->SetSprite(lans[i]);
+				node->SetSortingOrder(3);
+				batch_win->AddSprite(node);
+
+				std::string text = Localization::GetString(lan_keys[i]);
+				auto label = CreateLabel(lan->GetGameObject().get(), Vector3(50, 0, 0), 40, LabelPivot::Center, 6);
+				label->GetLabel()->SetText(text);
+			}
+			
+			node = GameObject::Create("button back")->AddComponent<SpriteNode>();
+			node->GetTransform()->SetParent(settings_lan->GetTransform());
+			node->GetTransform()->SetLocalPosition(Vector3(-370, -210, 0));
+			node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+			node->SetSprite(back);
+			node->SetSortingOrder(2);
+			batch_win->AddSprite(node);
+			collider = node->GetGameObject()->AddComponent<BoxCollider>();
+			collider->SetSize(back->GetSize());
+			node->GetGameObject()->AddComponent<ButtonLanBackEventListener>();
+		}
 	}
 	
 	void CreateUI(UICanvas *canvas, UIAtlas *atlas)
@@ -165,7 +258,7 @@ protected:
 		auto sprite = atlas->CreateSprite(
 			"bar_bottom",
 			Vector2(0.5f, 1),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Tiled,
 			Vector2(1920, 89));
 		auto node = GameObject::Create("")->AddComponent<SpriteNode>();
@@ -179,7 +272,7 @@ protected:
 		sprite = atlas->CreateSprite(
 			"exp bar",
 			Vector2(0, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Sliced,
 			Vector2(300, 63));
 		sprite->SetBorder(Vector4(15, 0, 15, 0));
@@ -194,7 +287,7 @@ protected:
 		sprite = atlas->CreateSprite(
 			"exp",
 			Vector2(0, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Sliced,
 			Vector2(295, 56));
 		sprite->SetBorder(Vector4(8, 0, 8, 0));
@@ -208,14 +301,14 @@ protected:
 		g_sprite_exp = node.get();
 
 		auto label_level = CreateLabel(batch_ui->GetGameObject().get(), Vector3(-790, 47, 0), 40, LabelPivot::Center, 4);
-		label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level).str + "</outline>");
+		label_level->GetLabel()->SetText("<outline>Lv." + GTString::ToString(g_level) + "</outline>");
 		label_level->SetColor(Color(31, 255, 5, 255) / 255.0f);
 		g_label_level = label_level.get();
 
 		sprite = atlas->CreateSprite(
 			"gold",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		node = GameObject::Create("")->AddComponent<SpriteNode>();
@@ -227,14 +320,14 @@ protected:
 		batch_ui->AddSprite(node);
 
 		auto label_gold = CreateLabel(batch_ui->GetGameObject().get(), Vector3(-490, 47, 0), 40, LabelPivot::Left, 4);
-		label_gold->GetLabel()->SetText("<outline>" + GTString::ToString(g_gold).str + "</outline>");
+		label_gold->GetLabel()->SetText("<outline>" + GTString::ToString(g_gold) + "</outline>");
 		label_gold->SetColor(Color(228, 255, 0, 255) / 255.0f);
 		g_label_gold = label_gold.get();
 
 		sprite = atlas->CreateSprite(
 			"settings",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		node = GameObject::Create("settings")->AddComponent<SpriteNode>();
@@ -257,7 +350,7 @@ protected:
 		sprite = atlas->CreateSprite(
 			"bag",
 			Vector2(0.5f, 0),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		node = GameObject::Create("bag")->AddComponent<SpriteNode>();
@@ -274,7 +367,7 @@ protected:
 		sprite = atlas->CreateSprite(
 			"up",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		node = GameObject::Create("up")->AddComponent<SpriteNode>();
@@ -297,15 +390,14 @@ protected:
 		tabs->GetTransform()->SetLocalPosition(Vector3(-740, -7, 0));
 		tabs->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 
-		std::vector<SpriteNode *> tab_group(5);
-
+		g_tab_group.resize(5);
 		for(int i=0; i<5; i++)
 		{
-			auto tab_name = std::string("tab_") + GTString::ToString(i).str;
+			auto tab_name = std::string("tab_") + GTString::ToString(i);
 			sprite = atlas->CreateSprite(
 				tab_name,
 				Vector2(0.5f, 1),
-				pixel_per_unit,
+				g_pixel_per_unit,
 				Sprite::Type::Simple,
 				Vector2(0, 0));
 			node = GameObject::Create(tab_name)->AddComponent<SpriteNode>();
@@ -325,19 +417,17 @@ protected:
 				sprite->GetAtlas().lock()->SetSpriteData(sprite, tab_name + "_selected");
 			}
 
-			tab_group[i] = node.get();
+			g_tab_group[i] = node.get();
 		}
 
 		for(int i=0; i<5; i++)
 		{
-			auto handler = tab_group[i]->GetGameObject()->GetComponent<TabEventListener>();
+			auto handler = g_tab_group[i]->GetGameObject()->GetComponent<TabEventListener>();
 			handler->index = i;
-			handler->selected = 0;
-			handler->tab_group = tab_group;
 		}
 
-		tab_group[3]->GetGameObject()->SetActive(false);
-		tab_group[4]->GetGameObject()->SetActive(false);
+		g_tab_group[3]->GetGameObject()->SetActive(false);
+		g_tab_group[4]->GetGameObject()->SetActive(false);
 		
 		auto cards_0 = GameObject::Create("cards_0");
 		cards_0->GetTransform()->SetParent(bag->GetTransform());
@@ -347,7 +437,13 @@ protected:
 		auto sprite_card = atlas->CreateSprite(
 			"card",
 			Vector2(0.5f, 0.5f),
-			pixel_per_unit,
+			g_pixel_per_unit,
+			Sprite::Type::Simple,
+			Vector2(0, 0));
+		auto sprite_card_locked = atlas->CreateSprite(
+			"card locked",
+			Vector2(0.5f, 0.5f),
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		for(int i=0; i<25; i++)
@@ -358,7 +454,7 @@ protected:
 			{
 				int type = i / 5;
 				int index = i % 5;
-				auto card = GameObject::Create("card_" + GTString::ToString(i).str)->AddComponent<SpriteNode>();
+				auto card = GameObject::Create("card_" + GTString::ToString(i))->AddComponent<SpriteNode>();
 				card->GetTransform()->SetParent(tabs->GetTransform());
 				card->GetTransform()->SetLocalPosition(Vector3(200 + 270.0f * index, -242, 0));
 				card->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
@@ -370,16 +466,33 @@ protected:
 				auto listener = card->GetGameObject()->AddComponent<CardEventListener>();
 				listener->type_0 = type;
 				listener->type_1 = index;
+				card->GetGameObject()->SetActive(false);
 
-				if(listener->type_0 != 0)
+				auto card_locked = GameObject::Create("card_locked_" + GTString::ToString(i))->AddComponent<SpriteNode>();
+				card_locked->GetTransform()->SetParent(tabs->GetTransform());
+				card_locked->GetTransform()->SetLocalPosition(Vector3(200 + 270.0f * index, -242, 0));
+				card_locked->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+				card_locked->SetSprite(sprite_card_locked);
+				card_locked->SetSortingOrder(2);
+				batch_bag->AddSprite(card_locked);
+				card_locked->GetGameObject()->SetActive(false);
+
+				if(type == 0)
 				{
-					card->GetGameObject()->SetActive(false);
+					if(g_level >= item.unlock_level)
+					{
+						card->GetGameObject()->SetActive(true);
+					}
+					else
+					{
+						card_locked->GetGameObject()->SetActive(true);
+					}
 				}
 
 				sprite = atlas->CreateSprite(
 					item.name + " icon",
 					Vector2(0.5f, 1),
-					pixel_per_unit,
+					g_pixel_per_unit,
 					Sprite::Type::Simple,
 					Vector2(0, 0));
 				node = GameObject::Create("icon")->AddComponent<SpriteNode>();
@@ -391,19 +504,19 @@ protected:
 				batch_bag->AddSprite(node);
 
 				auto label_price = CreateLabel(card->GetGameObject().get(), Vector3(-30, -115, 0), 40, LabelPivot::Left, 2);
-				label_price->GetLabel()->SetText("<outline>" + GTString::ToString(item.price_base).str + "</outline>");
+				label_price->GetLabel()->SetText("<outline>" + GTString::ToString(item.price_base) + "</outline>");
 				label_price->SetColor(Color(228, 255, 0, 255) / 255.0f);
 				item.label_price = label_price;
 
 				auto label_planted = CreateLabel(card->GetGameObject().get(), Vector3(40, 126, 0), 40, LabelPivot::Left, 2);
-				label_planted->GetLabel()->SetText("<outline>" + GTString::ToString(item.planted).str + "</outline>");
+				label_planted->GetLabel()->SetText("<outline>" + GTString::ToString(item.planted) + "</outline>");
 				label_planted->SetColor(Color(202, 237, 255, 255) / 255.0f);
 				item.label_planted = label_planted;
 
 				sprite = atlas->CreateSprite(
 					item.name + " tree",
 					Vector2(0.5f, 1),
-					pixel_per_unit,
+					g_pixel_per_unit,
 					Sprite::Type::Simple,
 					Vector2(0, 0));
 				node = GameObject::Create("tree")->AddComponent<SpriteNode>();
@@ -428,7 +541,7 @@ protected:
 				sprite = atlas->CreateSprite(
 					item.name + " fruit",
 					fruit_pivot,
-					pixel_per_unit,
+					g_pixel_per_unit,
 					Sprite::Type::Simple,
 					Vector2(0, 0));
 				node = GameObject::Create("fruit")->AddComponent<SpriteNode>();
@@ -443,6 +556,17 @@ protected:
 					node->GetGameObject()->SetActive(false);
 				}
 			}
+		}
+
+		for(int i=0; i<8; i++)
+		{
+			m_sprite_coin_anim[i] = g_atlas->CreateSprite(
+				"coin " + GTString::ToString(i),
+				Vector2(0.5f, 0.5f),
+				g_pixel_per_unit,
+				Sprite::Type::Simple,
+				Vector2(0, 0));
+			g_sprite_coin_anim[i] = m_sprite_coin_anim[i];
 		}
 
 		m_batch_ui->GetTransform()->SetLocalPosition(Vector3(0, -540, 0));
@@ -461,16 +585,17 @@ protected:
 		Screen::AddResizeListener(std::dynamic_pointer_cast<IScreenResizeEventListener>(GetComponentPtr()));
 
 		GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
+		set_language(0);
 
 		auto screen_buffer = RenderTexture::Create(1920, 1080, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Bilinear, TextureWrapMode::Clamp);
 		auto cam_screen = GameObject::Create("")->AddComponent<Camera>();
 		cam_screen->SetOrthographic(true);
-		cam_screen->SetOrthographicSize(1 / pixel_per_unit * Screen::GetHeight() / 2);
+		cam_screen->SetOrthographicSize(1 / g_pixel_per_unit * Screen::GetHeight() / 2);
 		cam_screen->SetClipPlane(-1, 1);
 		cam_screen->SetCullingMask(LayerMask::GetMask(Layer::Default));
 		cam_screen->SetDepth(1);
 		cam_screen->SetClearColor(Color(0, 0, 0, 1));
-		cam_screen->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / pixel_per_unit));
+		cam_screen->GetTransform()->SetLocalScale(Vector3::One() * (Screen::GetHeight() / 1080.f) * (1.0f / g_pixel_per_unit));
 		m_cam = cam_screen.get();
 
 		auto screen_sprite = Sprite::Create(std::dynamic_pointer_cast<Texture>(screen_buffer));
@@ -491,7 +616,7 @@ protected:
 
 		auto cam = GameObject::Create("")->AddComponent<Camera>();
 		cam->SetOrthographic(true);
-		cam->SetOrthographicSize(1 / pixel_per_unit * 1080 / 2);
+		cam->SetOrthographicSize(1 / g_pixel_per_unit * 1080 / 2);
 		cam->SetClipPlane(-1, 1);
 		cam->SetCullingMask(LayerMask::GetMask(Layer::UI));
 		cam->SetDepth(0);
@@ -500,7 +625,7 @@ protected:
 
 		auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
 		canvas->GetTransform()->SetParent(cam->GetTransform());
-		canvas->GetTransform()->SetLocalScale(Vector3::One() * (1.0f / pixel_per_unit));
+		canvas->GetTransform()->SetLocalScale(Vector3::One() * (1.0f / g_pixel_per_unit));
 		canvas->SetSize(1920, 1080);
 		m_canvas = canvas.get();
 
@@ -517,10 +642,11 @@ protected:
 		auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
 		batch->GetTransform()->SetParent(canvas->GetTransform());
 		batch->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-		batch->SetSortingOrder(0, 0);
+		batch->SetSortingOrder(-1, 0);
 		g_batch_game = batch.get();
 
 		auto atlas = GTUIManager::LoadAtlas("plant", Application::GetDataPath() + "/Assets/image/plant.json");
+		g_atlas = atlas.get();
 
 		g_grass_node_0 = GameObject::Create("grass_node_0").get();
 		g_grass_node_0->GetTransform()->SetParent(batch->GetTransform());
@@ -547,7 +673,7 @@ protected:
 		auto grass_0 = atlas->CreateSprite(
 			"grass_0",
 			Vector2(1, 1),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(1025, 120),
 			Vector4(1, 0, -1, 0));
@@ -562,7 +688,7 @@ protected:
 		auto grass_1 = atlas->CreateSprite(
 			"grass_1",
 			Vector2(0, 1),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(1025, 120),
 			Vector4(1, 0, -1, 0));
@@ -629,7 +755,7 @@ protected:
 		auto sprite_white = atlas->CreateSprite(
 			"white",
 			Vector2(0.5f, 0),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(1920, 1000),
 			Vector4(1, 1, -1, -1));
@@ -650,7 +776,7 @@ protected:
 		auto sprite = atlas->CreateSprite(
 			"ground",
 			Vector2(0.5f, 0),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
 		node = GameObject::Create("")->AddComponent<SpriteNode>();
@@ -675,19 +801,23 @@ protected:
 		sprite = atlas->CreateSprite(
 			"limit",
 			Vector2(0.5f, 1.f),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(0, 0));
-		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node = GameObject::Create("limit left")->AddComponent<SpriteNode>();
 		node->GetTransform()->SetParent(ground->GetTransform());
 		node->GetTransform()->SetLocalPosition(Vector3(0, -325, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 		node->SetSprite(sprite);
 		node->SetSortingOrder(999);
 		batch->AddSprite(node);
+		auto collider = node->GetGameObject()->AddComponent<BoxCollider>();
+		collider->SetSize(sprite->GetSize());
+		collider->SetCenter(Vector3(0, sprite->GetSize().y * 0.5f, 0));
+		node->GetGameObject()->AddComponent<MapLimitIncreaseEventListener>();
 		g_map_limit_left = node->GetGameObject().get();
 
-		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node = GameObject::Create("limit right")->AddComponent<SpriteNode>();
 		node->GetTransform()->SetParent(ground->GetTransform());
 		node->GetTransform()->SetLocalPosition(Vector3(0, -325, 0));
 		node->GetTransform()->SetLocalRotation(Quaternion::Euler(0, 180, 0));
@@ -695,12 +825,65 @@ protected:
 		node->SetSprite(sprite);
 		node->SetSortingOrder(999);
 		batch->AddSprite(node);
+		collider = node->GetGameObject()->AddComponent<BoxCollider>();
+		collider->SetSize(sprite->GetSize());
+		collider->SetCenter(Vector3(0, sprite->GetSize().y * 0.5f, 0));
+		node->GetGameObject()->AddComponent<MapLimitIncreaseEventListener>();
 		g_map_limit_right = node->GetGameObject().get();
+
+		sprite = atlas->CreateSprite(
+			"gold",
+			Vector2(0.5f, 0.5f),
+			g_pixel_per_unit,
+			Sprite::Type::Simple,
+			Vector2(0, 0));
+
+		auto limit_info = GameObject::Create("limit_info");
+		limit_info->GetTransform()->SetParent(g_map_limit_left->GetTransform());
+		limit_info->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+		limit_info->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		limit_info->SetActive(false);
+
+		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(limit_info->GetTransform());
+		node->GetTransform()->SetLocalPosition(Vector3(-50, 150, 0));
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		node->SetSprite(sprite);
+		node->SetSortingOrder(999);
+		batch->AddSprite(node);
+
+		auto label_limit = CreateLabel(limit_info.get(), Vector3(0, 150, 0), 40, LabelPivot::Left, 0);
+		label_limit->GetLabel()->SetText("<bold>" + 
+			GTString::ToString(g_gold) + "/" + GTString::ToString(g_gold_limit_increase) +
+			"</bold>");
+		label_limit->SetColor(Color(1, 0, 0, 1));
+		g_label_gold_limit_increase_left = label_limit.get();
+
+		limit_info = GameObject::Create("limit_info");
+		limit_info->GetTransform()->SetParent(g_map_limit_right->GetTransform());
+		limit_info->GetTransform()->SetLocalPosition(Vector3(0, 0, 0));
+		limit_info->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		limit_info->SetActive(false);
+
+		node = GameObject::Create("")->AddComponent<SpriteNode>();
+		node->GetTransform()->SetParent(limit_info->GetTransform());
+		node->GetTransform()->SetLocalPosition(Vector3(50, 150, 0));
+		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
+		node->SetSprite(sprite);
+		node->SetSortingOrder(999);
+		batch->AddSprite(node);
+
+		label_limit = CreateLabel(limit_info.get(), Vector3(0, 150, 0), 40, LabelPivot::Right, 0);
+		label_limit->GetLabel()->SetText("<bold>" +
+			GTString::ToString(g_gold) + "/" + GTString::ToString(g_gold_limit_increase) +
+			"/<bold>");
+		label_limit->SetColor(Color(1, 0, 0, 1));
+		g_label_gold_limit_increase_right = label_limit.get();
 
 		sprite = atlas->CreateSprite(
 			"wave",
 			Vector2(0, 1),
-			pixel_per_unit,
+			g_pixel_per_unit,
 			Sprite::Type::Simple,
 			Vector2(199, 50),
 			Vector4(1, 0, -1, -2));
@@ -821,10 +1004,10 @@ protected:
 			hit_name = hit->GetName();
 		}
 
-		m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-			"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
+		m_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()) + "\n" +
+			"draw call:" + GTString::ToString(GTTime::GetDrawCall()) + "\n" +
 			"ray hit ui:" + hit_name + "\n"
-			"map_x:" + GTString::ToString((int) g_map_pos).str);
+			"map_x:" + GTString::ToString((int) g_map_pos));
 
 		float wave_speed = GTTime::GetDeltaTime() * 120;
 		
