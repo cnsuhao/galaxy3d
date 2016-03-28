@@ -238,225 +238,13 @@ namespace Galaxy3D
 		}
 	}
 
-	static void fill_vertex_buffer(char *buffer, const std::shared_ptr<Label> &label)
-	{
-		char *p = buffer;
-		auto pivot = label->GetPivot();
-		auto align = label->GetAlign();
-		auto aw = label->GetWidthActual();
-		auto ah = label->GetHeightActual();
-		auto w = label->GetWidth();
-		auto h = label->GetHeight();
-        auto offset_y = label->GetOffsetY();
-
-		if(w < 0)
-		{
-			w = aw;
-		}
-		if(h < 0)
-		{
-			h = ah;
-		}
-
-		if(align == LabelAlign::Auto)
-		{
-			if(	pivot == LabelPivot::TopLeft ||
-				pivot == LabelPivot::Left ||
-				pivot == LabelPivot::BottomLeft)
-			{
-				align = LabelAlign::Left;
-			}
-			else if(
-				pivot == LabelPivot::Top ||
-				pivot == LabelPivot::Center ||
-				pivot == LabelPivot::Bottom)
-			{
-				align = LabelAlign::Center;
-			}
-			else if(
-				pivot == LabelPivot::TopRight ||
-				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::BottomRight)
-			{
-				align = LabelAlign::Right;
-			}
-		}
-
-		auto &lines = label->GetLines();
-		for(size_t i=0; i<lines.size(); i++)
-		{
-			auto &line = lines[i];
-			auto &vertices = line.vertices;
-			auto &colors = line.colors;
-			auto &uv = line.uv;
-			int vertex_count = vertices.size();
-
-			for(int i=0; i<vertex_count; i++)
-			{
-				Vector3 pos = vertices[i];
-
-				if(	pivot == LabelPivot::Top ||
-					pivot == LabelPivot::Center ||
-					pivot == LabelPivot::Bottom)
-				{
-					pos.x -= Mathf::Round(w * 0.5f);
-				}
-
-				if(	pivot == LabelPivot::TopRight ||
-					pivot == LabelPivot::Right ||
-					pivot == LabelPivot::BottomRight)
-				{
-					pos.x -= w;
-				}
-
-				if(	pivot == LabelPivot::Left ||
-					pivot == LabelPivot::Center ||
-					pivot == LabelPivot::Right)
-				{
-					pos.y += Mathf::Round(h * 0.5f);
-				}
-
-				if(	pivot == LabelPivot::BottomLeft ||
-					pivot == LabelPivot::Bottom ||
-					pivot == LabelPivot::BottomRight)
-				{
-					pos.y += h;
-				}
-
-				if(align == LabelAlign::Center)
-				{
-					pos.x += Mathf::Round((w - line.width) * 0.5f);
-				}
-				else if(align == LabelAlign::Right)
-				{
-					pos.x += (w - line.width);
-				}
-
-                pos.y += offset_y;
-
-				memcpy(p, &pos, sizeof(Vector3));
-				p += sizeof(Vector3);
-
-				Color c = colors[i];
-				memcpy(p, &c, sizeof(Color));
-				p += sizeof(Color);
-
-				Vector2 v1 = uv[i];
-				memcpy(p, &v1, sizeof(Vector2));
-				p += sizeof(Vector2);
-			}
-		}
-	}
-
-	static void fill_vertex_buffer(char *buffer, LabelImageItem &item, const std::shared_ptr<Label> &label, const LabelLine &line)
-	{
-		char *p = buffer;
-		Vector2 *vertices = &item.vertices[0];
-		Vector2 *uv = &item.uv[0];
-		auto pivot = label->GetPivot();
-		auto align = label->GetAlign();
-		auto aw = label->GetWidthActual();
-		auto ah = label->GetHeightActual();
-		auto w = label->GetWidth();
-		auto h = label->GetHeight();
-        auto offset_y = label->GetOffsetY();
-
-		if(w < 0)
-		{
-			w = aw;
-		}
-		if(h < 0)
-		{
-			h = ah;
-		}
-
-		if(align == LabelAlign::Auto)
-		{
-			if(	pivot == LabelPivot::TopLeft ||
-				pivot == LabelPivot::Left ||
-				pivot == LabelPivot::BottomLeft)
-			{
-				align = LabelAlign::Left;
-			}
-			else if(
-				pivot == LabelPivot::Top ||
-				pivot == LabelPivot::Center ||
-				pivot == LabelPivot::Bottom)
-			{
-				align = LabelAlign::Center;
-			}
-			else if(
-				pivot == LabelPivot::TopRight ||
-				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::BottomRight)
-			{
-				align = LabelAlign::Right;
-			}
-		}
-
-		for(int i=0; i<4; i++)
-		{
-			Vector3 pos = vertices[i];
-
-			if(	pivot == LabelPivot::Top ||
-				pivot == LabelPivot::Center ||
-				pivot == LabelPivot::Bottom)
-			{
-				pos.x -= Mathf::Round(w * 0.5f);
-			}
-
-			if(	pivot == LabelPivot::TopRight ||
-				pivot == LabelPivot::Right ||
-				pivot == LabelPivot::BottomRight)
-			{
-				pos.x -= w;
-			}
-
-			if(	pivot == LabelPivot::Left ||
-				pivot == LabelPivot::Center ||
-				pivot == LabelPivot::Right)
-			{
-				pos.y += Mathf::Round(h * 0.5f);
-			}
-
-			if(	pivot == LabelPivot::BottomLeft ||
-				pivot == LabelPivot::Bottom ||
-				pivot == LabelPivot::BottomRight)
-			{
-				pos.y += h;
-			}
-
-			if(align == LabelAlign::Center)
-			{
-				pos.x += Mathf::Round((w - line.width) * 0.5f);
-			}
-			else if(align == LabelAlign::Right)
-			{
-				pos.x += (w - line.width);
-			}
-
-            pos.y += offset_y;
-
-			memcpy(p, &pos, sizeof(Vector3));
-			p += sizeof(Vector3);
-
-			Color c(1, 1, 1, 1);
-			memcpy(p, &c, sizeof(Color));
-			p += sizeof(Color);
-
-			Vector2 v1 = uv[i];
-			memcpy(p, &v1, sizeof(Vector2));
-			p += sizeof(Vector2);
-		}
-	}
-
 	void TextRenderer::CreateVertexBuffer()
 	{
 		int vertex_count = m_label->GetVertexCount();
 		int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		fill_vertex_buffer(buffer, m_label);
+		Label::FillVertexBuffer(buffer, m_label, NULL);
 
         m_vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 
@@ -469,7 +257,7 @@ namespace Galaxy3D
 		int buffer_size = sizeof(VertexUI) * vertex_count;
 		char *buffer = (char *) malloc(buffer_size);
 
-		fill_vertex_buffer(buffer, m_label);
+		Label::FillVertexBuffer(buffer, m_label, NULL);
 
         GraphicsDevice::GetInstance()->UpdateBufferObject(m_vertex_buffer, buffer, buffer_size);
 
@@ -478,23 +266,12 @@ namespace Galaxy3D
 
 	void TextRenderer::CreateIndexBuffer()
 	{
-		int index_count = m_label->GetVertexCount() / 4 * 6;
+		int index_count = m_label->GetIndexCount();
 		int buffer_size = sizeof(unsigned short) * index_count;
 		char *buffer = (char *) malloc(buffer_size);
 		char *p = buffer;
 
-		auto &lines = m_label->GetLines();
-		for(size_t i=0; i<lines.size(); i++)
-		{
-			auto &indices = lines[i].indices;
-			int size = sizeof(unsigned short) * indices.size();
-			
-			if(size > 0)
-			{
-				memcpy(p, &indices[0], size);
-				p += size;
-			}
-		}
+		Label::FillIndexBuffer(p, m_label);
 		
         m_index_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::StaticDraw, BufferType::Index);
 
@@ -518,7 +295,7 @@ namespace Galaxy3D
 				int buffer_size = sizeof(VertexUI) * 4;
 				char *buffer = (char *) malloc(buffer_size);
 
-				fill_vertex_buffer(buffer, images[j], m_label, lines[i]);
+				Label::FillVertexBuffer(buffer, images[j], m_label, lines[i]);
 
                 auto vertex_buffer = GraphicsDevice::GetInstance()->CreateBufferObject(buffer, buffer_size, BufferUsage::DynamicDraw, BufferType::Vertex);
 				
@@ -543,7 +320,7 @@ namespace Galaxy3D
 				int buffer_size = sizeof(VertexUI) * 4;
 				char *buffer = (char *) malloc(buffer_size);
 
-				fill_vertex_buffer(buffer, images[j], m_label, lines[i]);
+				Label::FillVertexBuffer(buffer, images[j], m_label, lines[i]);
 
                 GraphicsDevice::GetInstance()->UpdateBufferObject(vertex_buffer, buffer, buffer_size);
 

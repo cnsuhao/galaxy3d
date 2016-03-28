@@ -4,7 +4,7 @@
 
 namespace Galaxy3D
 {
-    static int get_sprites_vertex_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    static int get_sprites_vertex_count(const std::list<std::shared_ptr<SpriteNode>> &list)
     {
         int vertex_count = 0;
         for(auto &i : list)
@@ -15,7 +15,7 @@ namespace Galaxy3D
         return vertex_count;
     }
 
-    static int get_sprites_index_count(std::list<std::shared_ptr<SpriteNode>> &list)
+    static int get_sprites_index_count(const std::list<std::shared_ptr<SpriteNode>> &list)
     {
         int index_count = 0;
         for(auto &i : list)
@@ -110,7 +110,6 @@ namespace Galaxy3D
         GraphicsDevice::GetInstance()->SetIndexBuffer(m_index_buffer, IndexType::UShort);
 		
 		auto camera = Camera::GetCurrent();
-
         Matrix4x4 wvp = camera->GetViewProjectionMatrix() * GetTransform()->GetLocalToWorldMatrix();
 
 		mat->SetMatrix("WorldViewProjection", wvp);
@@ -166,7 +165,7 @@ namespace Galaxy3D
 
         for(auto &i : m_sprites)
         {
-            if(i->IsDirty() || i->GetSprite()->IsDirdy())
+            if(i->IsDirty() || i->GetSprite()->IsDirty())
             {
                 any_sprite_dirty = true;
                 break;
@@ -178,11 +177,6 @@ namespace Galaxy3D
 
 	void SpriteBatchRenderer::UpdateSprites()
 	{
-		if(m_sprites.empty())
-		{
-			return;
-		}
-
         int vertex_count = get_sprites_vertex_count(m_sprites);
         int index_count = get_sprites_index_count(m_sprites);
 
@@ -293,12 +287,12 @@ namespace Galaxy3D
             int vertex_count = 0;
             for(auto &i : m_sprites)
             {
-                int index_count = i->GetSprite()->GetIndexCount();
-                unsigned short *indices = i->GetSprite()->GetIndices();
-
                 if(i->GetGameObject()->IsActiveInHierarchy() && i->IsEnable())
                 {
-                    for(int j=0; j<index_count; j++)
+					int count = i->GetSprite()->GetIndexCount();
+					unsigned short *indices = i->GetSprite()->GetIndices();
+
+                    for(int j=0; j<count; j++)
                     {
                         unsigned short index = indices[j] + vertex_count;
                         *p = index;

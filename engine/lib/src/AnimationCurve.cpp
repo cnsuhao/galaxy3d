@@ -4,6 +4,15 @@
 
 namespace Galaxy3D
 {
+	AnimationCurve AnimationCurve::DefaultLinear()
+	{
+		AnimationCurve c;
+		c.keys.push_back(Keyframe(0, 0, 1, 1));
+		c.keys.push_back(Keyframe(1, 1, 1, 1));
+
+		return c;
+	}
+
     static float evaluate(float time, const Keyframe &k0, const Keyframe &k1)
     {
         float dt = k1.time - k0.time;

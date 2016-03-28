@@ -30,7 +30,7 @@
     <ProjectGuid>{f5ee6cce-ee56-46b7-bbc4-46dffa526ed3}</ProjectGuid>
     <Keyword>DirectXApp</Keyword>
     <RootNamespace>game</RootNamespace>
-    <DefaultLanguage>zh-CN</DefaultLanguage>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
@@ -363,6 +363,11 @@
   <ItemGroup>
     <Media Include="Assets\audio\bgm.mp3" />
     <Media Include="Assets\audio\click.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\language\en-US\string.txt" />
+    <Text Include="Assets\language\zh-CN\string.txt" />
+    <Text Include="Assets\language\zh-TW\string.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
