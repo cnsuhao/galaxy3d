@@ -638,6 +638,7 @@ protected:
 		tr->SetColor(Color(0, 0, 0, 1));
 		tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
 		m_fps = tr.get();
+		m_fps->GetGameObject()->SetActive(false);
 		
 		auto batch = GameObject::Create("")->AddComponent<SpriteBatchRenderer>();
 		batch->GetTransform()->SetParent(canvas->GetTransform());

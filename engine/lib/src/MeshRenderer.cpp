@@ -120,6 +120,8 @@ namespace Galaxy3D
                             pass->name != "deferred")
                         {
                             right_pass = true;
+
+							RenderSettings::GetGlobalDirectionalLight()->SetMaterialShadowParams(mat);
                         }
                     }
                 }

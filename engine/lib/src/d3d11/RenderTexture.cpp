@@ -1,4 +1,5 @@
 #include "RenderTexture.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -89,6 +90,22 @@ namespace Galaxy3D
     void RenderTexture::Create()
     {
         auto device = GraphicsDevice::GetInstance()->GetDevice();
+
+		if(m_format == RenderTextureFormat::Depth)
+		{
+			D3D11_FEATURE_DATA_D3D9_SHADOW_SUPPORT d3d9_shadow_support;
+			ZeroMemory(&d3d9_shadow_support, sizeof(D3D11_FEATURE_DATA_D3D9_SHADOW_SUPPORT));
+
+			device->CheckFeatureSupport(
+					D3D11_FEATURE_D3D9_SHADOW_SUPPORT, 
+					&d3d9_shadow_support,
+					sizeof(D3D11_FEATURE_DATA_D3D9_SHADOW_SUPPORT)
+					);
+			if(d3d9_shadow_support.SupportsDepthAsTextureWithLessEqualComparisonFilter == FALSE)
+			{
+				Debug::Log("RenderTexture::Create:Device do not support d3d9 shadow!");
+			}
+		}
 
         if(m_format != RenderTextureFormat::Depth)
         {
@@ -183,16 +200,34 @@ namespace Galaxy3D
             depth_texture->Release();
         }
 
-        // create sampler states
+		// create sampler states
         D3D11_SAMPLER_DESC sd;
-        ZeroMemory(&sd, sizeof(sd));
-        sd.Filter = Texture::FILTER_MODES[m_filter_mode];
-        sd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
-        sd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
-        sd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
-        sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-        sd.MinLOD = 0;
-        sd.MaxLOD = D3D11_FLOAT32_MAX;
+		ZeroMemory(&sd, sizeof(sd));
+
+		/*if(m_format == RenderTextureFormat::Depth)
+		{
+			sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+			sd.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+			sd.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+			sd.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+			sd.BorderColor[0] = 1.0f;
+			sd.BorderColor[1] = 1.0f;
+			sd.BorderColor[2] = 1.0f;
+			sd.BorderColor[3] = 1.0f;
+			sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+			sd.MinLOD = 0;
+			sd.MaxLOD = D3D11_FLOAT32_MAX;
+		}
+		else*/
+		{
+			sd.Filter = Texture::FILTER_MODES[m_filter_mode];
+			sd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
+			sd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
+			sd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
+			sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+			sd.MinLOD = 0;
+			sd.MaxLOD = D3D11_FLOAT32_MAX;
+		}
 
         device->CreateSamplerState(&sd, &m_sampler_state);
     }

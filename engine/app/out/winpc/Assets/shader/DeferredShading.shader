@@ -263,7 +263,7 @@ DeferredShading
             return shadow / ((pcf_size*2+1) * (pcf_size*2+1));
         }
 
-        float sample_shadow(float2 uv, float depth, float4 pos_world)
+        float sample_shadow(float depth, float4 pos_world)
         {
             // shadow
             bool cascade = ((int) ShadowParam.z) == 1;
@@ -387,7 +387,7 @@ DeferredShading
             bool shadow_enable = ((int) ShadowParam.w) == 1;
             if(shadow_enable)
             {
-                float shadow = sample_shadow(uv, depth, pos_world);
+                float shadow = sample_shadow(depth, pos_world);
                 intensity *= shadow;
             }
 
@@ -676,7 +676,7 @@ DeferredShading
             return shadow / ((pcf_size*2+1) * (pcf_size*2+1));
         }
 
-        float sample_shadow(float2 uv, float depth, float4 pos_world)
+        float sample_shadow(float depth, float4 pos_world)
         {
             // shadow
             bool cascade = ((int) ShadowParam.z) == 1;
@@ -822,7 +822,7 @@ DeferredShading
             bool shadow_enable = ((int) ShadowParam.w) == 1;
             if(shadow_enable)
             {
-                float shadow = sample_shadow(uv, depth, pos_world);
+                float shadow = sample_shadow(depth, pos_world);
                 intensity *= shadow;
             }
 

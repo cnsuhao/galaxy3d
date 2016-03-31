@@ -450,19 +450,48 @@ namespace Galaxy3D
                 
                 if(GTString(words[1]).StartsWith("vec"))
                 {
-                    std::stringstream ss(words[1].str.substr(3));
-                    int value;
-                    ss >> value;
-                    
-                    GTString name = words[2].Replace(";", "");
+					GTString name = words[2];
+					size_t find_left;
+					size_t find_right;
+					int size;
+
+					{
+						std::stringstream ss(words[1].str.substr(3));
+						int value;
+						ss >> value;
+
+						size = value * 4;
+					}
+
+					//array
+					int array_size_value = -1;
+					find_right = name.str.rfind("]");
+					if(find_right != std::string::npos)
+					{
+						find_left = name.str.rfind("[", find_right);
+						GTString array_size = name.str.substr(find_left + 1, find_right - find_left - 1);
+						name = name.str.substr(0, find_left);
+
+						std::stringstream ss(array_size.str);
+						ss >> array_size_value;
+
+						if(array_size_value > 0)
+						{
+							size *= array_size_value;
+						}
+					}
+					else
+					{
+						name = name.Replace(";", "");
+					}
                     
                     ShaderConstantBuffer cb;
-					cb.name = name.str;
-                    cb.size = value * 4;
+                    cb.name = name.str;
+                    cb.size = size;
                     
                     cbuffers[name.str] = cb;
 
-					Debug::Log("%s %d", name.str.c_str(), cb.size);
+					Debug::Log("%s %d %d", name.str.c_str(), size, array_size_value);
                 }
                 else if(GTString(words[1]).StartsWith("mat"))
                 {
@@ -669,6 +698,11 @@ namespace Galaxy3D
 
 		for(auto &i : m_passes)
 		{
+			if(i.vs == NULL || i.ps == NULL)
+			{
+				continue;
+			}
+
 			GLuint program = glCreateProgram();
 
 			glAttachShader(program, i.vs->shader);

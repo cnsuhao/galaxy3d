@@ -30,7 +30,6 @@
     <ClCompile Include="..\adler32.c" />
     <ClCompile Include="..\compress.c" />
     <ClCompile Include="..\contrib\minizip\ioapi.c" />
-    <ClCompile Include="..\contrib\minizip\miniunz.c" />
     <ClCompile Include="..\contrib\minizip\unzip.c" />
     <ClCompile Include="..\contrib\minizip\zip.c" />
     <ClCompile Include="..\crc32.c" />

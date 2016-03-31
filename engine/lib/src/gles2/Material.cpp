@@ -268,6 +268,16 @@ namespace Galaxy3D
 
 				texture_id++;
 			}
+			else
+			{
+				auto texture = Texture2D::GetDefaultTexture()->GetTexture();
+
+				glActiveTexture(GL_TEXTURE0 + texture_id);
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glUniform1i(i.second.slot, texture_id);
+
+				texture_id++;
+			}
 		}
 	}
 

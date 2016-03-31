@@ -53,6 +53,7 @@ namespace Galaxy3D
         void EnableCascade(bool enable) {m_cascade = enable;}
         bool IsCascade() const {return m_cascade;}
         void SetCascadeViewport(int index);
+		void SetMaterialShadowParams(const std::shared_ptr<Material> &material);
 
     private:
         static const int SHADOW_MAP_SIZE = 1024;

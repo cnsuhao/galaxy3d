@@ -50,7 +50,7 @@ namespace Galaxy3D
         {
             if(!m_shadow_map)
             {
-                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT, SHADOW_MAP_SIZE, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Bilinear);
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT, SHADOW_MAP_SIZE, RenderTextureFormat::RFloat, DepthBuffer::Depth_0, FilterMode::Bilinear);
             }
         }
 
@@ -277,6 +277,28 @@ namespace Galaxy3D
 
         return lights;
     }
+
+	void Light::SetMaterialShadowParams(const std::shared_ptr<Material> &material)
+	{
+		auto camera = Camera::GetCurrent();
+
+		bool enable = m_shadow_enable;
+		material->SetZBufferParams(camera);
+		material->SetVector("ShadowMapTexel", Vector4(1.0f / (SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT), 1.0f / SHADOW_MAP_SIZE));
+		material->SetVector("ShadowParam", Vector4(m_shadow_bias, m_shadow_strength, m_cascade ? 1.0f : 0, enable ? 1.0f : 0));
+        if(enable)
+        {
+            material->SetTexture("_ShadowMapTexture", GetShadowMap());
+            std::vector<Matrix4x4> mats(3);
+            memcpy(&mats[0], m_view_projection_matrices, sizeof(Matrix4x4) * 3);
+            material->SetMatrixArray("ViewProjectionLight", mats);
+
+            if(IsCascade())
+            {
+                material->SetVector("CascadeSplits", Vector4(CASCADE_SPLITS[0], CASCADE_SPLITS[1], CASCADE_SPLITS[2]));
+            }
+        }
+	}
 
     void Light::ShadingDirectionalLight(const Light *light, std::shared_ptr<Material> &material)
     {
