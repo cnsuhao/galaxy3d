@@ -16,6 +16,7 @@ namespace Galaxy3D
         static std::shared_ptr<Mesh> Create();
         static std::shared_ptr<GameObject> LoadStaticMesh(const std::string &file);
         static std::shared_ptr<GameObject> LoadSkinnedMesh(const std::string &file);
+		// these mesh vertex have no normal
         static std::shared_ptr<Mesh> CreateMeshCube();
         static std::shared_ptr<Mesh> CreateMeshSphere();
         static std::shared_ptr<Mesh> CreateMeshCone();

@@ -491,7 +491,7 @@ namespace Galaxy3D
 				}
 				else
 				{
-					Debug::Log("can't find shader %s cso", file);
+					Debug::Log("can't find shader %s cso", file.str.c_str());
 				}
 #endif
 
@@ -1001,7 +1001,7 @@ namespace Galaxy3D
 				}
 				else
 				{
-					Debug::Log("can't find shader %s cso", file);
+					Debug::Log("can't find shader %s cso", file.str.c_str());
 				}
 #endif
 				CreateConstantBuffers(i.block, ps.cbuffers);

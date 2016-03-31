@@ -3,7 +3,7 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE				:= libViry3D
-LOCAL_CFLAGS				:= -Wall -DANDROID -DIOAPI_NO_64
+LOCAL_CFLAGS				:= -Wall -DANDROID -DIOAPI_NO_64 -DFPM_ARM
 LOCAL_CPPFLAGS				:= -std=c++11 -fexceptions -frtti
 
 LOCAL_C_INCLUDES			:= \
@@ -59,6 +59,8 @@ LOCAL_SRC_FILES			:= \
     ../../src/ImageEffectToneMapping.cpp \
     ../../src/Input.cpp \
     ../../src/Label.cpp \
+	../../src/LabelBatchRenderer.cpp \
+	../../src/LabelNode.cpp \
     ../../src/Light.cpp \
     ../../src/LightmapSettings.cpp \
     ../../src/Localization.cpp \

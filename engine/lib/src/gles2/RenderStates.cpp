@@ -1,6 +1,7 @@
 #include "RenderStates.h"
 #include "GTString.h"
 #include "GraphicsDevice.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {

@@ -47,6 +47,8 @@ namespace Galaxy3D
 	{
 		m_screen_buffer = std::shared_ptr<RenderTexture>(
             new RenderTexture(Screen::GetWidth(), Screen::GetHeight(), 0));
+
+		glFrontFace(GL_CW);
 	}
 
 	void GraphicsDevice::ClearShaderResources()

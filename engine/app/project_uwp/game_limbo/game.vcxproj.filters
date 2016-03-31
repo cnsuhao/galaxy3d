@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="Assets">
+      <UniqueIdentifier>1385dee4-bc99-4125-bcc3-4064d9158d84</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Image Include="Assets\logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\image\fog.jpg">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\ground1.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\ground2.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\mushroom.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\start.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\tree1.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\tree2.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\witch.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\ground3.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\bird.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\ground1_fog.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\wheel.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\car.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+    <Image Include="Assets\image\ground1_collider.png">
+      <Filter>Assets\image</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXHelper.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="StepTimer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SplashScreen.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\LauncherLimbo.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="game_TemporaryKey.pfx" />
+    <None Include="Assets\font\heiti.ttc">
+      <Filter>Assets\font</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Sprite.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Text.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Package.StoreAssociation.xml" />
+    <None Include="game_StoreKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{f4c6e9b4-e1ed-48bc-bdf1-1ba352bddf97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\font">
+      <UniqueIdentifier>{4c7a1d48-91cf-4279-931f-4646745d07c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\image">
+      <UniqueIdentifier>{bbf1f0fe-af3b-44ae-884d-e564a92b041d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader">
+      <UniqueIdentifier>{bf9c51a2-567e-4e5e-a490-00326f375421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\UI">
+      <UniqueIdentifier>{80f5b17b-a6d5-4fef-b772-fbc36e1df599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\audio">
+      <UniqueIdentifier>{285ac585-efd0-4e5d-91ee-a0c5520197e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language">
+      <UniqueIdentifier>{33da86a5-a11a-4e9e-8256-b4aacf22c1b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\en-US">
+      <UniqueIdentifier>{1324b1ff-5edf-4121-9704-0431a7205c22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-CN">
+      <UniqueIdentifier>{fe424fcf-7ebe-4f54-8e12-7eb3e86704cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\language\zh-TW">
+      <UniqueIdentifier>{308b9d36-0125-48c3-ad05-64be53d6e69e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\language\en-US\string.txt">
+      <Filter>Assets\language\en-US</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-CN\string.txt">
+      <Filter>Assets\language\zh-CN</Filter>
+    </Text>
+    <Text Include="Assets\language\zh-TW\string.txt">
+      <Filter>Assets\language\zh-TW</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

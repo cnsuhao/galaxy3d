@@ -52,9 +52,6 @@
     <ClCompile Include="..\contrib\minizip\zip.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\contrib\minizip\miniunz.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\contrib\minizip\ioapi.c">
       <Filter>src</Filter>
     </ClCompile>
