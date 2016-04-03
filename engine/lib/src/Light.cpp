@@ -3,6 +3,7 @@
 #include "GraphicsDevice.h"
 #include "RenderSettings.h"
 #include "RenderTexture.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
@@ -50,7 +51,7 @@ namespace Galaxy3D
         {
             if(!m_shadow_map)
             {
-                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT, SHADOW_MAP_SIZE, RenderTextureFormat::RFloat, DepthBuffer::Depth_0, FilterMode::Bilinear);
+                m_shadow_map = RenderTexture::Create(SHADOW_MAP_SIZE * CASCADE_SHADOW_COUNT, SHADOW_MAP_SIZE, RenderTextureFormat::Depth, DepthBuffer::Depth_0, FilterMode::Bilinear);
             }
         }
 
@@ -168,6 +169,7 @@ namespace Galaxy3D
 
         // build light orthographic matrix
         min_z = Mathf::Min(min_z, z_near);
+
         return Matrix4x4::Ortho(left, right, bottom, top, min_z, z_far);
     }
 

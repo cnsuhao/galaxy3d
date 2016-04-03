@@ -115,6 +115,9 @@
     <None Include="Assets\shader\SkinnedMesh\Diffuse.shader">
       <Filter>Assets\shader\SkinnedMesh</Filter>
     </None>
+    <None Include="Assets\shader\BlitCopy.shader">
+      <Filter>Assets\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -199,6 +202,12 @@
     </FxCompile>
     <FxCompile Include="Assets\shader\SkinnedMesh\SkinnedMesh.Diffuse.ps_depth.hlsl">
       <Filter>Assets\shader\SkinnedMesh</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\BlitCopy.ps.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\BlitCopy.vs.hlsl">
+      <Filter>Assets\shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

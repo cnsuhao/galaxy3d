@@ -2,11 +2,21 @@
 #include "Screen.h"
 #include "RenderTexture.h"
 #include "Mesh.h"
+#include "Debug.h"
 
 namespace Galaxy3D
 {
     static GraphicsDevice *g_device = NULL;
     static bool g_done = false;
+
+	void GraphicsDevice::CheckGetError(const char *file, int line)
+	{
+		GLenum err = glGetError();
+		if(err != 0)
+		{
+			Debug::Log("OpenGL error:%d, %s, %d", err, file, line);
+		}
+	}
 
 	GraphicsDevice *GraphicsDevice::GetInstance()
 	{
@@ -48,7 +58,13 @@ namespace Galaxy3D
 		m_screen_buffer = std::shared_ptr<RenderTexture>(
             new RenderTexture(Screen::GetWidth(), Screen::GetHeight(), 0));
 
+		glEnable(GL_DEPTH_TEST);
+        glEnable(GL_POLYGON_OFFSET_FILL);
 		glFrontFace(GL_CW);
+		glClearDepthf(1.0f);
+		glClearStencil(0);
+
+		Debug::Log("GL_EXTENSIONS:%s", (const char *) glGetString(GL_EXTENSIONS));
 	}
 
 	void GraphicsDevice::ClearShaderResources()
@@ -66,9 +82,9 @@ namespace Galaxy3D
             indices[0].resize(6);
 
             VertexMesh v0 = {Vector3(-1, 1, 0), Vector3(), Vector4(), Vector2(0, 0), Vector2()};
-            VertexMesh v1 = {Vector3(1, 1, 0.3f), Vector3(), Vector4(), Vector2(1, 0), Vector2()};
-            VertexMesh v2 = {Vector3(1, -1, 0.2f), Vector3(), Vector4(), Vector2(1, 1), Vector2()};
-            VertexMesh v3 = {Vector3(-1, -1, 0.1f), Vector3(), Vector4(), Vector2(0, 1), Vector2()};
+            VertexMesh v1 = {Vector3(1, 1, 0), Vector3(), Vector4(), Vector2(1, 0), Vector2()};
+            VertexMesh v2 = {Vector3(1, -1, 0), Vector3(), Vector4(), Vector2(1, 1), Vector2()};
+            VertexMesh v3 = {Vector3(-1, -1, 0), Vector3(), Vector4(), Vector2(0, 1), Vector2()};
 
             vertices.push_back(v0);
             vertices.push_back(v1);
@@ -85,14 +101,20 @@ namespace Galaxy3D
 
     void GraphicsDevice::CreateBlitMaterialIfNeeded()
     {
+		CHECK_GL_ERROR;
+
         if(!m_blit_mat)
         {
             m_blit_mat = Material::Create("BlitCopy");
         }
+
+		CHECK_GL_ERROR;
     }
 
     void GraphicsDevice::Blit(const std::shared_ptr<Texture> &source, const std::shared_ptr<RenderTexture> &destination, const std::shared_ptr<Material> &material, int pass)
     {
+		CHECK_GL_ERROR;
+
         CreateBlitMeshIfNeeded();
 
         auto cam = Camera::GetCurrent();
@@ -147,10 +169,14 @@ namespace Galaxy3D
         }
 
 		ClearShaderResources();
+
+		CHECK_GL_ERROR;
     }
 
     void GraphicsDevice::DrawMeshNow(const std::shared_ptr<Mesh> &mesh, int sub_mesh_index, const std::shared_ptr<Material> &material, int pass_index)
     {
+		CHECK_GL_ERROR;
+
         auto vertex_buffer = mesh->GetVertexBuffer();
         auto index_buffer = mesh->GetIndexBuffer();
 
@@ -177,11 +203,17 @@ namespace Galaxy3D
 
             Renderer::DrawIndexed(index_count, index_offset);
         }while(false);
+
+		CHECK_GL_ERROR;
     }
 
 	void GraphicsDevice::SetViewport(int left, int top, int width, int height)
 	{
+		CHECK_GL_ERROR;
+
 		glViewport(left, top, width, height);
+
+		CHECK_GL_ERROR;
 	}
 
 	void GraphicsDevice::Present()
@@ -190,6 +222,8 @@ namespace Galaxy3D
 
 	void GraphicsDevice::SetRenderTargets(const std::vector<std::shared_ptr<RenderTexture>> &color_buffers, const std::shared_ptr<RenderTexture> &depth_stencil_buffer)
     {
+		CHECK_GL_ERROR;
+
 		std::shared_ptr<RenderTexture> target;
 
 		if(!color_buffers.empty())
@@ -204,27 +238,38 @@ namespace Galaxy3D
 		auto frame_buffer = target->GetFrameBuffer();
         glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
 		m_frame_buffer_current = frame_buffer;
+
+		CHECK_GL_ERROR;
     }
 
 	void GraphicsDevice::ClearRenderTarget(CameraClearFlags::Enum clear_flags, const Color &color, float depth, int stencil)
 	{
+		CHECK_GL_ERROR;
+
+		GLboolean depth_mask_old;
+		glGetBooleanv(GL_DEPTH_WRITEMASK, &depth_mask_old);
+		
+		glDepthMask(GL_TRUE);
+
 		if(clear_flags == CameraClearFlags::SolidColor)
         {
             glClearColor(color.r, color.g, color.b, color.a);
-			glClearDepthf(depth);
-			glClearStencil(stencil);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }
         else if(clear_flags == CameraClearFlags::Depth)
         {
-            glClearDepthf(depth);
-			glClearStencil(stencil);
 			glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }
+
+		glDepthMask(depth_mask_old);
+
+		CHECK_GL_ERROR;
 	}
 
 	BufferObject GraphicsDevice::CreateBufferObject(void *data, int size, BufferUsage::Enum usage, BufferType::Enum type)
 	{
+		CHECK_GL_ERROR;
+
 		GLenum target;
 		GLenum use;
 		
@@ -256,11 +301,16 @@ namespace Galaxy3D
 		bo.buffer = (void *) buffer;
 		bo.type = type;
 		bo.usage = usage;
+
+		CHECK_GL_ERROR;
+
         return bo;
 	}
 
 	void GraphicsDevice::UpdateBufferObject(BufferObject &bo, void *data, int size)
 	{
+		CHECK_GL_ERROR;
+
 		GLenum target;
 		GLenum use;
 		
@@ -287,14 +337,20 @@ namespace Galaxy3D
 		glBindBuffer(target, buffer);
 		glBufferData(target, size, data, use);
 		glBindBuffer(target, 0);
+
+		CHECK_GL_ERROR;
 	}
 
 	void GraphicsDevice::ReleaseBufferObject(BufferObject &bo)
 	{
+		CHECK_GL_ERROR;
+
 		GLuint buffer = (GLuint) bo.buffer;
 
 		glDeleteBuffers(1, &buffer);
 		bo.buffer = 0;
+
+		CHECK_GL_ERROR;
 	}
 
 	void GraphicsDevice::SetInputLayout(VertexShader *shader)
@@ -303,6 +359,8 @@ namespace Galaxy3D
 
 	void GraphicsDevice::SetVertexBuffer(BufferObject &bo, VertexShader *shader)
 	{
+		CHECK_GL_ERROR;
+
 		GLuint buffer = (GLuint) bo.buffer;
 
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -312,22 +370,34 @@ namespace Galaxy3D
             int slot = i.slot;
             int size = i.size;
 			int offset = i.offset;
-            glVertexAttribPointer(slot, size, GL_FLOAT, GL_FALSE, shader->vertex_stride, (const GLvoid *) offset);
-            glEnableVertexAttribArray(slot);
+
+			if(slot >= 0)
+			{
+				glVertexAttribPointer(slot, size, GL_FLOAT, GL_FALSE, shader->vertex_stride, (const GLvoid *) offset);
+				glEnableVertexAttribArray(slot);
+			}
         }
+
+		CHECK_GL_ERROR;
 	}
 
 	void GraphicsDevice::SetIndexBuffer(BufferObject &bo, IndexType::Enum bits)
 	{
+		CHECK_GL_ERROR;
+
 		GLuint buffer = (GLuint) bo.buffer;
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
 
 		m_index_buffer_bits = bits;
+
+		CHECK_GL_ERROR;
 	}
 
 	void GraphicsDevice::DrawIndexed(int count, int offset)
 	{
+		CHECK_GL_ERROR;
+
 		GLenum type;
 
 		if(m_index_buffer_bits == IndexType::UShort)
@@ -340,5 +410,7 @@ namespace Galaxy3D
 		}
 
 		glDrawElements(GL_TRIANGLES, count, type, (const GLvoid *) offset);
+
+		CHECK_GL_ERROR;
 	}
 }

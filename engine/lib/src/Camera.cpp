@@ -360,6 +360,14 @@ namespace Galaxy3D
                 i->RenderShadowMaps();
                 i->Render();
 
+				/*for debug
+				auto src = RenderSettings::GetGlobalDirectionalLight()->GetShadowMap();
+				if(src)
+				{
+					GraphicsDevice::GetInstance()->Blit(src, GraphicsDevice::GetInstance()->GetScreenBuffer().lock(), std::shared_ptr<Material>(), 0);
+				}
+				*/
+
                 m_current.reset();
 
 				rendered = true;
