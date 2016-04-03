@@ -107,7 +107,6 @@ namespace Galaxy3D
 			}
 		}
 
-        if(m_format != RenderTextureFormat::Depth)
         {
             DXGI_FORMAT fmt;
 
@@ -123,7 +122,7 @@ namespace Galaxy3D
             {
                 fmt = DXGI_FORMAT_R16G16_FLOAT;
             }
-            else if(m_format == RenderTextureFormat::RFloat)
+            else if(m_format == RenderTextureFormat::RFloat || m_format == RenderTextureFormat::Depth)
             {
                 fmt = DXGI_FORMAT_R32_FLOAT;
             }
@@ -149,7 +148,7 @@ namespace Galaxy3D
             texture->Release();
         }
 
-        if(m_format == RenderTextureFormat::Depth || m_depth != DepthBuffer::Depth_0)
+        if(m_depth != DepthBuffer::Depth_0)
         {
             DXGI_FORMAT fmt;
             DXGI_FORMAT fmt_dsv;
@@ -160,7 +159,7 @@ namespace Galaxy3D
                 fmt_dsv = DXGI_FORMAT_D16_UNORM;
                 fmt_srv = DXGI_FORMAT_R16_UNORM;
             }
-            else if(m_depth == DepthBuffer::Depth_24 || m_format == RenderTextureFormat::Depth)
+            else if(m_depth == DepthBuffer::Depth_24)
             {
                 fmt = DXGI_FORMAT_R24G8_TYPELESS;
                 fmt_dsv = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -203,31 +202,13 @@ namespace Galaxy3D
 		// create sampler states
         D3D11_SAMPLER_DESC sd;
 		ZeroMemory(&sd, sizeof(sd));
-
-		/*if(m_format == RenderTextureFormat::Depth)
-		{
-			sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-			sd.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-			sd.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-			sd.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-			sd.BorderColor[0] = 1.0f;
-			sd.BorderColor[1] = 1.0f;
-			sd.BorderColor[2] = 1.0f;
-			sd.BorderColor[3] = 1.0f;
-			sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-			sd.MinLOD = 0;
-			sd.MaxLOD = D3D11_FLOAT32_MAX;
-		}
-		else*/
-		{
-			sd.Filter = Texture::FILTER_MODES[m_filter_mode];
-			sd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
-			sd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
-			sd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
-			sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			sd.MinLOD = 0;
-			sd.MaxLOD = D3D11_FLOAT32_MAX;
-		}
+		sd.Filter = Texture::FILTER_MODES[m_filter_mode];
+		sd.AddressU = Texture::ADDRESS_MODES[m_wrap_mode];
+		sd.AddressV = Texture::ADDRESS_MODES[m_wrap_mode];
+		sd.AddressW = Texture::ADDRESS_MODES[m_wrap_mode];
+		sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		sd.MinLOD = 0;
+		sd.MaxLOD = D3D11_FLOAT32_MAX;
 
         device->CreateSamplerState(&sd, &m_sampler_state);
     }

@@ -60,6 +60,7 @@ namespace Galaxy3D
 	public:
 		static GraphicsDevice *GetInstance();
         static void Done();
+		static void CheckGetError(const char *file, int line);
 		~GraphicsDevice();
 		void Init(void *param);
 		void ClearShaderResources();
@@ -92,6 +93,8 @@ namespace Galaxy3D
         void CreateBlitMeshIfNeeded();
         void CreateBlitMaterialIfNeeded();
 	};
+
+#define CHECK_GL_ERROR GraphicsDevice::CheckGetError(__FILE__, __LINE__)
 }
 
 #endif

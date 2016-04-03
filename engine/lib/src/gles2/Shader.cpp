@@ -422,6 +422,8 @@ namespace Galaxy3D
 		{
 			shader->vertex_stride = sizeof(VertexMesh);
 		}
+
+		Debug::Log("attributes count %d", shader->attributes.size());
 	}
 
 	void Shader::CreateConstantBuffers(const std::string &src, std::unordered_map<std::string, ShaderConstantBuffer> &cbuffers)
@@ -707,6 +709,13 @@ namespace Galaxy3D
 
 			glAttachShader(program, i.vs->shader);
             glAttachShader(program, i.ps->shader);
+
+			// bind location must before link program
+			int index = 0;
+			for(auto &j : i.vs->attributes)
+            {
+				glBindAttribLocation(program, index++, j.name.c_str());
+            }
 			
 			GLint status;
             glLinkProgram(program);
@@ -740,7 +749,13 @@ namespace Galaxy3D
 
 			for(auto &j : i.vs->attributes)
             {
-                j.slot = glGetAttribLocation(program, j.name.c_str());
+				j.slot = glGetAttribLocation(program, j.name.c_str());
+
+				GLint active;
+				glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &active);
+				GLint max;
+				glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max);
+				Debug::Log("attribute %s %d %d %d", j.name.c_str(), j.slot, active, max);
             }
 
 			for(auto &j : p.cbuffers)

@@ -152,15 +152,14 @@ namespace Galaxy3D
 
 		for(auto &i: m_textures)
 		{
+			if(!i.second)
+            {
+                continue;
+            }
+
 			auto find = shader_pass->ps->textures.find(i.first);
 			if(find != shader_pass->ps->textures.end())
 			{
-                if(!i.second)
-                {
-                    find->second.texture = 0;
-                    continue;
-                }
-
                 auto tex = std::dynamic_pointer_cast<Texture2D>(i.second);
 				if(tex)
 				{
@@ -171,8 +170,7 @@ namespace Galaxy3D
                 auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
                 if(render_texture)
                 {
-                    if( i.first == "_CameraDepthTexture" ||
-                        i.first == "_ShadowMapTexture")
+                    if(i.first == "_CameraDepthTexture" || i.first == "_ShadowMapTexture")
                     {
                         find->second.texture = render_texture->GetDepthTexture();
                     }
@@ -203,6 +201,11 @@ namespace Galaxy3D
 
 		for(auto &i : shader_pass->program.cbuffers)
 		{
+			if(i.second.slot < 0)
+			{
+				continue;
+			}
+
 			{
 				auto find = m_vectors.find(i.first);
 				if(find != m_vectors.end())
@@ -252,15 +255,12 @@ namespace Galaxy3D
 		int texture_id = 0;
 		for(auto &i : shader_pass->ps->textures)
 		{
-			if(i.second.texture != 0)
+			if(i.second.slot < 0)
 			{
-				glActiveTexture(GL_TEXTURE0 + texture_id);
-				glBindTexture(GL_TEXTURE_2D, i.second.texture);
-				glUniform1i(i.second.slot, texture_id);
-
-				texture_id++;
+				continue;
 			}
-			else if(i.second.cubemap != 0)
+
+			if(i.second.cubemap != 0)
 			{
 				glActiveTexture(GL_TEXTURE0 + texture_id);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, i.second.cubemap);
@@ -270,7 +270,12 @@ namespace Galaxy3D
 			}
 			else
 			{
-				auto texture = Texture2D::GetDefaultTexture()->GetTexture();
+				GLuint texture = i.second.texture;
+
+				if(texture == 0)
+				{
+					texture = Texture2D::GetDefaultTexture()->GetTexture();
+				}
 
 				glActiveTexture(GL_TEXTURE0 + texture_id);
 				glBindTexture(GL_TEXTURE_2D, texture);

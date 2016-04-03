@@ -193,7 +193,7 @@ Diffuse
 			// shadow
 			bool cascade = ((int) ShadowParam.z) == 1;
 
-			int index = 0;
+			int index = -1;
 
 			if(cascade)
 			{
@@ -211,28 +211,35 @@ Diffuse
 					index = 2;
 				}
 			}
-
-			float shadow = 0;
-			float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
-			float3 pos_light = pos_light_4.xyz / pos_light_4.w;
-			pos_light.z = min(1, pos_light.z);
-
-			float2 uv_shadow = 0;
-			uv_shadow.x = 0.5 + pos_light.x * 0.5;
-			uv_shadow.y = 0.5 - pos_light.y * 0.5;
-
-			float tex_witdh = 1.0;
-			float tex_height = 1.0;
-			if(cascade)
+			else
 			{
-				tex_witdh = 1.0 / 3;
-				uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
+				index = 0;
 			}
 
-			float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
+			float shadow = 1.0;
 
-			float c = PCF(uv_shadow, size, pos_light.z);
-			shadow += c;
+			if(index >= 0)
+			{
+				float4 pos_light_4 = mul(pos_world, ViewProjectionLight[index]);
+				float3 pos_light = pos_light_4.xyz / pos_light_4.w;
+				pos_light.z = min(1, pos_light.z);
+
+				float2 uv_shadow = 0;
+				uv_shadow.x = 0.5 + pos_light.x * 0.5;
+				uv_shadow.y = 0.5 - pos_light.y * 0.5;
+
+				float tex_witdh = 1.0;
+				float tex_height = 1.0;
+				if(cascade)
+				{
+					tex_witdh = 1.0 / 3;
+					uv_shadow.x = index * tex_witdh + uv_shadow.x * tex_witdh;
+				}
+
+				float2 size = ShadowMapTexel.xy * float2(tex_witdh, tex_height);
+
+				shadow = PCF(uv_shadow, size, pos_light.z);
+			}
 
 			return shadow;
 		}
@@ -449,6 +456,8 @@ Diffuse
 		varying vec3 v_light_dir_world;
 		varying vec3 v_eye_dir_world;
 		varying vec3 v_normal_world;
+		varying vec4 v_pos_proj;
+		varying vec4 v_pos_world;
 
 		void main()
 		{
@@ -457,26 +466,126 @@ Diffuse
 			v_uv = Texcoord0;
 
             vec4 pos_world = Position * World;
-            vec3 normal_world = (vec4(Normal, 0) * World).xyz;
+            vec3 normal_world = (vec4(Normal, 0.0) * World).xyz;
 
             v_light_dir_world = - LightDirection.xyz;
             v_eye_dir_world = EyePosition.xyz - pos_world.xyz;
             v_normal_world = normal_world;
+			v_pos_proj = gl_Position;
+			v_pos_world = pos_world;
 		}
 	}
 
 	GLPS ps
 	{
-		precision mediump float;
+		precision highp float;
 		uniform vec4 GlobalAmbient;
 		uniform vec4 LightColor;
 		uniform vec4 _Color;
+		uniform mat4 ViewProjectionLight[3];
+		uniform vec4 ShadowParam;
+		uniform vec4 _ZBufferParams;
+		uniform vec4 ShadowMapTexel;
+		uniform vec4 CascadeSplits;
+
 		uniform sampler2D _MainTex;
+		uniform sampler2D _ShadowMapTexture;
 
 		varying vec2 v_uv;
 		varying vec3 v_light_dir_world;
 		varying vec3 v_eye_dir_world;
 		varying vec3 v_normal_world;
+		varying vec4 v_pos_proj;
+		varying vec4 v_pos_world;
+
+		float texture2DCompare(vec2 uv, float compare)
+		{
+			return step(compare * 0.5 + 0.5, texture2D(_ShadowMapTexture, uv).r);
+		}
+
+		float PCF(vec2 uv, vec2 size, float z)
+		{
+			float bias = ShadowParam.x;
+			float strength = ShadowParam.y;
+			float shadow_weak = clamp(1.0 - strength, 0.0, 1.0);
+			float shadow = 0.0;
+			int pcf_size = 1;
+
+			for(int i=-pcf_size;i<=pcf_size;i++)
+			{
+				for(int j=-pcf_size;j<=pcf_size;j++)
+				{
+					vec2 off = vec2(float(i), float(j)) * size;
+					float compare = texture2DCompare(uv + off, z - bias);
+
+					if(compare < 1.0)
+					{
+						shadow += shadow_weak;
+					}
+					else
+					{
+						shadow += 1.0;
+					}
+				}
+			}
+			return shadow / float((pcf_size*2+1) * (pcf_size*2+1));
+		}
+
+		float sample_shadow(float depth, vec4 pos_world)
+		{
+			// shadow
+			int cascade = int(ShadowParam.z);
+
+			int index = -1;
+
+			if(cascade == 1)
+			{
+				float linear_depth = 1.0 / (_ZBufferParams.x * depth + _ZBufferParams.y);
+				if(linear_depth < CascadeSplits.x)
+				{
+					index = 0;
+				}
+				else if(linear_depth < CascadeSplits.y)
+				{
+					index = 1;
+				}
+				else if(linear_depth < CascadeSplits.z)
+				{
+					index = 2;
+				}
+			}
+			else
+			{
+				index = 0;
+			}
+
+			float shadow = 1.0;
+
+			if(index >= 0)
+			{
+				vec4 pos_light_4 = pos_world * ViewProjectionLight[index];
+				vec3 pos_light = pos_light_4.xyz / pos_light_4.w;
+				pos_light.z = min(1.0, pos_light.z);
+
+				vec2 uv_shadow = vec2(0.0, 0.0);
+				uv_shadow.x = 0.5 + pos_light.x * 0.5;
+				uv_shadow.y = 0.5 + pos_light.y * 0.5;
+
+				float tex_witdh = 1.0;
+				float tex_height = 1.0;
+				if(cascade == 1)
+				{
+					tex_witdh = 1.0 / 3.0;
+					uv_shadow.x = float(index) * tex_witdh + uv_shadow.x * tex_witdh;
+				}
+
+				vec2 size = ShadowMapTexel.xy * vec2(tex_witdh, tex_height);
+
+				shadow = PCF(uv_shadow, size, pos_light.z);
+			}
+
+			return shadow;
+		}
 
 		void main()
 		{
@@ -494,10 +603,21 @@ Diffuse
             float nh = max(0.0, dot(normal, h));
             float spec = pow(nh, 128.0 * specular_power) * specular_intensity;
 
-            c.rgb = GlobalAmbient.rgb * c.rgb + 
-                diff * c.rgb * LightColor.rgb + 
-                spec * LightColor.rgb;
+            float intensity = 1.0;
+	
+			int shadow_enable = int(ShadowParam.w);
+			if(shadow_enable == 1)
+			{
+				float depth = v_pos_proj.z / v_pos_proj.w;
+				depth = depth * 0.5 + 0.5;
+				float shadow = sample_shadow(depth, v_pos_world);
+				intensity *= shadow;
+			}
 
+			c.rgb = GlobalAmbient.rgb * c.rgb + 
+				(diff * c.rgb * LightColor.rgb + 
+				spec * LightColor.rgb) * intensity;
+			
 			gl_FragColor = c;
 		}
 	}
@@ -515,6 +635,13 @@ Diffuse
 		void main()
 		{
 			gl_Position = Position * WorldViewProjection;
+		}
+	}
+
+	GLPS ps_depth
+	{
+		void main()
+		{
 		}
 	}
 }
