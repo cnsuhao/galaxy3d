@@ -10,6 +10,7 @@
 #include "Light.h"
 #include "LayerMask.h"
 #include "SkyBox.h"
+#include <thread>
 
 namespace Galaxy3D
 {
@@ -365,6 +366,7 @@ namespace Galaxy3D
 				if(src)
 				{
 					GraphicsDevice::GetInstance()->Blit(src, GraphicsDevice::GetInstance()->GetScreenBuffer().lock(), std::shared_ptr<Material>(), 0);
+					std::this_thread::sleep_for(std::chrono::seconds(1));
 				}
 				*/
 

@@ -761,11 +761,15 @@ namespace Galaxy3D
 			for(auto &j : p.cbuffers)
             {
                 j.second.slot = glGetUniformLocation(program, j.first.c_str());
+
+				Debug::Log("uniform %s %d", j.first.c_str(), j.second.slot);
             }
 
 			for(auto &j : i.ps->textures)
             {
                 j.second.slot = glGetUniformLocation(program, j.first.c_str());
+
+				Debug::Log("uniform texture %s %d", j.first.c_str(), j.second.slot);
             }
 
 			i.program = p;
