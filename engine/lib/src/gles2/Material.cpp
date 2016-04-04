@@ -150,45 +150,44 @@ namespace Galaxy3D
             return;
         }
 
-		for(auto &i: m_textures)
+		for(auto &i : shader_pass->ps->textures)
 		{
-			if(!i.second)
-            {
-                continue;
-            }
-
-			auto find = shader_pass->ps->textures.find(i.first);
-			if(find != shader_pass->ps->textures.end())
+			auto find = m_textures.find(i.first);
+			if(find != m_textures.end())
 			{
-                auto tex = std::dynamic_pointer_cast<Texture2D>(i.second);
+				auto tex = std::dynamic_pointer_cast<Texture2D>(find->second);
 				if(tex)
 				{
-					find->second.texture = tex->GetTexture();
+					i.second.texture = tex->GetTexture();
                     continue;
 				}
 
-                auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
+                auto render_texture = std::dynamic_pointer_cast<RenderTexture>(find->second);
                 if(render_texture)
                 {
                     if(i.first == "_CameraDepthTexture" || i.first == "_ShadowMapTexture")
                     {
-                        find->second.texture = render_texture->GetDepthTexture();
+                        i.second.texture = render_texture->GetDepthTexture();
                     }
                     else
                     {
-                        find->second.texture = render_texture->GetColorTexture();
+                        i.second.texture = render_texture->GetColorTexture();
                     }
 
                     continue;
                 }
 
-                auto cubemap = std::dynamic_pointer_cast<Cubemap>(i.second);
+                auto cubemap = std::dynamic_pointer_cast<Cubemap>(find->second);
                 if(cubemap)
                 {
-                    find->second.cubemap = cubemap->GetTexture();
-
+                    i.second.cubemap = cubemap->GetTexture();
                     continue;
                 }
+			}
+
+			if(i.second.texture == 0)
+			{
+				i.second.texture = Texture2D::GetDefaultTexture()->GetTexture();
 			}
 		}
 	}
@@ -196,12 +195,14 @@ namespace Galaxy3D
 	void Material::ApplyPass(int pass)
 	{
 		auto shader_pass = m_shader->GetPass(pass);
+		auto program = shader_pass->program.program;
 
-		glUseProgram(shader_pass->program.program);
+		glUseProgram(program);
 
 		for(auto &i : shader_pass->program.cbuffers)
 		{
-			if(i.second.slot < 0)
+			int slot = i.second.slot;
+			if(slot < 0)
 			{
 				continue;
 			}
@@ -210,7 +211,7 @@ namespace Galaxy3D
 				auto find = m_vectors.find(i.first);
 				if(find != m_vectors.end())
 				{
-					glUniform4fv(i.second.slot, 1, (const GLfloat *) &find->second);
+					glUniform4fv(slot, 1, (const GLfloat *) &find->second);
 					continue;
 				}
 			}
@@ -219,7 +220,7 @@ namespace Galaxy3D
 				auto find = m_vector_arrays.find(i.first);
 				if(find != m_vector_arrays.end())
 				{
-					glUniform4fv(i.second.slot, find->second.size(), (const GLfloat *) &find->second[0]);
+					glUniform4fv(slot, find->second.size(), (const GLfloat *) &find->second[0]);
 					continue;
 				}
 			}
@@ -228,7 +229,7 @@ namespace Galaxy3D
 				auto find = m_colors.find(i.first);
 				if(find != m_colors.end())
 				{
-					glUniform4fv(i.second.slot, 1, (const GLfloat *) &find->second);
+					glUniform4fv(slot, 1, (const GLfloat *) &find->second);
 					continue;
 				}
 			}
@@ -237,7 +238,7 @@ namespace Galaxy3D
 				auto find = m_matrices.find(i.first);
 				if(find != m_matrices.end())
 				{
-					glUniformMatrix4fv(i.second.slot, 1, GL_FALSE, (const GLfloat *) &find->second);
+					glUniformMatrix4fv(slot, 1, GL_FALSE, (const GLfloat *) &find->second);
 					continue;
 				}
 			}
@@ -246,43 +247,33 @@ namespace Galaxy3D
 				auto find = m_matrix_arrays.find(i.first);
 				if(find != m_matrix_arrays.end())
 				{
-					glUniformMatrix4fv(i.second.slot, find->second.size(), GL_FALSE, (const GLfloat *) &find->second[0]);
+					glUniformMatrix4fv(slot, find->second.size(), GL_FALSE, (const GLfloat *) &find->second[0]);
 					continue;
 				}
 			}
 		}
 
-		int texture_id = 0;
+		int index = 0;
 		for(auto &i : shader_pass->ps->textures)
 		{
-			if(i.second.slot < 0)
+			int slot = i.second.slot;
+			if(slot < 0)
 			{
 				continue;
 			}
 
+			glActiveTexture(GL_TEXTURE0 + index);
 			if(i.second.cubemap != 0)
 			{
-				glActiveTexture(GL_TEXTURE0 + texture_id);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, i.second.cubemap);
-				glUniform1i(i.second.slot, texture_id);
-
-				texture_id++;
 			}
 			else
 			{
-				GLuint texture = i.second.texture;
-
-				if(texture == 0)
-				{
-					texture = Texture2D::GetDefaultTexture()->GetTexture();
-				}
-
-				glActiveTexture(GL_TEXTURE0 + texture_id);
-				glBindTexture(GL_TEXTURE_2D, texture);
-				glUniform1i(i.second.slot, texture_id);
-
-				texture_id++;
+				glBindTexture(GL_TEXTURE_2D, i.second.texture);
 			}
+			glUniform1i(slot, index);
+
+			index++;
 		}
 	}
 
