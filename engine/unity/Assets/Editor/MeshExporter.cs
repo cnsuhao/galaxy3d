@@ -599,7 +599,7 @@ public class MeshExporter
 
                 WriteString(bw, tex_name);
 
-                if(tex != null)
+                if(tex != null && tex is Texture2D)
                 {
                     var bytes = (tex as Texture2D).EncodeToPNG();
                     if(bytes != null)

@@ -59,6 +59,11 @@ namespace Galaxy3D
         auto mat = Material::Create(shader_name);
         mat->SetGuid(mat_guid);
 
+		if(!mat_name.empty())
+		{
+			mat->SetName(mat_name);
+		}
+
         int property_count;
         BUFFER_READ(property_count, p, 4);
 
@@ -114,7 +119,7 @@ namespace Galaxy3D
 
                         auto tex = Texture2D::LoadFromFile(tex_path, FilterMode::Bilinear, wrap, true);
 
-                        if(mat)
+                        if(mat && tex)
                         {
                             mat->SetTexture(property_name, tex);
                         }
@@ -551,7 +556,7 @@ namespace Galaxy3D
         return obj;
     }
 
-    std::shared_ptr<GameObject> Mesh::LoadStaticMesh(const std::string &file)
+    std::shared_ptr<GameObject> Mesh::LoadStaticMesh(const std::string &file, const Vector3 &scale)
     {
         std::shared_ptr<GameObject> obj;
 
@@ -582,7 +587,7 @@ namespace Galaxy3D
                 renderer_tran->SetParent(obj->GetTransform());
                 renderer_tran->SetPosition(pos);
                 renderer_tran->SetRotation(rot);
-                renderer_tran->SetScale(sca);
+                renderer_tran->SetScale(Vector3(sca.x * scale.x, sca.y * scale.y, sca.z * scale.z));
 
                 auto renderer = renderer_obj->AddComponent<MeshRenderer>();
                 auto mesh = ReadMesh(p, renderer.get(), file.substr(0, file.find_last_of('/')), false);

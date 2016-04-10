@@ -152,6 +152,8 @@ namespace Galaxy3D
 
 		for(auto &i : shader_pass->ps->textures)
 		{
+			i.second.texture = 0;
+
 			auto find = m_textures.find(i.first);
 			if(find != m_textures.end())
 			{

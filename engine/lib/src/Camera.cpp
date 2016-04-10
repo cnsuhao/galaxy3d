@@ -12,6 +12,8 @@
 #include "SkyBox.h"
 #include <thread>
 
+bool g_show_shadow_map = false;
+
 namespace Galaxy3D
 {
 	std::list<Camera *> Camera::m_cameras;
@@ -361,14 +363,17 @@ namespace Galaxy3D
                 i->RenderShadowMaps();
                 i->Render();
 
-				/*for debug
-				auto src = RenderSettings::GetGlobalDirectionalLight()->GetShadowMap();
-				if(src)
+				//*for debug
+				if(g_show_shadow_map)
 				{
-					GraphicsDevice::GetInstance()->Blit(src, GraphicsDevice::GetInstance()->GetScreenBuffer().lock(), std::shared_ptr<Material>(), 0);
-					std::this_thread::sleep_for(std::chrono::seconds(1));
+					auto src = RenderSettings::GetGlobalDirectionalLight()->GetShadowMap();
+					if(src)
+					{
+						GraphicsDevice::GetInstance()->Blit(src, GraphicsDevice::GetInstance()->GetScreenBuffer().lock(), std::shared_ptr<Material>(), 0);
+						//std::this_thread::sleep_for(std::chrono::seconds(1));
+					}
 				}
-				*/
+				//*/
 
                 m_current.reset();
 

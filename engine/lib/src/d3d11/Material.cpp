@@ -272,77 +272,79 @@ namespace Galaxy3D
             }
         }
 
-		for(auto &i: m_textures)
+		if(shader_pass->ps != NULL)
 		{
-            if(shader_pass->ps == NULL)
-            {
-                continue;
-            }
-
-			auto find = shader_pass->ps->textures.find(i.first);
-			if(find != shader_pass->ps->textures.end())
+			for(auto &i : shader_pass->ps->textures)
 			{
-                if(!i.second)
-                {
-                    find->second.texture = NULL;
+				i.second.texture = NULL;
 
-                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
-                    if(find_sampler != shader_pass->ps->samplers.end())
-                    {
-                        find_sampler->second.sampler = NULL;
-                    }
-
-                    continue;
-                }
-
-                auto tex = std::dynamic_pointer_cast<Texture2D>(i.second);
-				if(tex)
+				auto find = m_textures.find(i.first);
+				if(find != m_textures.end())
 				{
-					find->second.texture = tex->GetTexture();
+					if(find->second)
+					{
+						auto tex = std::dynamic_pointer_cast<Texture2D>(find->second);
+						if(tex)
+						{
+							i.second.texture = tex->GetTexture();
+
+							auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+							if(find_sampler != shader_pass->ps->samplers.end())
+							{
+								find_sampler->second.sampler = tex->GetSampler();
+							}
+
+							continue;
+						}
+
+						auto render_texture = std::dynamic_pointer_cast<RenderTexture>(find->second);
+						if(render_texture)
+						{
+							if(i.first == "_CameraDepthTexture")
+							{
+								i.second.texture = render_texture->GetShaderResourceViewDepth();
+							}
+							else
+							{
+								i.second.texture = render_texture->GetShaderResourceViewColor();
+							}
+
+							auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+							if(find_sampler != shader_pass->ps->samplers.end())
+							{
+								find_sampler->second.sampler = render_texture->GetSamplerState();
+							}
+
+							continue;
+						}
+
+						auto cubemap = std::dynamic_pointer_cast<Cubemap>(find->second);
+						if(cubemap)
+						{
+							i.second.texture = cubemap->GetTexture();
+
+							auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
+							if(find_sampler != shader_pass->ps->samplers.end())
+							{
+								find_sampler->second.sampler = cubemap->GetSampler();
+							}
+
+							continue;
+						}
+					}
+				}
+
+				if(i.second.texture == NULL)
+				{
+					auto tex = Texture2D::GetDefaultTexture();
+					i.second.texture = tex->GetTexture();
 
 					auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
 					if(find_sampler != shader_pass->ps->samplers.end())
 					{
 						find_sampler->second.sampler = tex->GetSampler();
 					}
-
-                    continue;
 				}
-
-                auto render_texture = std::dynamic_pointer_cast<RenderTexture>(i.second);
-                if(render_texture)
-                {
-                    if(i.first == "_CameraDepthTexture")
-                    {
-                        find->second.texture = render_texture->GetShaderResourceViewDepth();
-                    }
-                    else
-                    {
-                        find->second.texture = render_texture->GetShaderResourceViewColor();
-                    }
-
-                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
-                    if(find_sampler != shader_pass->ps->samplers.end())
-                    {
-                        find_sampler->second.sampler = render_texture->GetSamplerState();
-                    }
-
-                    continue;
-                }
-
-                auto cubemap = std::dynamic_pointer_cast<Cubemap>(i.second);
-                if(cubemap)
-                {
-                    find->second.texture = cubemap->GetTexture();
-
-                    auto find_sampler = shader_pass->ps->samplers.find(i.first + "_Sampler");
-                    if(find_sampler != shader_pass->ps->samplers.end())
-                    {
-                        find_sampler->second.sampler = cubemap->GetSampler();
-                    }
-
-                    continue;
-                }
 			}
 		}
 	}
@@ -376,28 +378,12 @@ namespace Galaxy3D
 
             for(auto &i : shader_pass->ps->textures)
             {
-                if(i.second.texture == NULL)
-                {
-                    auto texture = Texture2D::GetDefaultTexture()->GetTexture();
-                    context->PSSetShaderResources(i.second.slot, 1, &texture);
-                }
-                else
-                {
-                    context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
-                }
+                context->PSSetShaderResources(i.second.slot, 1, &i.second.texture);
             }
 
             for(auto &i : shader_pass->ps->samplers)
             {
-                if(i.second.sampler == NULL)
-                {
-                    auto sampler = Texture2D::GetDefaultTexture()->GetSampler();
-                    context->PSSetSamplers(i.second.slot, 1, &sampler);
-                }
-                else
-                {
-                    context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
-                }
+                context->PSSetSamplers(i.second.slot, 1, &i.second.sampler);
             }
         }
 	}
