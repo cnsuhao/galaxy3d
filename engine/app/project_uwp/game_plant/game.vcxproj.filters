@@ -38,6 +38,186 @@
     <Image Include="Assets\mesh\anim\xiao_bie_li\sharedassets46.assets.12.png">
       <Filter>Assets\mesh\anim\xiao_bie_li</Filter>
     </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -118,6 +298,27 @@
     <None Include="Assets\shader\BlitCopy.shader">
       <Filter>Assets\shader</Filter>
     </None>
+    <None Include="Assets\mesh\car\body.mesh">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\Standard.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
+    <None Include="Assets\shader\SkyBox.shader">
+      <Filter>Assets\shader</Filter>
+    </None>
+    <None Include="Assets\mesh\car\car.mesh">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\StandardTransparent.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
+    <None Include="Assets\mesh\car\9b4fd90913bcfe949a71be3929f758160">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\mesh\car\941147f7428b40e4c8da15f17d30d7fc0">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -165,6 +366,15 @@
     <Filter Include="Assets\shader\SkinnedMesh">
       <UniqueIdentifier>{03ddee0c-ab21-4c32-b48a-d5db47a997a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\mesh\car">
+      <UniqueIdentifier>{0c346f3d-c53d-4444-bc21-a687a3543b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\PBR">
+      <UniqueIdentifier>{c90b9db4-0f9a-49bd-853e-621d83aac6a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\car\sky">
+      <UniqueIdentifier>{eb11d6bd-f609-4f01-9670-bf4567c421c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
@@ -208,6 +418,24 @@
     </FxCompile>
     <FxCompile Include="Assets\shader\BlitCopy.vs.hlsl">
       <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.vs.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkyBox.ps.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkyBox.vs.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardTransparent.vs.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardTransparent.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
