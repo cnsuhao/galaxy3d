@@ -23,52 +23,52 @@ SkyBox
     HLVS vs
     {
         cbuffer cbuffer0 : register(b0)
-        {
-            matrix WorldViewProjection;
-        };
+		{
+			matrix WorldViewProjection;
+		};
 
-        struct VS_INPUT
-        {
-            float4 Position : POSITION;
-            float3 Normal : NORMAL;
-            float4 Tangent : TANGENT;
-            float2 Texcoord0 : TEXCOORD0;
-            float2 Texcoord1 : TEXCOORD1;
-        };
+		struct VS_INPUT
+		{
+			float4 Position : POSITION;
+			float3 Normal : NORMAL;
+			float4 Tangent : TANGENT;
+			float2 Texcoord0 : TEXCOORD0;
+			float2 Texcoord1 : TEXCOORD1;
+		};
 
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float3 v_uv : POSITION;
-        };
+		struct PS_INPUT
+		{
+			float4 v_pos : SV_POSITION;
+			float3 v_uv : POSITION;
+		};
 
-        PS_INPUT main(VS_INPUT input)
-        {
-            PS_INPUT output = (PS_INPUT) 0;
+		PS_INPUT main(VS_INPUT input)
+		{
+			PS_INPUT output = (PS_INPUT) 0;
 
-            output.v_pos = mul(input.Position, WorldViewProjection).xyww;
-            output.v_uv = input.Position.xyz;
+			output.v_pos = mul(input.Position, WorldViewProjection).xyww;
+			output.v_uv = input.Position.xyz;
 
-            return output;
-        }
+			return output;
+		}
     }
 
     HLPS ps
     {
         TextureCube _MainTex : register(t0);
-        SamplerState _MainTex_Sampler : register(s0);
+		SamplerState _MainTex_Sampler : register(s0);
 
-        struct PS_INPUT
-        {
-            float4 v_pos : SV_POSITION;
-            float3 v_uv : POSITION;
-        };
+		struct PS_INPUT
+		{
+			float4 v_pos : SV_POSITION;
+			float3 v_uv : POSITION;
+		};
 
-        float4 main(PS_INPUT input) : SV_Target
-        {
-            float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
-            return c;
-        }
+		float4 main(PS_INPUT input) : SV_Target
+		{
+			float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
+			return c;
+		}
     }
 
     GLVS vs
