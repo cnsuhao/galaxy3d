@@ -7,7 +7,7 @@
 #include "Application.h"
 #include "GTTime.h"
 #include "TweenColor.h"
-#include "LauncherFighting.hpp"
+#include "LauncherDemo.hpp"
 
 using namespace Galaxy3D;
 
@@ -64,7 +64,7 @@ class SplashScreen : public Component
 		tc->on_finished = 
 			[this](Component *tween, std::weak_ptr<Component> &target)
 			{
-				GameObject::Create("")->AddComponent<LauncherFighting>();
+				GameObject::Create("")->AddComponent<LauncherDemo>();
 				auto obj = this->GetGameObject();
 				GameObject::Destroy(obj);
 			};

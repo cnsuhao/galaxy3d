@@ -8,7 +8,7 @@ LOCAL_CPPFLAGS				:= -std=c++11 -fexceptions -frtti
 
 LOCAL_C_INCLUDES			:= \
 	../../src \
-	../../src/gles2 \
+	../../src/gles \
 	../../depend/openal-soft-winphone-master/include \
 	../../depend/bullet3-2.83.6/src \
 	../../depend/json/src/json \
@@ -20,12 +20,13 @@ LOCAL_SRC_FILES			:= \
 	../../depend/zlib-1.2.8/contrib/minizip/ioapi.c \
 	../../depend/zlib-1.2.8/contrib/minizip/zip.c \
 	../../depend/zlib-1.2.8/contrib/minizip/unzip.c \
-	../../src/gles2/GraphicsDevice.cpp \
-	../../src/gles2/Material.cpp \
-	../../src/gles2/RenderTexture.cpp \
-	../../src/gles2/RenderStates.cpp \
-	../../src/gles2/Shader.cpp \
-	../../src/gles2/Texture2D.cpp \
+	../../src/gles/Cubemap.cpp \
+	../../src/gles/GraphicsDevice.cpp \
+	../../src/gles/Material.cpp \
+	../../src/gles/RenderTexture.cpp \
+	../../src/gles/RenderStates.cpp \
+	../../src/gles/Shader.cpp \
+	../../src/gles/Texture2D.cpp \
     ../../src/Animation.cpp \
     ../../src/AnimationCurve.cpp \
     ../../src/Application.cpp \

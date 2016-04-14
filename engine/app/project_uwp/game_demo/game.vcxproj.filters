@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="Assets">
+      <UniqueIdentifier>1385dee4-bc99-4125-bcc3-4064d9158d84</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Image Include="Assets\logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\mesh\anim\xiao_bie_li\sharedassets46.assets.10.png">
+      <Filter>Assets\mesh\anim\xiao_bie_li</Filter>
+    </Image>
+    <Image Include="Assets\mesh\anim\xiao_bie_li\sharedassets46.assets.12.png">
+      <Filter>Assets\mesh\anim\xiao_bie_li</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_0_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_1_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_2_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_3_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_4_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_5_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_6_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_7_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_8_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_0.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_1.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_2.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_3.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_4.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+    <Image Include="Assets\mesh\car\sky\sphere map_9_5.png">
+      <Filter>Assets\mesh\car\sky</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXHelper.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="StepTimer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SplashScreen.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="game_TemporaryKey.pfx" />
+    <None Include="Assets\font\heiti.ttc">
+      <Filter>Assets\font</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Sprite.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Assets\shader\UI\Text.shader">
+      <Filter>Assets\shader\UI</Filter>
+    </None>
+    <None Include="Package.StoreAssociation.xml" />
+    <None Include="game_StoreKey.pfx" />
+    <None Include="Assets\shader\Diffuse.shader">
+      <Filter>Assets\shader</Filter>
+    </None>
+    <None Include="Assets\mesh\primitive\Cube.mesh">
+      <Filter>Assets\mesh\primitive</Filter>
+    </None>
+    <None Include="Assets\mesh\primitive\Sphere.mesh">
+      <Filter>Assets\mesh\primitive</Filter>
+    </None>
+    <None Include="Assets\mesh\anim\xiao_bie_li\xiao_bie_li.anim">
+      <Filter>Assets\mesh\anim\xiao_bie_li</Filter>
+    </None>
+    <None Include="Assets\shader\SkinnedMesh\Diffuse.shader">
+      <Filter>Assets\shader\SkinnedMesh</Filter>
+    </None>
+    <None Include="Assets\shader\BlitCopy.shader">
+      <Filter>Assets\shader</Filter>
+    </None>
+    <None Include="Assets\mesh\car\body.mesh">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\Standard.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
+    <None Include="Assets\shader\SkyBox.shader">
+      <Filter>Assets\shader</Filter>
+    </None>
+    <None Include="Assets\mesh\car\car.mesh">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\StandardTransparent.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
+    <None Include="Assets\mesh\car\9b4fd90913bcfe949a71be3929f758160">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+    <None Include="Assets\mesh\car\941147f7428b40e4c8da15f17d30d7fc0">
+      <Filter>Assets\mesh\car</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{f4c6e9b4-e1ed-48bc-bdf1-1ba352bddf97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\font">
+      <UniqueIdentifier>{4c7a1d48-91cf-4279-931f-4646745d07c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader">
+      <UniqueIdentifier>{bf9c51a2-567e-4e5e-a490-00326f375421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\UI">
+      <UniqueIdentifier>{80f5b17b-a6d5-4fef-b772-fbc36e1df599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh">
+      <UniqueIdentifier>{6775e917-a091-4e1e-b1c7-957b373b9c7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\primitive">
+      <UniqueIdentifier>{977132e9-8443-4af7-b76d-57b0a78b1c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\anim">
+      <UniqueIdentifier>{37a2d789-21b6-4d0b-bfc2-22d1499c8da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\anim\xiao_bie_li">
+      <UniqueIdentifier>{31b13b17-6511-4029-9785-913cd7666cc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\SkinnedMesh">
+      <UniqueIdentifier>{03ddee0c-ab21-4c32-b48a-d5db47a997a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\car">
+      <UniqueIdentifier>{0c346f3d-c53d-4444-bc21-a687a3543b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\shader\PBR">
+      <UniqueIdentifier>{c90b9db4-0f9a-49bd-853e-621d83aac6a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\car\sky">
+      <UniqueIdentifier>{eb11d6bd-f609-4f01-9670-bf4567c421c3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Sprite.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.ps.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\UI\UI.Text.vs.hlsl">
+      <Filter>Assets\shader\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\Diffuse.ps.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\Diffuse.vs.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkinnedMesh\SkinnedMesh.Diffuse.ps.hlsl">
+      <Filter>Assets\shader\SkinnedMesh</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkinnedMesh\SkinnedMesh.Diffuse.vs.hlsl">
+      <Filter>Assets\shader\SkinnedMesh</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\Diffuse.vs_depth.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkinnedMesh\SkinnedMesh.Diffuse.vs_depth.hlsl">
+      <Filter>Assets\shader\SkinnedMesh</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\Diffuse.ps_depth.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkinnedMesh\SkinnedMesh.Diffuse.ps_depth.hlsl">
+      <Filter>Assets\shader\SkinnedMesh</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\BlitCopy.ps.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\BlitCopy.vs.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.vs.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkyBox.ps.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\SkyBox.vs.hlsl">
+      <Filter>Assets\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardTransparent.vs.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardTransparent.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.ps_depth.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.Standard.vs_depth.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
