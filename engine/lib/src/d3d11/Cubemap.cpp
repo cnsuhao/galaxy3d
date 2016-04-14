@@ -16,12 +16,13 @@ namespace Galaxy3D
         auto map = std::shared_ptr<Cubemap>(new Cubemap(texs[0]->GetWidth(), filter_mode, wrap_mode));
 		if(mipmap && !mip_gen)
 		{
-			map->m_colors.resize(mip_count * 6);
+			map->m_colors.resize(mip_count * 6, NULL);
 		}
 		else
 		{
-			map->m_colors.resize(6);
+			map->m_colors.resize(6, NULL);
 		}
+
         for(size_t i=0; i<files.size(); i++)
         {
             auto pixels = texs[i]->GetPixels();
@@ -36,9 +37,25 @@ namespace Galaxy3D
         return map;
     }
 
+	Cubemap::~Cubemap()
+    {
+        SAFE_RELEASE(m_texture_res);
+        SAFE_RELEASE(m_sampler);
+
+		for(size_t i=0; i<m_colors.size(); i++)
+		{
+			if(m_colors[i] != NULL)
+			{
+				free(m_colors[i]);
+				m_colors[i] = NULL;
+			}
+		}
+		m_colors.clear();
+    }
+
     void Cubemap::SetPixels(const char *colors, int size, int index)
     {
-		if(index < m_colors.size())
+		if(index < (int) m_colors.size())
 		{
 			if(m_colors[index] == 0)
 			{
@@ -111,7 +128,7 @@ namespace Galaxy3D
             if(m_colors[k] != 0 && bpp > 0)
             {
                 int bytes = bpp / 8;
-				int mip_div = pow(2, k / 6);
+				int mip_div = (int) pow(2, k / 6);
 				int w = m_width / mip_div;
 				int h = m_height / mip_div;
 

@@ -10,11 +10,7 @@ namespace Galaxy3D
     {
     public:
         static std::shared_ptr<Cubemap> LoadFromFile(const std::vector<std::string> &files, FilterMode::Enum filter_mode = FilterMode::Bilinear, TextureWrapMode::Enum wrap_mode = TextureWrapMode::Clamp, bool mipmap = false, bool mip_gen = true, int mip_count = 0);
-        virtual ~Cubemap()
-        {
-            SAFE_RELEASE(m_texture_res);
-            SAFE_RELEASE(m_sampler);
-        }
+        virtual ~Cubemap();
         ID3D11ShaderResourceView *GetTexture() const {return m_texture_res;}
         ID3D11SamplerState *GetSampler() const {return m_sampler;}
 
