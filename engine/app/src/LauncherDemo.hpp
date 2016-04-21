@@ -53,19 +53,19 @@ class LauncherDemo : public Component
 		Init2D();
 
 		auto cam = GameObject::Create("")->AddComponent<Camera>();
-		cam->GetTransform()->SetPosition(Vector3(0, 0, -4));
+		cam->GetTransform()->SetPosition(Vector3(0, 0, -10));
 		cam->GetTransform()->SetForward(Vector3::Zero() - cam->GetTransform()->GetPosition());
 		cam->SetClipPlane(0.3f, 100.f);
 		cam->SetCullingMask(LayerMask::GetMask(Layer::Default));
 		cam->SetClearColor(Color(1, 1, 1, 1) * 0.3f);
 		cam->SetDepth(0);
 		g_cam = cam.get();
-		g_cam_dis = 4;
+		g_cam_dis = 10;
 		g_cam_rot = Vector3::Zero();
 
 		RenderSettings::light_ambient = Color(1, 1, 1, 1) * 0.2f;
 		RenderSettings::GetGlobalDirectionalLight()->GetTransform()->SetRotation(Quaternion::Euler(30, 45, 0));
-		RenderSettings::GetGlobalDirectionalLight()->SetIntensity(0.8f);
+		RenderSettings::GetGlobalDirectionalLight()->SetIntensity(1.0f);
 		RenderSettings::GetGlobalDirectionalLight()->EnableShadow(true);
 		RenderSettings::GetGlobalDirectionalLight()->EnableCascade(true);
 
@@ -95,10 +95,13 @@ class LauncherDemo : public Component
 		auto sphere = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Sphere.mesh");
 		sphere->GetTransform()->SetPosition(Vector3(3.f, 0.5f, 0));
 		*/
+
+		/*
 		auto ground = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/primitive/Cube.mesh", Vector3(20, 1, 20));
 		ground->GetTransform()->SetPosition(Vector3(0, -0.5f, 0));
-
+		*/
 		auto car = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/car/car.mesh");
+		car->GetTransform()->SetPosition(Vector3(0, 3, 0));
 		auto rs = car->GetComponentsInChildren<MeshRenderer>();
 		for(auto &i : rs)
 		{
@@ -120,6 +123,17 @@ class LauncherDemo : public Component
 			}
 		}
 		g_car = car.get();
+		
+		auto cams = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/cam/cams.mesh");
+		rs = cams->GetComponentsInChildren<MeshRenderer>();
+		for(auto &i : rs)
+		{
+			auto mats = i->GetSharedMaterials();
+			for(auto &j : mats)
+			{
+				j->SetTexture("_ReflectionMap", cubemap);
+			}
+		}
 
 		/*
 		{

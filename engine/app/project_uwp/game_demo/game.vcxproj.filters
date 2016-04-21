@@ -313,6 +313,36 @@
     <None Include="Assets\mesh\car\941147f7428b40e4c8da15f17d30d7fc0">
       <Filter>Assets\mesh\car</Filter>
     </None>
+    <None Include="Assets\mesh\cam\021d9b5b3137cc04dba8c5cc2e101ea50">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\24a9fce82ab205d42a69da5339e66c470">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\41ab0a6de019b0140b83e90520401f460">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\8967c95017fccb249b585a25379896100">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\94924a79acdada44498e5a41cfcdc6bb0">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\cams.mesh">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\fc7fe100253e5e74dac2851fa273ad5f0">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\mesh\cam\8afa4701d289c9243836d85ca6113b0b0">
+      <Filter>Assets\mesh\cam</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\StandardBumped.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
+    <None Include="Assets\shader\PBR\StandardBumpedWood.shader">
+      <Filter>Assets\shader\PBR</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -350,6 +380,9 @@
     </Filter>
     <Filter Include="Assets\mesh\car\sky">
       <UniqueIdentifier>{eb11d6bd-f609-4f01-9670-bf4567c421c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\mesh\cam">
+      <UniqueIdentifier>{17601c3d-456b-42cf-ada5-466c936f9e56}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -417,6 +450,18 @@
       <Filter>Assets\shader\PBR</Filter>
     </FxCompile>
     <FxCompile Include="Assets\shader\PBR\PBR.Standard.vs_depth.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardBumped.vs.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardBumped.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardBumpedWood.ps.hlsl">
+      <Filter>Assets\shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\PBR\PBR.StandardBumpedWood.vs.hlsl">
       <Filter>Assets\shader\PBR</Filter>
     </FxCompile>
   </ItemGroup>
