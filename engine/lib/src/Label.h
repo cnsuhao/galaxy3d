@@ -126,6 +126,7 @@ namespace Galaxy3D
 		int m_height_actual;
         int m_offset_y;
 		bool m_rich;
+		bool m_mono;
 		LabelPivot::Enum m_pivot;
 		LabelAlign::Enum m_align;
 		std::vector<LabelLine> m_lines;

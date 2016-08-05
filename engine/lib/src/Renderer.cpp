@@ -115,8 +115,8 @@ namespace Galaxy3D
                 auto cam = Camera::GetCurrent();
                 if(cam)
                 {
-                    float dis1 = (cam->GetTransform()->GetPosition() - b1.renderer->GetTransform()->GetPosition()).SqrMagnitude();
-                    float dis2 = (cam->GetTransform()->GetPosition() - b2.renderer->GetTransform()->GetPosition()).SqrMagnitude();
+                    float dis1 = (cam->GetTransform()->GetPosition() - b1.renderer->GetBounds().center).SqrMagnitude();
+                    float dis2 = (cam->GetTransform()->GetPosition() - b2.renderer->GetBounds().center).SqrMagnitude();
                     
                     if(dis1 < dis2)
                     {

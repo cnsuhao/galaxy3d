@@ -129,9 +129,6 @@
     <ClCompile Include="..\src\Guid.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Thread.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\d3d11\RenderTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -256,6 +253,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Localization.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioClip.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioListener.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AudioSource.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabelNode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabelBatchRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -446,9 +461,6 @@
     <ClInclude Include="..\src\Guid.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Thread.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\d3d11\RenderTexture.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -579,6 +591,24 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Localization.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioClip.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioListener.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioManager.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AudioSource.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabelNode.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabelBatchRenderer.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,6 +16,7 @@ namespace Galaxy3D
             Scene = 6,
             Terrain = 7,
             Character = 8,
+			Editor = 31
 		};
 	};
 }
