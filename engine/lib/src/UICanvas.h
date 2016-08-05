@@ -23,6 +23,7 @@ namespace Galaxy3D
         int GetWidth();
         int GetHeight();
         void AnchorTransform(std::shared_ptr<Transform> &t, const Vector4 &anchor);
+		void SetCamera(const std::shared_ptr<Camera> &cam) {m_camera = cam;}
 
     protected:
         virtual void Start();
@@ -31,7 +32,7 @@ namespace Galaxy3D
     private:
         int m_width;
         int m_height;
-        std::shared_ptr<Camera> m_camera;
+        std::weak_ptr<Camera> m_camera;
 
         void ProcessMouse();
         void ProcessTouch(bool pressed, bool released);

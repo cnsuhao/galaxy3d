@@ -113,6 +113,11 @@ namespace Galaxy3D
 
     static bool raycast(const Vector3 &in_pos)
     {
+		if(g_camera.expired())
+		{
+			return false;
+		}
+
         auto cam = g_camera.lock();
 
         Vector3 pos = cam->ScreenToViewportPoint(in_pos);
@@ -224,7 +229,7 @@ namespace Galaxy3D
     {
         if(m_width == 0)
         {
-            m_width = Screen::GetWidth();
+            m_width = m_camera.lock()->GetPixelWidth();
         }
 
         return m_width;
@@ -234,7 +239,7 @@ namespace Galaxy3D
     {
         if(m_height == 0)
         {
-            m_height = Screen::GetHeight();
+            m_height = m_camera.lock()->GetPixelHeight();
         }
 
         return m_height;
@@ -260,14 +265,14 @@ namespace Galaxy3D
 
     void UICanvas::Start()
     {
-        m_camera = GetGameObject()->GetComponentInParent<Camera>();
+        
     }
 
     void UICanvas::Update()
     {
         g_camera = m_camera;
 
-        ProcessMouse();
+		ProcessMouse();
     }
 
     void UICanvas::SetHoveredObject(const std::weak_ptr<GameObject> &obj)

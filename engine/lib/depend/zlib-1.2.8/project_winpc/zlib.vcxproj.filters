@@ -52,5 +52,11 @@
     <ClCompile Include="..\inffast.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\contrib\minizip\unzip.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\minizip\ioapi.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

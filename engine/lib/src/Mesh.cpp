@@ -57,9 +57,9 @@ namespace Galaxy3D
         shader_name = GTString(shader_name).Replace(" ", "").str;
 
         auto mat = Material::Create(shader_name);
-        mat->SetGuid(mat_guid);
+		mat->SetGuid(mat_guid);
 
-		if(!mat_name.empty())
+		if(!mat_name.empty() && mat)
 		{
 			mat->SetName(mat_name);
 		}

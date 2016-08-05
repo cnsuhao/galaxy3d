@@ -41,7 +41,7 @@ namespace Galaxy3D
 		static bool RayBoundsIntersection(const Ray &ray, const Bounds &box, float &t);
         static float RandomRange(float min, float max);
         static int RandomRange(int min, int max);
-		static float Log2(float x) {return logf(x) / 0.3010299956639f;}
+		static float Log2(float x) {return logf(x) / logf(2);}
 		static int Abs(int v) {return (int) fabsf((float) v);}
 	};
 

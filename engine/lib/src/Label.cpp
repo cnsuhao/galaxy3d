@@ -370,10 +370,11 @@ namespace Galaxy3D
 			label = std::shared_ptr<Label>(new Label());
 			label->m_text = text;
 			label->m_font = font;
-			label->m_font_size = font_size;
+			label->m_font_size = font_size * 96 / 72;
 			label->m_rich = rich;
 			label->m_pivot = pivot;
 			label->m_align = align;
+			label->m_mono = font_size <= 12;
 
 			label->ProcessText();
 		}
@@ -382,7 +383,7 @@ namespace Galaxy3D
 	}
 
 	Label::Label():
-		m_font_size(20),
+		m_font_size(16),
 		m_pixels_per_unit(100),
 		m_char_space(0),
 		m_line_space(0),
@@ -392,6 +393,7 @@ namespace Galaxy3D
 		m_height_actual(-1),
         m_offset_y(0),
 		m_rich(false),
+		m_mono(false),
 		m_pivot(LabelPivot::TopLeft),
 		m_align(LabelAlign::Auto),
 		m_vertex_count(0),
@@ -454,7 +456,7 @@ namespace Galaxy3D
         }
     }
 
-	static CharInfo get_char_info(const std::string &font, int c, int size, bool bold, bool italic)
+	static CharInfo get_char_info(const std::string &font, int c, int size, bool bold, bool italic, bool mono)
 	{
         int size_key = size | (bold ? (1 << 24) : 0) | (italic ? (1 << 16) : 0);
 
@@ -498,9 +500,15 @@ namespace Galaxy3D
 
 			FT_GlyphSlot slot = face->glyph;
 			auto glyph_index = FT_Get_Char_Index(face, c);
-			//FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
 
-            FT_Load_Char(face, c, FT_LOAD_FORCE_AUTOHINT);
+			if(mono)
+			{
+				FT_Load_Char(face, c, FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO);
+			}
+			else
+			{
+				FT_Load_Char(face, c, FT_LOAD_DEFAULT);
+			}
 
             if(bold)
             {
@@ -518,11 +526,13 @@ namespace Galaxy3D
                 FT_Outline_Transform(&face->glyph->outline, &matrix);
             }
             
-            FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-
-			if((int) slot->bitmap.width != slot->bitmap.pitch)
+			if(mono)
 			{
-				Debug::Log("font bitmap width not equal with pitch");
+				FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+			}
+			else
+			{
+				FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
 			}
 
 			info.glyph_index = glyph_index;
@@ -562,14 +572,40 @@ namespace Galaxy3D
                         g_texture_x += 1;
                     }
 
+					unsigned char *char_pixels = NULL;
+					
+					if(mono)
+					{
+						char_pixels = (unsigned char *) malloc(info.uv_pixel_w * info.uv_pixel_h);
+						
+						for(int i=0; i<info.uv_pixel_h; i++)
+						{
+							for(int j=0; j<info.uv_pixel_w; j++)
+							{
+								unsigned char bit = slot->bitmap.buffer[i * slot->bitmap.pitch + j / 8] & (0x1 << (7 - j % 8));
+								bit = bit == 0 ? 0 : 255;
+								char_pixels[i * info.uv_pixel_w + j] = bit;
+							}
+						}
+					}
+					else
+					{
+						char_pixels = slot->bitmap.buffer;
+					}
+
                     g_font_texture->SetPixels(
                         g_texture_x,
                         g_texture_y,
                         info.uv_pixel_w,
                         info.uv_pixel_h,
-                        (char *) slot->bitmap.buffer);
+                        (char *) char_pixels);
                     info.uv_pixel_x = g_texture_x;
                     info.uv_pixel_y = g_texture_y;
+
+					if(mono)
+					{
+						free(char_pixels);
+					}
 
                     g_texture_x += info.uv_pixel_w;
                 }
@@ -1411,7 +1447,7 @@ namespace Galaxy3D
 
 			bool visible = (c != (int) '\n' && c != -1);
 
-			CharInfo info = get_char_info(font, c, font_size, bold, italic);
+			CharInfo info = get_char_info(font, c, font_size, bold, italic, m_mono);
 
 			if(visible)
 			{
@@ -1432,7 +1468,7 @@ namespace Galaxy3D
 				}
 			}
 
-            CharInfo base_info = get_char_info(font, 'A', font_size, bold, italic);
+            CharInfo base_info = get_char_info(font, 'A', font_size, bold, italic, m_mono);
             int base_y0 = base_info.bearing_y;
             int base_y1 = base_info.bearing_y - base_info.uv_pixel_h;
             int baseline = Mathf::RoundToInt(base_y0 + (font_size - base_y0 + base_y1) * 0.5f);

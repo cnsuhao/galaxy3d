@@ -14,6 +14,10 @@
     <ClCompile Include="..\src\Animation.cpp" />
     <ClCompile Include="..\src\AnimationCurve.cpp" />
     <ClCompile Include="..\src\Application.cpp" />
+    <ClCompile Include="..\src\AudioClip.cpp" />
+    <ClCompile Include="..\src\AudioListener.cpp" />
+    <ClCompile Include="..\src\AudioManager.cpp" />
+    <ClCompile Include="..\src\AudioSource.cpp" />
     <ClCompile Include="..\src\Bounds.cpp" />
     <ClCompile Include="..\src\BoxCollider.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
@@ -47,6 +51,8 @@
     <ClCompile Include="..\src\ImageEffectToneMapping.cpp" />
     <ClCompile Include="..\src\Input.cpp" />
     <ClCompile Include="..\src\Label.cpp" />
+    <ClCompile Include="..\src\LabelBatchRenderer.cpp" />
+    <ClCompile Include="..\src\LabelNode.cpp" />
     <ClCompile Include="..\src\Light.cpp" />
     <ClCompile Include="..\src\LightmapSettings.cpp" />
     <ClCompile Include="..\src\Localization.cpp" />
@@ -78,7 +84,6 @@
     <ClCompile Include="..\src\TerrainCollider.cpp" />
     <ClCompile Include="..\src\TerrainRenderer.cpp" />
     <ClCompile Include="..\src\TextRenderer.cpp" />
-    <ClCompile Include="..\src\Thread.cpp" />
     <ClCompile Include="..\src\Transform.cpp" />
     <ClCompile Include="..\src\TweenColor.cpp" />
     <ClCompile Include="..\src\Tweenner.cpp" />
@@ -102,6 +107,10 @@
     <ClInclude Include="..\src\AnimationCurve.h" />
     <ClInclude Include="..\src\AnimationState.h" />
     <ClInclude Include="..\src\Application.h" />
+    <ClInclude Include="..\src\AudioClip.h" />
+    <ClInclude Include="..\src\AudioListener.h" />
+    <ClInclude Include="..\src\AudioManager.h" />
+    <ClInclude Include="..\src\AudioSource.h" />
     <ClInclude Include="..\src\Bounds.h" />
     <ClInclude Include="..\src\BoxCollider.h" />
     <ClInclude Include="..\src\Camera.h" />
@@ -143,6 +152,8 @@
     <ClInclude Include="..\src\ImageEffectToneMapping.h" />
     <ClInclude Include="..\src\Input.h" />
     <ClInclude Include="..\src\Label.h" />
+    <ClInclude Include="..\src\LabelBatchRenderer.h" />
+    <ClInclude Include="..\src\LabelNode.h" />
     <ClInclude Include="..\src\Layer.h" />
     <ClInclude Include="..\src\LayerMask.h" />
     <ClInclude Include="..\src\Light.h" />
@@ -182,7 +193,6 @@
     <ClInclude Include="..\src\Texture.h" />
     <ClInclude Include="..\src\TextureFormat.h" />
     <ClInclude Include="..\src\TextureWrapMode.h" />
-    <ClInclude Include="..\src\Thread.h" />
     <ClInclude Include="..\src\Transform.h" />
     <ClInclude Include="..\src\TweenColor.h" />
     <ClInclude Include="..\src\Tweenner.h" />
@@ -237,11 +247,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\mad;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IncludePath>..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\openal-soft-winphone-master\include;..\..\lib\depend\mad;..\..\lib\depend\bullet3-2.83.6\src;..\..\lib\depend\freetype-2.6\include;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\..\lib\src\d3d11;..\..\lib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -249,7 +259,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;WINPC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FPM_DEFAULT;WIN32;_DEBUG;_LIB;WINPC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -264,8 +274,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;WINPC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>FPM_DEFAULT;WIN32;NDEBUG;_LIB;WINPC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

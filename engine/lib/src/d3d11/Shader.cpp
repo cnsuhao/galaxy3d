@@ -459,7 +459,7 @@ namespace Galaxy3D
 				{
 					if(p_error != 0)
 					{
-						Debug::Log((char *) p_error->GetBufferPointer());
+						Debug::Log("VS Shader error: %s - %s - %s", GetName().c_str(), i.name.c_str(), (char *) p_error->GetBufferPointer());
 						p_error->Release();
 					}
 
@@ -973,7 +973,7 @@ namespace Galaxy3D
 				{
 					if(p_error != 0)
 					{
-						Debug::Log((char *) p_error->GetBufferPointer());
+						Debug::Log("PS Shader error: %s - %s - %s", GetName().c_str(), i.name.c_str(), (char *) p_error->GetBufferPointer());
 						p_error->Release();
 					}
 
