@@ -11,7 +11,7 @@
 #include "GTTime.h"
 #include "Cursor.h"
 #include "Debug.h"
-#include "LauncherMerged.h"
+#include "LauncherDemoTemple.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GraphicsDevice::GetInstance()->Init(g_hwnd);
 	World::Init();
 
-	GameObject::Create("launcher")->AddComponent<LauncherMerged>();
+	GameObject::Create("launcher")->AddComponent<LauncherDemoTemple>();
 
 	// Main message loop
 	MSG msg = {0};

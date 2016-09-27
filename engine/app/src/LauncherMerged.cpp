@@ -60,8 +60,8 @@ static void on_lose()
 	auto over = g_window_pause->GetTransform()->Find("over")->GetGameObject();
 	over->GetComponent<TextRenderer>()->GetLabel()->SetText(
 		"Game Over\n<size=60>" + 
-		Localization::GetString("score") + " : " + GTString::ToString(g_score).str + "\n" +
-		Localization::GetString("score_best") + " : " + GTString::ToString(g_score_best).str + "</size>");
+		Localization::GetString("score") + " : " + GTString::ToString(g_score) + "\n" +
+		Localization::GetString("score_best") + " : " + GTString::ToString(g_score_best) + "</size>");
 	over->SetActive(true);
 	g_window_pause->GetTransform()->Find("continue")->GetGameObject()->SetActive(false);
 	g_window_pause->SetActive(true);
@@ -89,7 +89,7 @@ static void on_lose()
 	tc->on_set_value = on_pause_tween_color_set_value;
 
 	g_coin += g_score / 10;
-	g_coin_label->SetText(GTString::ToString(g_coin).str);
+	g_coin_label->SetText(GTString::ToString(g_coin));
 
 	write_score_best();
 }
@@ -105,12 +105,12 @@ struct DestroyButtonEventListener : UIEventListener
 			new_tile(max);
 
 			g_coin -= g_coin_destroy_price;
-			g_coin_label->SetText(GTString::ToString(g_coin).str);
+			g_coin_label->SetText(GTString::ToString(g_coin));
 			int next_price = (int) (g_coin_destroy_price * 1.5f);
 			if(next_price < 8192)
 			{
 				g_coin_destroy_price = next_price;
-				g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price).str);
+				g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price));
 			}
 		}
 	}
@@ -345,7 +345,7 @@ void LauncherMerged::Start()
 	node->GetGameObject()->AddComponent<DestroyButtonEventListener>();
 
 	auto destroy_price = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(135 / g_scale), Mathf::Round(34 / g_scale), 0), 40, LabelPivot::Center, 1);
-	destroy_price->GetLabel()->SetText(GTString::ToString(g_coin_destroy_price).str);
+	destroy_price->GetLabel()->SetText(GTString::ToString(g_coin_destroy_price));
 	g_coin_destroy_price_label = destroy_price->GetLabel().get();
 
 	sprite = atlas->CreateSprite(
@@ -362,11 +362,11 @@ void LauncherMerged::Start()
 	batch->AddSprite(node);
 
 	auto score_best = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(90 / g_scale), Mathf::Round(-30 / g_scale), 0), 40, LabelPivot::Left, 1);
-	score_best->GetLabel()->SetText(GTString::ToString(g_score_best).str);
+	score_best->GetLabel()->SetText(GTString::ToString(g_score_best));
 	g_score_best_label = score_best->GetLabel().get();
 
 	auto coin = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(90 / g_scale), Mathf::Round(-98 / g_scale), 0), 40, LabelPivot::Left, 1);
-	coin->GetLabel()->SetText(GTString::ToString(g_coin).str);
+	coin->GetLabel()->SetText(GTString::ToString(g_coin));
 	g_coin_label = coin->GetLabel().get();
 
 	sprite = atlas->CreateSprite(
@@ -387,7 +387,7 @@ void LauncherMerged::Start()
 	node->GetGameObject()->AddComponent<PauseButtonEventListener>();
 	
 	auto score = create_label(node->GetGameObject().get(), Vector3(Mathf::Round(-180 / g_scale), Mathf::Round(-75 / g_scale), 0), 80, LabelPivot::Right, 1);
-	score->GetLabel()->SetText(GTString::ToString(g_score).str);
+	score->GetLabel()->SetText(GTString::ToString(g_score));
 	g_score_label = score->GetLabel().get();
 
 	sprite = atlas->CreateSprite(
@@ -493,8 +493,8 @@ void LauncherMerged::Update()
         hit_name = hit->GetName();
     }
 
-	g_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-		"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
+	g_fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()) + "\n" +
+		"draw call:" + GTString::ToString(GTTime::GetDrawCall()) + "\n" +
         "ray hit ui:" + hit_name);
 
 	static float s_rot = 0;

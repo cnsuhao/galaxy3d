@@ -25,6 +25,7 @@ void LauncherDemoTemple::Start()
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
+	canvas->SetCamera(cam2d);
 
     auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
     auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
@@ -86,8 +87,8 @@ void LauncherDemoTemple::Start()
 
 void LauncherDemoTemple::Update()
 {
-    fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-        "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
+    fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()) + "\n" +
+        "drawcall:" + GTString::ToString(GTTime::GetDrawCall()));
 }
 
 static void add_dust_particles(std::shared_ptr<GameObject> &parent, std::shared_ptr<Camera> &cam3d, const Vector3 &local_pos)

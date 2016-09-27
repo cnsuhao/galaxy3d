@@ -97,11 +97,11 @@ static void restart()
 	destroy_rotate_tiles();
 	
 	g_score = 0;
-	g_score_label->SetText(GTString::ToString(g_score).str);
+	g_score_label->SetText(GTString::ToString(g_score));
 	g_merge_check.clear();
 
 	g_coin_destroy_price = 2;
-	g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price).str);
+	g_coin_destroy_price_label->SetText(GTString::ToString(g_coin_destroy_price));
 
 	new_tile(2);
 }
@@ -311,11 +311,11 @@ static void merge()
 				t_out->target = t_out;
 				t_out->on_finished = MergeOutTweenScale::OnFinished;
 				g_score += point;
-				g_score_label->SetText(GTString::ToString(g_score).str);
+				g_score_label->SetText(GTString::ToString(g_score));
 				if(g_score > g_score_best)
 				{
 					g_score_best = g_score;
-					g_score_best_label->SetText(GTString::ToString(g_score_best).str);
+					g_score_best_label->SetText(GTString::ToString(g_score_best));
 				}
 
 				g_tiles[index] = NULL;
@@ -458,7 +458,7 @@ struct RotateTileEventListener : UIEventListener
 
 				for(int i=0; i<2; i++)
 				{
-					auto tile = g_rotate_tiles->GetTransform()->Find(GTString::ToString(i).str);
+					auto tile = g_rotate_tiles->GetTransform()->Find(GTString::ToString(i));
 					t = tile->GetGameObject()->GetComponent<TweenRotation>();
 					if(!t)
 					{
@@ -937,7 +937,7 @@ static void new_tile(int max_point)
 		}while(true);
 
 		auto node = create_tile(point);
-		node->SetName(GTString::ToString(i).str);
+		node->SetName(GTString::ToString(i));
 		node->GetTransform()->SetParent(g_rotate_tiles->GetTransform());
 		node->GetTransform()->SetLocalPosition(Vector3(175.0f * i - (175.0f * (count - 1) * 0.5f), 0, 0));
 		node->GetTransform()->SetLocalScale(Vector3(1, 1, 1) * 0.1f);

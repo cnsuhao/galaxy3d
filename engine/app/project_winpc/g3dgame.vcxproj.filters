@@ -10,8 +10,11 @@
     <ClCompile Include="..\src\winpc\g3dgame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\LauncherMerged.cpp">
+    <ClCompile Include="..\src\LauncherDemoTemple.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\depend\openal-soft-winphone-master\project_winpc\OpenAL32.lib" />
   </ItemGroup>
 </Project>
