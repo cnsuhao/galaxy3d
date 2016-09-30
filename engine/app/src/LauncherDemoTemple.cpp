@@ -15,16 +15,17 @@ void LauncherDemoTemple::Start()
 
     cam2d = GameObject::Create("camera")->AddComponent<Camera>();
     cam2d->SetOrthographic(true);
-    cam2d->SetOrthographicSize(g_unit_per_pixel * Screen::GetHeight() / 2);
+    cam2d->SetOrthographicSize(1);
     cam2d->SetClipPlane(-1, 1);
     cam2d->SetCullingMask(LayerMask::GetMask(Layer::UI));
     cam2d->SetDepth(1);
     cam2d->SetClearFlags(CameraClearFlags::Nothing);
     cam2d->SetClearColor(Color(0.3f, 0.3f, 0.3f, 1));
 
+	float ui_scale = 2.0f / Screen::GetHeight();
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
-    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
+    canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * ui_scale);
 	canvas->SetCamera(cam2d);
 
     auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
