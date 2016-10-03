@@ -504,7 +504,8 @@ protected:
 				batch_bag->AddSprite(node);
 
 				auto label_price = CreateLabel(card->GetGameObject().get(), Vector3(-30, -115, 0), 40, LabelPivot::Left, 2);
-				label_price->GetLabel()->SetText("<outline>" + GTString::ToString(item.price_base) + "</outline>");
+				int price = (int) (item.price_multiply * g_price_plant[item.planted]);
+				label_price->GetLabel()->SetText("<outline>" + GTString::ToString(price) + "</outline>");
 				label_price->SetColor(Color(228, 255, 0, 255) / 255.0f);
 				item.label_price = label_price;
 
@@ -586,6 +587,7 @@ protected:
 
 		GTUIManager::LoadFont("heiti", Application::GetDataPath() + "/Assets/font/heiti.ttc");
 		set_language(0);
+		load_config();
 
 		auto screen_buffer = RenderTexture::Create(1920, 1080, RenderTextureFormat::RGBA32, DepthBuffer::Depth_0, FilterMode::Bilinear, TextureWrapMode::Clamp);
 		auto cam_screen = GameObject::Create("")->AddComponent<Camera>();
@@ -602,10 +604,10 @@ protected:
 
 		auto screen_renderer = GameObject::Create("")->AddComponent<SpriteRenderer>();
 		screen_renderer->GetTransform()->SetParent(cam_screen->GetTransform());
-#ifdef WINPHONE
-		screen_renderer->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
-#else
+#ifdef ANDROID
 		screen_renderer->GetTransform()->SetLocalScale(Vector3(1, -1, 1));
+#else
+		screen_renderer->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
 #endif
 		screen_renderer->SetSprite(screen_sprite);
 
