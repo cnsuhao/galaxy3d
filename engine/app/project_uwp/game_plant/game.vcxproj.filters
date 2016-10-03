@@ -94,6 +94,9 @@
     <None Include="Assets\image\plant.json">
       <Filter>Assets\image</Filter>
     </None>
+    <None Include="Assets\config.json">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

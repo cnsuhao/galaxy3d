@@ -31,6 +31,10 @@ extern bool g_mouse_button_down[3];
 extern bool g_mouse_button_up[3];
 extern Vector3 g_mouse_position;
 extern bool g_mouse_button_held[3];
+extern bool g_key_down[KeyCode::COUNT];
+extern bool g_key[KeyCode::COUNT];
+extern bool g_key_up[KeyCode::COUNT];
+extern bool g_key_held[KeyCode::COUNT];
 
 // 加载应用程序时加载并初始化应用程序资产。
 Main::Main(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
@@ -66,50 +70,6 @@ void Main::OnInitEngine()
 void Main::CreateWindowSizeDependentResources() 
 {
 	// TODO: 将此替换为应用程序内容的与大小相关的初始化。
-}
-
-void Main::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ e)
-{
-	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
-	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
-
-	if(!g_down_pointer_id)
-	{
-		g_down_pointer_id = std::make_shared<unsigned int>(e->CurrentPoint->PointerId);
-
-		g_mouse_button_down[0] = true;
-		g_mouse_position.x = (float) x;
-		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
-		g_mouse_button_held[0] = true;
-	}
-}
-
-void Main::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ e)
-{
-	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
-	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
-
-	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
-	{
-		g_mouse_position.x = (float) x;
-		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
-	}
-}
-
-void Main::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ e)
-{
-	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
-	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
-
-	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
-	{
-		g_down_pointer_id.reset();
-
-		g_mouse_button_up[0] = true;
-		g_mouse_position.x = (float) x;
-		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
-		g_mouse_button_held[0] = false;
-	}
 }
 
 // 每帧更新一次应用程序状态。
@@ -159,4 +119,115 @@ void Main::OnDeviceLost()
 void Main::OnDeviceRestored()
 {
 	CreateWindowSizeDependentResources();
+}
+
+void Main::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	if(!g_down_pointer_id)
+	{
+		g_down_pointer_id = std::make_shared<unsigned int>(e->CurrentPoint->PointerId);
+
+		g_mouse_button_down[0] = true;
+		g_mouse_position.x = (float) x;
+		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+		g_mouse_button_held[0] = true;
+	}
+}
+
+void Main::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
+	{
+		g_mouse_position.x = (float) x;
+		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+	}
+}
+
+void Main::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ e)
+{
+	float x = e->CurrentPoint->Position.X * m_deviceResources->GetCompositionScaleX();
+	float y = e->CurrentPoint->Position.Y * m_deviceResources->GetCompositionScaleY();
+
+	if(g_down_pointer_id && *g_down_pointer_id == e->CurrentPoint->PointerId)
+	{
+		g_down_pointer_id.reset();
+
+		g_mouse_button_up[0] = true;
+		g_mouse_position.x = (float) x;
+		g_mouse_position.y = (float) Screen::GetHeight() - y - 1;
+		g_mouse_button_held[0] = false;
+	}
+}
+
+static int get_key_code(int wParam)
+{
+    int key = -1;
+
+    if(wParam >= 48 && wParam < 48 + 10)
+    {
+        key = KeyCode::Alpha0 + wParam - 48;
+    }
+    else if(wParam >= 96 && wParam < 96 + 10)
+    {
+        key = KeyCode::Keypad0 + wParam - 96;
+    }
+    else if(wParam >= 65 && wParam < 65 + 'z' - 'a')
+    {
+        key = KeyCode::A + wParam - 65;
+    }
+	else if(wParam >= VK_F1 && wParam <= VK_F12)
+	{
+		key = KeyCode::F1 + wParam - VK_F1;
+	}
+    else if(wParam == VK_BACK)
+    {
+        key = KeyCode::Backspace;
+    }
+    else if(wParam == VK_SPACE)
+    {
+        key = KeyCode::Space;
+    }
+    else if(wParam == VK_ESCAPE)
+    {
+        key = KeyCode::Escape;
+    }
+    else if(wParam == VK_RETURN)
+    {
+        key = KeyCode::Return;
+    }
+
+    return key;
+}
+
+void Main::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	int key = get_key_code((int) e->VirtualKey);
+
+    if(key >= 0)
+    {
+        if(!g_key_held[key])
+        {
+            g_key_down[key] = true;
+            g_key_held[key] = true;
+            g_key[key] = true;
+        }
+    }
+}
+
+void Main::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	int key = get_key_code((int) e->VirtualKey);
+
+    if(key >= 0)
+    {
+        g_key_up[key] = true;
+        g_key_held[key] = false;
+        g_key[key] = false;
+    }
 }

@@ -30,15 +30,18 @@
     <ProjectReference Include="..\..\lib\depend\lpng1512\project_winpc\png.vcxproj">
       <Project>{7ecebe1d-02d7-42b7-952d-28d609653ef6}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\mad\project_winpc\mad.vcxproj">
+      <Project>{c40601f8-47fb-47ae-9809-53c547c6219f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\depend\sqlite3\project_winpc\sqlite3.vcxproj">
+      <Project>{220e2815-e850-4dc8-82bc-a9f7a01ae766}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\depend\zlib-1.2.8\project_winpc\zlib.vcxproj">
       <Project>{8551aba5-7d5b-4283-af7d-1418521eced9}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\project_winpc\galaxy3d.vcxproj">
       <Project>{ac93fc0a-71ec-44f8-ad28-5861e03fca3b}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\lib\depend\openal-soft-winphone-master\project_winpc\OpenAL32.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0FFFED23-DA22-4449-A481-99280F706F16}</ProjectGuid>
@@ -74,14 +77,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\lib\depend\openal-soft-winphone-master\project_winpc;$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\lib\depend\sqlite3;..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\src;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\lib\depend\sqlite3;..\..\lib\src\d3d11;..\..\lib\src;..\..\lib\depend\zlib-1.2.8;..\..\lib\depend\json\src\json;..\src;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\out\winpc\</OutDir>
-    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\..\lib\depend\openal-soft-winphone-master\project_winpc;$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

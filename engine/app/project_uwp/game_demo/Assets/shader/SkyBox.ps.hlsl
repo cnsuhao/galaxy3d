@@ -9,6 +9,6 @@ struct PS_INPUT
 
 float4 main(PS_INPUT input) : SV_Target
 {
-    float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
+	float4 c = _MainTex.Sample(_MainTex_Sampler, input.v_uv);
     return c;
 }

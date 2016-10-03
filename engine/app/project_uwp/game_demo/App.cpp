@@ -70,6 +70,8 @@ void App::SetWindow(CoreWindow^ window)
 	window->PointerPressed += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerPressed);
 	window->PointerMoved += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerMoved);
 	window->PointerReleased += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(this, &App::OnPointerReleased);
+	window->KeyDown += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(this, &App::OnKeyDown);
+	window->KeyUp += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(this, &App::OnKeyUp);
 
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
@@ -227,5 +229,21 @@ void App::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ e)
 	if(m_main)
 	{
 		m_main->OnPointerReleased(sender, e);
+	}
+}
+
+void App::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	if(m_main)
+	{
+		m_main->OnKeyDown(sender, e);
+	}
+}
+
+void App::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	if(m_main)
+	{
+		m_main->OnKeyUp(sender, e);
 	}
 }
