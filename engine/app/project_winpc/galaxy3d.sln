@@ -22,6 +22,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bullet", "..\..\lib\depend\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json", "..\..\lib\depend\json\project_winpc\json.vcxproj", "{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mad", "..\..\lib\depend\mad\project_winpc\mad.vcxproj", "{C40601F8-47FB-47AE-9809-53C547C6219F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "..\..\lib\depend\sqlite3\project_winpc\sqlite3.vcxproj", "{220E2815-E850-4DC8-82BC-A9F7A01AE766}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -100,6 +104,26 @@ Global
 		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|Win32.Build.0 = Release|Win32
 		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|x64.ActiveCfg = Release|x64
 		{FB24B87F-4421-44C8-ABC4-F6EB13A1B445}.Release|x64.Build.0 = Release|x64
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Debug|ARM.ActiveCfg = Debug|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Debug|Win32.Build.0 = Debug|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Debug|x64.ActiveCfg = Debug|x64
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Debug|x64.Build.0 = Debug|x64
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Release|ARM.ActiveCfg = Release|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Release|Win32.ActiveCfg = Release|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Release|Win32.Build.0 = Release|Win32
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Release|x64.ActiveCfg = Release|x64
+		{C40601F8-47FB-47AE-9809-53C547C6219F}.Release|x64.Build.0 = Release|x64
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Debug|ARM.ActiveCfg = Debug|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Debug|Win32.ActiveCfg = Debug|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Debug|Win32.Build.0 = Debug|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Debug|x64.ActiveCfg = Debug|x64
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Debug|x64.Build.0 = Debug|x64
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Release|ARM.ActiveCfg = Release|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Release|Win32.ActiveCfg = Release|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Release|Win32.Build.0 = Release|Win32
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Release|x64.ActiveCfg = Release|x64
+		{220E2815-E850-4DC8-82BC-A9F7A01AE766}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
