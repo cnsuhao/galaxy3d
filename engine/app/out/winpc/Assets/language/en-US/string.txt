@@ -1,0 +1,8 @@
+{
+    "resume": "<outline>RESUME</outline>",
+	"about": "<outline>ABOUT</outline>",
+	"lan en": "<outline>English</outline>",
+	"lan zh-hans": "<outline>简体中文</outline>",
+	"lan zh-hant": "<outline>繁體中文</outline>",
+	"about_info": "<outline>Engine & Game Program\nDu Jing\n\nDesign & Artist\nLi Hang Fei</outline>"
+}
