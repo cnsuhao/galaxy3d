@@ -22,6 +22,7 @@
 #include "SpriteRenderer.h"
 #include "Input.h"
 #include "Localization.h"
+#include "json.h"
 #include <deque>
 #include <unordered_map>
 
@@ -32,7 +33,7 @@ struct Card
 	int type_0;
 	int type_1;
 	std::string name;
-	int price_base;
+	float price_multiply;
 	int price_sale;
 	int level;
 	int planted;
@@ -44,16 +45,16 @@ struct Card
 		type_0(-1),
 		type_1(-1),
 		name(""),
-		price_base(-1),
+		price_multiply(0),
 		level(-1),
 		planted(-1),
 		unlock_level(-1)
 	{}
-	Card(int type_0, int type_1, const std::string &name, int price_base, int price_sale, int level, int planted, int unlock_level):
+	Card(int type_0, int type_1, const std::string &name, float price_multiply, int price_sale, int level, int planted, int unlock_level):
 		type_0(type_0),
 		type_1(type_1),
 		name(name),
-		price_base(price_base),
+		price_multiply(price_multiply),
 		price_sale(price_sale),
 		level(level),
 		planted(planted),
@@ -114,28 +115,30 @@ static bool g_ui_bag_up = true;
 static int g_tab_current = 0;
 static std::vector<SpriteNode *> g_tab_group;
 static Card g_cards[25] = {
-	Card(0, 0, "carrot", 3, 10000, 0, 0, 1),
-	Card(0, 1, "turnip", 4, 2, 0, 0, 5),
-	Card(0, 2, "pumpkin", 5, 3, 0, 0, 9),
-	Card(0, 3, "radish", 6, 4, 0, 0, 13),
-	Card(0, 4, "cabbage", 7, 5, 0, 0, 17),
+	Card(0, 0, "carrot", 0, 0, 0, 0, 1),
+	Card(0, 1, "turnip", 0, 0, 0, 0, 5),
+	Card(0, 2, "pumpkin", 0, 0, 0, 0, 9),
+	Card(0, 3, "radish", 0, 0, 0, 0, 13),
+	Card(0, 4, "cabbage", 0, 0, 0, 0, 17),
 
-	Card(1, 0, "blueberry", 8, 6, 0, 0, 2),
-	Card(1, 1, "raspberry", 9, 7, 0, 0, 6),
-	Card(1, 2, "tomato", 10, 8, 0, 0, 10),
-	Card(1, 3, "bell pepper", 11, 9, 0, 0, 14),
-	Card(1, 4, "eggplant", 12, 10, 0, 0, 18),
+	Card(1, 0, "blueberry", 0, 0, 0, 0, 2),
+	Card(1, 1, "raspberry", 0, 0, 0, 0, 6),
+	Card(1, 2, "tomato", 0, 0, 0, 0, 10),
+	Card(1, 3, "bell pepper", 0, 0, 0, 0, 14),
+	Card(1, 4, "eggplant", 0, 0, 0, 0, 18),
 
-	Card(2, 0, "apple", 30, 10, 0, 0, 3),
-	Card(2, 1, "pear", 80, 100, 0, 0, 7),
-	Card(2, 2, "orange", 250, 1000, 0, 0, 11),
-	Card(2, 3, "cherry", 800, 10000, 0, 0, 15),
-	Card(2, 4, "lemon", 2000, 100000, 0, 0, 19),
+	Card(2, 0, "apple", 0, 0, 0, 0, 3),
+	Card(2, 1, "pear", 0, 0, 0, 0, 7),
+	Card(2, 2, "orange", 0, 0, 0, 0, 11),
+	Card(2, 3, "cherry", 0, 0, 0, 0, 15),
+	Card(2, 4, "lemon", 0, 0, 0, 0, 19),
 };
 static std::deque<std::shared_ptr<Plant>> g_plants[3];
 static int g_gold = 10;
 static TextRenderer *g_label_gold;
 static int g_exp = 0;
+static std::vector<int> g_exp_full;
+static std::vector<int> g_price_plant;
 static SpriteNode *g_sprite_exp;
 static int g_level = 1;
 static TextRenderer *g_label_level;
@@ -149,6 +152,57 @@ static std::unordered_map<std::string, TextRenderer *> g_localized_text;
 static UIAtlas *g_atlas;
 static std::weak_ptr<Sprite> g_sprite_coin_anim[8];
 static PressOn::Enum g_press_on = PressOn::None;
+
+static void load_config()
+{
+	std::string path = Application::GetDataPath() + "/Assets/config.json";
+	if(GTFile::Exist(path))
+	{
+		std::string str;
+        GTFile::ReadAllText(path, str);
+
+        if(!str.empty())
+        {
+            Json::Reader reader;
+            Json::Value root;
+
+            if(reader.parse(str, root))
+			{
+				auto level_exp = root["level_exp"];
+				auto price_plant = root["price_plant"];
+				auto cards = root["card"]["row"];
+
+				g_exp_full.resize(level_exp.size());
+				for(size_t i=0; i<level_exp.size(); i++)
+				{
+					g_exp_full[i] = level_exp[i].asInt();
+				}
+
+				g_price_plant.resize(price_plant.size());
+				for(size_t i=0; i<price_plant.size(); i++)
+				{
+					g_price_plant[i] = price_plant[i].asInt();
+				}
+
+				for(size_t i=0; i<cards.size(); i++)
+				{
+					auto &card = cards[i];
+
+					int type_0 = card[(Json::UInt) 0].asInt();
+					int type_1 = card[(Json::UInt) 1].asInt();
+					std::string name = card[(Json::UInt) 2].asString();
+					float price_multiply = (float) card[(Json::UInt) 3].asDouble();
+					int price_sale = card[(Json::UInt) 4].asInt();
+					int unlock_level = card[(Json::UInt) 5].asInt();
+
+					g_cards[i].price_multiply = price_multiply;
+					g_cards[i].price_sale = price_sale;
+					g_cards[i].unlock_level = unlock_level;
+				}
+			}
+		}
+	}
+}
 
 static void set_language(int lan)
 {
@@ -196,11 +250,14 @@ static void set_level(int level)
 
 static void set_exp(int exp)
 {
-	g_exp = exp;
-	int exp_full = g_level * 10;
+	if(g_level <= (int) g_exp_full.size())
+	{
+		g_exp = exp;
+		int exp_full = g_exp_full[g_level - 1];
 
-	float w = Mathf::Round(295 * g_exp / (float) exp_full);
-	g_sprite_exp->GetSprite()->SetSize(Vector2(w, 56));
+		float w = Mathf::Round(295 * g_exp / (float) exp_full);
+		g_sprite_exp->GetSprite()->SetSize(Vector2(w, 56));
+	}
 }
 
 static void unlock_card()
@@ -223,20 +280,32 @@ static void unlock_card()
 
 static void add_exp(int exp)
 {
-	int exp_full = g_level * 10;
-	g_exp += exp;
-
-	while(g_exp >= exp_full)
+	if(g_level <= (int) g_exp_full.size())
 	{
-		g_exp -= exp_full;
-		g_level += 1;
-		exp_full = g_level * 10;
+		int exp_full = g_exp_full[g_level - 1];
+		g_exp += exp;
 
-		unlock_card();
+		while(g_exp >= exp_full)
+		{
+			if(g_level + 1 <= (int) g_exp_full.size())
+			{
+				g_exp -= exp_full;
+				g_level += 1;
+				g_exp_full[g_level - 1];
+
+				unlock_card();
+			}
+			else
+			{
+				// level max
+				g_exp = exp_full;
+				break;
+			}
+		}
+
+		set_level(g_level);
+		set_exp(g_exp);
 	}
-
-	set_level(g_level);
-	set_exp(g_exp);
 }
 
 static void on_grow_finished(Component *tween, std::weak_ptr<Component> &target)
@@ -1313,12 +1382,17 @@ struct CardEventListener : public UIEventListener
 
 						set_plants_pos();
 
+						// spend gold
+						int spent = (int) (card.price_multiply * g_price_plant[card.planted]);
+						set_gold(g_gold - spent);
+
 						// add planted
 						card.planted++;
 						card.label_planted.lock()->GetLabel()->SetText("<outline>" + GTString::ToString(card.planted) + "</outline>");
-					
-						// spend gold
-						set_gold(g_gold - card.price_base);
+						
+						// fresh price
+						int new_price = (int) (card.price_multiply * g_price_plant[card.planted]);
+						card.label_price.lock()->GetLabel()->SetText("<outline>" + GTString::ToString(new_price) + "</outline>");
 					}
 				}
 			}

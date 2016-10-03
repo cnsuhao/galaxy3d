@@ -16,10 +16,11 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "openal32.lib")
 
 using namespace Galaxy3D;
 
-static const char g_title[] = "Galaxy3D Engine";
+static const char g_title[] = "Viry3D Engine";
 static int g_screen_w = 1280;
 static int g_screen_h = 720;
 static HINSTANCE g_hinst;

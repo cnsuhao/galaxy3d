@@ -146,7 +146,7 @@ static std::shared_ptr<T> create_button(
 
     for(size_t i=0; i<sub_sprites.size(); i++)
     {
-        auto node = GameObject::Create(GTString::ToString(i).str)->AddComponent<SpriteNode>();
+        auto node = GameObject::Create(GTString::ToString(i))->AddComponent<SpriteNode>();
         node->GetTransform()->SetParent(button->GetTransform());
         node->GetTransform()->SetLocalPosition(sub_offsets[i]);
         node->GetTransform()->SetLocalScale(Vector3(1, 1, 1));
@@ -579,6 +579,7 @@ void LauncherDemoUI::Start()
     auto canvas = GameObject::Create("canvas")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1 / g_pixel_per_unit));
+	canvas->SetCamera(cam2d);
 
 	auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
@@ -616,8 +617,8 @@ void LauncherDemoUI::Update()
         hit_name = hit->GetName();
     }
 
-	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-		"draw call:" + GTString::ToString(GTTime::GetDrawCall()).str + "\n" +
+	fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()) + "\n" +
+		"draw call:" + GTString::ToString(GTTime::GetDrawCall()) + "\n" +
         "ray hit ui:" + hit_name);
 
     if(Input::GetKeyUp(KeyCode::Escape))
