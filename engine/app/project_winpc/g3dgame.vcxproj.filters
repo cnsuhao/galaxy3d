@@ -14,7 +14,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\lib\depend\openal-soft-winphone-master\project_winpc\OpenAL32.lib" />
-  </ItemGroup>
 </Project>
