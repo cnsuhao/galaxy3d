@@ -180,6 +180,17 @@ extern unzFile ZEXPORT unzOpen64 OF((const void *path));
        does not describe the reality
 */
 
+typedef struct ZipFileMem
+{
+	void *data;
+	int pos;
+	int size;
+}ZipFileMem;
+
+extern unzFile ZEXPORT unz_open_mem(
+	void *data, int size,
+	zlib_filefunc64_32_def* pzlib_filefunc64_32_def);
+
 
 extern unzFile ZEXPORT unzOpen2 OF((const char *path,
                                     zlib_filefunc_def* pzlib_filefunc_def));

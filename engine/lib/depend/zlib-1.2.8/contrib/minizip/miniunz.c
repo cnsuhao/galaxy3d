@@ -530,7 +530,7 @@ int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,passwo
         return 1;
 }
 
-
+/*
 int main(argc,argv)
     int argc;
     char *argv[];
@@ -607,7 +607,7 @@ int main(argc,argv)
 #        endif
 
         strncpy(filename_try, zipfilename,MAXFILENAME-1);
-        /* strncpy doesnt append the trailing NULL, of the string is too long. */
+        // strncpy doesnt append the trailing NULL, of the string is too long. 
         filename_try[ MAXFILENAME ] = '\0';
 
 #        ifdef USEWIN32IOAPI
@@ -658,3 +658,4 @@ int main(argc,argv)
 
     return ret_value;
 }
+*/
