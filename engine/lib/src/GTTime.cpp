@@ -16,7 +16,6 @@ static long long g_frequency = -1L;
 namespace Galaxy3D
 {
 	long long GTTime::m_time_startup = 0;
-	long long GTTime::m_time_update;
 	float GTTime::m_time_delta = 0;
 	float GTTime::m_time_record = -1;
 	int GTTime::m_frame_count = 0;
