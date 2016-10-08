@@ -20,7 +20,6 @@ namespace Galaxy3D
 
 	private:
 		static long long m_time_startup;
-		static long long m_time_update;
 		static float m_time_delta;
 		static float m_time_record;
         static float m_time;
