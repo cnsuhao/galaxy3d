@@ -37,6 +37,8 @@ void LauncherDemoTemple::Start()
     tr->SetAnchor(Vector4(0.5f, 0, 0, 0));
     fps = tr;
 
+	cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
+
     cam3d = GameObject::Create("camera")->AddComponent<Camera>();
     cam3d->SetFieldOfView(45);
     cam3d->SetCullingMask(LayerMask::GetMask(Layer::Default));
@@ -82,8 +84,6 @@ void LauncherDemoTemple::Start()
     Renderer::BuildOctree(scene);
     scene->SetStaticRecursively();
     Renderer::BuildStaticBatches();
-
-    cam2d->GetGameObject()->SetLayerRecursively(Layer::UI);
 }
 
 void LauncherDemoTemple::Update()
