@@ -7,9 +7,9 @@
 #include "Application.h"
 #include "GTTime.h"
 #include "TweenColor.h"
-#include "LauncherPlant.hpp"
+#include "LauncherMerged.h"
 
-#define Launcher LauncherPlant
+#define Launcher LauncherMerged
 
 using namespace Galaxy3D;
 
