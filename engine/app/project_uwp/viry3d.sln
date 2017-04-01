@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bullet", "..\..\lib\depend\bullet3-2.83.6\project_uwp\bullet.vcxproj", "{8EDCB7A4-118C-4880-A4B9-B31EB22FEC0D}"
 EndProject
@@ -21,7 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "..\..\lib\depend\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mad", "..\..\lib\depend\mad\project_uwp\mad.vcxproj", "{95FB4DAB-E4D4-49B5-AEB2-E7F1F84BFF76}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game_demo\game.vcxproj", "{F5EE6CCE-EE56-46B7-BBC4-46DFFA526ED3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game_plant\game.vcxproj", "{F5EE6CCE-EE56-46B7-BBC4-46DFFA526ED3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
