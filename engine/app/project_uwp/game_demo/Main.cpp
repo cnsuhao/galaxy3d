@@ -13,6 +13,7 @@ using namespace Concurrency;
 #include "World.h"
 #include "Camera.h"
 #include "Debug.h"
+#include "Input.h"
 #include "../../src/SplashScreen.hpp"
 
 using namespace Galaxy3D;
