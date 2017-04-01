@@ -9,6 +9,8 @@
 #include "TweenColor.h"
 #include "LauncherDemo.hpp"
 
+#define Launcher LauncherDemo
+
 using namespace Galaxy3D;
 
 class SplashScreen : public Component
@@ -64,7 +66,7 @@ class SplashScreen : public Component
 		tc->on_finished = 
 			[this](Component *tween, std::weak_ptr<Component> &target)
 			{
-				GameObject::Create("")->AddComponent<LauncherDemo>();
+				GameObject::Create("")->AddComponent<Launcher>();
 				auto obj = this->GetGameObject();
 				GameObject::Destroy(obj);
 			};
