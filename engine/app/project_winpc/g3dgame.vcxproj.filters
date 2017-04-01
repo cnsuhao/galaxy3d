@@ -10,7 +10,7 @@
     <ClCompile Include="..\src\winpc\g3dgame.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\LauncherDemoTemple.cpp">
+    <ClCompile Include="..\src\LauncherMerged.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
