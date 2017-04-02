@@ -308,6 +308,7 @@ void LauncherMerged::Start()
 	canvas->GetTransform()->SetParent(cam->GetTransform());
 	canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * (1.0f / pixel_per_unit * Screen::GetHeight() / 1920));
 	canvas->SetSize(1080, 1920);
+	canvas->SetCamera(cam);
 
 	auto label = Label::Create("", "heiti", 40, LabelPivot::Top, LabelAlign::Auto, true);
 	auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
