@@ -629,6 +629,7 @@ protected:
 		canvas->GetTransform()->SetParent(cam->GetTransform());
 		canvas->GetTransform()->SetLocalScale(Vector3::One() * (1.0f / g_pixel_per_unit));
 		canvas->SetSize(1920, 1080);
+		canvas->SetCamera(cam);
 		m_canvas = canvas.get();
 
 		auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
