@@ -334,19 +334,6 @@ namespace Galaxy3D
     {
         float t = GTTime::GetTime();
 
-        for(auto i=m_particles.begin(); i!=m_particles.end(); )
-        {
-            if(i->lifetime <= 0)
-            {
-                i = m_particles.erase(i);
-                continue;
-            }
-            else
-            {
-                i++;
-            }
-        }
-
         if((t > start_delay) && ((t - start_delay) * playback_speed < duration || loop))//system ok
         {
             if((((t - m_time_emit) * playback_speed) > (1 / emission_rate)) || (m_time_emit < 0))//time ok
@@ -439,8 +426,14 @@ namespace Galaxy3D
     {
         float delta_time = GTTime::GetDeltaTime() * playback_speed;
 
-        for(auto i=m_particles.begin(); i!=m_particles.end(); i++)
+        for(auto i=m_particles.begin(); i!=m_particles.end(); )
         {
+			if(i->lifetime <= 0)
+            {
+                i = m_particles.erase(i);
+                continue;
+            }
+
             float t = (i->start_lifetime - i->lifetime) / i->start_lifetime;
 
             Vector3 v;
@@ -486,6 +479,8 @@ namespace Galaxy3D
             {
                 i->size = i->start_size * size_curve.Evaluate(t);
             }
+
+			i++;
         }
     }
 }
