@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\LauncherDemoTemple.cpp" />
+    <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
     <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -44,7 +44,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\LauncherDemoTemple.h" />
     <ClInclude Include="..\src\SplashScreen.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

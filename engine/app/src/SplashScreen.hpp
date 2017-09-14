@@ -7,9 +7,9 @@
 #include "Application.h"
 #include "GTTime.h"
 #include "TweenColor.h"
-#include "LauncherDemoTemple.h"
+#include "LauncherDemoTerrain.h"
 
-#define Launcher LauncherDemoTemple
+#define Launcher LauncherDemoTerrain
 
 using namespace Galaxy3D;
 
