@@ -62,7 +62,7 @@
     <ProjectGuid>{939830D9-F22D-47C3-9513-8CB60F28F8D1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>jpeg</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
