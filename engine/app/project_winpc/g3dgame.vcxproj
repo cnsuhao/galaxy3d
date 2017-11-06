@@ -11,7 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\LauncherDemoDef.cpp" />
+    <ClCompile Include="..\src\LauncherDemoTemple.cpp" />
     <ClCompile Include="..\src\LauncherDemoTerrain.cpp" />
+    <ClCompile Include="..\src\LauncherDemoUI.cpp" />
+    <ClCompile Include="..\src\WinGraphicSettings.cpp" />
     <ClCompile Include="..\src\winpc\g3dgame.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -56,16 +56,16 @@ class LauncherDemo : public Component
 		//RenderSettings::GetGlobalDirectionalLight()->EnableCascade(true);
 
 		std::vector<std::string> sky_textures;
-		for(int i=0; i<12; i++)
+		for (int i = 0; i < 12; i++)
 		{
-			for(int j=0; j<6; j++)
+			for (int j = 0; j < 6; j++)
 			{
-				auto name = "cubemap_" + GTString::ToString(i) + "_" +  GTString::ToString(j) + ".png";
+				auto name = "cubemap_" + GTString::ToString(i) + "_" + GTString::ToString(j) + ".png";
 				sky_textures.push_back(Application::GetDataPath() + "/Assets/mesh/scene/sky/" + name);
 			}
 		}
 		auto cubemap = Cubemap::LoadFromFile(sky_textures, FilterMode::Trilinear, TextureWrapMode::Clamp, true, false, 10);
-		
+
 		auto sky = cam->GetGameObject()->AddComponent<SkyBox>();
 		sky->SetCubemap(cubemap);
 
