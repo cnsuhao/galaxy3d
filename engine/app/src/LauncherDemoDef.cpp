@@ -27,6 +27,7 @@ void LauncherDemoDef::Start()
     auto canvas = GameObject::Create("")->AddComponent<UICanvas>();
     canvas->GetTransform()->SetParent(cam2d->GetTransform());
     canvas->GetTransform()->SetScale(Vector3(1, 1, 1) * g_unit_per_pixel);
+	canvas->SetCamera(cam2d);
 
     auto label = Label::Create("", "heiti", 20, LabelPivot::Top, LabelAlign::Auto, true);
     auto tr = GameObject::Create("fps")->AddComponent<TextRenderer>();
@@ -70,12 +71,12 @@ void LauncherDemoDef::Start()
 
     auto sky = cam3d->GetGameObject()->AddComponent<SkyBox>();
     std::vector<std::string> sky_textures;
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/left.png");
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/right.png");
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/up.png");
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/down.png");
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/front.png");
-    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/back.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/left.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/right.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/up.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/down.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/front.png");
+    sky_textures.push_back(Application::GetDataPath() + "/Assets/texture/skybox/dawm/back.png");
     sky->SetCubemap(Cubemap::LoadFromFile(sky_textures));
 
     auto mesh = Mesh::LoadStaticMesh(Application::GetDataPath() + "/Assets/mesh/LY/LY-1.mesh");
@@ -215,8 +216,8 @@ static Vector3 drag_cam_rot(std::shared_ptr<Camera> &cam3d)
 
 void LauncherDemoDef::Update()
 {
-    fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()).str + "\n" +
-        "drawcall:" + GTString::ToString(GTTime::GetDrawCall()).str);
+    fps->GetLabel()->SetText("fps:" + GTString::ToString(GTTime::GetFPS()) + "\n" +
+        "drawcall:" + GTString::ToString(GTTime::GetDrawCall()));
 
     int key_down_count_old = g_key_down_count;
 
